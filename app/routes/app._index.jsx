@@ -2,6 +2,7 @@ import { useNavigation } from 'react-router';
 import { Text } from '@shopify/polaris';
 import SetupGuide from '../components/pages/dashboard/SetupGuide';
 import Loader from '../components/essentials/Loader';
+import AppEmbedStatus from '../components/essentials/AppEmbedStatus';
 
 export default function Index() {
   // Start----Default CSR loading state checking for navigation
@@ -25,6 +26,9 @@ export default function Index() {
       </s-stack>
 
       <SetupGuide />
+      <AppEmbedStatus
+        isAppEnabled={false}
+      />
     </s-page>
   );
 }

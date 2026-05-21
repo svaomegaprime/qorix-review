@@ -7,7 +7,7 @@ export default function AppEmbedStatus({ isAppEnabled }) {
                         <s-heading>App embed status</s-heading>
                         <s-badge tone={isAppEnabled ? "success" : "warning"}>{isAppEnabled ? "Enabled" : "Setup required"}</s-badge>
                     </s-stack>
-                    <s-paragraph color="subdued">Allow the app to display popups on your storefront</s-paragraph>
+                    <s-paragraph color="subdued">Allow the app to display widgets on your storefront</s-paragraph>
                 </s-stack>
                 <s-stack>
                     <s-button variant="secondary" disabled={isAppEnabled}>{isAppEnabled ? "Enabled" : "Enable now"}</s-button>
