@@ -1,5 +1,15 @@
+import { useNavigation } from 'react-router';
 import { Text } from '@shopify/polaris';
+import SetupGuide from '../components/pages/dashboard/SetupGuide';
+import Loader from '../components/essentials/Loader';
+
 export default function Index() {
+  // Start----Default CSR loading state checking for navigation
+  const navigation = useNavigation();
+  if (navigation.state === 'loading') {
+    return <Loader />;
+  }
+  // End----Default CSR loading state checking for navigation
   return (
     <s-page>
       <s-stack direction='inline' gap='base' justifyContent='space-between' alignItems='center'>
@@ -13,6 +23,8 @@ export default function Index() {
           </s-button>
         </s-grid>
       </s-stack>
+
+      <SetupGuide />
     </s-page>
   );
 }
