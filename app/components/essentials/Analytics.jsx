@@ -1,60 +1,16 @@
-import Li from "./elements/Li";
 import { Text } from "@shopify/polaris";
+import starFilled from "../../assets/images/star-filled.svg"
+import starEmpty from "../../assets/images/star-empty.svg"
+import CustomText from "../essentials/elements/Text"
 
 export default function Analytics() {
+    const arrowUp = '↑';
+    const arrowDown = '↓';
     return (
         <s-stack paddingBlockEnd="base">
             <s-query-container>
-                <s-grid gap="base" gridTemplateColumns="@container (inline-size > 500px) 340px 192px 192px 192px,1fr">
-                    <s-box>
-                        <s-section>
-                            <s-heading>Feature status</s-heading>
-                            <s-stack gap="base" paddingBlockStart="small">
-                                <s-grid gridTemplateColumns="50px 1fr auto" gap="small">
-                                    <s-stack
-                                        alignItems="center"
-                                        justifyContent="center"
-                                        background="subdued"
-                                        borderRadius="base"
-                                    >
-                                        <s-icon type="currency-convert" />
-                                    </s-stack>
-                                    <s-stack>
-                                        <s-heading>Currency conversion</s-heading>
-                                        <s-stack
-                                            direction="inline"
-                                            alignItems="center"
-                                            gap="none large"
-                                        >
-                                            4 currencies <Li>Auto detect on</Li>
-                                        </s-stack>
-                                    </s-stack>
-                                    <s-switch checked />
-                                </s-grid>
-
-                                <s-divider />
-
-                                <s-grid gridTemplateColumns="50px 1fr auto" gap="small">
-                                    <s-stack
-                                        alignItems="center"
-                                        justifyContent="center"
-                                        background="subdued"
-                                        borderRadius="base"
-                                    >
-                                        <s-icon type="language-translate" />
-                                    </s-stack>
-                                    <s-stack>
-                                        <s-heading>Language translation</s-heading>
-                                        <s-stack direction="inline" alignItems="center" gap="large">
-                                            EN <Li>BN</Li> <Li>HI</Li> <Li>AR</Li>
-                                        </s-stack>
-                                    </s-stack>
-                                    <s-switch />
-                                </s-grid>
-                            </s-stack>
-                        </s-section>
-                    </s-box>
-
+                <s-grid gap="base" gridTemplateColumns="@container (inline-size > 500px) 'repeat(4, 1fr)', 'repeat(2, 1fr)'">
+                    {/* Total reviews start */}
                     <s-box>
                         <s-section>
                             <s-stack
@@ -62,17 +18,60 @@ export default function Analytics() {
                                 gap="small"
                                 alignItems="center"
                                 justifyContent="space-between"
-                            >
-                                <s-heading>Sessions this week</s-heading>
-                                <s-icon type="eye-check-mark" />
+                                >
+                                <s-heading>Total reviews</s-heading>
+                                <s-icon type="plan" />
                             </s-stack>
-                            <Text as="h2">0</Text>
-                            <s-paragraph color="subdued">
-                                Data appears once visitors start switching currency or language
+                            <Text as="h2">14</Text>
+                            <CustomText as="p" color={"#00BF7A"}>
+                                {arrowUp} 5 this week
+                            </CustomText>
+                        </s-section>
+                    </s-box>
+                    {/* Total reviews end */}
+                    {/* Avg. rating start */}
+                    <s-box>
+                        <s-section>
+                            <s-stack
+                                direction="inline"
+                                gap="small"
+                                alignItems="center"
+                                justifyContent="space-between"
+                                >
+                                <s-heading>Avg. rating</s-heading>
+                                <s-icon type="star-list" />
+                            </s-stack>
+                            <Text as="h2">4.3</Text>
+                            <s-grid gridTemplateColumns="repeat(5, 20px)" alignItems="center">
+                                <s-image src={starFilled} inlineSize="fill" />
+                                <s-image src={starFilled} inlineSize="fill" />
+                                <s-image src={starFilled} inlineSize="fill" />
+                                <s-image src={starFilled} inlineSize="fill" />
+                                <s-image src={starEmpty} inlineSize="fill" />
+                            </s-grid>
+                        </s-section>
+                    </s-box>
+                    {/* Avg. rating end */}
+                    {/* Requests sent start */}
+                    <s-box>
+                        <s-section>
+                            <s-stack
+                                direction="inline"
+                                gap="small"
+                                alignItems="center"
+                                justifyContent="space-between"
+                                >
+                                <s-heading>Requests sent</s-heading>
+                                <s-icon type="send" />
+                            </s-stack>
+                            <Text as="h2">22</Text>
+                            <s-paragraph>
+                                Last 30 days
                             </s-paragraph>
                         </s-section>
                     </s-box>
-
+                    {/* Requests sent end */}
+                    {/* Pending reviews start */}
                     <s-box>
                         <s-section>
                             <s-stack
@@ -80,30 +79,17 @@ export default function Analytics() {
                                 gap="small"
                                 alignItems="center"
                                 justifyContent="space-between"
-                            >
-                                <s-heading>Currency switches</s-heading>
-                                <s-icon type="currency-convert" />
+                                >
+                                <s-heading>Pending</s-heading>
+                                <s-icon type="clock" />
                             </s-stack>
-                            <Text as="h2">3,441</Text>
-                            <s-paragraph tone="success">↑ 12% vs last week</s-paragraph>
+                            <Text as="h2">2</Text>
+                            <CustomText as="p" color={"#FF9500"}>
+                                Needs moderation
+                            </CustomText>
                         </s-section>
                     </s-box>
-
-                    <s-box>
-                        <s-section>
-                            <s-stack
-                                direction="inline"
-                                gap="small"
-                                alignItems="center"
-                                justifyContent="space-between"
-                            >
-                                <s-heading>Language switches</s-heading>
-                                <s-icon type="language-translate" />
-                            </s-stack>
-                            <Text as="h2">2,759</Text>
-                            <s-paragraph tone="success">↑ 8% vs last week</s-paragraph>
-                        </s-section>
-                    </s-box>
+                    {/* Pending reviews end */}
                 </s-grid>
             </s-query-container>
         </s-stack>

@@ -3,6 +3,7 @@ import { Text } from '@shopify/polaris';
 import SetupGuide from '../components/pages/dashboard/SetupGuide';
 import Loader from '../components/essentials/Loader';
 import AppEmbedStatus from '../components/essentials/AppEmbedStatus';
+import Analytics from '../components/essentials/Analytics';
 
 export default function Index() {
   // Start----Default CSR loading state checking for navigation
@@ -29,6 +30,7 @@ export default function Index() {
       <AppEmbedStatus
         isAppEnabled={false}
       />
+      <Analytics />
     </s-page>
   );
 }
