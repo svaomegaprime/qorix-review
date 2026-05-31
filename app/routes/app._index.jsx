@@ -1,6 +1,7 @@
 import { useNavigation } from 'react-router';
 import { Text } from '@shopify/polaris';
 import SetupGuide from '../components/pages/dashboard/SetupGuide';
+import ReviewBreakdown from '../components/pages/dashboard/ReviewBreakdown';
 import Loader from '../components/essentials/Loader';
 import AppEmbedStatus from '../components/essentials/AppEmbedStatus';
 import Analytics from '../components/essentials/Analytics';
@@ -31,6 +32,7 @@ export default function Index() {
         isAppEnabled={false}
       />
       <Analytics />
+      <ReviewBreakdown />
     </s-page>
   );
 }
