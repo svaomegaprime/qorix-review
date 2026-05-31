@@ -1,6 +1,24 @@
-import { motion } from "framer-motion"
 import { useState } from "react"
 import FaqItem from "./elements/FaqItem"
+
+const FAQ_ITEMS = [
+    {
+        title: "How do I start collecting reviews?",
+        desc: "After installing the app, go to Requests in the sidebar and enable automatic review requests. Qorix will automatically email your customers after their order is fulfilled."
+    },
+    {
+        title: "Why are my reviews not showing on my store?",
+        desc: "Make sure the app embed is enabled in your Shopify theme editor. Go to <b>Online Store → Themes → Customize → App embeds</b> and toggle on Qorix Review. Also confirm the Review Widget block is added to your product page template."
+    },
+    {
+        title: "Can I control which reviews are published?",
+        desc: "Yes. Go to <b>Settings → Publishing & moderation</b>. You can auto-publish all reviews, only verified purchase reviews, or hold low-star reviews (1–2 stars) for manual approval before they go live."
+    },
+    {
+        title: "How do I change when the review request email is sent?",
+        desc: "Go to <b>Settings → Request scheduling</b>. You can set the delay between order fulfilment and the email. We recommend 7 to 14 days to give customers enough time to use the product before reviewing."
+    }
+]
 
 export default function FAQ() {
     const [open, setOpen] = useState("item1")
@@ -8,43 +26,18 @@ export default function FAQ() {
         <s-section>
             <s-heading>Frequently asked questions</s-heading>
             <s-stack>
-                <FaqItem
-                    isOpen={open === "item1"}
-                    onToggle={() => setOpen("item1")}
-                    title="Why isn't the currency switcher showing on my store?"
-                >
-                    <s-paragraph>
-                        Two things to check. First, make sure the app is turned on from the dashboard. Second, go to Shopify <b>Admin → Online Store → Themes → Customize → App embeds</b> and confirm DemoApp is toggled on. Both need to be active for the widget to appear.
-                    </s-paragraph>
-                </FaqItem>
-                <FaqItem
-                    isOpen={open === "item2"}
-                    onToggle={() => setOpen("item2")}
-                    title="Why aren't my product prices converting?"
-                >
-                    <s-paragraph>
-                        Check your theme's <b>Settings → Languages</b>. If you have multiple languages enabled, Shopify might be using the theme's built-in converter instead of the app. Disable the theme's converter and ensure the app is the primary currency tool.
-                    </s-paragraph>
-                </FaqItem>
-                <FaqItem
-                    isOpen={open === "item3"}
-                    onToggle={() => setOpen("item3")}
-                    title="How often do exchange rates update?"
-                >
-                    <s-paragraph>
-                        Rates update automatically every 6 hours using the latest data from the European Central Bank. You can also manually refresh rates from the dashboard at any time.
-                    </s-paragraph>
-                </FaqItem>
-                <FaqItem
-                    isOpen={open === "item4"}
-                    onToggle={() => setOpen("item4")}
-                    title="Can I control which pages the widget appears on?"
-                    bordered={false}
-                >
-                    <s-paragraph>
-                        Yes. From the <b>Settings</b> tab, you can choose to show the currency switcher on all pages, or only on specific pages like the homepage, product pages, or collection pages.
-                    </s-paragraph>
-                </FaqItem>
+                {FAQ_ITEMS.map((item, index) => (
+                    <FaqItem
+                        isOpen={open === `item${index + 1}`}
+                        onToggle={() => setOpen(`item${index + 1}`)}
+                        title={item.title}
+                        bordered={index === FAQ_ITEMS.length - 1 ? false : true}
+                    >
+                        <s-paragraph 
+                            dangerouslySetInnerHTML={{__html: item.desc}}
+                        />
+                    </FaqItem>
+                ))}
             </s-stack>
         </s-section>
     )

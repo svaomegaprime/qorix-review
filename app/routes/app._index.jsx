@@ -5,6 +5,8 @@ import ReviewBreakdown from '../components/pages/dashboard/ReviewBreakdown';
 import Loader from '../components/essentials/Loader';
 import AppEmbedStatus from '../components/essentials/AppEmbedStatus';
 import Analytics from '../components/essentials/Analytics';
+import FAQ from '../components/pages/dashboard/FAQ';
+import Help from '../components/pages/dashboard/Help';
 
 export default function Index() {
   // Start----Default CSR loading state checking for navigation
@@ -33,6 +35,13 @@ export default function Index() {
       />
       <Analytics />
       <ReviewBreakdown />
+      <s-stack paddingBlockStart='base'><FAQ /></s-stack>
+      <s-stack paddingBlockStart='base'><Help /></s-stack>
+      <s-stack alignItems='center' paddingBlockStart='large'>
+        <s-paragraph color='subdued'>
+          Powered by Qorix Shopify - All rights reserved
+        </s-paragraph>
+      </s-stack>
     </s-page>
   );
 }
