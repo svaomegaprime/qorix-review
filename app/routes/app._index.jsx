@@ -29,7 +29,7 @@ export default function Index() {
         </s-grid>
       </s-stack>
 
-      <SetupGuide />
+      <SetupGuide /> 
       <AppEmbedStatus
         isAppEnabled={false}
       />
