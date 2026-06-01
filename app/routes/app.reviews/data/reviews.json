@@ -1,0 +1,32 @@
+[
+    {
+        "id": 1,
+        "reviewerName": "Osman R.",
+        "reviewerAvatar": "/reviewer-1.png",
+        "rating": 4,
+        "reviewDate": "2 days ago",
+        "reviewTitle": "Facial Serum Vitamin C",
+        "reviewDescription": "Amazing product, my skin looks so much better after just 2 weeks. Will definitely reorder.",
+        "reviewStatus": "Published"
+    },
+    {
+        "id": 2,
+        "reviewerName": "Hasan AB",
+        "reviewerAvatar": "/reviewer-2.png",
+        "rating": 5,
+        "reviewDate": "5 hours ago",
+        "reviewTitle": "Facial Serum Vitamin C",
+        "reviewDescription": "Arrived late and packaging was damaged. Product seems fine but not impressed.",
+        "reviewStatus": "Pending"
+    },
+    {
+        "id": 3,
+        "reviewerName": "Hasan AB",
+        "reviewerAvatar": "/reviewer-1.png",
+        "rating": 5,
+        "reviewDate": "1 week ago",
+        "reviewTitle": "Facial Serum Vitamin C",
+        "reviewDescription": "Good results, noticed a difference in about a week. Fast shipping too.",
+        "reviewStatus": "Rejected"
+    }
+]
