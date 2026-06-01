@@ -29,7 +29,7 @@ export default function Reviews() {
   return (
     <s-page>
       {/* Start----Page Header */}
-      <s-grid gridTemplateColumns="auto 1fr" alignItems="center" gap="base">
+      <s-grid gridTemplateColumns="auto 1fr" alignItems="center" gap="base" paddingBlock="small large">
         <s-stack direction="inline" alignItems="center" gap="small">
           <Text as="h2">Reviews</Text>
           <s-badge tone="success" color="strong">Auto-Publish: On</s-badge>
