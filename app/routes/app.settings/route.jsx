@@ -52,7 +52,7 @@ export default function SettingsRoot() {
               <Clickable
                 title="Widgets"
                 icon="paint-brush-flat"
-                url="/app/settings/publishing-moderation"
+                url="/app/settings/widgets"
               />
 
               <s-stack paddingBlock="base">
@@ -61,9 +61,17 @@ export default function SettingsRoot() {
 
               <s-heading>General</s-heading>
 
-              <Clickable title="Branding" icon="paint-brush-flat" />
+              <Clickable
+                title="Branding"
+                icon="paint-brush-flat"
+                url="/app/settings/branding"
+              />
 
-              <Clickable title="Admin notifications" icon="notification" />
+              <Clickable
+                title="Admin notifications"
+                icon="notification"
+                url="/app/settings/admin-notification"
+              />
             </s-section>
           </div>
 
