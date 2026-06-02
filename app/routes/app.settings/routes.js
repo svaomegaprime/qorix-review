@@ -5,7 +5,8 @@ import { fileURLToPath } from "node:url";
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 
-const routesDirectory = "routes/app.reviews/routes";
+const routeGroupName = path.basename(__dirname);
+const routesDirectory = `routes/${routeGroupName}/routes`;
 const routesFolderPath = path.join(__dirname, "routes");
 const ROUTE_EXTENSION_PATTERN = /\.(jsx|js|tsx|ts)$/;
 const ROUTE_SEGMENT_PATTERN = String.raw`(?:[a-z0-9-]+|\$[A-Za-z_][A-Za-z0-9_]*)`;
@@ -17,7 +18,13 @@ const ROUTE_FILE_PATTERN = new RegExp(
 );
 
 if (!fs.existsSync(routesFolderPath)) {
-  throw new Error(`Reviews routes folder not found: ${routesFolderPath}`);
+  throw new Error(`Routes folder not found: ${routesFolderPath}`);
+}
+
+if (!routeGroupName.startsWith("app.")) {
+  throw new Error(
+    `Route group folder must start with "app.": ${routeGroupName}`,
+  );
 }
 
 const toUrlSegments = (routeName) =>
@@ -79,7 +86,7 @@ const routes = routeFiles.map(({ file, filePrefix, routePrefix }) => {
   const conflict = routeConflicts.get(routeKey);
   if (conflict) {
     throw new Error(
-      `Duplicate reviews route path "${urlPath}" for "${conflict}" and "${filePath}".`,
+      `Duplicate route path "${urlPath}" for "${conflict}" and "${filePath}".`,
     );
   }
 

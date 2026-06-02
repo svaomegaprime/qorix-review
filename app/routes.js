@@ -36,7 +36,9 @@ if (appRoute?.children) {
       continue;
     }
 
-    const localRoutesModule = await import(pathToFileURL(localRoutesFile).href);
+    const localRoutesModule = await import(
+      /* @vite-ignore */ pathToFileURL(localRoutesFile).href
+    );
 
     parentRoute.children = localRoutesModule.default;
   }

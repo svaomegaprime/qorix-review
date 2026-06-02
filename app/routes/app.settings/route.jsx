@@ -1,5 +1,5 @@
 import { useOutlet } from "react-router";
-import Settings from "./routes/index.jsx";
+import Settings from "./routes/app.index.jsx";
 import Clickable from "./components/elements/Clickable.jsx";
 
 export default function SettingsRoot() {
@@ -43,7 +43,9 @@ export default function SettingsRoot() {
                 url="/app/settings/publishing-moderation"
               />
 
-              <s-divider />
+              <s-stack paddingBlock="base">
+                <s-divider />
+              </s-stack>
 
               <s-heading>Review display</s-heading>
 
@@ -53,7 +55,9 @@ export default function SettingsRoot() {
                 url="/app/settings/publishing-moderation"
               />
 
-              <s-divider />
+              <s-stack paddingBlock="base">
+                <s-divider />
+              </s-stack>
 
               <s-heading>General</s-heading>
 
