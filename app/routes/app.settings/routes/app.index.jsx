@@ -1,9 +1,44 @@
+import { useLoaderData } from "react-router";
 import CustomGridSection from "../../../components/essentials/CustomGridSection";
 import CustomSection from "../../../components/essentials/CustomSection";
 import Text from "../../../components/essentials/elements/Text";
+import { useState } from "react";
+const DEFAULT_REQUEST_SCHEDULING = {
+  isAutomaticRequest: true,
+  sendRequestAfterDelivery: 5,
+  isReminderRequest: true,
+  reminderRequestDelay: 5,
+  isSkipRefundedOrder: true,
+  isSkipCancelledOrder: true,
+  minimumOrderValue: 0,
+};
+
+export function loader() {
+  return { status: true, message: "hello" };
+}
+
 export default function Settings() {
+  const data = useLoaderData();
+  const [requestScheduling, setRequestScheduling] = useState(
+    DEFAULT_REQUEST_SCHEDULING,
+  );
+  const [showCustomFields, setShowCustomFields] = useState({
+    customDeliveryDays: false,
+    customDelayDays: false,
+  });
+
+  console.log("DEFAULT_REQUEST_SCHEDULING:", requestScheduling);
+
   return (
     <>
+      <pre>{JSON.stringify(requestScheduling, null, 2)}</pre>
+      <ui-save-bar id="leave-confirm-save-bar">
+        <button variant="primary" id="save-button">
+          Save
+        </button>
+        <button id="discard-button">Discard</button>
+      </ui-save-bar>
+
       <s-stack
         paddingBlockEnd="base"
         direction="inline"
@@ -32,6 +67,12 @@ export default function Settings() {
             <CustomSection>
               <s-grid gap="small">
                 <s-switch
+                  onChange={(e) =>
+                    setRequestScheduling((pre) => ({
+                      ...pre,
+                      isAutomaticRequest: e.target.checked,
+                    }))
+                  }
                   label="Enable automatic requests"
                   details="Customers receive a review request email automatically after their order is delivered"
                 ></s-switch>
@@ -43,22 +84,59 @@ export default function Settings() {
                     Days after the order is marked as delivered
                   </s-paragraph>
                   <s-box paddingBlock="small">
-                    <s-select>
-                      <s-option>5 days after delivery</s-option>
-                      <s-option>7 days after delivery</s-option>
-                      <s-option>15 days after delivery</s-option>
-                      <s-option>Add custom days</s-option>
+                    <s-select
+                      onChange={(e) => {
+                        const value = e.currentTarget.value;
+                        const isCustom = value === "custom";
+                        setRequestScheduling((pre) => ({
+                          ...pre,
+                          sendRequestAfterDelivery: isCustom
+                            ? 5
+                            : Number(value),
+                        }));
+                        isCustom
+                          ? setShowCustomFields((pre) => ({
+                              ...pre,
+                              customDeliveryDays: true,
+                            }))
+                          : setShowCustomFields((pre) => ({
+                              ...pre,
+                              customDeliveryDays: false,
+                            }));
+                      }}
+                    >
+                      <s-option value="5">5 days after delivery</s-option>
+                      <s-option value="7">7 days after delivery</s-option>
+                      <s-option value="15">15 days after delivery</s-option>
+                      <s-option value="custom">Add custom days</s-option>
                     </s-select>
                   </s-box>
-                  <s-number-field
-                    label="Custom days"
-                    onInput={(e) => console.log(e.currentTarget.value)}
-                  />
+                  {showCustomFields.customDeliveryDays && (
+                    <s-number-field
+                      inputMode="numeric"
+                      step={1}
+                      min={0}
+                      label="Custom days"
+                      defaultValue={requestScheduling.sendRequestAfterDelivery}
+                      onInput={(e) =>
+                        setRequestScheduling((pre) => ({
+                          ...pre,
+                          sendRequestAfterDelivery: Number(e.target.value),
+                        }))
+                      }
+                    />
+                  )}
                 </s-stack>
                 <s-divider />
 
                 <s-stack>
                   <s-switch
+                    onChange={(e) =>
+                      setRequestScheduling((pre) => ({
+                        ...pre,
+                        isReminderRequest: e.target.checked,
+                      }))
+                    }
                     label="Send reminder if no response"
                     details="Follow-up email if customer hasn't reviewed after the first request"
                   ></s-switch>
@@ -71,17 +149,47 @@ export default function Settings() {
                     Days after first request to send the reminder
                   </s-paragraph>
                   <s-box paddingBlock="small">
-                    <s-select>
-                      <s-option>5 days later</s-option>
-                      <s-option>7 days later</s-option>
-                      <s-option>10 days later</s-option>
-                      <s-option>15 days later</s-option>
+                    <s-select
+                      onChange={(e) => {
+                        const value = e.currentTarget.value;
+                        const isCustom = value === "custom";
+                        setRequestScheduling((pre) => ({
+                          ...pre,
+                          reminderRequestDelay: isCustom ? 5 : Number(value),
+                        }));
+                        isCustom
+                          ? setShowCustomFields((pre) => ({
+                              ...pre,
+                              customDelayDays: true,
+                            }))
+                          : setShowCustomFields((pre) => ({
+                              ...pre,
+                              customDelayDays: false,
+                            }));
+                      }}
+                    >
+                      <s-option value="5">5 days later</s-option>
+                      <s-option value="7">7 days later</s-option>
+                      <s-option value="10">10 days later</s-option>
+                      <s-option value="15">15 days later</s-option>
+                      <s-option value="custom">Add custom days</s-option>
                     </s-select>
                   </s-box>
-                  <s-number-field
-                    label="Custom days"
-                    onInput={(e) => console.log(e.currentTarget.value)}
-                  />
+                  {showCustomFields.customDelayDays && (
+                    <s-number-field
+                      inputMode="numeric"
+                      step={1}
+                      min={0}
+                      label="Custom days"
+                      defaultValue={requestScheduling.reminderRequestDelay}
+                      onInput={(e) =>
+                        setRequestScheduling((pre) => ({
+                          ...pre,
+                          reminderRequestDelay: Number(e.target.value),
+                        }))
+                      }
+                    />
+                  )}
                 </s-stack>
               </s-grid>
             </CustomSection>
@@ -126,10 +234,22 @@ export default function Settings() {
             <CustomSection>
               <s-grid gap="small">
                 <s-switch
+                  onChange={(e) =>
+                    setRequestScheduling((pre) => ({
+                      ...pre,
+                      isSkipRefundedOrder: e.target.checked,
+                    }))
+                  }
                   label="Skip refunded orders"
                   details="Don't send requests for orders that were fully refunded"
                 ></s-switch>
                 <s-switch
+                  onChange={(e) =>
+                    setRequestScheduling((pre) => ({
+                      ...pre,
+                      isSkipCancelledOrder: e.target.checked,
+                    }))
+                  }
                   label="Skip cancelled orders"
                   details="Don't send requests for orders that were cancelled"
                 ></s-switch>
@@ -142,11 +262,18 @@ export default function Settings() {
                         orders)
                       </s-paragraph>
                     </s-box>
-                    <s-select>
-                      <s-option>0 USD</s-option>
-                      <s-option>100 USD</s-option>
-                      <s-option>500 USD</s-option>
-                      <s-option>1000 USD</s-option>
+                    <s-select
+                      onChange={(e) =>
+                        setRequestScheduling((pre) => ({
+                          ...pre,
+                          minimumOrderValue: Number(e.target.value),
+                        }))
+                      }
+                    >
+                      <s-option value="0">0 USD</s-option>
+                      <s-option value="100">100 USD</s-option>
+                      <s-option value="500">500 USD</s-option>
+                      <s-option value="1000">1000 USD</s-option>
                     </s-select>
                   </s-grid>
                 </CustomSection>
