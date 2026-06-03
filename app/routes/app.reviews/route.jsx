@@ -1,5 +1,5 @@
 import { useOutlet } from "react-router";
-import Reviews from "./routes/index.jsx";
+import Reviews from "./routes/app._index.jsx";
 
 export async function loader() {
   console.log("Loader for reviews root route");

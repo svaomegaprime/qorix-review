@@ -1,32 +1,2811 @@
 [
     {
         "id": 1,
-        "reviewerName": "Osman R.",
-        "reviewerAvatar": "/reviewer-1.png",
-        "rating": 4,
-        "reviewDate": "2 days ago",
-        "reviewTitle": "Facial Serum Vitamin C",
-        "reviewDescription": "Amazing product, my skin looks so much better after just 2 weeks. Will definitely reorder.",
-        "reviewStatus": "Published"
+        "reviewerName": "Tanvir A.",
+        "reviewerAvatar": "/reviews/reviewer/reviewer-2.png",
+        "rating": 2,
+        "reviewDate": "42 minutes ago",
+        "reviewTitle": "Brightening Night Cream",
+        "reviewDescription": "Did not suit my skin type. I had to stop using it after a few days.",
+        "attachments": [
+            {
+                "type": "image",
+                "url": "/reviews/attachments/image-2.jpg"
+            }
+        ],
+        "reviewStatus": "Rejected",
+        "reply": "We are sorry about the issue. Our support team will follow up and help you."
     },
     {
         "id": 2,
-        "reviewerName": "Hasan AB",
-        "reviewerAvatar": "/reviewer-2.png",
-        "rating": 5,
-        "reviewDate": "5 hours ago",
-        "reviewTitle": "Facial Serum Vitamin C",
-        "reviewDescription": "Arrived late and packaging was damaged. Product seems fine but not impressed.",
-        "reviewStatus": "Pending"
+        "reviewerName": "Rakib U.",
+        "reviewerAvatar": "/reviews/reviewer/reviewer-1.png",
+        "rating": 4,
+        "reviewDate": "2 hours ago",
+        "reviewTitle": "Aloe Repair Gel",
+        "reviewDescription": "Delivery was on time, but the outer box had a small dent.",
+        "attachments": [
+            {
+                "type": "image",
+                "url": "/reviews/attachments/image-3.jpg"
+            },
+            {
+                "type": "image",
+                "url": "/reviews/attachments/image-4.jpg"
+            }
+        ],
+        "reviewStatus": "Pending",
+        "reply": ""
     },
     {
         "id": 3,
+        "reviewerName": "Mehedi S.",
+        "reviewerAvatar": "/reviews/reviewer/reviewer-2.png",
+        "rating": 4,
+        "reviewDate": "9 hours ago",
+        "reviewTitle": "Lip Sleeping Balm",
+        "reviewDescription": "I noticed a visible glow after a few uses. Works well with my daily routine.",
+        "attachments": [
+            {
+                "type": "image",
+                "url": "/reviews/attachments/image-4.jpg"
+            },
+            {
+                "type": "video",
+                "url": "/reviews/attachments/video-2.mp4"
+            },
+            {
+                "type": "image",
+                "url": "/reviews/attachments/image-1.jpg"
+            }
+        ],
+        "reviewStatus": "Published",
+        "reply": ""
+    },
+    {
+        "id": 4,
+        "reviewerName": "Rumi A.",
+        "reviewerAvatar": "/reviews/reviewer/reviewer-1.png",
+        "rating": 4,
+        "reviewDate": "2 days ago",
+        "reviewTitle": "Green Tea Face Wash",
+        "reviewDescription": "Very gentle on my skin and the scent is mild. Exactly what I wanted.",
+        "attachments": [
+            {
+                "type": "video",
+                "url": "/reviews/attachments/video-2.mp4"
+            },
+            {
+                "type": "image",
+                "url": "/reviews/attachments/image-1.jpg"
+            },
+            {
+                "type": "image",
+                "url": "/reviews/attachments/image-2.jpg"
+            },
+            {
+                "type": "image",
+                "url": "/reviews/attachments/image-3.jpg"
+            }
+        ],
+        "reviewStatus": "Archive",
+        "reply": "We appreciate the honest review and will pass this to our product team."
+    },
+    {
+        "id": 5,
         "reviewerName": "Hasan AB",
-        "reviewerAvatar": "/reviewer-1.png",
+        "reviewerAvatar": "/reviews/reviewer/reviewer-2.png",
+        "rating": 3,
+        "reviewDate": "5 days ago",
+        "reviewTitle": "Rose Clay Face Mask",
+        "reviewDescription": "Good enough for the price. I will update after using it for a few more weeks.",
+        "attachments": [
+            {
+                "type": "image",
+                "url": "/reviews/attachments/image-1.jpg"
+            },
+            {
+                "type": "image",
+                "url": "/reviews/attachments/image-2.jpg"
+            },
+            {
+                "type": "image",
+                "url": "/reviews/attachments/image-3.jpg"
+            },
+            {
+                "type": "video",
+                "url": "/reviews/attachments/video-3.mp4"
+            },
+            {
+                "type": "image",
+                "url": "/reviews/attachments/image-5.jpg"
+            }
+        ],
+        "reviewStatus": "Pending",
+        "reply": ""
+    },
+    {
+        "id": 6,
+        "reviewerName": "Sadia Noor",
+        "reviewerAvatar": "/reviews/reviewer/reviewer-1.png",
         "rating": 5,
-        "reviewDate": "1 week ago",
+        "reviewDate": "2 weeks ago",
+        "reviewTitle": "Niacinamide Toner",
+        "reviewDescription": "This helped reduce dryness a lot. I would recommend it for everyday use.",
+        "attachments": [
+            {
+                "type": "image",
+                "url": "/reviews/attachments/image-2.jpg"
+            },
+            {
+                "type": "image",
+                "url": "/reviews/attachments/image-3.jpg"
+            },
+            {
+                "type": "video",
+                "url": "/reviews/attachments/video-3.mp4"
+            },
+            {
+                "type": "image",
+                "url": "/reviews/attachments/image-5.jpg"
+            },
+            {
+                "type": "image",
+                "url": "/reviews/attachments/image-1.jpg"
+            },
+            {
+                "type": "image",
+                "url": "/reviews/attachments/image-2.jpg"
+            }
+        ],
+        "reviewStatus": "Published",
+        "reply": ""
+    },
+    {
+        "id": 7,
+        "reviewerName": "Lamia T.",
+        "reviewerAvatar": "/reviews/reviewer/reviewer-2.png",
+        "rating": 2,
+        "reviewDate": "1 month ago",
+        "reviewTitle": "Hydrating Eye Cream",
+        "reviewDescription": "Repeated message with no clear product feedback.",
+        "attachments": [
+            {
+                "type": "image",
+                "url": "/reviews/attachments/image-3.jpg"
+            },
+            {
+                "type": "video",
+                "url": "/reviews/attachments/video-3.mp4"
+            },
+            {
+                "type": "image",
+                "url": "/reviews/attachments/image-5.jpg"
+            },
+            {
+                "type": "image",
+                "url": "/reviews/attachments/image-1.jpg"
+            },
+            {
+                "type": "image",
+                "url": "/reviews/attachments/image-2.jpg"
+            },
+            {
+                "type": "video",
+                "url": "/reviews/attachments/video-1.mp4"
+            },
+            {
+                "type": "image",
+                "url": "/reviews/attachments/image-4.jpg"
+            }
+        ],
+        "reviewStatus": "Spam",
+        "reply": ""
+    },
+    {
+        "id": 8,
+        "reviewerName": "Samira B.",
+        "reviewerAvatar": "/reviews/reviewer/reviewer-1.png",
+        "rating": 3,
+        "reviewDate": "18 minutes ago",
+        "reviewTitle": "Daily Moisture Lotion",
+        "reviewDescription": "The bottle leaked inside the package. Please improve the packaging.",
+        "attachments": [
+            {
+                "type": "video",
+                "url": "/reviews/attachments/video-3.mp4"
+            },
+            {
+                "type": "image",
+                "url": "/reviews/attachments/image-5.jpg"
+            }
+        ],
+        "reviewStatus": "Rejected",
+        "reply": "We are sorry about the issue. Our support team will follow up and help you."
+    },
+    {
+        "id": 9,
+        "reviewerName": "Sabbir H.",
+        "reviewerAvatar": "/reviews/reviewer/reviewer-2.png",
+        "rating": 3,
+        "reviewDate": "1 hour ago",
+        "reviewTitle": "SPF 50 Sunscreen",
+        "reviewDescription": "It works decently for daily use. I may try another item next time.",
+        "attachments": [],
+        "reviewStatus": "Published",
+        "reply": ""
+    },
+    {
+        "id": 10,
+        "reviewerName": "Rafael Hasan",
+        "reviewerAvatar": "/reviews/reviewer/reviewer-1.png",
+        "rating": 4,
+        "reviewDate": "5 hours ago",
         "reviewTitle": "Facial Serum Vitamin C",
-        "reviewDescription": "Good results, noticed a difference in about a week. Fast shipping too.",
-        "reviewStatus": "Rejected"
+        "reviewDescription": "Packaging was neat and the product quality feels premium. I am happy with the purchase.",
+        "attachments": [
+            {
+                "type": "image",
+                "url": "/reviews/attachments/image-1.jpg"
+            },
+            {
+                "type": "image",
+                "url": "/reviews/attachments/image-2.jpg"
+            },
+            {
+                "type": "video",
+                "url": "/reviews/attachments/video-1.mp4"
+            }
+        ],
+        "reviewStatus": "Published",
+        "reply": "We appreciate the honest review and will pass this to our product team."
+    },
+    {
+        "id": 11,
+        "reviewerName": "Imran H.",
+        "reviewerAvatar": "/reviews/reviewer/reviewer-2.png",
+        "rating": 3,
+        "reviewDate": "1 day ago",
+        "reviewTitle": "Brightening Night Cream",
+        "reviewDescription": "Not satisfied with the result. I expected better based on the description.",
+        "attachments": [
+            {
+                "type": "image",
+                "url": "/reviews/attachments/image-2.jpg"
+            }
+        ],
+        "reviewStatus": "Rejected",
+        "reply": "We are sorry about the issue. Our support team will follow up and help you."
+    },
+    {
+        "id": 12,
+        "reviewerName": "Jahid R.",
+        "reviewerAvatar": "/reviews/reviewer/reviewer-1.png",
+        "rating": 2,
+        "reviewDate": "3 days ago",
+        "reviewTitle": "Aloe Repair Gel",
+        "reviewDescription": "Arrived late and packaging was damaged. Product seems fine but not impressed.",
+        "attachments": [
+            {
+                "type": "video",
+                "url": "/reviews/attachments/video-1.mp4"
+            },
+            {
+                "type": "image",
+                "url": "/reviews/attachments/image-4.jpg"
+            },
+            {
+                "type": "image",
+                "url": "/reviews/attachments/image-5.jpg"
+            },
+            {
+                "type": "image",
+                "url": "/reviews/attachments/image-1.jpg"
+            },
+            {
+                "type": "video",
+                "url": "/reviews/attachments/video-2.mp4"
+            }
+        ],
+        "reviewStatus": "Pending",
+        "reply": ""
+    },
+    {
+        "id": 13,
+        "reviewerName": "Khalid N.",
+        "reviewerAvatar": "/reviews/reviewer/reviewer-2.png",
+        "rating": 4,
+        "reviewDate": "1 week ago",
+        "reviewTitle": "Lip Sleeping Balm",
+        "reviewDescription": "Fast delivery and the product matched the description. Great experience overall.",
+        "attachments": [
+            {
+                "type": "image",
+                "url": "/reviews/attachments/image-4.jpg"
+            },
+            {
+                "type": "image",
+                "url": "/reviews/attachments/image-5.jpg"
+            },
+            {
+                "type": "image",
+                "url": "/reviews/attachments/image-1.jpg"
+            },
+            {
+                "type": "video",
+                "url": "/reviews/attachments/video-2.mp4"
+            }
+        ],
+        "reviewStatus": "Published",
+        "reply": "Thanks for the review. We appreciate your feedback and support."
+    },
+    {
+        "id": 14,
+        "reviewerName": "Priya D.",
+        "reviewerAvatar": "/reviews/reviewer/reviewer-1.png",
+        "rating": 5,
+        "reviewDate": "3 weeks ago",
+        "reviewTitle": "Green Tea Face Wash",
+        "reviewDescription": "This helped reduce dryness a lot. I would recommend it for everyday use.",
+        "attachments": [],
+        "reviewStatus": "Archive",
+        "reply": "We are sorry about the issue. Our support team will follow up and help you."
+    },
+    {
+        "id": 15,
+        "reviewerName": "Maya K.",
+        "reviewerAvatar": "/reviews/reviewer/reviewer-2.png",
+        "rating": 5,
+        "reviewDate": "5 minutes ago",
+        "reviewTitle": "Rose Clay Face Mask",
+        "reviewDescription": "It works decently for daily use. I may try another item next time.",
+        "attachments": [],
+        "reviewStatus": "Pending",
+        "reply": ""
+    },
+    {
+        "id": 16,
+        "reviewerName": "Farhana P.",
+        "reviewerAvatar": "/reviews/reviewer/reviewer-1.png",
+        "rating": 5,
+        "reviewDate": "42 minutes ago",
+        "reviewTitle": "Niacinamide Toner",
+        "reviewDescription": "Amazing product, my skin looks so much better after just 2 weeks. Will definitely reorder.",
+        "attachments": [
+            {
+                "type": "video",
+                "url": "/reviews/attachments/video-2.mp4"
+            }
+        ],
+        "reviewStatus": "Published",
+        "reply": "We appreciate the honest review and will pass this to our product team."
+    },
+    {
+        "id": 17,
+        "reviewerName": "Nusrat J.",
+        "reviewerAvatar": "/reviews/reviewer/reviewer-2.png",
+        "rating": 2,
+        "reviewDate": "2 hours ago",
+        "reviewTitle": "Hydrating Eye Cream",
+        "reviewDescription": "This appears to be spam content and needs review.",
+        "attachments": [
+            {
+                "type": "image",
+                "url": "/reviews/attachments/image-3.jpg"
+            },
+            {
+                "type": "image",
+                "url": "/reviews/attachments/image-4.jpg"
+            }
+        ],
+        "reviewStatus": "Spam",
+        "reply": ""
+    },
+    {
+        "id": 18,
+        "reviewerName": "Tania R.",
+        "reviewerAvatar": "/reviews/reviewer/reviewer-1.png",
+        "rating": 1,
+        "reviewDate": "9 hours ago",
+        "reviewTitle": "Daily Moisture Lotion",
+        "reviewDescription": "Arrived late and packaging was damaged. Product seems fine but not impressed.",
+        "attachments": [
+            {
+                "type": "image",
+                "url": "/reviews/attachments/image-4.jpg"
+            },
+            {
+                "type": "image",
+                "url": "/reviews/attachments/image-5.jpg"
+            },
+            {
+                "type": "video",
+                "url": "/reviews/attachments/video-3.mp4"
+            }
+        ],
+        "reviewStatus": "Rejected",
+        "reply": ""
+    },
+    {
+        "id": 19,
+        "reviewerName": "Faisal M.",
+        "reviewerAvatar": "/reviews/reviewer/reviewer-2.png",
+        "rating": 3,
+        "reviewDate": "2 days ago",
+        "reviewTitle": "SPF 50 Sunscreen",
+        "reviewDescription": "The texture is okay. Not bad, but not as impressive as I expected.",
+        "attachments": [
+            {
+                "type": "image",
+                "url": "/reviews/attachments/image-5.jpg"
+            },
+            {
+                "type": "video",
+                "url": "/reviews/attachments/video-3.mp4"
+            },
+            {
+                "type": "image",
+                "url": "/reviews/attachments/image-2.jpg"
+            },
+            {
+                "type": "image",
+                "url": "/reviews/attachments/image-3.jpg"
+            }
+        ],
+        "reviewStatus": "Published",
+        "reply": "Thanks for the review. We appreciate your feedback and support."
+    },
+    {
+        "id": 20,
+        "reviewerName": "Nadia S.",
+        "reviewerAvatar": "/reviews/reviewer/reviewer-1.png",
+        "rating": 4,
+        "reviewDate": "5 days ago",
+        "reviewTitle": "Facial Serum Vitamin C",
+        "reviewDescription": "Very gentle on my skin and the scent is mild. Exactly what I wanted.",
+        "attachments": [
+            {
+                "type": "video",
+                "url": "/reviews/attachments/video-3.mp4"
+            },
+            {
+                "type": "image",
+                "url": "/reviews/attachments/image-2.jpg"
+            },
+            {
+                "type": "image",
+                "url": "/reviews/attachments/image-3.jpg"
+            },
+            {
+                "type": "image",
+                "url": "/reviews/attachments/image-4.jpg"
+            },
+            {
+                "type": "video",
+                "url": "/reviews/attachments/video-1.mp4"
+            }
+        ],
+        "reviewStatus": "Published",
+        "reply": "We are sorry about the issue. Our support team will follow up and help you."
+    },
+    {
+        "id": 21,
+        "reviewerName": "Ayesha M.",
+        "reviewerAvatar": "/reviews/reviewer/reviewer-2.png",
+        "rating": 1,
+        "reviewDate": "2 weeks ago",
+        "reviewTitle": "Brightening Night Cream",
+        "reviewDescription": "I received the wrong item. Waiting for support to resolve it.",
+        "attachments": [
+            {
+                "type": "image",
+                "url": "/reviews/attachments/image-2.jpg"
+            },
+            {
+                "type": "image",
+                "url": "/reviews/attachments/image-3.jpg"
+            },
+            {
+                "type": "image",
+                "url": "/reviews/attachments/image-4.jpg"
+            },
+            {
+                "type": "video",
+                "url": "/reviews/attachments/video-1.mp4"
+            },
+            {
+                "type": "image",
+                "url": "/reviews/attachments/image-1.jpg"
+            },
+            {
+                "type": "image",
+                "url": "/reviews/attachments/image-2.jpg"
+            }
+        ],
+        "reviewStatus": "Rejected",
+        "reply": ""
+    },
+    {
+        "id": 22,
+        "reviewerName": "Arman K.",
+        "reviewerAvatar": "/reviews/reviewer/reviewer-1.png",
+        "rating": 4,
+        "reviewDate": "1 month ago",
+        "reviewTitle": "Aloe Repair Gel",
+        "reviewDescription": "The product is usable, but the fragrance is a little stronger than I prefer.",
+        "attachments": [
+            {
+                "type": "image",
+                "url": "/reviews/attachments/image-3.jpg"
+            },
+            {
+                "type": "image",
+                "url": "/reviews/attachments/image-4.jpg"
+            },
+            {
+                "type": "video",
+                "url": "/reviews/attachments/video-1.mp4"
+            },
+            {
+                "type": "image",
+                "url": "/reviews/attachments/image-1.jpg"
+            },
+            {
+                "type": "image",
+                "url": "/reviews/attachments/image-2.jpg"
+            },
+            {
+                "type": "image",
+                "url": "/reviews/attachments/image-3.jpg"
+            },
+            {
+                "type": "video",
+                "url": "/reviews/attachments/video-2.mp4"
+            }
+        ],
+        "reviewStatus": "Pending",
+        "reply": ""
+    },
+    {
+        "id": 23,
+        "reviewerName": "Nayeem P.",
+        "reviewerAvatar": "/reviews/reviewer/reviewer-2.png",
+        "rating": 4,
+        "reviewDate": "18 minutes ago",
+        "reviewTitle": "Lip Sleeping Balm",
+        "reviewDescription": "My skin feels smoother and cleaner. The formula is comfortable and not sticky.",
+        "attachments": [
+            {
+                "type": "image",
+                "url": "/reviews/attachments/image-4.jpg"
+            },
+            {
+                "type": "video",
+                "url": "/reviews/attachments/video-1.mp4"
+            }
+        ],
+        "reviewStatus": "Published",
+        "reply": "Thanks for choosing Qorix Review. We are happy you liked it."
+    },
+    {
+        "id": 24,
+        "reviewerName": "Osman R.",
+        "reviewerAvatar": "/reviews/reviewer/reviewer-1.png",
+        "rating": 3,
+        "reviewDate": "1 hour ago",
+        "reviewTitle": "Green Tea Face Wash",
+        "reviewDescription": "Product seems fine, but I need more time to see clear results.",
+        "attachments": [],
+        "reviewStatus": "Archive",
+        "reply": ""
+    },
+    {
+        "id": 25,
+        "reviewerName": "Tanvir A.",
+        "reviewerAvatar": "/reviews/reviewer/reviewer-2.png",
+        "rating": 3,
+        "reviewDate": "5 hours ago",
+        "reviewTitle": "Rose Clay Face Mask",
+        "reviewDescription": "The texture is okay. Not bad, but not as impressive as I expected.",
+        "attachments": [
+            {
+                "type": "image",
+                "url": "/reviews/attachments/image-1.jpg"
+            },
+            {
+                "type": "image",
+                "url": "/reviews/attachments/image-2.jpg"
+            },
+            {
+                "type": "image",
+                "url": "/reviews/attachments/image-3.jpg"
+            }
+        ],
+        "reviewStatus": "Pending",
+        "reply": ""
+    },
+    {
+        "id": 26,
+        "reviewerName": "Rakib U.",
+        "reviewerAvatar": "/reviews/reviewer/reviewer-1.png",
+        "rating": 5,
+        "reviewDate": "1 day ago",
+        "reviewTitle": "Niacinamide Toner",
+        "reviewDescription": "Packaging was neat and the product quality feels premium. I am happy with the purchase.",
+        "attachments": [
+            {
+                "type": "image",
+                "url": "/reviews/attachments/image-2.jpg"
+            }
+        ],
+        "reviewStatus": "Published",
+        "reply": "We are sorry about the issue. Our support team will follow up and help you."
+    },
+    {
+        "id": 27,
+        "reviewerName": "Mehedi S.",
+        "reviewerAvatar": "/reviews/reviewer/reviewer-2.png",
+        "rating": 2,
+        "reviewDate": "3 days ago",
+        "reviewTitle": "Hydrating Eye Cream",
+        "reviewDescription": "Looks suspicious and does not seem related to the product.",
+        "attachments": [
+            {
+                "type": "image",
+                "url": "/reviews/attachments/image-3.jpg"
+            },
+            {
+                "type": "video",
+                "url": "/reviews/attachments/video-2.mp4"
+            },
+            {
+                "type": "image",
+                "url": "/reviews/attachments/image-5.jpg"
+            },
+            {
+                "type": "image",
+                "url": "/reviews/attachments/image-1.jpg"
+            },
+            {
+                "type": "image",
+                "url": "/reviews/attachments/image-2.jpg"
+            }
+        ],
+        "reviewStatus": "Spam",
+        "reply": ""
+    },
+    {
+        "id": 28,
+        "reviewerName": "Rumi A.",
+        "reviewerAvatar": "/reviews/reviewer/reviewer-1.png",
+        "rating": 2,
+        "reviewDate": "1 week ago",
+        "reviewTitle": "Daily Moisture Lotion",
+        "reviewDescription": "The product felt too heavy for me. It may work better for dry skin.",
+        "attachments": [
+            {
+                "type": "video",
+                "url": "/reviews/attachments/video-2.mp4"
+            },
+            {
+                "type": "image",
+                "url": "/reviews/attachments/image-5.jpg"
+            },
+            {
+                "type": "image",
+                "url": "/reviews/attachments/image-1.jpg"
+            },
+            {
+                "type": "image",
+                "url": "/reviews/attachments/image-2.jpg"
+            }
+        ],
+        "reviewStatus": "Rejected",
+        "reply": "We are sorry about the issue. Our support team will follow up and help you."
+    },
+    {
+        "id": 29,
+        "reviewerName": "Hasan AB",
+        "reviewerAvatar": "/reviews/reviewer/reviewer-2.png",
+        "rating": 3,
+        "reviewDate": "3 weeks ago",
+        "reviewTitle": "SPF 50 Sunscreen",
+        "reviewDescription": "Good enough for the price. I will update after using it for a few more weeks.",
+        "attachments": [],
+        "reviewStatus": "Published",
+        "reply": "Thanks for choosing Qorix Review. We are happy you liked it."
+    },
+    {
+        "id": 30,
+        "reviewerName": "Sadia Noor",
+        "reviewerAvatar": "/reviews/reviewer/reviewer-1.png",
+        "rating": 4,
+        "reviewDate": "5 minutes ago",
+        "reviewTitle": "Facial Serum Vitamin C",
+        "reviewDescription": "This helped reduce dryness a lot. I would recommend it for everyday use.",
+        "attachments": [],
+        "reviewStatus": "Published",
+        "reply": ""
+    },
+    {
+        "id": 31,
+        "reviewerName": "Lamia T.",
+        "reviewerAvatar": "/reviews/reviewer/reviewer-2.png",
+        "rating": 2,
+        "reviewDate": "42 minutes ago",
+        "reviewTitle": "Brightening Night Cream",
+        "reviewDescription": "Did not suit my skin type. I had to stop using it after a few days.",
+        "attachments": [
+            {
+                "type": "image",
+                "url": "/reviews/attachments/image-2.jpg"
+            }
+        ],
+        "reviewStatus": "Rejected",
+        "reply": "We are sorry about the issue. Our support team will follow up and help you."
+    },
+    {
+        "id": 32,
+        "reviewerName": "Samira B.",
+        "reviewerAvatar": "/reviews/reviewer/reviewer-1.png",
+        "rating": 2,
+        "reviewDate": "2 hours ago",
+        "reviewTitle": "Aloe Repair Gel",
+        "reviewDescription": "The bottle leaked inside the package. Please improve the packaging.",
+        "attachments": [
+            {
+                "type": "video",
+                "url": "/reviews/attachments/video-3.mp4"
+            },
+            {
+                "type": "image",
+                "url": "/reviews/attachments/image-4.jpg"
+            }
+        ],
+        "reviewStatus": "Pending",
+        "reply": ""
+    },
+    {
+        "id": 33,
+        "reviewerName": "Sabbir H.",
+        "reviewerAvatar": "/reviews/reviewer/reviewer-2.png",
+        "rating": 4,
+        "reviewDate": "9 hours ago",
+        "reviewTitle": "Lip Sleeping Balm",
+        "reviewDescription": "Good texture and absorbs quickly. It feels light but still keeps my skin hydrated.",
+        "attachments": [
+            {
+                "type": "image",
+                "url": "/reviews/attachments/image-4.jpg"
+            },
+            {
+                "type": "image",
+                "url": "/reviews/attachments/image-5.jpg"
+            },
+            {
+                "type": "image",
+                "url": "/reviews/attachments/image-1.jpg"
+            }
+        ],
+        "reviewStatus": "Published",
+        "reply": ""
+    },
+    {
+        "id": 34,
+        "reviewerName": "Rafael Hasan",
+        "reviewerAvatar": "/reviews/reviewer/reviewer-1.png",
+        "rating": 4,
+        "reviewDate": "2 days ago",
+        "reviewTitle": "Green Tea Face Wash",
+        "reviewDescription": "Packaging was neat and the product quality feels premium. I am happy with the purchase.",
+        "attachments": [
+            {
+                "type": "image",
+                "url": "/reviews/attachments/image-5.jpg"
+            },
+            {
+                "type": "image",
+                "url": "/reviews/attachments/image-1.jpg"
+            },
+            {
+                "type": "video",
+                "url": "/reviews/attachments/video-1.mp4"
+            },
+            {
+                "type": "image",
+                "url": "/reviews/attachments/image-3.jpg"
+            }
+        ],
+        "reviewStatus": "Archive",
+        "reply": "We appreciate the honest review and will pass this to our product team."
+    },
+    {
+        "id": 35,
+        "reviewerName": "Imran H.",
+        "reviewerAvatar": "/reviews/reviewer/reviewer-2.png",
+        "rating": 5,
+        "reviewDate": "5 days ago",
+        "reviewTitle": "Rose Clay Face Mask",
+        "reviewDescription": "Good enough for the price. I will update after using it for a few more weeks.",
+        "attachments": [
+            {
+                "type": "image",
+                "url": "/reviews/attachments/image-1.jpg"
+            },
+            {
+                "type": "video",
+                "url": "/reviews/attachments/video-1.mp4"
+            },
+            {
+                "type": "image",
+                "url": "/reviews/attachments/image-3.jpg"
+            },
+            {
+                "type": "image",
+                "url": "/reviews/attachments/image-4.jpg"
+            },
+            {
+                "type": "image",
+                "url": "/reviews/attachments/image-5.jpg"
+            }
+        ],
+        "reviewStatus": "Pending",
+        "reply": ""
+    },
+    {
+        "id": 36,
+        "reviewerName": "Jahid R.",
+        "reviewerAvatar": "/reviews/reviewer/reviewer-1.png",
+        "rating": 5,
+        "reviewDate": "2 weeks ago",
+        "reviewTitle": "Niacinamide Toner",
+        "reviewDescription": "Very gentle on my skin and the scent is mild. Exactly what I wanted.",
+        "attachments": [
+            {
+                "type": "video",
+                "url": "/reviews/attachments/video-1.mp4"
+            },
+            {
+                "type": "image",
+                "url": "/reviews/attachments/image-3.jpg"
+            },
+            {
+                "type": "image",
+                "url": "/reviews/attachments/image-4.jpg"
+            },
+            {
+                "type": "image",
+                "url": "/reviews/attachments/image-5.jpg"
+            },
+            {
+                "type": "video",
+                "url": "/reviews/attachments/video-2.mp4"
+            },
+            {
+                "type": "image",
+                "url": "/reviews/attachments/image-2.jpg"
+            }
+        ],
+        "reviewStatus": "Published",
+        "reply": ""
+    },
+    {
+        "id": 37,
+        "reviewerName": "Khalid N.",
+        "reviewerAvatar": "/reviews/reviewer/reviewer-2.png",
+        "rating": 2,
+        "reviewDate": "1 month ago",
+        "reviewTitle": "Hydrating Eye Cream",
+        "reviewDescription": "Repeated message with no clear product feedback.",
+        "attachments": [
+            {
+                "type": "image",
+                "url": "/reviews/attachments/image-3.jpg"
+            },
+            {
+                "type": "image",
+                "url": "/reviews/attachments/image-4.jpg"
+            },
+            {
+                "type": "image",
+                "url": "/reviews/attachments/image-5.jpg"
+            },
+            {
+                "type": "video",
+                "url": "/reviews/attachments/video-2.mp4"
+            },
+            {
+                "type": "image",
+                "url": "/reviews/attachments/image-2.jpg"
+            },
+            {
+                "type": "image",
+                "url": "/reviews/attachments/image-3.jpg"
+            },
+            {
+                "type": "image",
+                "url": "/reviews/attachments/image-4.jpg"
+            }
+        ],
+        "reviewStatus": "Spam",
+        "reply": ""
+    },
+    {
+        "id": 38,
+        "reviewerName": "Priya D.",
+        "reviewerAvatar": "/reviews/reviewer/reviewer-1.png",
+        "rating": 3,
+        "reviewDate": "18 minutes ago",
+        "reviewTitle": "Daily Moisture Lotion",
+        "reviewDescription": "The bottle leaked inside the package. Please improve the packaging.",
+        "attachments": [
+            {
+                "type": "image",
+                "url": "/reviews/attachments/image-4.jpg"
+            },
+            {
+                "type": "image",
+                "url": "/reviews/attachments/image-5.jpg"
+            }
+        ],
+        "reviewStatus": "Rejected",
+        "reply": "We are sorry about the issue. Our support team will follow up and help you."
+    },
+    {
+        "id": 39,
+        "reviewerName": "Maya K.",
+        "reviewerAvatar": "/reviews/reviewer/reviewer-2.png",
+        "rating": 3,
+        "reviewDate": "1 hour ago",
+        "reviewTitle": "SPF 50 Sunscreen",
+        "reviewDescription": "It works decently for daily use. I may try another item next time.",
+        "attachments": [],
+        "reviewStatus": "Published",
+        "reply": ""
+    },
+    {
+        "id": 40,
+        "reviewerName": "Farhana P.",
+        "reviewerAvatar": "/reviews/reviewer/reviewer-1.png",
+        "rating": 4,
+        "reviewDate": "5 hours ago",
+        "reviewTitle": "Facial Serum Vitamin C",
+        "reviewDescription": "Amazing product, my skin looks so much better after just 2 weeks. Will definitely reorder.",
+        "attachments": [
+            {
+                "type": "video",
+                "url": "/reviews/attachments/video-2.mp4"
+            },
+            {
+                "type": "image",
+                "url": "/reviews/attachments/image-2.jpg"
+            },
+            {
+                "type": "image",
+                "url": "/reviews/attachments/image-3.jpg"
+            }
+        ],
+        "reviewStatus": "Published",
+        "reply": "We appreciate the honest review and will pass this to our product team."
+    },
+    {
+        "id": 41,
+        "reviewerName": "Nusrat J.",
+        "reviewerAvatar": "/reviews/reviewer/reviewer-2.png",
+        "rating": 3,
+        "reviewDate": "1 day ago",
+        "reviewTitle": "Brightening Night Cream",
+        "reviewDescription": "Not satisfied with the result. I expected better based on the description.",
+        "attachments": [
+            {
+                "type": "image",
+                "url": "/reviews/attachments/image-2.jpg"
+            }
+        ],
+        "reviewStatus": "Rejected",
+        "reply": "We are sorry about the issue. Our support team will follow up and help you."
+    },
+    {
+        "id": 42,
+        "reviewerName": "Tania R.",
+        "reviewerAvatar": "/reviews/reviewer/reviewer-1.png",
+        "rating": 4,
+        "reviewDate": "3 days ago",
+        "reviewTitle": "Aloe Repair Gel",
+        "reviewDescription": "Product seems fine, but I need more time to see clear results.",
+        "attachments": [
+            {
+                "type": "image",
+                "url": "/reviews/attachments/image-3.jpg"
+            },
+            {
+                "type": "image",
+                "url": "/reviews/attachments/image-4.jpg"
+            },
+            {
+                "type": "video",
+                "url": "/reviews/attachments/video-3.mp4"
+            },
+            {
+                "type": "image",
+                "url": "/reviews/attachments/image-1.jpg"
+            },
+            {
+                "type": "image",
+                "url": "/reviews/attachments/image-2.jpg"
+            }
+        ],
+        "reviewStatus": "Pending",
+        "reply": ""
+    },
+    {
+        "id": 43,
+        "reviewerName": "Faisal M.",
+        "reviewerAvatar": "/reviews/reviewer/reviewer-2.png",
+        "rating": 4,
+        "reviewDate": "1 week ago",
+        "reviewTitle": "Lip Sleeping Balm",
+        "reviewDescription": "I noticed a visible glow after a few uses. Works well with my daily routine.",
+        "attachments": [
+            {
+                "type": "image",
+                "url": "/reviews/attachments/image-4.jpg"
+            },
+            {
+                "type": "video",
+                "url": "/reviews/attachments/video-3.mp4"
+            },
+            {
+                "type": "image",
+                "url": "/reviews/attachments/image-1.jpg"
+            },
+            {
+                "type": "image",
+                "url": "/reviews/attachments/image-2.jpg"
+            }
+        ],
+        "reviewStatus": "Published",
+        "reply": "Thanks for the review. We appreciate your feedback and support."
+    },
+    {
+        "id": 44,
+        "reviewerName": "Nadia S.",
+        "reviewerAvatar": "/reviews/reviewer/reviewer-1.png",
+        "rating": 5,
+        "reviewDate": "3 weeks ago",
+        "reviewTitle": "Green Tea Face Wash",
+        "reviewDescription": "Very gentle on my skin and the scent is mild. Exactly what I wanted.",
+        "attachments": [],
+        "reviewStatus": "Archive",
+        "reply": "We are sorry about the issue. Our support team will follow up and help you."
+    },
+    {
+        "id": 45,
+        "reviewerName": "Ayesha M.",
+        "reviewerAvatar": "/reviews/reviewer/reviewer-2.png",
+        "rating": 3,
+        "reviewDate": "5 minutes ago",
+        "reviewTitle": "Rose Clay Face Mask",
+        "reviewDescription": "It works decently for daily use. I may try another item next time.",
+        "attachments": [],
+        "reviewStatus": "Pending",
+        "reply": ""
+    },
+    {
+        "id": 46,
+        "reviewerName": "Arman K.",
+        "reviewerAvatar": "/reviews/reviewer/reviewer-1.png",
+        "rating": 5,
+        "reviewDate": "42 minutes ago",
+        "reviewTitle": "Niacinamide Toner",
+        "reviewDescription": "This helped reduce dryness a lot. I would recommend it for everyday use.",
+        "attachments": [
+            {
+                "type": "image",
+                "url": "/reviews/attachments/image-2.jpg"
+            }
+        ],
+        "reviewStatus": "Published",
+        "reply": "We appreciate the honest review and will pass this to our product team."
+    },
+    {
+        "id": 47,
+        "reviewerName": "Nayeem P.",
+        "reviewerAvatar": "/reviews/reviewer/reviewer-2.png",
+        "rating": 2,
+        "reviewDate": "2 hours ago",
+        "reviewTitle": "Hydrating Eye Cream",
+        "reviewDescription": "This appears to be spam content and needs review.",
+        "attachments": [
+            {
+                "type": "image",
+                "url": "/reviews/attachments/image-3.jpg"
+            },
+            {
+                "type": "video",
+                "url": "/reviews/attachments/video-1.mp4"
+            }
+        ],
+        "reviewStatus": "Spam",
+        "reply": ""
+    },
+    {
+        "id": 48,
+        "reviewerName": "Osman R.",
+        "reviewerAvatar": "/reviews/reviewer/reviewer-1.png",
+        "rating": 1,
+        "reviewDate": "9 hours ago",
+        "reviewTitle": "Daily Moisture Lotion",
+        "reviewDescription": "Arrived late and packaging was damaged. Product seems fine but not impressed.",
+        "attachments": [
+            {
+                "type": "video",
+                "url": "/reviews/attachments/video-1.mp4"
+            },
+            {
+                "type": "image",
+                "url": "/reviews/attachments/image-5.jpg"
+            },
+            {
+                "type": "image",
+                "url": "/reviews/attachments/image-1.jpg"
+            }
+        ],
+        "reviewStatus": "Rejected",
+        "reply": ""
+    },
+    {
+        "id": 49,
+        "reviewerName": "Tanvir A.",
+        "reviewerAvatar": "/reviews/reviewer/reviewer-2.png",
+        "rating": 3,
+        "reviewDate": "2 days ago",
+        "reviewTitle": "SPF 50 Sunscreen",
+        "reviewDescription": "The texture is okay. Not bad, but not as impressive as I expected.",
+        "attachments": [
+            {
+                "type": "image",
+                "url": "/reviews/attachments/image-5.jpg"
+            },
+            {
+                "type": "image",
+                "url": "/reviews/attachments/image-1.jpg"
+            },
+            {
+                "type": "image",
+                "url": "/reviews/attachments/image-2.jpg"
+            },
+            {
+                "type": "video",
+                "url": "/reviews/attachments/video-2.mp4"
+            }
+        ],
+        "reviewStatus": "Published",
+        "reply": "Thanks for the review. We appreciate your feedback and support."
+    },
+    {
+        "id": 50,
+        "reviewerName": "Rakib U.",
+        "reviewerAvatar": "/reviews/reviewer/reviewer-1.png",
+        "rating": 4,
+        "reviewDate": "5 days ago",
+        "reviewTitle": "Facial Serum Vitamin C",
+        "reviewDescription": "Packaging was neat and the product quality feels premium. I am happy with the purchase.",
+        "attachments": [
+            {
+                "type": "image",
+                "url": "/reviews/attachments/image-1.jpg"
+            },
+            {
+                "type": "image",
+                "url": "/reviews/attachments/image-2.jpg"
+            },
+            {
+                "type": "video",
+                "url": "/reviews/attachments/video-2.mp4"
+            },
+            {
+                "type": "image",
+                "url": "/reviews/attachments/image-4.jpg"
+            },
+            {
+                "type": "image",
+                "url": "/reviews/attachments/image-5.jpg"
+            }
+        ],
+        "reviewStatus": "Published",
+        "reply": "We are sorry about the issue. Our support team will follow up and help you."
+    },
+    {
+        "id": 51,
+        "reviewerName": "Mehedi S.",
+        "reviewerAvatar": "/reviews/reviewer/reviewer-2.png",
+        "rating": 1,
+        "reviewDate": "2 weeks ago",
+        "reviewTitle": "Brightening Night Cream",
+        "reviewDescription": "I received the wrong item. Waiting for support to resolve it.",
+        "attachments": [
+            {
+                "type": "image",
+                "url": "/reviews/attachments/image-2.jpg"
+            },
+            {
+                "type": "video",
+                "url": "/reviews/attachments/video-2.mp4"
+            },
+            {
+                "type": "image",
+                "url": "/reviews/attachments/image-4.jpg"
+            },
+            {
+                "type": "image",
+                "url": "/reviews/attachments/image-5.jpg"
+            },
+            {
+                "type": "image",
+                "url": "/reviews/attachments/image-1.jpg"
+            },
+            {
+                "type": "video",
+                "url": "/reviews/attachments/video-3.mp4"
+            }
+        ],
+        "reviewStatus": "Rejected",
+        "reply": ""
+    },
+    {
+        "id": 52,
+        "reviewerName": "Rumi A.",
+        "reviewerAvatar": "/reviews/reviewer/reviewer-1.png",
+        "rating": 2,
+        "reviewDate": "1 month ago",
+        "reviewTitle": "Aloe Repair Gel",
+        "reviewDescription": "The product felt too heavy for me. It may work better for dry skin.",
+        "attachments": [
+            {
+                "type": "video",
+                "url": "/reviews/attachments/video-2.mp4"
+            },
+            {
+                "type": "image",
+                "url": "/reviews/attachments/image-4.jpg"
+            },
+            {
+                "type": "image",
+                "url": "/reviews/attachments/image-5.jpg"
+            },
+            {
+                "type": "image",
+                "url": "/reviews/attachments/image-1.jpg"
+            },
+            {
+                "type": "video",
+                "url": "/reviews/attachments/video-3.mp4"
+            },
+            {
+                "type": "image",
+                "url": "/reviews/attachments/image-3.jpg"
+            },
+            {
+                "type": "image",
+                "url": "/reviews/attachments/image-4.jpg"
+            }
+        ],
+        "reviewStatus": "Pending",
+        "reply": ""
+    },
+    {
+        "id": 53,
+        "reviewerName": "Hasan AB",
+        "reviewerAvatar": "/reviews/reviewer/reviewer-2.png",
+        "rating": 4,
+        "reviewDate": "18 minutes ago",
+        "reviewTitle": "Lip Sleeping Balm",
+        "reviewDescription": "Fast delivery and the product matched the description. Great experience overall.",
+        "attachments": [
+            {
+                "type": "image",
+                "url": "/reviews/attachments/image-4.jpg"
+            },
+            {
+                "type": "image",
+                "url": "/reviews/attachments/image-5.jpg"
+            }
+        ],
+        "reviewStatus": "Published",
+        "reply": "Thanks for choosing Qorix Review. We are happy you liked it."
+    },
+    {
+        "id": 54,
+        "reviewerName": "Sadia Noor",
+        "reviewerAvatar": "/reviews/reviewer/reviewer-1.png",
+        "rating": 3,
+        "reviewDate": "1 hour ago",
+        "reviewTitle": "Green Tea Face Wash",
+        "reviewDescription": "Product seems fine, but I need more time to see clear results.",
+        "attachments": [],
+        "reviewStatus": "Archive",
+        "reply": ""
+    },
+    {
+        "id": 55,
+        "reviewerName": "Lamia T.",
+        "reviewerAvatar": "/reviews/reviewer/reviewer-2.png",
+        "rating": 5,
+        "reviewDate": "5 hours ago",
+        "reviewTitle": "Rose Clay Face Mask",
+        "reviewDescription": "The texture is okay. Not bad, but not as impressive as I expected.",
+        "attachments": [
+            {
+                "type": "image",
+                "url": "/reviews/attachments/image-1.jpg"
+            },
+            {
+                "type": "video",
+                "url": "/reviews/attachments/video-3.mp4"
+            },
+            {
+                "type": "image",
+                "url": "/reviews/attachments/image-3.jpg"
+            }
+        ],
+        "reviewStatus": "Pending",
+        "reply": ""
+    },
+    {
+        "id": 56,
+        "reviewerName": "Samira B.",
+        "reviewerAvatar": "/reviews/reviewer/reviewer-1.png",
+        "rating": 5,
+        "reviewDate": "1 day ago",
+        "reviewTitle": "Niacinamide Toner",
+        "reviewDescription": "Amazing product, my skin looks so much better after just 2 weeks. Will definitely reorder.",
+        "attachments": [
+            {
+                "type": "video",
+                "url": "/reviews/attachments/video-3.mp4"
+            }
+        ],
+        "reviewStatus": "Published",
+        "reply": "We are sorry about the issue. Our support team will follow up and help you."
+    },
+    {
+        "id": 57,
+        "reviewerName": "Sabbir H.",
+        "reviewerAvatar": "/reviews/reviewer/reviewer-2.png",
+        "rating": 2,
+        "reviewDate": "3 days ago",
+        "reviewTitle": "Hydrating Eye Cream",
+        "reviewDescription": "Looks suspicious and does not seem related to the product.",
+        "attachments": [
+            {
+                "type": "image",
+                "url": "/reviews/attachments/image-3.jpg"
+            },
+            {
+                "type": "image",
+                "url": "/reviews/attachments/image-4.jpg"
+            },
+            {
+                "type": "image",
+                "url": "/reviews/attachments/image-5.jpg"
+            },
+            {
+                "type": "video",
+                "url": "/reviews/attachments/video-1.mp4"
+            },
+            {
+                "type": "image",
+                "url": "/reviews/attachments/image-2.jpg"
+            }
+        ],
+        "reviewStatus": "Spam",
+        "reply": ""
+    },
+    {
+        "id": 58,
+        "reviewerName": "Rafael Hasan",
+        "reviewerAvatar": "/reviews/reviewer/reviewer-1.png",
+        "rating": 2,
+        "reviewDate": "1 week ago",
+        "reviewTitle": "Daily Moisture Lotion",
+        "reviewDescription": "The product felt too heavy for me. It may work better for dry skin.",
+        "attachments": [
+            {
+                "type": "image",
+                "url": "/reviews/attachments/image-4.jpg"
+            },
+            {
+                "type": "image",
+                "url": "/reviews/attachments/image-5.jpg"
+            },
+            {
+                "type": "video",
+                "url": "/reviews/attachments/video-1.mp4"
+            },
+            {
+                "type": "image",
+                "url": "/reviews/attachments/image-2.jpg"
+            }
+        ],
+        "reviewStatus": "Rejected",
+        "reply": "We are sorry about the issue. Our support team will follow up and help you."
+    },
+    {
+        "id": 59,
+        "reviewerName": "Imran H.",
+        "reviewerAvatar": "/reviews/reviewer/reviewer-2.png",
+        "rating": 3,
+        "reviewDate": "3 weeks ago",
+        "reviewTitle": "SPF 50 Sunscreen",
+        "reviewDescription": "Good enough for the price. I will update after using it for a few more weeks.",
+        "attachments": [],
+        "reviewStatus": "Published",
+        "reply": "Thanks for choosing Qorix Review. We are happy you liked it."
+    },
+    {
+        "id": 60,
+        "reviewerName": "Jahid R.",
+        "reviewerAvatar": "/reviews/reviewer/reviewer-1.png",
+        "rating": 4,
+        "reviewDate": "5 minutes ago",
+        "reviewTitle": "Facial Serum Vitamin C",
+        "reviewDescription": "Very gentle on my skin and the scent is mild. Exactly what I wanted.",
+        "attachments": [],
+        "reviewStatus": "Published",
+        "reply": ""
+    },
+    {
+        "id": 61,
+        "reviewerName": "Khalid N.",
+        "reviewerAvatar": "/reviews/reviewer/reviewer-2.png",
+        "rating": 2,
+        "reviewDate": "42 minutes ago",
+        "reviewTitle": "Brightening Night Cream",
+        "reviewDescription": "Did not suit my skin type. I had to stop using it after a few days.",
+        "attachments": [
+            {
+                "type": "image",
+                "url": "/reviews/attachments/image-2.jpg"
+            }
+        ],
+        "reviewStatus": "Rejected",
+        "reply": "We are sorry about the issue. Our support team will follow up and help you."
+    },
+    {
+        "id": 62,
+        "reviewerName": "Priya D.",
+        "reviewerAvatar": "/reviews/reviewer/reviewer-1.png",
+        "rating": 4,
+        "reviewDate": "2 hours ago",
+        "reviewTitle": "Aloe Repair Gel",
+        "reviewDescription": "Delivery was on time, but the outer box had a small dent.",
+        "attachments": [
+            {
+                "type": "image",
+                "url": "/reviews/attachments/image-3.jpg"
+            },
+            {
+                "type": "image",
+                "url": "/reviews/attachments/image-4.jpg"
+            }
+        ],
+        "reviewStatus": "Pending",
+        "reply": ""
+    },
+    {
+        "id": 63,
+        "reviewerName": "Maya K.",
+        "reviewerAvatar": "/reviews/reviewer/reviewer-2.png",
+        "rating": 4,
+        "reviewDate": "9 hours ago",
+        "reviewTitle": "Lip Sleeping Balm",
+        "reviewDescription": "My skin feels smoother and cleaner. The formula is comfortable and not sticky.",
+        "attachments": [
+            {
+                "type": "image",
+                "url": "/reviews/attachments/image-4.jpg"
+            },
+            {
+                "type": "video",
+                "url": "/reviews/attachments/video-2.mp4"
+            },
+            {
+                "type": "image",
+                "url": "/reviews/attachments/image-1.jpg"
+            }
+        ],
+        "reviewStatus": "Published",
+        "reply": ""
+    },
+    {
+        "id": 64,
+        "reviewerName": "Farhana P.",
+        "reviewerAvatar": "/reviews/reviewer/reviewer-1.png",
+        "rating": 4,
+        "reviewDate": "2 days ago",
+        "reviewTitle": "Green Tea Face Wash",
+        "reviewDescription": "Amazing product, my skin looks so much better after just 2 weeks. Will definitely reorder.",
+        "attachments": [
+            {
+                "type": "video",
+                "url": "/reviews/attachments/video-2.mp4"
+            },
+            {
+                "type": "image",
+                "url": "/reviews/attachments/image-1.jpg"
+            },
+            {
+                "type": "image",
+                "url": "/reviews/attachments/image-2.jpg"
+            },
+            {
+                "type": "image",
+                "url": "/reviews/attachments/image-3.jpg"
+            }
+        ],
+        "reviewStatus": "Archive",
+        "reply": "We appreciate the honest review and will pass this to our product team."
+    },
+    {
+        "id": 65,
+        "reviewerName": "Nusrat J.",
+        "reviewerAvatar": "/reviews/reviewer/reviewer-2.png",
+        "rating": 3,
+        "reviewDate": "5 days ago",
+        "reviewTitle": "Rose Clay Face Mask",
+        "reviewDescription": "Good enough for the price. I will update after using it for a few more weeks.",
+        "attachments": [
+            {
+                "type": "image",
+                "url": "/reviews/attachments/image-1.jpg"
+            },
+            {
+                "type": "image",
+                "url": "/reviews/attachments/image-2.jpg"
+            },
+            {
+                "type": "image",
+                "url": "/reviews/attachments/image-3.jpg"
+            },
+            {
+                "type": "video",
+                "url": "/reviews/attachments/video-3.mp4"
+            },
+            {
+                "type": "image",
+                "url": "/reviews/attachments/image-5.jpg"
+            }
+        ],
+        "reviewStatus": "Pending",
+        "reply": ""
+    },
+    {
+        "id": 66,
+        "reviewerName": "Tania R.",
+        "reviewerAvatar": "/reviews/reviewer/reviewer-1.png",
+        "rating": 5,
+        "reviewDate": "2 weeks ago",
+        "reviewTitle": "Niacinamide Toner",
+        "reviewDescription": "Packaging was neat and the product quality feels premium. I am happy with the purchase.",
+        "attachments": [
+            {
+                "type": "image",
+                "url": "/reviews/attachments/image-2.jpg"
+            },
+            {
+                "type": "image",
+                "url": "/reviews/attachments/image-3.jpg"
+            },
+            {
+                "type": "video",
+                "url": "/reviews/attachments/video-3.mp4"
+            },
+            {
+                "type": "image",
+                "url": "/reviews/attachments/image-5.jpg"
+            },
+            {
+                "type": "image",
+                "url": "/reviews/attachments/image-1.jpg"
+            },
+            {
+                "type": "image",
+                "url": "/reviews/attachments/image-2.jpg"
+            }
+        ],
+        "reviewStatus": "Published",
+        "reply": ""
+    },
+    {
+        "id": 67,
+        "reviewerName": "Faisal M.",
+        "reviewerAvatar": "/reviews/reviewer/reviewer-2.png",
+        "rating": 2,
+        "reviewDate": "1 month ago",
+        "reviewTitle": "Hydrating Eye Cream",
+        "reviewDescription": "Repeated message with no clear product feedback.",
+        "attachments": [
+            {
+                "type": "image",
+                "url": "/reviews/attachments/image-3.jpg"
+            },
+            {
+                "type": "video",
+                "url": "/reviews/attachments/video-3.mp4"
+            },
+            {
+                "type": "image",
+                "url": "/reviews/attachments/image-5.jpg"
+            },
+            {
+                "type": "image",
+                "url": "/reviews/attachments/image-1.jpg"
+            },
+            {
+                "type": "image",
+                "url": "/reviews/attachments/image-2.jpg"
+            },
+            {
+                "type": "video",
+                "url": "/reviews/attachments/video-1.mp4"
+            },
+            {
+                "type": "image",
+                "url": "/reviews/attachments/image-4.jpg"
+            }
+        ],
+        "reviewStatus": "Spam",
+        "reply": ""
+    },
+    {
+        "id": 68,
+        "reviewerName": "Nadia S.",
+        "reviewerAvatar": "/reviews/reviewer/reviewer-1.png",
+        "rating": 3,
+        "reviewDate": "18 minutes ago",
+        "reviewTitle": "Daily Moisture Lotion",
+        "reviewDescription": "The bottle leaked inside the package. Please improve the packaging.",
+        "attachments": [
+            {
+                "type": "video",
+                "url": "/reviews/attachments/video-3.mp4"
+            },
+            {
+                "type": "image",
+                "url": "/reviews/attachments/image-5.jpg"
+            }
+        ],
+        "reviewStatus": "Rejected",
+        "reply": "We are sorry about the issue. Our support team will follow up and help you."
+    },
+    {
+        "id": 69,
+        "reviewerName": "Ayesha M.",
+        "reviewerAvatar": "/reviews/reviewer/reviewer-2.png",
+        "rating": 3,
+        "reviewDate": "1 hour ago",
+        "reviewTitle": "SPF 50 Sunscreen",
+        "reviewDescription": "It works decently for daily use. I may try another item next time.",
+        "attachments": [],
+        "reviewStatus": "Published",
+        "reply": ""
+    },
+    {
+        "id": 70,
+        "reviewerName": "Arman K.",
+        "reviewerAvatar": "/reviews/reviewer/reviewer-1.png",
+        "rating": 4,
+        "reviewDate": "5 hours ago",
+        "reviewTitle": "Facial Serum Vitamin C",
+        "reviewDescription": "This helped reduce dryness a lot. I would recommend it for everyday use.",
+        "attachments": [
+            {
+                "type": "image",
+                "url": "/reviews/attachments/image-1.jpg"
+            },
+            {
+                "type": "image",
+                "url": "/reviews/attachments/image-2.jpg"
+            },
+            {
+                "type": "video",
+                "url": "/reviews/attachments/video-1.mp4"
+            }
+        ],
+        "reviewStatus": "Published",
+        "reply": "We appreciate the honest review and will pass this to our product team."
+    },
+    {
+        "id": 71,
+        "reviewerName": "Nayeem P.",
+        "reviewerAvatar": "/reviews/reviewer/reviewer-2.png",
+        "rating": 3,
+        "reviewDate": "1 day ago",
+        "reviewTitle": "Brightening Night Cream",
+        "reviewDescription": "Not satisfied with the result. I expected better based on the description.",
+        "attachments": [
+            {
+                "type": "image",
+                "url": "/reviews/attachments/image-2.jpg"
+            }
+        ],
+        "reviewStatus": "Rejected",
+        "reply": "We are sorry about the issue. Our support team will follow up and help you."
+    },
+    {
+        "id": 72,
+        "reviewerName": "Osman R.",
+        "reviewerAvatar": "/reviews/reviewer/reviewer-1.png",
+        "rating": 2,
+        "reviewDate": "3 days ago",
+        "reviewTitle": "Aloe Repair Gel",
+        "reviewDescription": "Arrived late and packaging was damaged. Product seems fine but not impressed.",
+        "attachments": [
+            {
+                "type": "video",
+                "url": "/reviews/attachments/video-1.mp4"
+            },
+            {
+                "type": "image",
+                "url": "/reviews/attachments/image-4.jpg"
+            },
+            {
+                "type": "image",
+                "url": "/reviews/attachments/image-5.jpg"
+            },
+            {
+                "type": "image",
+                "url": "/reviews/attachments/image-1.jpg"
+            },
+            {
+                "type": "video",
+                "url": "/reviews/attachments/video-2.mp4"
+            }
+        ],
+        "reviewStatus": "Pending",
+        "reply": ""
+    },
+    {
+        "id": 73,
+        "reviewerName": "Tanvir A.",
+        "reviewerAvatar": "/reviews/reviewer/reviewer-2.png",
+        "rating": 4,
+        "reviewDate": "1 week ago",
+        "reviewTitle": "Lip Sleeping Balm",
+        "reviewDescription": "Good texture and absorbs quickly. It feels light but still keeps my skin hydrated.",
+        "attachments": [
+            {
+                "type": "image",
+                "url": "/reviews/attachments/image-4.jpg"
+            },
+            {
+                "type": "image",
+                "url": "/reviews/attachments/image-5.jpg"
+            },
+            {
+                "type": "image",
+                "url": "/reviews/attachments/image-1.jpg"
+            },
+            {
+                "type": "video",
+                "url": "/reviews/attachments/video-2.mp4"
+            }
+        ],
+        "reviewStatus": "Published",
+        "reply": "Thanks for the review. We appreciate your feedback and support."
+    },
+    {
+        "id": 74,
+        "reviewerName": "Rakib U.",
+        "reviewerAvatar": "/reviews/reviewer/reviewer-1.png",
+        "rating": 5,
+        "reviewDate": "3 weeks ago",
+        "reviewTitle": "Green Tea Face Wash",
+        "reviewDescription": "Packaging was neat and the product quality feels premium. I am happy with the purchase.",
+        "attachments": [],
+        "reviewStatus": "Archive",
+        "reply": "We are sorry about the issue. Our support team will follow up and help you."
+    },
+    {
+        "id": 75,
+        "reviewerName": "Mehedi S.",
+        "reviewerAvatar": "/reviews/reviewer/reviewer-2.png",
+        "rating": 5,
+        "reviewDate": "5 minutes ago",
+        "reviewTitle": "Rose Clay Face Mask",
+        "reviewDescription": "It works decently for daily use. I may try another item next time.",
+        "attachments": [],
+        "reviewStatus": "Pending",
+        "reply": ""
+    },
+    {
+        "id": 76,
+        "reviewerName": "Rumi A.",
+        "reviewerAvatar": "/reviews/reviewer/reviewer-1.png",
+        "rating": 5,
+        "reviewDate": "42 minutes ago",
+        "reviewTitle": "Niacinamide Toner",
+        "reviewDescription": "Very gentle on my skin and the scent is mild. Exactly what I wanted.",
+        "attachments": [
+            {
+                "type": "video",
+                "url": "/reviews/attachments/video-2.mp4"
+            }
+        ],
+        "reviewStatus": "Published",
+        "reply": "We appreciate the honest review and will pass this to our product team."
+    },
+    {
+        "id": 77,
+        "reviewerName": "Hasan AB",
+        "reviewerAvatar": "/reviews/reviewer/reviewer-2.png",
+        "rating": 2,
+        "reviewDate": "2 hours ago",
+        "reviewTitle": "Hydrating Eye Cream",
+        "reviewDescription": "This appears to be spam content and needs review.",
+        "attachments": [
+            {
+                "type": "image",
+                "url": "/reviews/attachments/image-3.jpg"
+            },
+            {
+                "type": "image",
+                "url": "/reviews/attachments/image-4.jpg"
+            }
+        ],
+        "reviewStatus": "Spam",
+        "reply": ""
+    },
+    {
+        "id": 78,
+        "reviewerName": "Sadia Noor",
+        "reviewerAvatar": "/reviews/reviewer/reviewer-1.png",
+        "rating": 1,
+        "reviewDate": "9 hours ago",
+        "reviewTitle": "Daily Moisture Lotion",
+        "reviewDescription": "Arrived late and packaging was damaged. Product seems fine but not impressed.",
+        "attachments": [
+            {
+                "type": "image",
+                "url": "/reviews/attachments/image-4.jpg"
+            },
+            {
+                "type": "image",
+                "url": "/reviews/attachments/image-5.jpg"
+            },
+            {
+                "type": "video",
+                "url": "/reviews/attachments/video-3.mp4"
+            }
+        ],
+        "reviewStatus": "Rejected",
+        "reply": ""
+    },
+    {
+        "id": 79,
+        "reviewerName": "Lamia T.",
+        "reviewerAvatar": "/reviews/reviewer/reviewer-2.png",
+        "rating": 3,
+        "reviewDate": "2 days ago",
+        "reviewTitle": "SPF 50 Sunscreen",
+        "reviewDescription": "The texture is okay. Not bad, but not as impressive as I expected.",
+        "attachments": [
+            {
+                "type": "image",
+                "url": "/reviews/attachments/image-5.jpg"
+            },
+            {
+                "type": "video",
+                "url": "/reviews/attachments/video-3.mp4"
+            },
+            {
+                "type": "image",
+                "url": "/reviews/attachments/image-2.jpg"
+            },
+            {
+                "type": "image",
+                "url": "/reviews/attachments/image-3.jpg"
+            }
+        ],
+        "reviewStatus": "Published",
+        "reply": "Thanks for the review. We appreciate your feedback and support."
+    },
+    {
+        "id": 80,
+        "reviewerName": "Samira B.",
+        "reviewerAvatar": "/reviews/reviewer/reviewer-1.png",
+        "rating": 4,
+        "reviewDate": "5 days ago",
+        "reviewTitle": "Facial Serum Vitamin C",
+        "reviewDescription": "Amazing product, my skin looks so much better after just 2 weeks. Will definitely reorder.",
+        "attachments": [
+            {
+                "type": "video",
+                "url": "/reviews/attachments/video-3.mp4"
+            },
+            {
+                "type": "image",
+                "url": "/reviews/attachments/image-2.jpg"
+            },
+            {
+                "type": "image",
+                "url": "/reviews/attachments/image-3.jpg"
+            },
+            {
+                "type": "image",
+                "url": "/reviews/attachments/image-4.jpg"
+            },
+            {
+                "type": "video",
+                "url": "/reviews/attachments/video-1.mp4"
+            }
+        ],
+        "reviewStatus": "Published",
+        "reply": "We are sorry about the issue. Our support team will follow up and help you."
+    },
+    {
+        "id": 81,
+        "reviewerName": "Sabbir H.",
+        "reviewerAvatar": "/reviews/reviewer/reviewer-2.png",
+        "rating": 1,
+        "reviewDate": "2 weeks ago",
+        "reviewTitle": "Brightening Night Cream",
+        "reviewDescription": "I received the wrong item. Waiting for support to resolve it.",
+        "attachments": [
+            {
+                "type": "image",
+                "url": "/reviews/attachments/image-2.jpg"
+            },
+            {
+                "type": "image",
+                "url": "/reviews/attachments/image-3.jpg"
+            },
+            {
+                "type": "image",
+                "url": "/reviews/attachments/image-4.jpg"
+            },
+            {
+                "type": "video",
+                "url": "/reviews/attachments/video-1.mp4"
+            },
+            {
+                "type": "image",
+                "url": "/reviews/attachments/image-1.jpg"
+            },
+            {
+                "type": "image",
+                "url": "/reviews/attachments/image-2.jpg"
+            }
+        ],
+        "reviewStatus": "Rejected",
+        "reply": ""
+    },
+    {
+        "id": 82,
+        "reviewerName": "Rafael Hasan",
+        "reviewerAvatar": "/reviews/reviewer/reviewer-1.png",
+        "rating": 4,
+        "reviewDate": "1 month ago",
+        "reviewTitle": "Aloe Repair Gel",
+        "reviewDescription": "The product is usable, but the fragrance is a little stronger than I prefer.",
+        "attachments": [
+            {
+                "type": "image",
+                "url": "/reviews/attachments/image-3.jpg"
+            },
+            {
+                "type": "image",
+                "url": "/reviews/attachments/image-4.jpg"
+            },
+            {
+                "type": "video",
+                "url": "/reviews/attachments/video-1.mp4"
+            },
+            {
+                "type": "image",
+                "url": "/reviews/attachments/image-1.jpg"
+            },
+            {
+                "type": "image",
+                "url": "/reviews/attachments/image-2.jpg"
+            },
+            {
+                "type": "image",
+                "url": "/reviews/attachments/image-3.jpg"
+            },
+            {
+                "type": "video",
+                "url": "/reviews/attachments/video-2.mp4"
+            }
+        ],
+        "reviewStatus": "Pending",
+        "reply": ""
+    },
+    {
+        "id": 83,
+        "reviewerName": "Imran H.",
+        "reviewerAvatar": "/reviews/reviewer/reviewer-2.png",
+        "rating": 4,
+        "reviewDate": "18 minutes ago",
+        "reviewTitle": "Lip Sleeping Balm",
+        "reviewDescription": "I noticed a visible glow after a few uses. Works well with my daily routine.",
+        "attachments": [
+            {
+                "type": "image",
+                "url": "/reviews/attachments/image-4.jpg"
+            },
+            {
+                "type": "video",
+                "url": "/reviews/attachments/video-1.mp4"
+            }
+        ],
+        "reviewStatus": "Published",
+        "reply": "Thanks for choosing Qorix Review. We are happy you liked it."
+    },
+    {
+        "id": 84,
+        "reviewerName": "Jahid R.",
+        "reviewerAvatar": "/reviews/reviewer/reviewer-1.png",
+        "rating": 3,
+        "reviewDate": "1 hour ago",
+        "reviewTitle": "Green Tea Face Wash",
+        "reviewDescription": "Product seems fine, but I need more time to see clear results.",
+        "attachments": [],
+        "reviewStatus": "Archive",
+        "reply": ""
+    },
+    {
+        "id": 85,
+        "reviewerName": "Khalid N.",
+        "reviewerAvatar": "/reviews/reviewer/reviewer-2.png",
+        "rating": 3,
+        "reviewDate": "5 hours ago",
+        "reviewTitle": "Rose Clay Face Mask",
+        "reviewDescription": "The texture is okay. Not bad, but not as impressive as I expected.",
+        "attachments": [
+            {
+                "type": "image",
+                "url": "/reviews/attachments/image-1.jpg"
+            },
+            {
+                "type": "image",
+                "url": "/reviews/attachments/image-2.jpg"
+            },
+            {
+                "type": "image",
+                "url": "/reviews/attachments/image-3.jpg"
+            }
+        ],
+        "reviewStatus": "Pending",
+        "reply": ""
+    },
+    {
+        "id": 86,
+        "reviewerName": "Priya D.",
+        "reviewerAvatar": "/reviews/reviewer/reviewer-1.png",
+        "rating": 5,
+        "reviewDate": "1 day ago",
+        "reviewTitle": "Niacinamide Toner",
+        "reviewDescription": "This helped reduce dryness a lot. I would recommend it for everyday use.",
+        "attachments": [
+            {
+                "type": "image",
+                "url": "/reviews/attachments/image-2.jpg"
+            }
+        ],
+        "reviewStatus": "Published",
+        "reply": "We are sorry about the issue. Our support team will follow up and help you."
+    },
+    {
+        "id": 87,
+        "reviewerName": "Maya K.",
+        "reviewerAvatar": "/reviews/reviewer/reviewer-2.png",
+        "rating": 2,
+        "reviewDate": "3 days ago",
+        "reviewTitle": "Hydrating Eye Cream",
+        "reviewDescription": "Looks suspicious and does not seem related to the product.",
+        "attachments": [
+            {
+                "type": "image",
+                "url": "/reviews/attachments/image-3.jpg"
+            },
+            {
+                "type": "video",
+                "url": "/reviews/attachments/video-2.mp4"
+            },
+            {
+                "type": "image",
+                "url": "/reviews/attachments/image-5.jpg"
+            },
+            {
+                "type": "image",
+                "url": "/reviews/attachments/image-1.jpg"
+            },
+            {
+                "type": "image",
+                "url": "/reviews/attachments/image-2.jpg"
+            }
+        ],
+        "reviewStatus": "Spam",
+        "reply": ""
+    },
+    {
+        "id": 88,
+        "reviewerName": "Farhana P.",
+        "reviewerAvatar": "/reviews/reviewer/reviewer-1.png",
+        "rating": 2,
+        "reviewDate": "1 week ago",
+        "reviewTitle": "Daily Moisture Lotion",
+        "reviewDescription": "The product felt too heavy for me. It may work better for dry skin.",
+        "attachments": [
+            {
+                "type": "video",
+                "url": "/reviews/attachments/video-2.mp4"
+            },
+            {
+                "type": "image",
+                "url": "/reviews/attachments/image-5.jpg"
+            },
+            {
+                "type": "image",
+                "url": "/reviews/attachments/image-1.jpg"
+            },
+            {
+                "type": "image",
+                "url": "/reviews/attachments/image-2.jpg"
+            }
+        ],
+        "reviewStatus": "Rejected",
+        "reply": "We are sorry about the issue. Our support team will follow up and help you."
+    },
+    {
+        "id": 89,
+        "reviewerName": "Nusrat J.",
+        "reviewerAvatar": "/reviews/reviewer/reviewer-2.png",
+        "rating": 3,
+        "reviewDate": "3 weeks ago",
+        "reviewTitle": "SPF 50 Sunscreen",
+        "reviewDescription": "Good enough for the price. I will update after using it for a few more weeks.",
+        "attachments": [],
+        "reviewStatus": "Published",
+        "reply": "Thanks for choosing Qorix Review. We are happy you liked it."
+    },
+    {
+        "id": 90,
+        "reviewerName": "Tania R.",
+        "reviewerAvatar": "/reviews/reviewer/reviewer-1.png",
+        "rating": 4,
+        "reviewDate": "5 minutes ago",
+        "reviewTitle": "Facial Serum Vitamin C",
+        "reviewDescription": "Packaging was neat and the product quality feels premium. I am happy with the purchase.",
+        "attachments": [],
+        "reviewStatus": "Published",
+        "reply": ""
+    },
+    {
+        "id": 91,
+        "reviewerName": "Faisal M.",
+        "reviewerAvatar": "/reviews/reviewer/reviewer-2.png",
+        "rating": 2,
+        "reviewDate": "42 minutes ago",
+        "reviewTitle": "Brightening Night Cream",
+        "reviewDescription": "Did not suit my skin type. I had to stop using it after a few days.",
+        "attachments": [
+            {
+                "type": "image",
+                "url": "/reviews/attachments/image-2.jpg"
+            }
+        ],
+        "reviewStatus": "Rejected",
+        "reply": "We are sorry about the issue. Our support team will follow up and help you."
+    },
+    {
+        "id": 92,
+        "reviewerName": "Nadia S.",
+        "reviewerAvatar": "/reviews/reviewer/reviewer-1.png",
+        "rating": 2,
+        "reviewDate": "2 hours ago",
+        "reviewTitle": "Aloe Repair Gel",
+        "reviewDescription": "The bottle leaked inside the package. Please improve the packaging.",
+        "attachments": [
+            {
+                "type": "video",
+                "url": "/reviews/attachments/video-3.mp4"
+            },
+            {
+                "type": "image",
+                "url": "/reviews/attachments/image-4.jpg"
+            }
+        ],
+        "reviewStatus": "Pending",
+        "reply": ""
+    },
+    {
+        "id": 93,
+        "reviewerName": "Ayesha M.",
+        "reviewerAvatar": "/reviews/reviewer/reviewer-2.png",
+        "rating": 4,
+        "reviewDate": "9 hours ago",
+        "reviewTitle": "Lip Sleeping Balm",
+        "reviewDescription": "Fast delivery and the product matched the description. Great experience overall.",
+        "attachments": [
+            {
+                "type": "image",
+                "url": "/reviews/attachments/image-4.jpg"
+            },
+            {
+                "type": "image",
+                "url": "/reviews/attachments/image-5.jpg"
+            },
+            {
+                "type": "image",
+                "url": "/reviews/attachments/image-1.jpg"
+            }
+        ],
+        "reviewStatus": "Published",
+        "reply": ""
+    },
+    {
+        "id": 94,
+        "reviewerName": "Arman K.",
+        "reviewerAvatar": "/reviews/reviewer/reviewer-1.png",
+        "rating": 4,
+        "reviewDate": "2 days ago",
+        "reviewTitle": "Green Tea Face Wash",
+        "reviewDescription": "This helped reduce dryness a lot. I would recommend it for everyday use.",
+        "attachments": [
+            {
+                "type": "image",
+                "url": "/reviews/attachments/image-5.jpg"
+            },
+            {
+                "type": "image",
+                "url": "/reviews/attachments/image-1.jpg"
+            },
+            {
+                "type": "video",
+                "url": "/reviews/attachments/video-1.mp4"
+            },
+            {
+                "type": "image",
+                "url": "/reviews/attachments/image-3.jpg"
+            }
+        ],
+        "reviewStatus": "Archive",
+        "reply": "We appreciate the honest review and will pass this to our product team."
+    },
+    {
+        "id": 95,
+        "reviewerName": "Nayeem P.",
+        "reviewerAvatar": "/reviews/reviewer/reviewer-2.png",
+        "rating": 5,
+        "reviewDate": "5 days ago",
+        "reviewTitle": "Rose Clay Face Mask",
+        "reviewDescription": "Good enough for the price. I will update after using it for a few more weeks.",
+        "attachments": [
+            {
+                "type": "image",
+                "url": "/reviews/attachments/image-1.jpg"
+            },
+            {
+                "type": "video",
+                "url": "/reviews/attachments/video-1.mp4"
+            },
+            {
+                "type": "image",
+                "url": "/reviews/attachments/image-3.jpg"
+            },
+            {
+                "type": "image",
+                "url": "/reviews/attachments/image-4.jpg"
+            },
+            {
+                "type": "image",
+                "url": "/reviews/attachments/image-5.jpg"
+            }
+        ],
+        "reviewStatus": "Pending",
+        "reply": ""
+    },
+    {
+        "id": 96,
+        "reviewerName": "Osman R.",
+        "reviewerAvatar": "/reviews/reviewer/reviewer-1.png",
+        "rating": 5,
+        "reviewDate": "2 weeks ago",
+        "reviewTitle": "Niacinamide Toner",
+        "reviewDescription": "Amazing product, my skin looks so much better after just 2 weeks. Will definitely reorder.",
+        "attachments": [
+            {
+                "type": "video",
+                "url": "/reviews/attachments/video-1.mp4"
+            },
+            {
+                "type": "image",
+                "url": "/reviews/attachments/image-3.jpg"
+            },
+            {
+                "type": "image",
+                "url": "/reviews/attachments/image-4.jpg"
+            },
+            {
+                "type": "image",
+                "url": "/reviews/attachments/image-5.jpg"
+            },
+            {
+                "type": "video",
+                "url": "/reviews/attachments/video-2.mp4"
+            },
+            {
+                "type": "image",
+                "url": "/reviews/attachments/image-2.jpg"
+            }
+        ],
+        "reviewStatus": "Published",
+        "reply": ""
+    },
+    {
+        "id": 97,
+        "reviewerName": "Tanvir A.",
+        "reviewerAvatar": "/reviews/reviewer/reviewer-2.png",
+        "rating": 2,
+        "reviewDate": "1 month ago",
+        "reviewTitle": "Hydrating Eye Cream",
+        "reviewDescription": "Repeated message with no clear product feedback.",
+        "attachments": [
+            {
+                "type": "image",
+                "url": "/reviews/attachments/image-3.jpg"
+            },
+            {
+                "type": "image",
+                "url": "/reviews/attachments/image-4.jpg"
+            },
+            {
+                "type": "image",
+                "url": "/reviews/attachments/image-5.jpg"
+            },
+            {
+                "type": "video",
+                "url": "/reviews/attachments/video-2.mp4"
+            },
+            {
+                "type": "image",
+                "url": "/reviews/attachments/image-2.jpg"
+            },
+            {
+                "type": "image",
+                "url": "/reviews/attachments/image-3.jpg"
+            },
+            {
+                "type": "image",
+                "url": "/reviews/attachments/image-4.jpg"
+            }
+        ],
+        "reviewStatus": "Spam",
+        "reply": ""
+    },
+    {
+        "id": 98,
+        "reviewerName": "Rakib U.",
+        "reviewerAvatar": "/reviews/reviewer/reviewer-1.png",
+        "rating": 3,
+        "reviewDate": "18 minutes ago",
+        "reviewTitle": "Daily Moisture Lotion",
+        "reviewDescription": "The bottle leaked inside the package. Please improve the packaging.",
+        "attachments": [
+            {
+                "type": "image",
+                "url": "/reviews/attachments/image-4.jpg"
+            },
+            {
+                "type": "image",
+                "url": "/reviews/attachments/image-5.jpg"
+            }
+        ],
+        "reviewStatus": "Rejected",
+        "reply": "We are sorry about the issue. Our support team will follow up and help you."
+    },
+    {
+        "id": 99,
+        "reviewerName": "Mehedi S.",
+        "reviewerAvatar": "/reviews/reviewer/reviewer-2.png",
+        "rating": 3,
+        "reviewDate": "1 hour ago",
+        "reviewTitle": "SPF 50 Sunscreen",
+        "reviewDescription": "It works decently for daily use. I may try another item next time.",
+        "attachments": [],
+        "reviewStatus": "Published",
+        "reply": ""
+    },
+    {
+        "id": 100,
+        "reviewerName": "Rumi A.",
+        "reviewerAvatar": "/reviews/reviewer/reviewer-1.png",
+        "rating": 4,
+        "reviewDate": "5 hours ago",
+        "reviewTitle": "Facial Serum Vitamin C",
+        "reviewDescription": "Very gentle on my skin and the scent is mild. Exactly what I wanted.",
+        "attachments": [
+            {
+                "type": "video",
+                "url": "/reviews/attachments/video-2.mp4"
+            },
+            {
+                "type": "image",
+                "url": "/reviews/attachments/image-2.jpg"
+            },
+            {
+                "type": "image",
+                "url": "/reviews/attachments/image-3.jpg"
+            }
+        ],
+        "reviewStatus": "Published",
+        "reply": "We appreciate the honest review and will pass this to our product team."
+    },
+    {
+        "id": 101,
+        "reviewerName": "Hasan AB",
+        "reviewerAvatar": "/reviews/reviewer/reviewer-2.png",
+        "rating": 3,
+        "reviewDate": "1 day ago",
+        "reviewTitle": "Brightening Night Cream",
+        "reviewDescription": "Not satisfied with the result. I expected better based on the description.",
+        "attachments": [
+            {
+                "type": "image",
+                "url": "/reviews/attachments/image-2.jpg"
+            }
+        ],
+        "reviewStatus": "Rejected",
+        "reply": "We are sorry about the issue. Our support team will follow up and help you."
+    },
+    {
+        "id": 102,
+        "reviewerName": "Sadia Noor",
+        "reviewerAvatar": "/reviews/reviewer/reviewer-1.png",
+        "rating": 4,
+        "reviewDate": "3 days ago",
+        "reviewTitle": "Aloe Repair Gel",
+        "reviewDescription": "Product seems fine, but I need more time to see clear results.",
+        "attachments": [
+            {
+                "type": "image",
+                "url": "/reviews/attachments/image-3.jpg"
+            },
+            {
+                "type": "image",
+                "url": "/reviews/attachments/image-4.jpg"
+            },
+            {
+                "type": "video",
+                "url": "/reviews/attachments/video-3.mp4"
+            },
+            {
+                "type": "image",
+                "url": "/reviews/attachments/image-1.jpg"
+            },
+            {
+                "type": "image",
+                "url": "/reviews/attachments/image-2.jpg"
+            }
+        ],
+        "reviewStatus": "Pending",
+        "reply": ""
+    },
+    {
+        "id": 103,
+        "reviewerName": "Lamia T.",
+        "reviewerAvatar": "/reviews/reviewer/reviewer-2.png",
+        "rating": 4,
+        "reviewDate": "1 week ago",
+        "reviewTitle": "Lip Sleeping Balm",
+        "reviewDescription": "My skin feels smoother and cleaner. The formula is comfortable and not sticky.",
+        "attachments": [
+            {
+                "type": "image",
+                "url": "/reviews/attachments/image-4.jpg"
+            },
+            {
+                "type": "video",
+                "url": "/reviews/attachments/video-3.mp4"
+            },
+            {
+                "type": "image",
+                "url": "/reviews/attachments/image-1.jpg"
+            },
+            {
+                "type": "image",
+                "url": "/reviews/attachments/image-2.jpg"
+            }
+        ],
+        "reviewStatus": "Published",
+        "reply": "Thanks for the review. We appreciate your feedback and support."
+    },
+    {
+        "id": 104,
+        "reviewerName": "Samira B.",
+        "reviewerAvatar": "/reviews/reviewer/reviewer-1.png",
+        "rating": 5,
+        "reviewDate": "3 weeks ago",
+        "reviewTitle": "Green Tea Face Wash",
+        "reviewDescription": "Amazing product, my skin looks so much better after just 2 weeks. Will definitely reorder.",
+        "attachments": [],
+        "reviewStatus": "Archive",
+        "reply": "We are sorry about the issue. Our support team will follow up and help you."
+    },
+    {
+        "id": 105,
+        "reviewerName": "Sabbir H.",
+        "reviewerAvatar": "/reviews/reviewer/reviewer-2.png",
+        "rating": 3,
+        "reviewDate": "5 minutes ago",
+        "reviewTitle": "Rose Clay Face Mask",
+        "reviewDescription": "It works decently for daily use. I may try another item next time.",
+        "attachments": [],
+        "reviewStatus": "Pending",
+        "reply": ""
+    },
+    {
+        "id": 106,
+        "reviewerName": "Rafael Hasan",
+        "reviewerAvatar": "/reviews/reviewer/reviewer-1.png",
+        "rating": 5,
+        "reviewDate": "42 minutes ago",
+        "reviewTitle": "Niacinamide Toner",
+        "reviewDescription": "Packaging was neat and the product quality feels premium. I am happy with the purchase.",
+        "attachments": [
+            {
+                "type": "image",
+                "url": "/reviews/attachments/image-2.jpg"
+            }
+        ],
+        "reviewStatus": "Published",
+        "reply": "We appreciate the honest review and will pass this to our product team."
+    },
+    {
+        "id": 107,
+        "reviewerName": "Imran H.",
+        "reviewerAvatar": "/reviews/reviewer/reviewer-2.png",
+        "rating": 2,
+        "reviewDate": "2 hours ago",
+        "reviewTitle": "Hydrating Eye Cream",
+        "reviewDescription": "This appears to be spam content and needs review.",
+        "attachments": [
+            {
+                "type": "image",
+                "url": "/reviews/attachments/image-3.jpg"
+            },
+            {
+                "type": "video",
+                "url": "/reviews/attachments/video-1.mp4"
+            }
+        ],
+        "reviewStatus": "Spam",
+        "reply": ""
+    },
+    {
+        "id": 108,
+        "reviewerName": "Jahid R.",
+        "reviewerAvatar": "/reviews/reviewer/reviewer-1.png",
+        "rating": 1,
+        "reviewDate": "9 hours ago",
+        "reviewTitle": "Daily Moisture Lotion",
+        "reviewDescription": "Arrived late and packaging was damaged. Product seems fine but not impressed.",
+        "attachments": [
+            {
+                "type": "video",
+                "url": "/reviews/attachments/video-1.mp4"
+            },
+            {
+                "type": "image",
+                "url": "/reviews/attachments/image-5.jpg"
+            },
+            {
+                "type": "image",
+                "url": "/reviews/attachments/image-1.jpg"
+            }
+        ],
+        "reviewStatus": "Rejected",
+        "reply": ""
+    },
+    {
+        "id": 109,
+        "reviewerName": "Khalid N.",
+        "reviewerAvatar": "/reviews/reviewer/reviewer-2.png",
+        "rating": 3,
+        "reviewDate": "2 days ago",
+        "reviewTitle": "SPF 50 Sunscreen",
+        "reviewDescription": "The texture is okay. Not bad, but not as impressive as I expected.",
+        "attachments": [
+            {
+                "type": "image",
+                "url": "/reviews/attachments/image-5.jpg"
+            },
+            {
+                "type": "image",
+                "url": "/reviews/attachments/image-1.jpg"
+            },
+            {
+                "type": "image",
+                "url": "/reviews/attachments/image-2.jpg"
+            },
+            {
+                "type": "video",
+                "url": "/reviews/attachments/video-2.mp4"
+            }
+        ],
+        "reviewStatus": "Published",
+        "reply": "Thanks for the review. We appreciate your feedback and support."
+    },
+    {
+        "id": 110,
+        "reviewerName": "Priya D.",
+        "reviewerAvatar": "/reviews/reviewer/reviewer-1.png",
+        "rating": 4,
+        "reviewDate": "5 days ago",
+        "reviewTitle": "Facial Serum Vitamin C",
+        "reviewDescription": "This helped reduce dryness a lot. I would recommend it for everyday use.",
+        "attachments": [
+            {
+                "type": "image",
+                "url": "/reviews/attachments/image-1.jpg"
+            },
+            {
+                "type": "image",
+                "url": "/reviews/attachments/image-2.jpg"
+            },
+            {
+                "type": "video",
+                "url": "/reviews/attachments/video-2.mp4"
+            },
+            {
+                "type": "image",
+                "url": "/reviews/attachments/image-4.jpg"
+            },
+            {
+                "type": "image",
+                "url": "/reviews/attachments/image-5.jpg"
+            }
+        ],
+        "reviewStatus": "Published",
+        "reply": "We are sorry about the issue. Our support team will follow up and help you."
+    },
+    {
+        "id": 111,
+        "reviewerName": "Maya K.",
+        "reviewerAvatar": "/reviews/reviewer/reviewer-2.png",
+        "rating": 1,
+        "reviewDate": "2 weeks ago",
+        "reviewTitle": "Brightening Night Cream",
+        "reviewDescription": "I received the wrong item. Waiting for support to resolve it.",
+        "attachments": [
+            {
+                "type": "image",
+                "url": "/reviews/attachments/image-2.jpg"
+            },
+            {
+                "type": "video",
+                "url": "/reviews/attachments/video-2.mp4"
+            },
+            {
+                "type": "image",
+                "url": "/reviews/attachments/image-4.jpg"
+            },
+            {
+                "type": "image",
+                "url": "/reviews/attachments/image-5.jpg"
+            },
+            {
+                "type": "image",
+                "url": "/reviews/attachments/image-1.jpg"
+            },
+            {
+                "type": "video",
+                "url": "/reviews/attachments/video-3.mp4"
+            }
+        ],
+        "reviewStatus": "Rejected",
+        "reply": ""
+    },
+    {
+        "id": 112,
+        "reviewerName": "Farhana P.",
+        "reviewerAvatar": "/reviews/reviewer/reviewer-1.png",
+        "rating": 2,
+        "reviewDate": "1 month ago",
+        "reviewTitle": "Aloe Repair Gel",
+        "reviewDescription": "The product felt too heavy for me. It may work better for dry skin.",
+        "attachments": [
+            {
+                "type": "video",
+                "url": "/reviews/attachments/video-2.mp4"
+            },
+            {
+                "type": "image",
+                "url": "/reviews/attachments/image-4.jpg"
+            },
+            {
+                "type": "image",
+                "url": "/reviews/attachments/image-5.jpg"
+            },
+            {
+                "type": "image",
+                "url": "/reviews/attachments/image-1.jpg"
+            },
+            {
+                "type": "video",
+                "url": "/reviews/attachments/video-3.mp4"
+            },
+            {
+                "type": "image",
+                "url": "/reviews/attachments/image-3.jpg"
+            },
+            {
+                "type": "image",
+                "url": "/reviews/attachments/image-4.jpg"
+            }
+        ],
+        "reviewStatus": "Pending",
+        "reply": ""
+    },
+    {
+        "id": 113,
+        "reviewerName": "Nusrat J.",
+        "reviewerAvatar": "/reviews/reviewer/reviewer-2.png",
+        "rating": 4,
+        "reviewDate": "18 minutes ago",
+        "reviewTitle": "Lip Sleeping Balm",
+        "reviewDescription": "Good texture and absorbs quickly. It feels light but still keeps my skin hydrated.",
+        "attachments": [
+            {
+                "type": "image",
+                "url": "/reviews/attachments/image-4.jpg"
+            },
+            {
+                "type": "image",
+                "url": "/reviews/attachments/image-5.jpg"
+            }
+        ],
+        "reviewStatus": "Published",
+        "reply": "Thanks for choosing Qorix Review. We are happy you liked it."
+    },
+    {
+        "id": 114,
+        "reviewerName": "Tania R.",
+        "reviewerAvatar": "/reviews/reviewer/reviewer-1.png",
+        "rating": 3,
+        "reviewDate": "1 hour ago",
+        "reviewTitle": "Green Tea Face Wash",
+        "reviewDescription": "Product seems fine, but I need more time to see clear results.",
+        "attachments": [],
+        "reviewStatus": "Archive",
+        "reply": ""
+    },
+    {
+        "id": 115,
+        "reviewerName": "Faisal M.",
+        "reviewerAvatar": "/reviews/reviewer/reviewer-2.png",
+        "rating": 5,
+        "reviewDate": "5 hours ago",
+        "reviewTitle": "Rose Clay Face Mask",
+        "reviewDescription": "The texture is okay. Not bad, but not as impressive as I expected.",
+        "attachments": [
+            {
+                "type": "image",
+                "url": "/reviews/attachments/image-1.jpg"
+            },
+            {
+                "type": "video",
+                "url": "/reviews/attachments/video-3.mp4"
+            },
+            {
+                "type": "image",
+                "url": "/reviews/attachments/image-3.jpg"
+            }
+        ],
+        "reviewStatus": "Pending",
+        "reply": ""
     }
 ]
