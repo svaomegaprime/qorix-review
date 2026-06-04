@@ -1,9 +1,18 @@
+import { useState } from "react";
 import CustomGridSection from "../../../components/essentials/CustomGridSection";
 import CustomSection from "../../../components/essentials/CustomSection";
 import Text from "../../../components/essentials/elements/Text";
+import { DEFAULT_WIDGET } from "../data/defaultData";
+import { handleStateUpdate } from "../utils/client/utils.client";
 export default function Widgets() {
+  const [widgetSettings, setWidgetSettings] = useState(DEFAULT_WIDGET);
+  const [customReviewPerPage, setCustomReviewPerPage] = useState({
+    isCustomReviewPerPage: false,
+  });
   return (
     <>
+      {/* <pre>{JSON.stringify(widgetSettings, null, 2)}</pre> */}
+
       <s-stack
         paddingBlockEnd="base"
         direction="inline"
@@ -30,18 +39,50 @@ export default function Widgets() {
             <CustomSection>
               <s-grid gap="small">
                 <s-switch
+                  defaultChecked={widgetSettings.isShowWidgetOnProductPage}
+                  onInput={(e) =>
+                    handleStateUpdate(
+                      setWidgetSettings,
+                      "isShowWidgetOnProductPage",
+                      e.target.checked,
+                    )
+                  }
                   label="Show review widget on product pages"
                   details="Displays the full review section below the product description"
                 />
                 <s-switch
+                  defaultChecked={widgetSettings.isShowStarRatingBadge}
+                  onInput={(e) =>
+                    handleStateUpdate(
+                      setWidgetSettings,
+                      "isShowStarRatingBadge",
+                      e.target.checked,
+                    )
+                  }
                   label="Show star rating badge"
                   details="Displays average rating directly below the product title"
                 />
                 <s-switch
+                  defaultChecked={widgetSettings.isShowVerifiedPurchaseBadge}
+                  onInput={(e) =>
+                    handleStateUpdate(
+                      setWidgetSettings,
+                      "isShowVerifiedPurchaseBadge",
+                      e.target.checked,
+                    )
+                  }
                   label="Show verified purchase badge"
                   details="Marks reviews from confirmed buyers with a verified label"
                 />
                 <s-switch
+                  defaultChecked={widgetSettings.isShowReviewerPhotos}
+                  onInput={(e) =>
+                    handleStateUpdate(
+                      setWidgetSettings,
+                      "isShowReviewerPhotos",
+                      e.target.checked,
+                    )
+                  }
                   label="Show reviewer photos"
                   details="Display customer-uploaded photos within reviews"
                 />
@@ -58,18 +99,59 @@ export default function Widgets() {
             <CustomSection>
               <s-grid gap="small">
                 <s-heading>Reviews per page </s-heading>
-                <s-select>
-                  <s-option>10 reviews</s-option>
-                  <s-option>20 reviews</s-option>
-                  <s-option>Custom amount</s-option>
+                <s-select
+                  onChange={(e) => {
+                    const isCustom = e.target.value == "CUSTOM";
+                    !isCustom &&
+                      handleStateUpdate(
+                        setWidgetSettings,
+                        "reviewsPerPage",
+                        Number(e.target.value),
+                      );
+
+                    isCustom
+                      ? setCustomReviewPerPage((pre) => ({
+                          ...pre,
+                          isCustomReviewPerPage: true,
+                        }))
+                      : setCustomReviewPerPage((pre) => ({
+                          ...pre,
+                          isCustomReviewPerPage: false,
+                        }));
+                  }}
+                >
+                  <s-option value="10">10 reviews</s-option>
+                  <s-option value="20">20 reviews</s-option>
+                  <s-option value="CUSTOM">Custom amount</s-option>
                 </s-select>
-                <s-text>Custom review per page</s-text>
-                <s-number-field defaultValue={20} onInput={() => {}} />
+                {customReviewPerPage.isCustomReviewPerPage && (
+                  <>
+                    <s-text>Custom review per page</s-text>
+                    <s-number-field
+                      defaultValue={widgetSettings.reviewsPerPage}
+                      onInput={(e) => {
+                        handleStateUpdate(
+                          setWidgetSettings,
+                          "reviewsPerPage",
+                          Number(e.target.value),
+                        );
+                      }}
+                    />
+                  </>
+                )}
                 <s-heading>Default sort order</s-heading>
-                <s-select>
-                  <s-option>Most recent</s-option>
-                  <s-option>Highest rated</s-option>
-                  <s-option>Most helpful</s-option>
+                <s-select
+                  onChange={(e) =>
+                    handleStateUpdate(
+                      setWidgetSettings,
+                      "reviewSortOrder",
+                      e.target.value,
+                    )
+                  }
+                >
+                  <s-option value="RECENT">Most recent</s-option>
+                  <s-option value="RATED">Highest rated</s-option>
+                  <s-option value="HELPFUL">Most helpful</s-option>
                 </s-select>
               </s-grid>
             </CustomSection>

@@ -3,15 +3,7 @@ import CustomGridSection from "../../../components/essentials/CustomGridSection"
 import CustomSection from "../../../components/essentials/CustomSection";
 import Text from "../../../components/essentials/elements/Text";
 import { useState } from "react";
-const DEFAULT_REQUEST_SCHEDULING = {
-  isAutomaticRequest: true,
-  sendRequestAfterDelivery: 5,
-  isReminderRequest: true,
-  reminderRequestDelay: 5,
-  isSkipRefundedOrder: true,
-  isSkipCancelledOrder: true,
-  minimumOrderValue: 0,
-};
+import { DEFAULT_REQUEST_SCHEDULING } from "../data/defaultData";
 
 export function loader() {
   return { status: true, message: "hello" };
@@ -31,7 +23,7 @@ export default function Settings() {
 
   return (
     <>
-      <pre>{JSON.stringify(requestScheduling, null, 2)}</pre>
+      {/* <pre>{JSON.stringify(requestScheduling, null, 2)}</pre> */}
       <ui-save-bar id="leave-confirm-save-bar">
         <button variant="primary" id="save-button">
           Save
@@ -67,6 +59,7 @@ export default function Settings() {
             <CustomSection>
               <s-grid gap="small">
                 <s-switch
+                  defaultChecked={requestScheduling.isAutomaticRequest}
                   onChange={(e) =>
                     setRequestScheduling((pre) => ({
                       ...pre,
@@ -131,6 +124,7 @@ export default function Settings() {
 
                 <s-stack>
                   <s-switch
+                    defaultChecked={requestScheduling.isReminderRequest}
                     onChange={(e) =>
                       setRequestScheduling((pre) => ({
                         ...pre,
@@ -234,6 +228,7 @@ export default function Settings() {
             <CustomSection>
               <s-grid gap="small">
                 <s-switch
+                  defaultChecked={requestScheduling.isSkipRefundedOrder}
                   onChange={(e) =>
                     setRequestScheduling((pre) => ({
                       ...pre,
@@ -244,6 +239,7 @@ export default function Settings() {
                   details="Don't send requests for orders that were fully refunded"
                 ></s-switch>
                 <s-switch
+                  defaultChecked={requestScheduling.isSkipCancelledOrder}
                   onChange={(e) =>
                     setRequestScheduling((pre) => ({
                       ...pre,

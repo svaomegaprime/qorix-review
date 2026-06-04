@@ -5,6 +5,10 @@ import TabButton from "../../../components/essentials/TabButton";
 import { useState } from "react";
 import RequestEmail from "../components/essentials/RequestEmail";
 import PostReviewEmail from "../components/essentials/PostReviewEmail";
+import {
+  DEFAULT_OUTGOING_REQUEST_EMAIL,
+  DEFAULT_POST_REQUEST_EMAIL,
+} from "../data/defaultData";
 
 export default function EmailSettings() {
   const [emailActiveSettings, setEmailActiveSettings] = useState({
@@ -12,8 +16,18 @@ export default function EmailSettings() {
     postReviewEmail: false,
   });
 
+  const [outgoingRequestEmail, setOutgoingRequestEmail] = useState(
+    DEFAULT_OUTGOING_REQUEST_EMAIL,
+  );
+  const [postReviewEmail, setPostReviewEmail] = useState(
+    DEFAULT_POST_REQUEST_EMAIL,
+  );
+  console.log("DEFAULT_OUTGOING_REQUEST_EMAIL:", outgoingRequestEmail);
+
   return (
     <>
+      {/* <pre>{JSON.stringify(outgoingRequestEmail, null, 2)}</pre>
+      <pre>{JSON.stringify(postReviewEmail, null, 2)}</pre> */}
       <s-stack
         paddingBlockEnd="base"
         direction="inline"
@@ -54,8 +68,18 @@ export default function EmailSettings() {
             Post-review emails
           </TabButton>
         </s-stack>
-        {emailActiveSettings.requestEmail && <RequestEmail />}
-        {emailActiveSettings.postReviewEmail && <PostReviewEmail />}
+        {emailActiveSettings.requestEmail && (
+          <RequestEmail
+            outgoingRequestEmail={outgoingRequestEmail}
+            setOutgoingRequestEmail={setOutgoingRequestEmail}
+          />
+        )}
+        {emailActiveSettings.postReviewEmail && (
+          <PostReviewEmail
+            postReviewEmail={postReviewEmail}
+            setPostReviewEmail={setPostReviewEmail}
+          />
+        )}
       </s-section>
     </>
   );
