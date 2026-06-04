@@ -1,0 +1,259 @@
+import TEMP_REVIEWS from "../data/reviews.json";
+import Loader from "../../../components/essentials/Loader";
+import TabButton from "../../../components/essentials/TabButton";
+import CustomSection from "../../../components/essentials/CustomSection";
+import ReviewItem from "../../../components/essentials/ReviewItem";
+import Text from "../../../components/essentials/elements/Text";
+import { useLoaderData, useNavigation } from "react-router";
+import { useState } from "react";
+
+const REVIEWS_PER_PAGE = 8;
+const MAX_VISIBLE_PAGE_BUTTONS = 4;
+
+export async function loader() {
+  return {
+    reviews: TEMP_REVIEWS,
+  };
+}
+
+export default function Reviews() {
+  // Start----Default CSR loading state checking for navigation
+  const navigation = useNavigation();
+  const loading = navigation.state === "loading";
+  // End----Default CSR loading state checking for navigation
+  
+  // Start----Accessing loaded data using useLoaderData
+  const { reviews } = useLoaderData();
+  // End----Accessing loaded data using useLoaderData
+
+  // Start----State for active tab
+  const [activeTab, setActiveTab] = useState("all");
+  // End----State for active tab
+  // Start----Reviews pagination state
+  const [currentPage, setCurrentPage] = useState(1);
+  // End----Reviews pagination state
+
+  const [filteredReviews, setFilteredReviews] = useState(reviews);
+
+  // Start----Tab click handler
+  const handleTabClick = (tab) => {
+    setActiveTab(tab);
+    setCurrentPage(1);
+    if (tab === "all") {
+      setFilteredReviews(reviews);
+    } else {
+      const statusMap = {
+        pending: "Pending",
+        published: "Published",
+        spam: "Spam",
+        archive: "Archive"
+      };
+      const filtered = reviews.filter((review) => review.reviewStatus === statusMap[tab]);
+      setFilteredReviews(filtered);
+    }
+  };
+  // End----Tab click handler
+
+  // Start----Pagination click handler
+  const handlePaginationClick = (page) => {
+    const totalPages = Math.max(1, Math.ceil(filteredReviews.length / REVIEWS_PER_PAGE));
+    const nextPage = Math.min(Math.max(page, 1), totalPages);
+    setCurrentPage(nextPage);
+  };
+  // End----Pagination click handler
+
+  const totalReviews = filteredReviews.length;
+  const totalPages = Math.max(1, Math.ceil(totalReviews / REVIEWS_PER_PAGE));
+  const safeCurrentPage = Math.min(currentPage, totalPages);
+  const pageStartIndex = (safeCurrentPage - 1) * REVIEWS_PER_PAGE;
+  const pageEndIndex = Math.min(pageStartIndex + REVIEWS_PER_PAGE, totalReviews);
+  const paginatedReviews = filteredReviews.slice(pageStartIndex, pageEndIndex);
+  const visiblePageStart = Math.min(
+    Math.max(safeCurrentPage - Math.floor(MAX_VISIBLE_PAGE_BUTTONS / 2), 1),
+    Math.max(totalPages - MAX_VISIBLE_PAGE_BUTTONS + 1, 1),
+  );
+  const visiblePageCount = Math.min(MAX_VISIBLE_PAGE_BUTTONS, totalPages);
+  const visiblePages = Array.from(
+    { length: visiblePageCount },
+    (_, index) => visiblePageStart + index,
+  );
+
+  // Start----Debugging loaded data
+  console.clear();
+  console.log("Reviews data loaded:", reviews);
+  // End----Debugging loaded data
+
+  if (loading) {
+    return <Loader />; // Show loader while navigating to this page or when loader is fetching data
+  }
+
+  return (
+    <s-page>
+      {/* Start----Page Header */}
+      <s-grid gridTemplateColumns="auto 1fr" alignItems="center" gap="base" paddingBlock="small large">
+        <s-stack direction="inline" alignItems="center" gap="small">
+          <Text as="h2">Reviews</Text>
+          <s-badge tone="success" color="strong">Auto-Publish: On</s-badge>
+        </s-stack>
+        <s-grid gridTemplateColumns="auto auto auto" gap="small" justifyContent="end">
+          <s-button icon="download">Import</s-button>
+          <s-button icon="upload">Export</s-button>
+          <s-button icon="plus">Request reviews</s-button>
+        </s-grid>
+      </s-grid>
+      {/* End----Page Header */}
+
+      {/* Start----Page main filter tabs */}
+      <s-stack paddingBlock="small base">
+        <s-section>
+          <s-grid gridTemplateColumns="repeat(auto-fit, minmax(100px, 1fr))" gap="base">
+            {/* Start----All reviews button */}
+            <TabButton
+              isActive={activeTab === "all"}
+              onClick={()=> handleTabClick("all")}
+            >
+              All Reviews <s-badge tone="success" color="strong">{reviews.length}</s-badge>
+            </TabButton>
+            {/* End----All reviews button */}
+            {/* Start----Pending reviews button */}
+            <TabButton
+              isActive={activeTab === "pending"}
+              onClick={()=> handleTabClick("pending")}
+            >
+              Pending <s-badge tone="warning" color="strong">{reviews.filter((review) => review.reviewStatus === "Pending").length}</s-badge>
+            </TabButton>
+            {/* End----Pending reviews button */}
+            {/* Start----Published reviews button */}
+            <TabButton
+              isActive={activeTab === "published"}
+              onClick={()=> handleTabClick("published")}
+            >
+              Published <s-badge tone="success" color="strong">{reviews.filter((review) => review.reviewStatus === "Published").length}</s-badge>
+            </TabButton>
+            {/* End----Published reviews button */}
+            {/* Start----Spam reviews button */}
+            <TabButton
+              isActive={activeTab === "spam"}
+              onClick={()=> handleTabClick("spam")}
+            >
+              Spam <s-badge tone="critical" color="strong">{reviews.filter((review) => review.reviewStatus === "Spam").length}</s-badge>
+            </TabButton>
+            {/* End----Spam reviews button */}
+            {/* Start----Archive reviews button */}
+            <TabButton
+              isActive={activeTab === "archive"}
+              onClick={()=> handleTabClick("archive")}
+            >
+              Archive <s-badge tone="neutral" color="strong">{reviews.filter((review) => review.reviewStatus === "Archive").length}</s-badge>
+            </TabButton>
+            {/* End----Archive reviews button */}
+          </s-grid>
+        </s-section>
+      </s-stack>
+      {/* End----Page main filter tabs */}
+
+      {/* Start----Page main content */}
+      <s-section>
+        {/* Start----Page main content header */}
+        <s-grid gridTemplateColumns="1fr auto" gap="base" alignItems="center">
+          <s-grid gridTemplateColumns="242px 109px 120px" gap="base">
+            {/* Start----Search field */}
+            <s-search-field
+              placeholder="Search reviews"
+              onChange={(e) => console.log(e.currentTarget.value)}
+            />
+            {/* End----Search field */}
+            {/* Start----Filter options by rating */}
+            <s-select>
+              <s-option value="all" selected>All ratings</s-option>
+              <s-option value="5">5 stars</s-option>
+              <s-option value="4">4 stars</s-option>
+              <s-option value="3">3 stars</s-option>
+              <s-option value="2">2 stars</s-option>
+              <s-option value="1">1 star</s-option>
+            </s-select>
+            {/* End----Filter options by rating */}
+            {/* Start----Filter options by product */}
+            <s-select>
+              <s-option value="all">All products</s-option>
+            </s-select>
+            {/* End----Filter options by product */}
+          </s-grid>
+          {/* Start----Sort button */}
+          <s-press-button
+              pressed={false}
+              icon="select"
+          >
+            Newest first
+          </s-press-button>
+          {/* End----Sort button */}
+        </s-grid>
+        {/* End----Page main content header */}
+  
+        {/* Start----Reviews list */}    
+        <CustomSection margin="35px 0 0">
+          <s-stack>
+            {totalReviews === 0 ? (
+              <s-stack alignItems="center">
+                <s-text>No {activeTab} reviews found</s-text>
+              </s-stack>
+            ): (
+              paginatedReviews.map((review, index) => (
+                <div key={review.id}>
+                  <s-grid gridTemplateColumns="auto 1fr" gap="base">
+                    <s-checkbox /> {/* Checkbox for selection of reviews */}
+                    <ReviewItem data={review} />
+                  </s-grid>
+                  {index !== paginatedReviews.length - 1 && (
+                    <s-stack paddingBlock="base">
+                      <s-divider />
+                    </s-stack>
+                  )}
+                </div>
+              ))
+            )}
+          </s-stack>
+        </CustomSection>
+        {/* End----Reviews list */}
+        
+        {/* Start----Reviews pagination */}
+        <s-grid gridTemplateColumns="auto 1fr" alignItems="center" paddingBlock="large-300 small">
+          <s-paragraph>
+            Showing <b>{totalReviews === 0 ? 0 : pageStartIndex + 1}-{pageEndIndex}</b> of <b>{totalReviews}</b> reviews
+          </s-paragraph>
+          <s-stack direction="inline" gap="small" justifyContent="end">
+            <s-button
+              disabled={safeCurrentPage === 1}
+              onClick={() => handlePaginationClick(safeCurrentPage - 1)}
+            >
+              <div style={{ display: "inline-flex", alignItems: "center", gap: "4px", width: "75px", justifyContent: "center" }}>
+                <s-icon type="arrow-left" />
+                Previous
+              </div>
+            </s-button>
+            {visiblePages.map((page) => (
+              <s-press-button
+                key={page}
+                pressed={safeCurrentPage === page}
+                onClick={() => handlePaginationClick(page)}
+              >
+                {page}
+              </s-press-button>
+            ))}
+            <s-button
+              disabled={safeCurrentPage === totalPages}
+              onClick={() => handlePaginationClick(safeCurrentPage + 1)}
+            >
+              <div style={{ display: "inline-flex", alignItems: "center", gap: "4px", width: "70px", justifyContent: "center" }}>
+                Next
+                <s-icon type="arrow-right" />
+              </div>
+            </s-button>
+          </s-stack>
+        </s-grid>
+        {/* End----Reviews pagination */}
+      </s-section>
+      {/* End----Page main content */}
+    </s-page>
+  );
+}

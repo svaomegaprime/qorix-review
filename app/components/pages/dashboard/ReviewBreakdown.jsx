@@ -19,7 +19,7 @@ const TEMP_REVIEW_DATA = [
     {
         id: 2,
         reviewerName: "Hasan AB",
-        reviewerAvatar: "/reviewer-2.png",
+        reviewerAvatar: "/reviews/reviewer/reviewer-2.png",
         rating: 5,
         reviewDate: "5 hours ago",
         reviewTitle: "Facial Serum Vitamin C",
@@ -29,7 +29,7 @@ const TEMP_REVIEW_DATA = [
     {
         id: 3,
         reviewerName: "Hasan AB",
-        reviewerAvatar: "/reviewer-1.png",
+        reviewerAvatar: "/reviews/reviewer/reviewer-1.png",
         rating: 5,
         reviewDate: "1 week ago",
         reviewTitle: "Facial Serum Vitamin C",
