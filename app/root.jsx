@@ -1,5 +1,5 @@
 import { Links, Meta, Outlet, Scripts, ScrollRestoration } from "react-router";
-
+import SupportBox from "./components/essentials/SupportBox";
 export default function App() {
   return (
     <html lang="en">
@@ -18,6 +18,7 @@ export default function App() {
         <Outlet />
         <ScrollRestoration />
         <Scripts />
+        <SupportBox />
       </body>
     </html>
   );
