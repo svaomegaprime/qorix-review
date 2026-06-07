@@ -75,6 +75,7 @@ export default function AdminNotification() {
                   return (
                     <>
                       <s-text-field
+                        key={i}
                         defaultValue={
                           adminNotification.notificationEmailAddress[key]
                         }
