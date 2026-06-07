@@ -19,6 +19,7 @@ export default function App() {
         <s-link href="/app">Dashboard</s-link>
         <s-link href="/app/reviews">Reviews</s-link>
         <s-link href="/app/requests">Requests</s-link>
+        <s-link href="/app/widgets">Widgets</s-link>
         <s-link href="/app/settings">Settings</s-link>
       </s-app-nav>
       <Outlet />
