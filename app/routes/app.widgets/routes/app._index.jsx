@@ -39,7 +39,7 @@ const WIDGETS = [
         name: "TrustBar",
         description: "A clean badge displaying a product’s average star rating and total review count. Boosts credibility instantly — perfect above the fold or next to pricing.",
         previewUrl: "/widgets/trust-bar.png",
-        editUrl: "/app/preview",
+        editUrl: "/app/widgets/trust-bar",
         types: ["product-page", "standalone-page"]
     },
     {
@@ -47,7 +47,7 @@ const WIDGETS = [
         name: "ReviewReel",
         description: "An interactive carousel that turns your best video, image, and text reviews into moving stories. Shoppers can swipe, click, and play — no page reload.",
         previewUrl: "/widgets/review-reel.png",
-        editUrl: "/app/preview",
+        editUrl: "/app/widgets/review-reel",
         types: ["product-page", "standalone-page"]
     },
     {
@@ -55,7 +55,7 @@ const WIDGETS = [
         name: "VidioStack",
         description: "A sleek, rotating slider for your most impactful video reviews. Lets shoppers see your products in action without leaving the product page.",
         previewUrl: "/widgets/video-stack.png",
-        editUrl: "/app/preview",
+        editUrl: "/app/widgets/video-stack",
         types: ["product-page", "standalone-page"]
     },
     {
@@ -63,7 +63,7 @@ const WIDGETS = [
         name: "QuoteLoop",
         description: "A bold, eye-catching carousel to highlight winning quotes from your best reviews. Auto-rotates or manual.",
         previewUrl: "/widgets/quote-loop.png",
-        editUrl: "/app/preview",
+        editUrl: "/app/widgets/quote-loop",
         types: ["product-page", "standalone-page"]
     },
     {
@@ -71,7 +71,7 @@ const WIDGETS = [
         name: "ReviewHub",
         description: "Collect and display product reviews directly on your product pages. Full control over layout, sorting, and filters.",
         previewUrl: "/widgets/review-hub.png",
-        editUrl: "/app/preview",
+        editUrl: "/app/widgets/review-hub",
         types: ["product-page", "standalone-page"]
     },
     {
@@ -79,7 +79,7 @@ const WIDGETS = [
         name: "QuickReview",
         description: "A pre-installed, one-click widget that lets customers write a review instantly — no account required. Increases review collection by 40%+.",
         previewUrl: "/widgets/quick-review.png",
-        editUrl: "/app/preview",
+        editUrl: "/app/widgets/quick-review",
         types: ["floating", "review-form"]
     }
 ];
@@ -126,8 +126,7 @@ export default function Widegets() {
             {/* Start----Page Header */}
             <s-grid gridTemplateColumns="auto auto" alignItems="center" justifyContent="space-between" gap="base" paddingBlock="small large">
                 <s-stack direction="inline" alignItems="center" gap="small">
-                    <Text as="h2">Requests</Text>
-                    <s-badge tone="success" color="strong">Auto-send: On</s-badge>
+                    <Text as="h2">Widgets</Text>
                 </s-stack>
                 {/* <s-button icon="settings">Request reviews</s-button> */}
                 <s-select>
