@@ -1,0 +1,322 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Customer Reviews</title>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/swiper@12/swiper-bundle.min.css" />
+    <link rel="stylesheet" href="{{ 'review_reel.css' | asset_url }}" />
+  </head>
+
+  <body>
+    <style>
+      [data-section="qorix-review-reel-widget"] {
+        ---color-primray: #1c1c1c;
+        ---color-secondary: #008923;
+        ---color-gray: #616161;
+        ---: ;
+        ---: ;
+      }
+    </style>
+    <section data-section="qorix-review-reel-widget" class="qr-real-review-section">
+      <!-- ── Header ── -->
+      <div class="qr-section-header">
+        <div class="qr-title-group">
+          <p class="qr-subtitle">Customer love</p>
+          <h2 class="qr-heading">Real reviews from real people</h2>
+          <p class="qr-description">Watch and hear what our customers have to say.</p>
+        </div>
+
+        <div class="qr-rating-bar">
+          <div class="qr-stars-group">
+            <ul class="qr-reviews-stars" aria-label="5 stars">
+              <!-- star SVG repeated 5× -->
+              <li>
+                <svg width="17" height="16" viewBox="0 0 17 16" fill="none" xmlns="http://www.w3.org/2000/svg">
+                  <path
+                    d="M9.51964 0.855C8.97604-0.285 7.35604-0.285 6.81244 0.855L5.14444 4.3494L1.30564 4.8546C0.0552353 5.0202-0.446365 6.561 0.469235 7.4298L3.27724 10.0962L2.57284 13.9026C2.34244 15.1434 3.65404 16.0962 4.76284 15.495L8.16604 13.647L11.5692 15.495C12.678 16.0962 13.9896 15.1434 13.7592 13.9026L13.0548 10.0962L15.8628 7.4298C16.7772 6.561 16.2768 5.0202 15.0264 4.8546L11.1864 4.3494L9.51964 0.855Z"
+                    fill="#34C759"
+                  />
+                </svg>
+              </li>
+              <li>
+                <svg width="17" height="16" viewBox="0 0 17 16" fill="none" xmlns="http://www.w3.org/2000/svg">
+                  <path
+                    d="M9.51964 0.855C8.97604-0.285 7.35604-0.285 6.81244 0.855L5.14444 4.3494L1.30564 4.8546C0.0552353 5.0202-0.446365 6.561 0.469235 7.4298L3.27724 10.0962L2.57284 13.9026C2.34244 15.1434 3.65404 16.0962 4.76284 15.495L8.16604 13.647L11.5692 15.495C12.678 16.0962 13.9896 15.1434 13.7592 13.9026L13.0548 10.0962L15.8628 7.4298C16.7772 6.561 16.2768 5.0202 15.0264 4.8546L11.1864 4.3494L9.51964 0.855Z"
+                    fill="#34C759"
+                  />
+                </svg>
+              </li>
+              <li>
+                <svg width="17" height="16" viewBox="0 0 17 16" fill="none" xmlns="http://www.w3.org/2000/svg">
+                  <path
+                    d="M9.51964 0.855C8.97604-0.285 7.35604-0.285 6.81244 0.855L5.14444 4.3494L1.30564 4.8546C0.0552353 5.0202-0.446365 6.561 0.469235 7.4298L3.27724 10.0962L2.57284 13.9026C2.34244 15.1434 3.65404 16.0962 4.76284 15.495L8.16604 13.647L11.5692 15.495C12.678 16.0962 13.9896 15.1434 13.7592 13.9026L13.0548 10.0962L15.8628 7.4298C16.7772 6.561 16.2768 5.0202 15.0264 4.8546L11.1864 4.3494L9.51964 0.855Z"
+                    fill="#34C759"
+                  />
+                </svg>
+              </li>
+              <li>
+                <svg width="17" height="16" viewBox="0 0 17 16" fill="none" xmlns="http://www.w3.org/2000/svg">
+                  <path
+                    d="M9.51964 0.855C8.97604-0.285 7.35604-0.285 6.81244 0.855L5.14444 4.3494L1.30564 4.8546C0.0552353 5.0202-0.446365 6.561 0.469235 7.4298L3.27724 10.0962L2.57284 13.9026C2.34244 15.1434 3.65404 16.0962 4.76284 15.495L8.16604 13.647L11.5692 15.495C12.678 16.0962 13.9896 15.1434 13.7592 13.9026L13.0548 10.0962L15.8628 7.4298C16.7772 6.561 16.2768 5.0202 15.0264 4.8546L11.1864 4.3494L9.51964 0.855Z"
+                    fill="#34C759"
+                  />
+                </svg>
+              </li>
+              <li>
+                <svg width="17" height="16" viewBox="0 0 17 16" fill="none" xmlns="http://www.w3.org/2000/svg">
+                  <path
+                    d="M9.51964 0.855C8.97604-0.285 7.35604-0.285 6.81244 0.855L5.14444 4.3494L1.30564 4.8546C0.0552353 5.0202-0.446365 6.561 0.469235 7.4298L3.27724 10.0962L2.57284 13.9026C2.34244 15.1434 3.65404 16.0962 4.76284 15.495L8.16604 13.647L11.5692 15.495C12.678 16.0962 13.9896 15.1434 13.7592 13.9026L13.0548 10.0962L15.8628 7.4298C16.7772 6.561 16.2768 5.0202 15.0264 4.8546L11.1864 4.3494L9.51964 0.855Z"
+                    fill="#34C759"
+                  />
+                </svg>
+              </li>
+            </ul>
+            <span class="qr-rating-score">4.9</span>
+            <span class="qr-review-count">(2,451 reviews)</span>
+          </div>
+
+          <div class="qr-divider"></div>
+
+          <div class="qr-verified-group">
+            <svg
+              width="22"
+              height="22"
+              viewBox="0 0 22 22"
+              fill="none"
+              xmlns="http://www.w3.org/2000/svg"
+              aria-hidden="true"
+            >
+              <g clip-path="url(#clip0)">
+                <path
+                  d="M15.4734 20.075H2.03711C0.872656 20.075 0.0433588 18.9406 0.399999 17.832L1.81367 13.4148C2.26914 11.9969 3.82031 11.2621 5.20391 11.7992C6.12344 12.1559 7.30508 12.4352 8.75312 12.4352C10.2012 12.4352 11.3828 12.1559 12.3023 11.7992C12.3539 11.7777 12.4098 11.7605 12.4656 11.7434V11.8508C12.4656 14.3902 14.352 16.4957 16.7969 16.8395L17.1148 17.832C17.4672 18.9406 16.6422 20.075 15.4734 20.075ZM8.75742 1.925C6.3125 1.925 4.32734 3.91016 4.32734 6.35508C4.32734 8.8 6.3125 10.7852 8.75742 10.7852C11.2023 10.7852 13.1875 8.8 13.1875 6.35508C13.1875 3.91016 11.2023 1.925 8.75742 1.925ZM21.6824 11.8465C21.6824 14.1539 19.8133 16.0273 17.5016 16.0273C15.1941 16.0273 13.3207 14.1582 13.3207 11.8465C13.3207 9.53477 15.1941 7.66562 17.5016 7.66562C19.809 7.66992 21.6824 9.53906 21.6824 11.8465ZM20.0797 9.88281C19.7832 9.58633 19.302 9.58633 19.0055 9.88281L16.6852 12.2031L16.002 11.5199C15.7055 11.2234 15.2242 11.2234 14.9277 11.5199C14.6312 11.8164 14.6312 12.2977 14.9277 12.5941L16.148 13.8145C16.4445 14.1109 16.9258 14.1109 17.2223 13.8145L20.084 10.9527C20.3762 10.6605 20.3762 10.1793 20.0797 9.88281Z"
+                  fill="url(#paint0_linear)"
+                />
+              </g>
+              <defs>
+                <linearGradient
+                  id="paint0_linear"
+                  x1="2.62793"
+                  y1="6.21938"
+                  x2="16.3352"
+                  y2="19.9267"
+                  gradientUnits="userSpaceOnUse"
+                >
+                  <stop stop-color="#34C759" />
+                  <stop offset="1" stop-color="#088728" />
+                </linearGradient>
+                <clipPath id="clip0">
+                  <rect width="22" height="22" fill="white" />
+                </clipPath>
+              </defs>
+            </svg>
+            <span class="qr-verified-label">Verified reviews</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- ── Swiper ── -->
+      <div class="qr-swiper-wrapper">
+        <div class="swiper mySwiper">
+          <div class="swiper-wrapper">
+            <!-- Card 1 -->
+            <div class="swiper-slide">
+              <div class="qr-review-card">
+                <div class="qr-review-card-image">
+                  <img
+                    src="https://images.unsplash.com/photo-1556228578-8c89e6adf883?w=600&q=80"
+                    alt="Facial Serum Vitamin C product" height="" width=" "
+                  />
+                  <button class="play-btn" aria-label="Play video review">
+                    <svg width="40" height="40" viewBox="0 0 40 40" fill="none" xmlns="http://www.w3.org/2000/svg">
+                      <path
+                        d="M20 0C8.97167 0 0 8.97167 0 20C0 31.0283 8.97167 40 20 40C31.0283 40 40 31.0283 40 20C40 8.97167 31.0283 0 20 0ZM27.34 23.1217L18.6533 27.8783C18.1117 28.1833 17.515 28.335 16.9183 28.335C16.2967 28.335 15.6733 28.17 15.1067 27.84C13.995 27.19 13.3333 26.035 13.3333 24.7483V15.25C13.3333 13.9633 13.995 12.8083 15.1067 12.1583C16.215 11.51 17.5483 11.4983 18.67 12.13L27.3233 16.8683C28.4833 17.52 29.165 18.6867 29.165 19.9983C29.165 21.31 28.4833 22.4767 27.3383 23.12L27.34 23.1217ZM25.8333 20C25.8333 20.145 25.7367 20.1983 25.7233 20.2083L17.0367 24.9667C17.005 24.9833 16.9083 25.0367 16.7917 24.965C16.6683 24.8933 16.6683 24.7867 16.6683 24.7517V15.2533C16.6683 15.2183 16.6683 15.1117 16.7917 15.04C16.8367 15.0133 16.8783 15.005 16.915 15.005C16.975 15.005 17.0233 15.0317 17.0533 15.0483L25.7067 19.7883C25.7383 19.8067 25.8333 19.86 25.8333 20.005V20Z"
+                        fill="white"
+                      />
+                    </svg>
+                  </button>
+                </div>
+                <div class="qr-review-card-content">
+                  <div class="review-text">
+                    <p class="product-title">Product: Facial Serum Vitamin C</p>
+                    <h3 class="review-quote line-clamp">
+                      "I'm grateful for their honesty and transparency throughout the process."
+                    </h3>
+                  </div>
+                  <div class="review-user">
+                    <img class="user-avatar" src="https://i.pravatar.cc/56?img=47" alt="Saoirse Ronan"  height="" width=" "/>
+                    <div class="user-info">
+                      <p class="user-name">Saoirse Ronan</p>
+                      <p class="review-date">12th April, 2026</p>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <!-- Card 2 -->
+            <div class="swiper-slide">
+              <div class="qr-review-card">
+                <div class="qr-review-card-image">
+                  <img
+                    src="https://images.unsplash.com/photo-1608248543803-ba4f8c70ae0b?w=600&q=80"
+                    alt="AHA Smoothing Cream product" height="" width=" "
+                  />
+                  <button class="play-btn" aria-label="Play video review">
+                    <svg width="40" height="40" viewBox="0 0 40 40" fill="none" xmlns="http://www.w3.org/2000/svg">
+                      <path
+                        d="M20 0C8.97167 0 0 8.97167 0 20C0 31.0283 8.97167 40 20 40C31.0283 40 40 31.0283 40 20C40 8.97167 31.0283 0 20 0ZM27.34 23.1217L18.6533 27.8783C18.1117 28.1833 17.515 28.335 16.9183 28.335C16.2967 28.335 15.6733 28.17 15.1067 27.84C13.995 27.19 13.3333 26.035 13.3333 24.7483V15.25C13.3333 13.9633 13.995 12.8083 15.1067 12.1583C16.215 11.51 17.5483 11.4983 18.67 12.13L27.3233 16.8683C28.4833 17.52 29.165 18.6867 29.165 19.9983C29.165 21.31 28.4833 22.4767 27.3383 23.12L27.34 23.1217ZM25.8333 20C25.8333 20.145 25.7367 20.1983 25.7233 20.2083L17.0367 24.9667C17.005 24.9833 16.9083 25.0367 16.7917 24.965C16.6683 24.8933 16.6683 24.7867 16.6683 24.7517V15.2533C16.6683 15.2183 16.6683 15.1117 16.7917 15.04C16.8367 15.0133 16.8783 15.005 16.915 15.005C16.975 15.005 17.0233 15.0317 17.0533 15.0483L25.7067 19.7883C25.7383 19.8067 25.8333 19.86 25.8333 20.005V20Z"
+                        fill="white"
+                      />
+                    </svg>
+                  </button>
+                </div>
+                <div class="qr-review-card-content">
+                  <div class="review-text">
+                    <p class="product-title">Product: Facial Serum Vitamin C</p>
+                    <h3 class="review-quote line-clamp">"I was initially hesitant about applying for a mortgage"</h3>
+                  </div>
+                  <div class="review-user">
+                    <img class="user-avatar" src="https://i.pravatar.cc/56?img=12" alt="Jennifer Lawrence" height="" width=""/>
+                    <div class="user-info">
+                      <p class="user-name">Jennifer Lawrence</p>
+                      <p class="review-date">16th April, 2026</p>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <!-- Card 3 -->
+            <div class="swiper-slide">
+              <div class="qr-review-card">
+                <div class="qr-review-card-image">
+                  <img
+                    src="https://images.unsplash.com/photo-1598440947619-2c35fc9aa908?w=600&q=80"
+                    alt="Skincare product review" height="" width=" "
+                  />
+                  <button class="play-btn" aria-label="Play video review">
+                    <svg width="40" height="40" viewBox="0 0 40 40" fill="none" xmlns="http://www.w3.org/2000/svg">
+                      <path
+                        d="M20 0C8.97167 0 0 8.97167 0 20C0 31.0283 8.97167 40 20 40C31.0283 40 40 31.0283 40 20C40 8.97167 31.0283 0 20 0ZM27.34 23.1217L18.6533 27.8783C18.1117 28.1833 17.515 28.335 16.9183 28.335C16.2967 28.335 15.6733 28.17 15.1067 27.84C13.995 27.19 13.3333 26.035 13.3333 24.7483V15.25C13.3333 13.9633 13.995 12.8083 15.1067 12.1583C16.215 11.51 17.5483 11.4983 18.67 12.13L27.3233 16.8683C28.4833 17.52 29.165 18.6867 29.165 19.9983C29.165 21.31 28.4833 22.4767 27.3383 23.12L27.34 23.1217ZM25.8333 20C25.8333 20.145 25.7367 20.1983 25.7233 20.2083L17.0367 24.9667C17.005 24.9833 16.9083 25.0367 16.7917 24.965C16.6683 24.8933 16.6683 24.7867 16.6683 24.7517V15.2533C16.6683 15.2183 16.6683 15.1117 16.7917 15.04C16.8367 15.0133 16.8783 15.005 16.915 15.005C16.975 15.005 17.0233 15.0317 17.0533 15.0483L25.7067 19.7883C25.7383 19.8067 25.8333 19.86 25.8333 20.005V20Z"
+                        fill="white"
+                      />
+                    </svg>
+                  </button>
+                </div>
+                <div class="qr-review-card-content">
+                  <div class="review-text">
+                    <p class="product-title">Product: Facial Serum Vitamin C</p>
+                    <h3 class="review-quote line-clamp">
+                      "Trust is paramount when it comes to choosing a mortgage lender"
+                    </h3>
+                  </div>
+                  <div class="review-user">
+                    <img class="user-avatar" src="https://i.pravatar.cc/56?img=68" alt="Bruce Wills" height="" width=""/>
+                    <div class="user-info">
+                      <p class="user-name">Bruce Wills</p>
+                      <p class="review-date">17th May, 2026</p>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <!-- Card 4 (bonus slide to demo carousel) -->
+            <div class="swiper-slide">
+              <div class="qr-review-card">
+                <div class="qr-review-card-image">
+                  <img
+                    src="https://images.unsplash.com/photo-1571781926291-c477ebfd024b?w=600&q=80"
+                    alt="Product review image"
+                    height=""
+                    width=" "
+                  />
+                  <button class="play-btn" aria-label="Play video review">
+                    <svg width="40" height="40" viewBox="0 0 40 40" fill="none" xmlns="http://www.w3.org/2000/svg">
+                      <path
+                        d="M20 0C8.97167 0 0 8.97167 0 20C0 31.0283 8.97167 40 20 40C31.0283 40 40 31.0283 40 20C40 8.97167 31.0283 0 20 0ZM27.34 23.1217L18.6533 27.8783C18.1117 28.1833 17.515 28.335 16.9183 28.335C16.2967 28.335 15.6733 28.17 15.1067 27.84C13.995 27.19 13.3333 26.035 13.3333 24.7483V15.25C13.3333 13.9633 13.995 12.8083 15.1067 12.1583C16.215 11.51 17.5483 11.4983 18.67 12.13L27.3233 16.8683C28.4833 17.52 29.165 18.6867 29.165 19.9983C29.165 21.31 28.4833 22.4767 27.3383 23.12L27.34 23.1217ZM25.8333 20C25.8333 20.145 25.7367 20.1983 25.7233 20.2083L17.0367 24.9667C17.005 24.9833 16.9083 25.0367 16.7917 24.965C16.6683 24.8933 16.6683 24.7867 16.6683 24.7517V15.2533C16.6683 15.2183 16.6683 15.1117 16.7917 15.04C16.8367 15.0133 16.8783 15.005 16.915 15.005C16.975 15.005 17.0233 15.0317 17.0533 15.0483L25.7067 19.7883C25.7383 19.8067 25.8333 19.86 25.8333 20.005V20Z"
+                        fill="white"
+                      />
+                    </svg>
+                  </button>
+                </div>
+                <div class="qr-review-card-content">
+                  <div class="review-text">
+                    <p class="product-title">Product: Facial Serum Vitamin C</p>
+                    <h3 class="review-quote line-clamp">
+                      "Absolutely transformed my skincare routine in just two weeks."
+                    </h3>
+                  </div>
+                  <div class="review-user">
+                    <img class="user-avatar" src="https://i.pravatar.cc/56?img=25" alt="Emma Stone" height="" width=""/>
+                    <div class="user-info">
+                      <p class="user-name">Emma Stone</p>
+                      <p class="review-date">2nd June, 2026</p>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div data-swiper-controller class="swiper-button-next">
+            <svg width="20" height="20" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg">
+              <path
+                fill-rule="evenodd"
+                clip-rule="evenodd"
+                d="M7.71953 14.53C7.57908 14.3894 7.50019 14.1987 7.50019 14C7.50019 13.8012 7.57908 13.6106 7.71953 13.47L11.1895 9.99999L7.71953 6.52999C7.64993 6.46039 7.59472 6.37776 7.55705 6.28682C7.51939 6.19589 7.5 6.09842 7.5 5.99999C7.5 5.90156 7.51939 5.80409 7.55705 5.71316C7.59472 5.62222 7.64993 5.53959 7.71953 5.46999C7.78913 5.40039 7.87176 5.34518 7.9627 5.30751C8.05364 5.26984 8.1511 5.25046 8.24953 5.25046C8.34796 5.25046 8.44543 5.26984 8.53637 5.30751C8.6273 5.34518 8.70993 5.40039 8.77953 5.46999L12.7795 9.46999C12.92 9.61062 12.9989 9.80124 12.9989 9.99999C12.9989 10.1987 12.92 10.3894 12.7795 10.53L8.77953 14.53C8.63891 14.6704 8.44828 14.7493 8.24953 14.7493C8.05078 14.7493 7.86016 14.6704 7.71953 14.53Z"
+                fill="#4A4A4A"
+              />
+            </svg>
+          </div>
+          <div data-swiper-controller class="swiper-button-prev">
+            <svg width="20" height="20" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg">
+              <path
+                fill-rule="evenodd"
+                clip-rule="evenodd"
+                d="M12.2805 14.53C12.4209 14.3894 12.4998 14.1987 12.4998 14C12.4998 13.8012 12.4209 13.6106 12.2805 13.47L8.81047 9.99999L12.2805 6.52999C12.3501 6.46039 12.4053 6.37776 12.4429 6.28682C12.4806 6.19589 12.5 6.09842 12.5 5.99999C12.5 5.90156 12.4806 5.80409 12.4429 5.71316C12.4053 5.62222 12.3501 5.53959 12.2805 5.46999C12.2109 5.40039 12.1282 5.34518 12.0373 5.30751C11.9464 5.26984 11.8489 5.25046 11.7505 5.25046C11.652 5.25046 11.5546 5.26984 11.4636 5.30751C11.3727 5.34518 11.2901 5.40039 11.2205 5.46999L7.22047 9.46999C7.08002 9.61062 7.00113 9.80124 7.00113 9.99999C7.00113 10.1987 7.08002 10.3894 7.22047 10.53L11.2205 14.53C11.3611 14.6704 11.5517 14.7493 11.7505 14.7493C11.9492 14.7493 12.1398 14.6704 12.2805 14.53Z"
+                fill="#4A4A4A"
+              />
+            </svg>
+          </div>
+          <div class="swiper-pagination"></div>
+        </div>
+      </div>
+    </section>
+
+    <script src="https://cdn.jsdelivr.net/npm/swiper@12/swiper-bundle.min.js"></script>
+    <script>
+      new Swiper(".mySwiper", {
+        slidesPerView: 3,
+        spaceBetween: 24,
+        loop: true,
+        navigation: {
+          nextEl: ".swiper-button-next",
+          prevEl: ".swiper-button-prev",
+        },
+        pagination: {
+          el: ".swiper-pagination",
+          clickable: true,
+        },
+        breakpoints: {
+          961: { slidesPerView: 3, spaceBetween: 24 },
+          601: { slidesPerView: 2, spaceBetween: 20 },
+          0: { slidesPerView: 1, spaceBetween: 16 },
+        },
+      });
+    </script>
+  </body>
+</html>
+
+
+{% schema %}
+{
+  "name": "Review Reel widget",
+  "target": "section",
+  "settings": [
+   
+  ]
+}
+{% endschema %}
+
