@@ -17,6 +17,7 @@ const ROUTE_FILE_PATTERN =
   new RegExp(
     `^app\\.(?:_index|index|${ROUTE_SEGMENT_PATTERN}(?:\\.${ROUTE_SEGMENT_PATTERN})*)\\.(jsx|js|tsx|ts)$`,
   );
+const ROUTE_MODULE_FILE_NAMES = ["route.jsx", "route.js", "route.tsx", "route.ts"];
 
 if (!fs.existsSync(routesFolderPath)) {
   throw new Error(`Routes folder not found: ${routesFolderPath}`);
@@ -34,9 +35,50 @@ const toUrlSegments = (routeName) =>
       segment.startsWith("$") ? `:${segment.slice(1)}` : segment,
     );
 
-const routeFiles = [];
+const toRouteFilePath = (fileParts) =>
+  `${routesDirectory}/${fileParts.join("/")}`;
 
-const collectRouteFiles = (directory, routePrefix = [], filePrefix = []) => {
+const getRouteModuleFile = (directory) =>
+  ROUTE_MODULE_FILE_NAMES.find((fileName) =>
+    fs.existsSync(path.join(directory, fileName)),
+  );
+
+const addRoute = ({
+  routes,
+  routeConflicts,
+  urlPath,
+  filePath,
+  children = [],
+  isIndexRoute = false,
+}) => {
+  const routeKey = isIndexRoute && urlPath === "" ? "?index" : urlPath;
+  const conflict = routeConflicts.get(routeKey);
+
+  if (conflict) {
+    throw new Error(
+      `Duplicate route path "${urlPath}" for "${conflict}" and "${filePath}".`,
+    );
+  }
+
+  routeConflicts.set(routeKey, filePath);
+
+  if (isIndexRoute && urlPath === "") {
+    routes.push(index(filePath));
+    return;
+  }
+
+  routes.push(
+    children.length > 0 ? route(urlPath, filePath, children) : route(urlPath, filePath),
+  );
+};
+
+const collectRoutes = (
+  directory,
+  filePrefix = [],
+  routePrefix = [],
+  routeConflicts = new Map(),
+) => {
+  const routes = [];
   const entries = fs
     .readdirSync(directory, { withFileTypes: true })
     .sort((a, b) => a.name.localeCompare(b.name));
@@ -47,10 +89,38 @@ const collectRouteFiles = (directory, routePrefix = [], filePrefix = []) => {
         continue;
       }
 
-      collectRouteFiles(
-        path.join(directory, entry.name),
-        [...routePrefix, ...toUrlSegments(entry.name)],
-        [...filePrefix, entry.name],
+      const folderPath = path.join(directory, entry.name);
+      const folderRoutePrefix = [...routePrefix, ...toUrlSegments(entry.name)];
+      const routeModuleFile = getRouteModuleFile(folderPath);
+
+      if (routeModuleFile) {
+        const nestedRoutesPath = path.join(folderPath, "routes");
+        const children = fs.existsSync(nestedRoutesPath)
+          ? collectRoutes(
+              nestedRoutesPath,
+              [...filePrefix, entry.name, "routes"],
+              [],
+              new Map(),
+            )
+          : [];
+
+        addRoute({
+          routes,
+          routeConflicts,
+          urlPath: folderRoutePrefix.join("/"),
+          filePath: toRouteFilePath([...filePrefix, entry.name, routeModuleFile]),
+          children,
+        });
+        continue;
+      }
+
+      routes.push(
+        ...collectRoutes(
+          folderPath,
+          [...filePrefix, entry.name],
+          folderRoutePrefix,
+          routeConflicts,
+        ),
       );
       continue;
     }
@@ -59,42 +129,26 @@ const collectRouteFiles = (directory, routePrefix = [], filePrefix = []) => {
       continue;
     }
 
-    routeFiles.push({
-      file: entry.name,
-      filePrefix,
-      routePrefix,
+    const routeName = entry.name.replace(ROUTE_EXTENSION_PATTERN, "");
+    const isIndexRoute = routeName === "app._index" || routeName === "app.index";
+
+    const urlPath = [
+      ...routePrefix,
+      ...(isIndexRoute ? [] : toUrlSegments(routeName)),
+    ].join("/");
+
+    addRoute({
+      routes,
+      routeConflicts,
+      urlPath,
+      filePath: toRouteFilePath([...filePrefix, entry.name]),
+      isIndexRoute,
     });
   }
+
+  return routes;
 };
 
-collectRouteFiles(routesFolderPath);
-
-const routeConflicts = new Map();
-const routes = routeFiles.map(({ file, filePrefix, routePrefix }) => {
-  const routeName = file.replace(ROUTE_EXTENSION_PATTERN, "");
-  const filePath = `${routesDirectory}/${[...filePrefix, file].join("/")}`;
-  const isIndexRoute = routeName === "app._index" || routeName === "app.index";
-
-  const urlPath = [
-    ...routePrefix,
-    ...(isIndexRoute ? [] : toUrlSegments(routeName)),
-  ].join("/");
-
-  const routeKey = isIndexRoute && routePrefix.length === 0 ? "?index" : urlPath;
-  const conflict = routeConflicts.get(routeKey);
-  if (conflict) {
-    throw new Error(
-      `Duplicate route path "${urlPath}" for "${conflict}" and "${filePath}".`,
-    );
-  }
-
-  routeConflicts.set(routeKey, filePath);
-
-  if (isIndexRoute && routePrefix.length === 0) {
-    return index(filePath);
-  }
-
-  return route(urlPath, filePath);
-});
+const routes = collectRoutes(routesFolderPath);
 
 export default routes;
