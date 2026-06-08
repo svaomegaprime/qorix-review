@@ -1,0 +1,493 @@
+/* ─── Section wrapper ─────────────────────────────────────── */
+[data-section="qorix-review-quoteloop-widget"] .qr-real-review-section {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 50px;
+  padding: 80px 40px;
+  max-width: 1405px;
+  margin: 0 auto;
+  text-align: center;
+}
+
+/* ─── Header block ────────────────────────────────────────── */
+[data-section="qorix-review-quoteloop-widget"] .qr-section-header {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 24px;
+}
+
+[data-section="qorix-review-quoteloop-widget"] .qr-title-group {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 16px;
+}
+
+[data-section="qorix-review-quoteloop-widget"] .qr-subtitle {
+  margin: 0;
+
+  font-size: 1rem;
+  line-height: 19px;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  color: var(---color-secondary);
+}
+
+[data-section="qorix-review-quoteloop-widget"] .qr-heading {
+  margin: 0;
+
+  font-weight: 600;
+  font-size: 32px;
+  line-height: 1.22;
+  color: var(---color-primary);
+}
+
+[data-section="qorix-review-quoteloop-widget"] .qr-description {
+  margin: 0;
+
+  font-size: 1rem;
+  line-height: 19px;
+  color: var(---color-primary);
+}
+
+/* ─── Rating bar ──────────────────────────────────────────── */
+[data-section="qorix-review-quoteloop-widget"] .qr-rating-bar {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 16px;
+}
+
+[data-section="qorix-review-quoteloop-widget"] .qr-stars-group {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+[data-section="qorix-review-quoteloop-widget"] .qr-reviews-stars {
+  display: inline-flex;
+  gap: 4px;
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+
+[data-section="qorix-review-quoteloop-widget"] .qr-rating-score {
+  font-weight: 500;
+  font-size: 20px;
+  line-height: 1;
+  color: var(---color-primary);
+}
+
+[data-section="qorix-review-quoteloop-widget"] .qr-review-count {
+  font-size: 1rem;
+  line-height: 1.25;
+  color: var(---color-gray);
+}
+
+[data-section="qorix-review-quoteloop-widget"] .qr-divider {
+  width: 1px;
+  height: 20px;
+  border-left: 1.5px solid rgba(48, 48, 48, 0.3);
+}
+
+[data-section="qorix-review-quoteloop-widget"] .qr-verified-group {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+[data-section="qorix-review-quoteloop-widget"] .qr-verified-label {
+  font-size: 1rem;
+  line-height: 1.25;
+  color: var(---color-gray);
+}
+
+/* ─── Swiper container ────────────────────────────────────── */
+[data-section="qorix-review-quoteloop-widget"] .qr-swiper-wrapper {
+  width: 100%;
+  max-width: 1240px;
+  position: relative;
+  margin: 0 auto;
+}
+
+[data-section="qorix-review-quoteloop-widget"] .swiper {
+  width: 100%;
+  padding-top: 40px;
+  padding-bottom: 48px !important;
+  /* space for pagination */
+  overflow: hidden;
+  /* Hide until Swiper fully initializes — prevents FOUC flash */
+  opacity: 0;
+  transition: opacity 0.35s ease;
+}
+
+/* Swiper adds this class after init — reveal the carousel smoothly */
+[data-section="qorix-review-quoteloop-widget"] .swiper.swiper-initialized {
+  opacity: 1;
+}
+
+/* nav arrows */
+[data-section="qorix-review-quoteloop-widget"] .swiper-button-next,
+[data-section="qorix-review-quoteloop-widget"] .swiper-button-prev {
+  width: 44px;
+  height: 44px;
+  background: #fff;
+  border-radius: 99px;
+  box-shadow:
+    inset 0px -1px 0px #b5b5b5,
+    inset 0px 0px 0px 1px rgba(0, 0, 0, 0.1),
+    inset 0px 0.5px 0px 1.5px #fff;
+  top: 42%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition:
+    box-shadow 0.15s,
+    opacity 0.2s;
+  z-index: 10;
+  position: absolute;
+  top: 50%;
+  transform: translateY(-50%);
+}
+
+/* hide Swiper's default ::after arrow text */
+[data-section="qorix-review-quoteloop-widget"] .swiper-button-next::after,
+[data-section="qorix-review-quoteloop-widget"] .swiper-button-prev::after {
+  display: none;
+}
+
+[data-section="qorix-review-quoteloop-widget"] .swiper-button-next:hover,
+[data-section="qorix-review-quoteloop-widget"] .swiper-button-prev:hover {
+  box-shadow:
+    inset 0px -1px 0px #999,
+    inset 0px 0px 0px 1px rgba(0, 0, 0, 0.18),
+    inset 0px 0.5px 0px 1.5px #fff;
+}
+
+[data-section="qorix-review-quoteloop-widget"] .swiper-button-next {
+  right: -22px;
+}
+
+[data-section="qorix-review-quoteloop-widget"] .swiper-button-prev {
+  left: -22px;
+}
+
+/* pagination dots */
+[data-section="qorix-review-quoteloop-widget"] .swiper-pagination-bullet {
+  width: 12px;
+  height: 12px;
+  background: #34c759;
+  opacity: 0.2;
+  transition: opacity 0.2s;
+}
+
+[data-section="qorix-review-quoteloop-widget"] .swiper-pagination-bullet-active {
+  opacity: 1;
+}
+
+/* ─── Card ────────────────────────────────────────────────── */
+[data-section="qorix-review-quoteloop-widget"] .swiper-slide {
+  width: 368px !important;
+  height: 573px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+
+/* Inactive card: 368×533, border #EBEBEB (Figma Frame 346) */
+[data-section="qorix-review-quoteloop-widget"] .qr-review-card {
+  display: flex;
+  flex-direction: column;
+  padding: 50px 20px 24px;
+  background: #fff;
+  border: 1px solid #EBEBEB;
+  border-radius: 16px;
+  width: 368px;
+  height: 533px;
+  box-sizing: border-box;
+  transition:
+    width 0.45s cubic-bezier(0.4, 0, 0.2, 1),
+    height 0.45s cubic-bezier(0.4, 0, 0.2, 1),
+    box-shadow 0.45s;
+}
+
+/* Active card: 464×573, border #EBEBEB, shadow (Figma Frame 343) */
+[data-section="qorix-review-quoteloop-widget"] .swiper-slide-active .qr-review-card {
+  width: 464px;
+  height: 573px;
+  border: 1px solid #EBEBEB;
+  box-shadow: 0px 1px 2px rgba(199, 199, 199, 0.3), 0px 2px 6px 2px rgba(199, 199, 199, 0.15);
+}
+
+/* image area: quote icon centered, ~50px from top via card padding */
+[data-section="qorix-review-quoteloop-widget"] .qr-review-card-image {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+
+[data-section="qorix-review-quoteloop-widget"] .play-btn:hover {
+  background: #fff;
+  transform: translate(-50%, -50%) scale(1.08);
+}
+
+/* card content: takes remaining space, centers text content vertically */
+[data-section="qorix-review-quoteloop-widget"] .qr-review-card-content {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  margin-top: 50px;
+  /* quote icon 90px + top-padding 50px = 190px from card top, but padding handles 50px already */
+}
+
+[data-section="qorix-review-quoteloop-widget"] .review-text {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 20px;
+}
+
+[data-section="qorix-review-quoteloop-widget"] .review-stars ul {
+  display: inline-flex;
+  list-style: none;
+  flex-direction: row;
+  padding: 0;
+  margin: 0;
+  gap: 0;
+}
+
+[data-section="qorix-review-quoteloop-widget"] .product-title {
+  margin: 0;
+
+  font-weight: 500;
+  font-size: 1rem;
+  line-height: 170%;
+  letter-spacing: -0.5px;
+  color: #0d2440;
+}
+
+[data-section="qorix-review-quoteloop-widget"] .review-quote {
+  font-size: 24px;
+  color: var(---color-primary);
+  text-align: center;
+  margin: 0;
+  font-weight: 400;
+  line-height: 29px;
+}
+
+/* Footer block: pushed to bottom by margin-top:auto — replicates Figma absolute top:413px (inactive) / top:453px (active) */
+[data-section="qorix-review-quoteloop-widget"] .qr-card-divider {
+  width: 100%;
+  height: 1px;
+  background: #F0F0F0;
+  margin-top: auto;
+  margin-bottom: 40px;
+  flex-shrink: 0;
+}
+
+/* reviewer */
+[data-section="qorix-review-quoteloop-widget"] .review-user {
+  display: flex;
+  align-items: center;
+  justify-content: flex-start;
+  text-align: left;
+  gap: 16px;
+}
+
+[data-section="qorix-review-quoteloop-widget"] .user-avatar {
+  width: 56px;
+  height: 56px;
+  border-radius: 50%;
+  object-fit: cover;
+  flex-shrink: 0;
+  background: #eff2f5;
+}
+
+[data-section="qorix-review-quoteloop-widget"] .user-info {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+[data-section="qorix-review-quoteloop-widget"] .user-name {
+  margin: 0;
+  font-weight: 500;
+  font-size: 16px;
+  line-height: 20px;
+  color: #303030;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+[data-section="qorix-review-quoteloop-widget"] .review-product {
+  margin: 0;
+  font-size: 16px;
+  line-height: 20px;
+  color: #303030;
+}
+
+/* ─── Responsive breakpoints ──────────────────────────────── */
+
+/* ── Tablet  (601 – 960px): scale cards down, keep 2 visible ── */
+@media (max-width: 960px) {
+  [data-section="qorix-review-quoteloop-widget"] .qr-real-review-section {
+    padding: 60px 24px;
+    gap: 40px;
+  }
+
+  [data-section="qorix-review-quoteloop-widget"] .qr-heading {
+    font-size: 28px;
+  }
+
+  /* Scale slide containers */
+  [data-section="qorix-review-quoteloop-widget"] .swiper-slide {
+    width: 260px !important;
+    height: 500px;
+  }
+
+  /* Inactive card */
+  [data-section="qorix-review-quoteloop-widget"] .qr-review-card {
+    width: 260px;
+    height: 460px;
+    padding: 40px 16px 20px;
+  }
+
+  /* Active card */
+  [data-section="qorix-review-quoteloop-widget"].swiper-slide-active .qr-review-card {
+    width: 320px;
+    height: 500px;
+  }
+
+  [data-section="qorix-review-quoteloop-widget"] .qr-review-card-content {
+    margin-top: 36px;
+  }
+
+  [data-section="qorix-review-quoteloop-widget"] .review-quote {
+    font-size: 20px;
+    line-height: 26px;
+  }
+
+  [data-section="qorix-review-quoteloop-widget"] .qr-card-divider {
+    margin-bottom: 28px;
+  }
+
+  /* Pull arrows in so they don't overflow */
+  [data-section="qorix-review-quoteloop-widget"] .swiper-button-next {
+    right: -8px;
+  }
+
+  [data-section="qorix-review-quoteloop-widget"] .swiper-button-prev {
+    left: -8px;
+  }
+}
+
+/* ── Mobile (≤ 600px): single full-width card, no arrows ── */
+@media (max-width: 600px) {
+  [data-section="qorix-review-quoteloop-widget"] .qr-real-review-section {
+    padding: 48px 16px;
+    gap: 28px;
+  }
+
+  [data-section="qorix-review-quoteloop-widget"] .qr-section-header {
+    gap: 16px;
+  }
+
+  [data-section="qorix-review-quoteloop-widget"] .qr-heading {
+    font-size: 22px;
+  }
+
+  [data-section="qorix-review-quoteloop-widget"] .qr-subtitle {
+    font-size: 0.85rem;
+  }
+
+  [data-section="qorix-review-quoteloop-widget"] .qr-description {
+    font-size: 0.9rem;
+  }
+
+  [data-section="qorix-review-quoteloop-widget"] .qr-rating-bar {
+    flex-direction: column;
+    gap: 8px;
+  }
+
+  /* Hide the vertical divider in rating bar on mobile */
+  [data-section="qorix-review-quoteloop-widget"] .qr-divider {
+    display: none;
+  }
+
+  [data-section="qorix-review-quoteloop-widget"] .qr-rating-score {
+    font-size: 18px;
+  }
+
+  /* Full-width slides */
+  [data-section="qorix-review-quoteloop-widget"] .swiper-slide {
+    width: calc(100vw - 56px) !important;
+    height: auto !important;
+  }
+
+  /* All cards same size on mobile — no expansion effect */
+  [data-section="qorix-review-quoteloop-widget"] .qr-review-card,
+  [data-section="qorix-review-quoteloop-widget"].swiper-slide-active .qr-review-card {
+    width: 100%;
+    height: auto;
+    min-height: 360px;
+    padding: 32px 16px 20px;
+    box-shadow: none;
+    border: 1px solid #EBEBEB;
+  }
+
+  [data-section="qorix-review-quoteloop-widget"] .qr-review-card-content {
+    margin-top: 28px;
+  }
+
+  [data-section="qorix-review-quoteloop-widget"] .review-quote {
+    font-size: 18px;
+    line-height: 24px;
+  }
+
+  [data-section="qorix-review-quoteloop-widget"] .qr-card-divider {
+    margin-bottom: 24px;
+  }
+
+  [data-section="qorix-review-quoteloop-widget"] .user-name {
+    font-size: 14px;
+  }
+
+  [data-section="qorix-review-quoteloop-widget"] .review-product {
+    font-size: 14px;
+  }
+
+  [data-section="qorix-review-quoteloop-widget"] .user-avatar {
+    width: 44px;
+    height: 44px;
+  }
+
+  /* Hide arrows — swipe gesture only on mobile */
+  [data-section="qorix-review-quoteloop-widget"] .swiper-button-next,
+  [data-section="qorix-review-quoteloop-widget"] .swiper-button-prev {
+    display: none;
+  }
+
+  /* Pagination dots closer to cards */
+  [data-section="qorix-review-quoteloop-widget"] .swiper {
+    padding-bottom: 36px !important;
+  }
+}
+
+[data-section="qorix-review-quoteloop-widget"] [data-swiper-controller] svg {
+  width: 20px;
+  height: 20px;
+}
+
+[data-section="qorix-review-quoteloop-widget"] .line-clamp {
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
