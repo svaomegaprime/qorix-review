@@ -53,7 +53,7 @@ export function useSaveBarTrigger({
     }, [cleanForm, onSubmit]);
 
     const handleDiscard = useCallback((event) => {
-        if (resetSourceRef.current === "save") {
+        if (resetSourceRef.current === "save" || resetSourceRef.current === "silent") {
             return;
         }
 
@@ -67,9 +67,23 @@ export function useSaveBarTrigger({
         formRef.current?.requestSubmit();
     }, []);
 
-    const triggerDiscard = useCallback(() => {
-        formRef.current?.reset();
-    }, []);
+    const triggerDiscard = useCallback(({ silent = false } = {}) => {
+        const form = formRef.current;
+
+        if (!form) {
+            return;
+        }
+
+        if (silent) {
+            resetSourceRef.current = "silent";
+            form.reset();
+            resetSourceRef.current = null;
+            rearmForm();
+            return;
+        }
+
+        form.reset();
+    }, [rearmForm]);
 
     return {
         formKey: formVersion,

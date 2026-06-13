@@ -1,4 +1,5 @@
 import { useState } from "react";
+import PropTypes from "prop-types";
 import CustomSection from "../../../../components/essentials/CustomSection"
 import Text from "../../../../components/essentials/elements/Text"
 
@@ -6,8 +7,9 @@ export default function ColorPicker ({ data, onChange, defaultColor }) {
     const [color, setColor] = useState(defaultColor);
 
     const handleChange = (e) => {
-        setColor(e.target.value);
-        // onChange(e.target.value);
+        const value = e.target.value ?? e.currentTarget.value;
+        setColor(value);
+        onChange?.(value);
     }
     return(
         <CustomSection padding="none small small">
@@ -39,3 +41,12 @@ export default function ColorPicker ({ data, onChange, defaultColor }) {
         </CustomSection>
     )
 }
+
+ColorPicker.propTypes = {
+    data: PropTypes.shape({
+        key: PropTypes.string.isRequired,
+        label: PropTypes.string.isRequired
+    }).isRequired,
+    onChange: PropTypes.func,
+    defaultColor: PropTypes.string.isRequired
+};
