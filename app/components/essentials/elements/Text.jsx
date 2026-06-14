@@ -1,8 +1,10 @@
-export default function Text({ as = "h2", children, color = "inherit" }) {
+export default function Text({ as = "h2", children, color = "inherit", ...props }) {
+    const isRegularText = as === "p" || as === "span" || as === "a";
     const style = {
+        ...props.style,
         margin: "0",
-        padding: as !== "p" && as !== "span" ? "6px 0" : "0",
-        fontWeight: as !== "p" && as !== "span" ? "600" : "inherit",
+        padding: !isRegularText ? "6px 0" : "0",
+        fontWeight: !isRegularText ? "600" : "inherit",
         color: color
     };
     return (
@@ -30,6 +32,9 @@ export default function Text({ as = "h2", children, color = "inherit" }) {
             )}
             {as === "span" && (
                 <span style={style}>{children}</span>
+            )}
+            {as === "a" && (
+                <a style={style} href={props.href} {...props?.target ? { target: props.target } : {}}>{children}</a>
             )}
         </>
     )
