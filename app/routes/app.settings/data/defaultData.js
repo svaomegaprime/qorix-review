@@ -68,7 +68,6 @@ export const DEFAULT_ADMIN_NOTIFICATION = {
   isReviewApprovalNotify: true,
   isLowStarReviewNotify: true,
   isWeeklySummaryNotify: true,
-  notificationFrequency: "IMMEDIATELY", // WEEKLY // DAILY
 };
 
 export const DEFAULT_SMTP_SETUP = {

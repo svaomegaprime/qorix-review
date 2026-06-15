@@ -265,8 +265,11 @@ export default function Widgets() {
                   }
                 >
                   <s-option value="ALL_RATINGS">Show all ratings</s-option>
-                  <s-option value="3_STAR">3 star and above</s-option>
-                  <s-option value="4_STAR">4 star and above</s-option>
+                  <s-option value="ONE_STAR">1 star and above</s-option>
+                  <s-option value="TWO_STAR">2 star and above</s-option>
+                  <s-option value="THREE_STAR">3 star and above</s-option>
+                  <s-option value="FOUR_STAR">4 star and above</s-option>
+                  <s-option value="FIVE_STAR">5 star and above</s-option>
                 </s-select>
                 <s-divider />
                 <s-stack

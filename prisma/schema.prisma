@@ -53,6 +53,21 @@ enum ReviewSource {
   PRODUCT_PAGE
 }
 
+enum ReviewSortOrder {
+  RECENT
+  RATED
+  HELPFUL
+}
+
+enum MinimumStarRatingToDisplay {
+  ALL_RATINGS
+  ONE_STAR
+  TWO_STAR
+  THREE_STAR
+  FOUR_STAR
+  FIVE_STAR
+}
+
 model Store {
   id              String           @id @default(uuid()) @db.Uuid
   storeGID        String           @unique @db.VarChar
@@ -147,9 +162,13 @@ model StoreSettings {
   storeId String @unique
   store   Store  @relation(fields: [storeId], references: [storeGID], onDelete: Cascade)
 
-  requestScheduling RequestScheduling?
-  createdAt         DateTime           @default(now())
-  updatedAt         DateTime           @updatedAt
+  requestScheduling     RequestScheduling?
+  createdAt             DateTime               @default(now())
+  updatedAt             DateTime               @updatedAt
+  emailSettings         EmailSettings[]
+  publishingModerations PublishingModeration[]
+  widgetsSettings       widgetsSettings[]
+  adminNotifications    AdminNotification[]
 }
 
 model RequestScheduling {
@@ -168,4 +187,119 @@ model RequestScheduling {
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
+}
+
+model EmailSettings {
+  id String @id @default(uuid()) @db.Uuid()
+
+  storeSettingsId String
+
+  storeSettings StoreSettings @relation(fields: [storeSettingsId], references: [id], onDelete: Cascade)
+
+  smtpUser     String?
+  smtpPassword String?
+  smtpPort     Int?
+  smtpHost     String?
+
+  requestEmailSubjectLine String?
+  requestEmailBody        String?
+  requestEmailButton      String?
+  reminderSubjectLine     String?
+  reminderEmailBody       String?
+  reminderEmailButton     String?
+
+  isConfirmationReviewEmail Boolean @default(true)
+  confirmationEmailSubject  String?
+  confirmationEmailBody     String?
+  isReplyReviewEmail        Boolean @default(false)
+  replyReviewEmailSubject   String?
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+enum AutoPublishRules {
+  AUTO_PUBLISH
+  VERIFIED_ONLY
+  MANUAL_PUBLISH
+}
+
+model PublishingModeration {
+  id              String        @id @default(uuid()) @db.Uuid()
+  storeSettingsId String
+  storeSettings   StoreSettings @relation(fields: [storeSettingsId], references: [id], onDelete: Cascade)
+
+  autoPublishRules     AutoPublishRules @default(AUTO_PUBLISH)
+  isLowRatingHold      Boolean          @default(true)
+  isProfanityFilter    Boolean          @default(true)
+  isPersonalInfoFilter Boolean          @default(true)
+  isSpamFilter         Boolean          @default(true)
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+model widgetsSettings {
+  id              String        @id @default(uuid()) @db.Uuid()
+  storeSettingsId String
+  storeSettings   StoreSettings @relation(fields: [storeSettingsId], references: [id], onDelete: Cascade)
+
+  defaultStarColor    String @default("#F59E0B")
+  defaultFontSize     String @default("14px")
+  defaultBorderRadius String @default("8px")
+
+  isShowVerifiedBadge        Boolean                    @default(true)
+  isShowReviewerName         Boolean                    @default(true)
+  isShowReviewerDate         Boolean                    @default(true)
+  reviewsPerPage             Int                        @default(10)
+  reviewSortOrder            ReviewSortOrder            @default(RECENT)
+  minimumStarRatingToDisplay MinimumStarRatingToDisplay @default(ALL_RATINGS)
+  isShowMediaFirst           Boolean                    @default(true)
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+//  ### In this case, it would have been better to keep it in the same table. 
+// Moving it to a separate table just introduces more complexity, and since most
+//  of the fields are optional, it would result in many NULL values anyway, which 
+//  isn't necessarily a bad practice here.
+
+model AdminNotification {
+  id String @id @default(uuid()) @db.Uuid()
+
+  storeSettingsId String
+  storeSettings   StoreSettings @relation(fields: [storeSettingsId], references: [id], onDelete: Cascade)
+
+  notificationEmailAddress NotificationEmailAddress?
+
+  isNewReviewNotify      Boolean @default(true)
+  isReviewApprovalNotify Boolean @default(true)
+  isLowStarReviewNotify  Boolean @default(true)
+  isWeeklySummaryNotify  Boolean @default(true)
+
+  notificationFrequency NotificationFrequency @default(IMMEDIATELY)
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+model NotificationEmailAddress {
+  id String @id @default(uuid()) @db.Uuid()
+
+  adminNotificationId String            @unique
+  adminNotification   AdminNotification @relation(fields: [adminNotificationId], references: [id], onDelete: Cascade)
+
+  email1 String?
+  email2 String?
+  email3 String?
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+enum NotificationFrequency {
+  IMMEDIATELY
+  DAILY
+  WEEKLY
 }

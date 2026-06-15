@@ -158,7 +158,7 @@ export default function AdminNotification() {
               </s-grid>
             </CustomSection>
           </CustomGridSection>
-          <s-stack padding="base large base none">
+          {/* <s-stack padding="base large base none">
             <s-divider />
           </s-stack>
           <CustomGridSection
@@ -185,7 +185,7 @@ export default function AdminNotification() {
                 </s-select>
               </s-grid>
             </CustomSection>
-          </CustomGridSection>
+          </CustomGridSection> */}
         </CustomSection>
       </s-section>
     </>
