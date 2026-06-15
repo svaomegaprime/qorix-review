@@ -2,8 +2,23 @@ import { useState } from "react";
 import CustomGridSection from "../../../components/essentials/CustomGridSection";
 import CustomSection from "../../../components/essentials/CustomSection";
 import Text from "../../../components/essentials/elements/Text";
+import selectedImage from "../../../assets/images/selected.png";
 import { DEFAULT_WIDGET } from "../data/defaultData";
 import { handleStateUpdate } from "../utils/client/utils.client";
+import Range from "../../app.widgets/components/elements/Range";
+// export const DEFAULT_WIDGET = {
+//   defaultStarColor: "#F59E0B",
+//   defaultFontSize: "14px",
+//   defaultBorderRadius: "8px",
+//   isShowVerifiedBadge: true,
+//   isShowReviewerName: true,
+//   isShowReviewerDate: true,
+
+//   reviewsPerPage: 10,
+//   reviewSortOrder: "RECENT", //RATED// HELPFUL
+//   minimumStarRatingToDisplay: "ALL_RATINGS", // 3_STAR // 5_STAR
+//   isShowMediaFirst: true,
+// };
 export default function Widgets() {
   const [widgetSettings, setWidgetSettings] = useState(DEFAULT_WIDGET);
   const [customReviewPerPage, setCustomReviewPerPage] = useState({
@@ -11,7 +26,7 @@ export default function Widgets() {
   });
   return (
     <>
-      {/* <pre>{JSON.stringify(widgetSettings, null, 2)}</pre> */}
+      <pre>{JSON.stringify(widgetSettings, null, 2)}</pre>
 
       <s-stack
         paddingBlockEnd="base"
@@ -29,63 +44,148 @@ export default function Widgets() {
       </s-stack>
 
       <s-section>
-        {/* <s-stack padding="base" border="base" borderRadius="base">
-                </s-stack> */}
         <CustomSection padding="0">
           <CustomGridSection
-            heading="Review widget"
-            description="The main review section displayed on product pages"
+            heading="Global display default"
+            description="These defaults apply across all widgets unless changed in individual widget settings."
           >
             <CustomSection>
               <s-grid gap="small">
-                <s-switch
-                  defaultChecked={widgetSettings.isShowWidgetOnProductPage}
-                  onInput={(e) =>
-                    handleStateUpdate(
-                      setWidgetSettings,
-                      "isShowWidgetOnProductPage",
-                      e.target.checked,
-                    )
-                  }
-                  label="Show review widget on product pages"
-                  details="Displays the full review section below the product description"
-                />
-                <s-switch
-                  defaultChecked={widgetSettings.isShowStarRatingBadge}
-                  onInput={(e) =>
-                    handleStateUpdate(
-                      setWidgetSettings,
-                      "isShowStarRatingBadge",
-                      e.target.checked,
-                    )
-                  }
-                  label="Show star rating badge"
-                  details="Displays average rating directly below the product title"
-                />
-                <s-switch
-                  defaultChecked={widgetSettings.isShowVerifiedPurchaseBadge}
-                  onInput={(e) =>
-                    handleStateUpdate(
-                      setWidgetSettings,
-                      "isShowVerifiedPurchaseBadge",
-                      e.target.checked,
-                    )
-                  }
-                  label="Show verified purchase badge"
-                  details="Marks reviews from confirmed buyers with a verified label"
-                />
-                <s-switch
-                  defaultChecked={widgetSettings.isShowReviewerPhotos}
-                  onInput={(e) =>
-                    handleStateUpdate(
-                      setWidgetSettings,
-                      "isShowReviewerPhotos",
-                      e.target.checked,
-                    )
-                  }
-                  label="Show reviewer photos"
-                  details="Display customer-uploaded photos within reviews"
-                />
+                <s-grid gridTemplateColumns="1fr 1fr" direction="inline">
+                  <s-box>
+                    <s-heading>Default star color</s-heading>
+                    <s-paragraph color="subdued">
+                      Star color used in all widgets
+                    </s-paragraph>
+                  </s-box>
+                  <s-color-field
+                    onChange={(e) =>
+                      handleStateUpdate(
+                        setWidgetSettings,
+                        "defaultStarColor",
+                        e.target.value,
+                      )
+                    }
+                    defaultValue={widgetSettings.defaultStarColor}
+                  />
+                </s-grid>
+                <s-divider />
+                <s-grid gridTemplateColumns="1fr 1fr" direction="inline">
+                  <s-box>
+                    <s-heading>Default font size </s-heading>
+                    <s-paragraph color="subdued">
+                      Default text size for widget content.
+                    </s-paragraph>
+                  </s-box>
+                  <CustomSection padding="small">
+                    <Range
+                      onChange={(e) =>
+                        handleStateUpdate(
+                          setWidgetSettings,
+                          "defaultFontSize",
+                          e.target.value + "px",
+                        )
+                      }
+                      defaultValue={10}
+                      max={50}
+                    />
+                  </CustomSection>
+                </s-grid>
+                <s-divider />
+                <s-grid
+                  gridTemplateColumns="1fr 1fr"
+                  direction="inline"
+                  alignItems="center"
+                >
+                  <s-box>
+                    <s-heading>Default border radius </s-heading>
+                    <s-paragraph color="subdued">
+                      Corner rounding for all widget cards.
+                    </s-paragraph>
+                  </s-box>
+                  <CustomSection padding="small">
+                    <Range
+                      onChange={(e) =>
+                        handleStateUpdate(
+                          setWidgetSettings,
+                          "defaultBorderRadius",
+                          e.target.value + "px",
+                        )
+                      }
+                      defaultValue={10}
+                      max={50}
+                    />
+                  </CustomSection>
+                </s-grid>
+                <s-divider />
+                <s-stack
+                  alignItems="center"
+                  direction="inline"
+                  justifyContent="space-between"
+                >
+                  <s-box>
+                    <s-heading>Show verified badge</s-heading>
+                    <s-paragraph color="subdued">
+                      Display verified purchase badge everywhere.
+                    </s-paragraph>
+                  </s-box>
+                  <s-switch
+                    onChange={(e) =>
+                      handleStateUpdate(
+                        setWidgetSettings,
+                        "isShowVerifiedBadge",
+                        e.target.checked,
+                      )
+                    }
+                    defaultChecked={widgetSettings.isShowVerifiedBadge}
+                  />
+                </s-stack>
+                <s-divider />
+                <s-stack
+                  alignItems="center"
+                  direction="inline"
+                  justifyContent="space-between"
+                >
+                  <s-box>
+                    <s-heading>Show reviewer name</s-heading>
+                    <s-paragraph color="subdued">
+                      Display reviewer’s name in all widgets.
+                    </s-paragraph>
+                  </s-box>
+                  <s-switch
+                    onChange={(e) =>
+                      handleStateUpdate(
+                        setWidgetSettings,
+                        "isShowReviewerName",
+                        e.target.checked,
+                      )
+                    }
+                    defaultChecked={widgetSettings.isShowReviewerName}
+                  />
+                </s-stack>
+                <s-divider />
+                <s-stack
+                  alignItems="center"
+                  direction="inline"
+                  justifyContent="space-between"
+                >
+                  <s-box>
+                    <s-heading>Show review date</s-heading>
+                    <s-paragraph color="subdued">
+                      Display review date in all widgets.
+                    </s-paragraph>
+                  </s-box>
+                  <s-switch
+                    onChange={(e) =>
+                      handleStateUpdate(
+                        setWidgetSettings,
+                        "isShowReviewerDate",
+                        e.target.checked,
+                      )
+                    }
+                    defaultChecked={widgetSettings.isShowReviewerDate}
+                  />
+                </s-stack>
               </s-grid>
             </CustomSection>
           </CustomGridSection>
@@ -153,6 +253,86 @@ export default function Widgets() {
                   <s-option value="RATED">Highest rated</s-option>
                   <s-option value="HELPFUL">Most helpful</s-option>
                 </s-select>
+                <s-divider />
+                <s-heading>Minimum star rating to display</s-heading>
+                <s-select
+                  onChange={(e) =>
+                    handleStateUpdate(
+                      setWidgetSettings,
+                      "minimumStarRatingToDisplay",
+                      e.target.value,
+                    )
+                  }
+                >
+                  <s-option value="ALL_RATINGS">Show all ratings</s-option>
+                  <s-option value="ONE_STAR">1 star and above</s-option>
+                  <s-option value="TWO_STAR">2 star and above</s-option>
+                  <s-option value="THREE_STAR">3 star and above</s-option>
+                  <s-option value="FOUR_STAR">4 star and above</s-option>
+                  <s-option value="FIVE_STAR">5 star and above</s-option>
+                </s-select>
+                <s-divider />
+                <s-stack
+                  alignItems="center"
+                  direction="inline"
+                  justifyContent="space-between"
+                >
+                  <s-box>
+                    <s-heading>Show reviews with media first</s-heading>
+                    <s-paragraph color="subdued">
+                      Photo and video reviews will appear at the top
+                    </s-paragraph>
+                  </s-box>
+                  <s-switch
+                    defaultChecked={widgetSettings.isShowMediaFirst}
+                    onChange={(e) =>
+                      handleStateUpdate(
+                        setWidgetSettings,
+                        "isShowMediaFirst",
+                        e.target.checked,
+                      )
+                    }
+                  />
+                </s-stack>
+              </s-grid>
+            </CustomSection>
+          </CustomGridSection>
+          <s-stack padding="base large base none">
+            <s-divider />
+          </s-stack>
+          <CustomGridSection
+            heading="App embed status"
+            description="Widgets require the app embed to be enabled in your theme."
+          >
+            <CustomSection>
+              <s-grid gap="small">
+                <s-grid gridTemplateColumns="20px auto" gap="small">
+                  <s-image src={selectedImage} />
+                  <s-grid gridTemplateColumns="1fr auto" alignItems="center">
+                    <s-box>
+                      <s-heading>App embed is enabled</s-heading>
+                      <s-paragraph>
+                        Widgets can be displayed on your storefront
+                      </s-paragraph>
+                    </s-box>
+                    <s-button icon="app-extension" variant="primary">
+                      Manage in theme editor
+                    </s-button>
+                  </s-grid>
+                </s-grid>
+                <s-grid
+                  gridTemplateColumns="20px 1fr"
+                  background="subdued"
+                  padding="small"
+                  borderRadius="small"
+                  gap="small"
+                >
+                  <s-icon type="info" />
+                  <s-paragraph>
+                    If the app embed is disabled, none of your widgets will be
+                    visible on the storefront.
+                  </s-paragraph>
+                </s-grid>
               </s-grid>
             </CustomSection>
           </CustomGridSection>

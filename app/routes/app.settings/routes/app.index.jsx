@@ -17,13 +17,14 @@ export default function Settings() {
   const [showCustomFields, setShowCustomFields] = useState({
     customDeliveryDays: false,
     customDelayDays: false,
+    customMinimumOrderValue: false,
   });
 
   console.log("DEFAULT_REQUEST_SCHEDULING:", requestScheduling);
 
   return (
     <>
-      {/* <pre>{JSON.stringify(requestScheduling, null, 2)}</pre> */}
+      <pre>{JSON.stringify(requestScheduling, null, 2)}</pre>
       <ui-save-bar id="leave-confirm-save-bar">
         <button variant="primary" id="save-button">
           Save
@@ -191,36 +192,7 @@ export default function Settings() {
           <s-stack padding="base large base none">
             <s-divider />
           </s-stack>
-          {/* <CustomGridSection
-            heading="Request email content"
-            description="Customize what customers see in their review request."
-          >
-            <CustomSection>
-              <s-grid gap="small">
-                <s-heading>Email subject line</s-heading>
-                <s-text-field
-                  defaultValue="How did we do? Share your thoughts ⭐"
-                  onInput={() => {}}
-                  details={`Keep it short and friendly — avoid words like "feedback" which reduce open rates.`}
-                />
-                <s-heading>Email body message</s-heading>
-                <s-text-area
-                  defaultValue="Hi {{first_name}}, thank you for your recent order! We'd love to hear what you think. It only takes 30 seconds."
-                  onInput={() => {}}
-                  details={`Use {{first_name}} to personalize. Keep it under 3 sentences for best results.`}
-                />
-                <s-heading>CTA button text</s-heading>
-                <s-text-field
-                  defaultValue="Leave a review →"
-                  onInput={() => {}}
-                  details={`Action-oriented text converts better — e.g. "Leave a review" not "Click here"`}
-                />
-              </s-grid>
-            </CustomSection>
-          </CustomGridSection>
-          <s-stack padding="base none base none">
-            <s-divider />
-          </s-stack> */}
+
           <CustomGridSection
             heading="Request exclusions"
             description="Orders that should never receive a review request."
@@ -250,7 +222,7 @@ export default function Settings() {
                   details="Don't send requests for orders that were cancelled"
                 ></s-switch>
                 <CustomSection>
-                  <s-grid gridTemplateColumns="1fr 120px">
+                  <s-grid gridTemplateColumns="1fr 120px" gap="small none">
                     <s-box>
                       <s-heading>Minimum order value</s-heading>
                       <s-paragraph color="subdued">
@@ -259,18 +231,45 @@ export default function Settings() {
                       </s-paragraph>
                     </s-box>
                     <s-select
-                      onChange={(e) =>
-                        setRequestScheduling((pre) => ({
-                          ...pre,
-                          minimumOrderValue: Number(e.target.value),
-                        }))
-                      }
+                      onChange={(e) => {
+                        const isCustom = e.target.value === "CUSTOM";
+                        if (isCustom) {
+                          setShowCustomFields((pre) => ({
+                            ...pre,
+                            customMinimumOrderValue: true,
+                          }));
+                        } else {
+                          setRequestScheduling((pre) => ({
+                            ...pre,
+                            minimumOrderValue: Number(e.target.value),
+                          }));
+                          setShowCustomFields((pre) => ({
+                            ...pre,
+                            customMinimumOrderValue: false,
+                          }));
+                        }
+                      }}
                     >
                       <s-option value="0">0 USD</s-option>
                       <s-option value="100">100 USD</s-option>
                       <s-option value="500">500 USD</s-option>
                       <s-option value="1000">1000 USD</s-option>
+                      <s-option value="CUSTOM">Custom Value</s-option>
                     </s-select>
+
+                    {showCustomFields.customMinimumOrderValue && (
+                      <s-grid-item gridColumn="span 2">
+                        <s-number-field
+                          defaultValue={requestScheduling.minimumOrderValue}
+                          onInput={(e) =>
+                            setRequestScheduling((pre) => ({
+                              ...pre,
+                              minimumOrderValue: Number(e.target.value),
+                            }))
+                          }
+                        />
+                      </s-grid-item>
+                    )}
                   </s-grid>
                 </CustomSection>
               </s-grid>

@@ -9,26 +9,289 @@ generator client {
 // enough when changing adapters.
 // See https://www.prisma.io/docs/orm/reference/prisma-schema-reference#string for more information
 datasource db {
-  provider = "sqlite"
-  url      = "file:dev.sqlite"
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
 }
 
 model Session {
-  id            String    @id
-  shop          String
-  state         String
-  isOnline      Boolean   @default(false)
-  scope         String?
-  expires       DateTime?
-  accessToken   String
-  userId        BigInt?
-  firstName     String?
-  lastName      String?
-  email         String?
-  accountOwner  Boolean   @default(false)
-  locale        String?
-  collaborator  Boolean?  @default(false)
-  emailVerified Boolean?  @default(false)
+  id                  String    @id
+  shop                String
+  state               String
+  isOnline            Boolean   @default(false)
+  scope               String?
+  expires             DateTime?
+  accessToken         String
+  userId              BigInt?
+  firstName           String?
+  lastName            String?
+  email               String?
+  accountOwner        Boolean   @default(false)
+  locale              String?
+  collaborator        Boolean?  @default(false)
+  emailVerified       Boolean?  @default(false)
   refreshToken        String?
   refreshTokenExpires DateTime?
 }
+
+model Store {
+  id         String @id @default(uuid()) @db.Uuid
+  storeGID   String @unique
+  storeURL   String
+  storeEmail String
+
+  reviews         Review[]
+  subscription    Subscription?
+  trustBarWidgets TrustBarWidget[]
+  createdAt       DateTime         @default(now())
+  updatedAt       DateTime?        @updatedAt
+  storeSettings   StoreSettings[]
+}
+
+model Subscription {
+  id String @id @default(uuid()) @db.Uuid()
+
+  storeId String @unique
+  store   Store  @relation(fields: [storeId], references: [storeGID], onDelete: Cascade)
+
+  plan           PlanType  @default(FREE)
+  planHandle     String?
+  subscriptionId String?
+  status         String
+  trialEndsAt    DateTime?
+  startsAt       DateTime?
+  endsAt         DateTime?
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@index([plan])
+}
+
+model Review {
+  id            String  @id @default(uuid()) @db.Uuid()
+  storeId       String
+  store         Store   @relation(fields: [storeId], references: [storeGID], onDelete: Cascade)
+  productId     String?
+  productHandle String?
+
+  reviewerName  String?
+  reviewerEmail String? @unique
+  reviewerPhone String  @unique
+  rating        Int
+
+  title String?
+  body  String?
+
+  status       ReviewStatus
+  source       ReviewSource
+  isVerified   Boolean      @default(false)
+  helpfulCount Int          @default(0)
+
+  createdAt   DateTime     @default(now())
+  updatedAt   DateTime     @updatedAt
+  attachments Attachment[]
+
+  @@index([storeId])
+  @@index([productId])
+  @@index([rating])
+  @@index([status])
+  @@index([reviewerEmail])
+  @@index([createdAt])
+}
+
+model Attachment {
+  id String @id @default(uuid()) @db.Uuid()
+
+  type AttachmentType?
+  url  String?
+
+  reviewId String?
+  review   Review? @relation(fields: [reviewId], references: [id])
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+model TrustBarWidget {
+  id        String   @id @default(uuid()) @db.Uuid()
+  storeId   String
+  store     Store    @relation(fields: [storeId], references: [storeGID], onDelete: Cascade)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+model StoreSettings {
+  id      String @id @default(uuid()) @db.Uuid()
+  storeId String @unique
+  store   Store  @relation(fields: [storeId], references: [storeGID], onDelete: Cascade)
+
+  requestScheduling     RequestScheduling?
+  createdAt             DateTime               @default(now())
+  updatedAt             DateTime               @updatedAt
+  emailSettings         EmailSettings[]
+  publishingModerations PublishingModeration[]
+  widgetsSettings       widgetsSettings[]
+  adminNotifications    AdminNotification[]
+}
+
+model RequestScheduling {
+  id String @id @default(uuid()) @db.Uuid()
+
+  storeSettingsId String        @unique
+  storeSettings   StoreSettings @relation(fields: [storeSettingsId], references: [id], onDelete: Cascade)
+
+  isAutomaticRequest       Boolean @default(true)
+  sendRequestAfterDelivery Int     @default(5)
+  isReminderRequest        Boolean @default(true)
+  reminderRequestDelay     Int     @default(5)
+  isSkipRefundedOrder      Boolean @default(true)
+  isSkipCancelledOrder     Boolean @default(true)
+  minimumOrderValue        Int     @default(100)
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+model EmailSettings {
+  id String @id @default(uuid()) @db.Uuid()
+
+  storeSettingsId String
+
+  storeSettings StoreSettings @relation(fields: [storeSettingsId], references: [id], onDelete: Cascade)
+
+  smtpUser     String?
+  smtpPassword String?
+  smtpPort     Int?
+  smtpHost     String?
+
+  requestEmailSubjectLine String?
+  requestEmailBody        String?
+  requestEmailButton      String?
+  reminderSubjectLine     String?
+  reminderEmailBody       String?
+  reminderEmailButton     String?
+
+  isConfirmationReviewEmail Boolean @default(true)
+  confirmationEmailSubject  String?
+  confirmationEmailBody     String?
+  isReplyReviewEmail        Boolean @default(false)
+  replyReviewEmailSubject   String?
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+model PublishingModeration {
+  id              String        @id @default(uuid()) @db.Uuid()
+  storeSettingsId String
+  storeSettings   StoreSettings @relation(fields: [storeSettingsId], references: [id], onDelete: Cascade)
+
+  autoPublishRules     AutoPublishRules @default(AUTO_PUBLISH)
+  isLowRatingHold      Boolean          @default(true)
+  isProfanityFilter    Boolean          @default(true)
+  isPersonalInfoFilter Boolean          @default(true)
+  isSpamFilter         Boolean          @default(true)
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+model widgetsSettings {
+  id              String        @id @default(uuid()) @db.Uuid()
+  storeSettingsId String
+  storeSettings   StoreSettings @relation(fields: [storeSettingsId], references: [id], onDelete: Cascade)
+
+  defaultStarColor    String @default("#F59E0B")
+  defaultFontSize     String @default("14px")
+  defaultBorderRadius String @default("8px")
+
+  isShowVerifiedBadge        Boolean                    @default(true)
+  isShowReviewerName         Boolean                    @default(true)
+  isShowReviewerDate         Boolean                    @default(true)
+  reviewsPerPage             Int                        @default(10)
+  reviewSortOrder            ReviewSortOrder            @default(RECENT)
+  minimumStarRatingToDisplay MinimumStarRatingToDisplay @default(ALL_RATINGS)
+  isShowMediaFirst           Boolean                    @default(true)
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+model AdminNotification {
+  id String @id @default(uuid()) @db.Uuid()
+
+  storeSettingsId String
+  storeSettings   StoreSettings @relation(fields: [storeSettingsId], references: [id], onDelete: Cascade)
+
+  isNewReviewNotify      Boolean @default(true)
+  isReviewApprovalNotify Boolean @default(true)
+  isLowStarReviewNotify  Boolean @default(true)
+  isWeeklySummaryNotify  Boolean @default(true)
+
+  emails AdminNotificationEmail[]
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+model AdminNotificationEmail {
+  id String @id @default(uuid()) @db.Uuid()
+
+  adminNotificationId String
+  adminNotification   AdminNotification @relation(fields: [adminNotificationId], references: [id], onDelete: Cascade)
+
+  email String @unique
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+// Start--- Enums
+
+enum PlanType {
+  FREE
+  BASIC
+  PRO
+}
+
+enum ReviewStatus {
+  PENDING
+  PUBLISHED
+  REJECTED
+  SPAM
+  ARCHIVE
+}
+
+enum ReviewSource {
+  DEMO
+  REQUEST_EMAIL
+  PRODUCT_PAGE
+}
+
+enum ReviewSortOrder {
+  RECENT
+  RATED
+  HELPFUL
+}
+
+enum MinimumStarRatingToDisplay {
+  ALL_RATINGS
+  ONE_STAR
+  TWO_STAR
+  THREE_STAR
+  FOUR_STAR
+  FIVE_STAR
+}
+
+enum AttachmentType {
+  VIDEO
+  IMAGE
+}
+
+enum AutoPublishRules {
+  AUTO_PUBLISH
+  VERIFIED_ONLY
+  MANUAL_PUBLISH
+}
+
+// End--- Enums
