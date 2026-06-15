@@ -33,44 +33,12 @@ model Session {
   refreshTokenExpires DateTime?
 }
 
-enum PlanType {
-  FREE
-  BASIC
-  PRO
-}
-
-enum ReviewStatus {
-  PENDING
-  PUBLISHED
-  REJECTED
-  SPAM
-  ARCHIVE
-}
-
-enum ReviewSource {
-  DEMO
-  REQUEST_EMAIL
-  PRODUCT_PAGE
-}
-
-enum ReviewSortOrder {
-  RECENT
-  RATED
-  HELPFUL
-}
-
-enum MinimumStarRatingToDisplay {
-  ALL_RATINGS
-  ONE_STAR
-  TWO_STAR
-  THREE_STAR
-  FOUR_STAR
-  FIVE_STAR
-}
-
 model Store {
-  id              String           @id @default(uuid()) @db.Uuid
-  storeGID        String           @unique @db.VarChar
+  id         String @id @default(uuid()) @db.Uuid
+  storeGID   String @unique
+  storeURL   String
+  storeEmail String
+
   reviews         Review[]
   subscription    Subscription?
   trustBarWidgets TrustBarWidget[]
@@ -129,11 +97,6 @@ model Review {
   @@index([status])
   @@index([reviewerEmail])
   @@index([createdAt])
-}
-
-enum AttachmentType {
-  VIDEO
-  IMAGE
 }
 
 model Attachment {
@@ -218,12 +181,6 @@ model EmailSettings {
   updatedAt DateTime @updatedAt
 }
 
-enum AutoPublishRules {
-  AUTO_PUBLISH
-  VERIFIED_ONLY
-  MANUAL_PUBLISH
-}
-
 model PublishingModeration {
   id              String        @id @default(uuid()) @db.Uuid()
   storeSettingsId String
@@ -260,46 +217,81 @@ model widgetsSettings {
   updatedAt DateTime @updatedAt
 }
 
-//  ### In this case, it would have been better to keep it in the same table. 
-// Moving it to a separate table just introduces more complexity, and since most
-//  of the fields are optional, it would result in many NULL values anyway, which 
-//  isn't necessarily a bad practice here.
-
 model AdminNotification {
   id String @id @default(uuid()) @db.Uuid()
 
   storeSettingsId String
   storeSettings   StoreSettings @relation(fields: [storeSettingsId], references: [id], onDelete: Cascade)
 
-  notificationEmailAddress NotificationEmailAddress?
-
   isNewReviewNotify      Boolean @default(true)
   isReviewApprovalNotify Boolean @default(true)
   isLowStarReviewNotify  Boolean @default(true)
   isWeeklySummaryNotify  Boolean @default(true)
 
-  notificationFrequency NotificationFrequency @default(IMMEDIATELY)
+  emails AdminNotificationEmail[]
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 }
 
-model NotificationEmailAddress {
+model AdminNotificationEmail {
   id String @id @default(uuid()) @db.Uuid()
 
-  adminNotificationId String            @unique
+  adminNotificationId String
   adminNotification   AdminNotification @relation(fields: [adminNotificationId], references: [id], onDelete: Cascade)
 
-  email1 String?
-  email2 String?
-  email3 String?
+  email String @unique
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 }
 
-enum NotificationFrequency {
-  IMMEDIATELY
-  DAILY
-  WEEKLY
+// Start--- Enums
+
+enum PlanType {
+  FREE
+  BASIC
+  PRO
 }
+
+enum ReviewStatus {
+  PENDING
+  PUBLISHED
+  REJECTED
+  SPAM
+  ARCHIVE
+}
+
+enum ReviewSource {
+  DEMO
+  REQUEST_EMAIL
+  PRODUCT_PAGE
+}
+
+enum ReviewSortOrder {
+  RECENT
+  RATED
+  HELPFUL
+}
+
+enum MinimumStarRatingToDisplay {
+  ALL_RATINGS
+  ONE_STAR
+  TWO_STAR
+  THREE_STAR
+  FOUR_STAR
+  FIVE_STAR
+}
+
+enum AttachmentType {
+  VIDEO
+  IMAGE
+}
+
+enum AutoPublishRules {
+  AUTO_PUBLISH
+  VERIFIED_ONLY
+  MANUAL_PUBLISH
+}
+
+// End--- Enums
