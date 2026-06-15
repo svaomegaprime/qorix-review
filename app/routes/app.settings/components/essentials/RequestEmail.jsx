@@ -23,6 +23,7 @@ export default function RequestEmail({
               }
               details={`Keep it short and friendly — avoid words like "feedback" which reduce open rates.`}
             />
+            <s-divider />
             <s-heading>Email body message</s-heading>
             <s-text-area
               defaultValue="Hi {{first_name}}, thank you for your recent order! We'd love to hear what you think. It only takes 30 seconds."
@@ -32,8 +33,15 @@ export default function RequestEmail({
                   requestEmailBody: e.target.value,
                 }))
               }
-              details={`Use {{first_name}} to personalize. Keep it under 3 sentences for best results.`}
+              details={`Use {{variables}} to personalize your email.`}
             />
+            <s-stack direction="inline" gap="small">
+              <s-badge tone="neutral">{"{{first_name}}"}</s-badge>{" "}
+              <s-badge tone="neutral">{"{{store_name}}"}</s-badge>{" "}
+              <s-badge tone="neutral">{"{{product_name}}"}</s-badge>{" "}
+              <s-badge tone="neutral">{"{{review_rating}}"}</s-badge>{" "}
+            </s-stack>
+            <s-divider />
             <s-heading>CTA button text</s-heading>
             <s-text-field
               defaultValue="Leave a review →"
@@ -67,9 +75,11 @@ export default function RequestEmail({
               }
               defaultValue="Still time to share your thoughts ✍️"
             />
+            <s-divider />
             <s-heading>Email body</s-heading>
             <s-text-area
               defaultValue="Hi {{first_name}}, we noticed you haven't had a chance to leave a review yet. We'd really appreciate your feedback!"
+              details={`Use {{variables}} to personalize your email.`}
               onInput={(e) =>
                 setOutgoingRequestEmail((pre) => ({
                   ...pre,
@@ -77,6 +87,14 @@ export default function RequestEmail({
                 }))
               }
             />
+            <s-stack direction="inline" gap="small">
+              <s-badge tone="neutral">{"{{first_name}}"}</s-badge>{" "}
+              <s-badge tone="neutral">{"{{store_name}}"}</s-badge>{" "}
+              <s-badge tone="neutral">{"{{product_name}}"}</s-badge>{" "}
+              <s-badge tone="neutral">{"{{review_rating}}"}</s-badge>{" "}
+            </s-stack>
+            <s-divider />
+
             <s-heading>CTA button text</s-heading>
             <s-text-field
               defaultValue="Write my review →"

@@ -32,3 +32,140 @@ model Session {
   refreshToken        String?
   refreshTokenExpires DateTime?
 }
+
+enum PlanType {
+  FREE
+  BASIC
+  PRO
+}
+
+enum ReviewStatus {
+  PENDING
+  PUBLISHED
+  REJECTED
+  SPAM
+  ARCHIVE
+}
+
+enum ReviewSource {
+  DEMO
+  REQUEST_EMAIL
+  PRODUCT_PAGE
+}
+
+model Store {
+  id              String           @id @default(uuid()) @db.Uuid
+  storeGID        String           @unique @db.VarChar
+  reviews         Review[]
+  subscription    Subscription?
+  trustBarWidgets TrustBarWidget[]
+  createdAt       DateTime         @default(now())
+  updatedAt       DateTime?        @updatedAt
+  storeSettings   StoreSettings[]
+}
+
+model Subscription {
+  id String @id @default(uuid()) @db.Uuid()
+
+  storeId String @unique
+  store   Store  @relation(fields: [storeId], references: [storeGID], onDelete: Cascade)
+
+  plan           PlanType  @default(FREE)
+  planHandle     String?
+  subscriptionId String?
+  status         String
+  trialEndsAt    DateTime?
+  startsAt       DateTime?
+  endsAt         DateTime?
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@index([plan])
+}
+
+model Review {
+  id            String  @id @default(uuid()) @db.Uuid()
+  storeId       String
+  store         Store   @relation(fields: [storeId], references: [storeGID], onDelete: Cascade)
+  productId     String?
+  productHandle String?
+
+  reviewerName  String?
+  reviewerEmail String? @unique
+  reviewerPhone String  @unique
+  rating        Int
+
+  title String?
+  body  String?
+
+  status       ReviewStatus
+  source       ReviewSource
+  isVerified   Boolean      @default(false)
+  helpfulCount Int          @default(0)
+
+  createdAt   DateTime     @default(now())
+  updatedAt   DateTime     @updatedAt
+  attachments Attachment[]
+
+  @@index([storeId])
+  @@index([productId])
+  @@index([rating])
+  @@index([status])
+  @@index([reviewerEmail])
+  @@index([createdAt])
+}
+
+enum AttachmentType {
+  VIDEO
+  IMAGE
+}
+
+model Attachment {
+  id String @id @default(uuid()) @db.Uuid()
+
+  type AttachmentType?
+  url  String?
+
+  reviewId String?
+  review   Review? @relation(fields: [reviewId], references: [id])
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+model TrustBarWidget {
+  id        String   @id @default(uuid()) @db.Uuid()
+  storeId   String
+  store     Store    @relation(fields: [storeId], references: [storeGID], onDelete: Cascade)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+model StoreSettings {
+  id      String @id @default(uuid()) @db.Uuid()
+  storeId String @unique
+  store   Store  @relation(fields: [storeId], references: [storeGID], onDelete: Cascade)
+
+  requestScheduling RequestScheduling?
+  createdAt         DateTime           @default(now())
+  updatedAt         DateTime           @updatedAt
+}
+
+model RequestScheduling {
+  id String @id @default(uuid()) @db.Uuid()
+
+  storeSettingsId String        @unique
+  storeSettings   StoreSettings @relation(fields: [storeSettingsId], references: [id], onDelete: Cascade)
+
+  isAutomaticRequest       Boolean @default(true)
+  sendRequestAfterDelivery Int     @default(5)
+  isReminderRequest        Boolean @default(true)
+  reminderRequestDelay     Int     @default(5)
+  isSkipRefundedOrder      Boolean @default(true)
+  isSkipCancelledOrder     Boolean @default(true)
+  minimumOrderValue        Int     @default(100)
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}

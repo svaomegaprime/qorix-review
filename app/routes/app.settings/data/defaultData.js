@@ -38,15 +38,6 @@ export const DEFAULT_PUBLISHING_MODERATION = {
   isSpamFilter: true,
 };
 
-// export const DEFAULT_WIDGET = {
-//   isShowWidgetOnProductPage: true,
-//   isShowStarRatingBadge: true,
-//   isShowVerifiedPurchaseBadge: true,
-//   isShowReviewerPhotos: true,
-//   reviewsPerPage: 10,
-//   reviewSortOrder: "RECENT", //RATED// HELPFUL
-// };
-
 export const DEFAULT_WIDGET = {
   defaultStarColor: "#F59E0B",
   defaultFontSize: "14px",
@@ -78,4 +69,11 @@ export const DEFAULT_ADMIN_NOTIFICATION = {
   isLowStarReviewNotify: true,
   isWeeklySummaryNotify: true,
   notificationFrequency: "IMMEDIATELY", // WEEKLY // DAILY
+};
+
+export const DEFAULT_SMTP_SETUP = {
+  smtpUser: "",
+  smtpPassword: "",
+  smtpPort: "",
+  smtpHost: "",
 };

@@ -13,17 +13,23 @@ export default function PostReviewEmail({
       >
         <CustomSection>
           <s-grid gap="small">
-            <s-switch
-              defaultChecked={postReviewEmail.isConfirmationReviewEmail}
-              onChange={(e) =>
-                setPostReviewEmail((pre) => ({
-                  ...pre,
-                  isConfirmationReviewEmail: e.target.checked,
-                }))
-              }
-              label="Enable review confirmation email"
-              details="Let customers know their review was received"
-            ></s-switch>
+            <s-grid gridTemplateColumns="1fr auto" alignItems="start">
+              <s-switch
+                defaultChecked={postReviewEmail.isConfirmationReviewEmail}
+                onChange={(e) =>
+                  setPostReviewEmail((pre) => ({
+                    ...pre,
+                    isConfirmationReviewEmail: e.target.checked,
+                  }))
+                }
+                label="Enable review confirmation email"
+                details="Let customers know their review was received"
+              />
+              <s-button variant="secondary" icon="eye-check-mark">
+                Preview
+              </s-button>
+            </s-grid>
+            <s-divider />
             <s-heading>Email subject line</s-heading>
             <s-text-field
               defaultValue="Thanks for your review! 🙏"
@@ -34,6 +40,7 @@ export default function PostReviewEmail({
                 }))
               }
             />
+            <s-divider />
             <s-heading>Email body message</s-heading>
             <s-text-area
               defaultValue="Hi {{first_name}}, your review has been received. We really appreciate you taking the time!"
@@ -43,7 +50,14 @@ export default function PostReviewEmail({
                   confirmationEmailBody: e.target.value,
                 }))
               }
+              details="Use {{variables}} to personalize your email."
             />
+            <s-stack direction="inline" gap="small">
+              <s-badge tone="neutral">{"{{first_name}}"}</s-badge>{" "}
+              <s-badge tone="neutral">{"{{store_name}}"}</s-badge>{" "}
+              <s-badge tone="neutral">{"{{product_name}}"}</s-badge>{" "}
+              <s-badge tone="neutral">{"{{review_rating}}"}</s-badge>{" "}
+            </s-stack>
           </s-grid>
         </CustomSection>
       </CustomGridSection>
