@@ -6,6 +6,7 @@ import Contents from "./sidebar/Contents"
 import ResetToDefaults from "./sidebar/ResetToDefaults"
 import Typography from "./sidebar/Typography"
 import Visibility from "./sidebar/Visibility"
+import CardCodeSnippet from "./sidebar/CardCodeSnippet"
 
 export default function Sidebar ({
     VALUES,
@@ -64,6 +65,10 @@ export default function Sidebar ({
                     {/* Start----Visibility section */}
                     <Visibility VALUES={visibility} handleChange={handleChange} />
                     {/* End----Visibility section */}
+
+                    {/* Start----CardCodeSnippet section */}
+                    <CardCodeSnippet/>
+                    {/* End----CardCodeSnippet section */}
 
                     <ResetToDefaults handleResetToDefaults={handleResetToDefaults} />
                 </s-grid>
