@@ -1,0 +1,238 @@
+import BrandLogo from "../../../../assets/icon/brandLogo.png";
+
+export default function EmailConfirmation() {
+  return (
+    <>
+      <div class="email-confirmation">
+        <div class="qr-header">
+          <img src={BrandLogo} alt="Brand Logo" />
+        </div>
+
+        <p class="qr-tagline">Skincare that makes you glow</p>
+
+        <hr class="qr-divider" />
+
+        <p class="qr-greeting">Hi Osman,</p>
+        <p class="qr-message">
+          Your review has been received. We really appreciate you taking the
+          time! Your feedback helps other shoppers make better decisions.
+        </p>
+
+        <div class="qr-product-card">
+          <div class="qr-product-avatar">
+            <svg
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              stroke-width="1.5"
+            >
+              <circle cx="12" cy="8" r="3.2"></circle>
+              <path
+                d="M5 19c0-3.5 3-6 7-6s7 2.5 7 6"
+                stroke-linecap="round"
+              ></path>
+            </svg>
+          </div>
+          <div class="qr-product-info">
+            <div class="qr-rating">&#9733;&#9733;&#9733;&#9733;&#9733;</div>
+            <div class="qr-product-name">Hydrating eye cream</div>
+            <div class="qr-product-date">Submitted Mar 21, 2026</div>
+          </div>
+        </div>
+
+        <a href="#" class="qr-cta">
+          View your review <span class="qr-cta-arrow">&#8594;</span>
+        </a>
+
+        <div class="qr-footer">
+          <p class="qr-footer-meta">
+            @2026 glow store &nbsp;&middot;&nbsp; <a href="#">Unsubscribe</a>
+          </p>
+          <p class="qr-footer-powered">
+            Powered by <span class="qr-brand-highlight">Qorix</span>
+          </p>
+        </div>
+      </div>
+      <style>
+        {`             
+            /* Mother selector: everything for this email lives under .email-confirmation */
+            .email-confirmation {
+                max-width: 500px;
+                margin: 0 auto;
+                background: #ffffff;
+                border: 1px solid #e6e6e6;
+                border-radius: 14px;
+                padding: 20px;
+                box-sizing: border-box;
+            }
+            
+            .email-confirmation .qr-header {
+                display: flex;
+                align-items: center;
+                gap: 10px;
+                margin-bottom: 18px;
+            }
+            
+            .email-confirmation .qr-logo-mark {
+                width: 30px;
+                height: 30px;
+                border-radius: 50%;
+                background: #1f8f4f;
+                color: #ffffff;
+                font-size: 17px;
+                font-weight: 700;
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                flex-shrink: 0;
+            }
+            
+            .email-confirmation .qr-brand {
+                line-height: 1.05;
+            }
+            
+            .email-confirmation .qr-brand-name {
+                font-size: 19px;
+                font-weight: 700;
+                color: #1a1a1a;
+                letter-spacing: 0.2px;
+            }
+            
+            .email-confirmation .qr-brand-sub {
+                font-size: 10px;
+                font-weight: 600;
+                color: #9a9a9a;
+                letter-spacing: 2.5px;
+            }
+            
+            .email-confirmation .qr-tagline {
+                font-size: 14px;
+                color: #8b8b8b;
+                margin: 0 0 18px;
+            }
+            
+            .email-confirmation .qr-divider {
+                border: none;
+                border-top: 1px solid #e9e9e9;
+                margin: 0 0 24px;
+            }
+            
+            .email-confirmation .qr-greeting {
+                font-size: 15px;
+                font-weight: 700;
+                color: #1a1a1a;
+                margin: 0 0 12px;
+            }
+            
+            .email-confirmation .qr-message {
+                font-size: 14.5px;
+                line-height: 1.55;
+                color: #4a4a4a;
+                margin: 0 0 24px;
+            }
+            
+            .email-confirmation .qr-product-card {
+                display: flex;
+                align-items: center;
+                gap: 14px;
+                border: 1px solid #e9e9e9;
+                border-radius: 6px;
+                padding: 14px;
+                margin-bottom: 28px;
+            }
+            
+            .email-confirmation .qr-product-avatar {
+                width: 56px;
+                height: 56px;
+                flex-shrink: 0;
+                border-radius: 50%;
+                border: 1px solid #d8d8d8;
+                display: flex;
+                align-items: center;
+                justify-content: center;
+            }
+            
+            .email-confirmation .qr-product-avatar svg {
+                width: 26px;
+                height: 26px;
+                color: #b8b8b8;
+            }
+            
+            .email-confirmation .qr-product-info {
+                display: flex;
+                flex-direction: column;
+                gap: 4px;
+            }
+            
+            .email-confirmation .qr-rating {
+                font-size: 16px;
+                color: #f5a623;
+                letter-spacing: 2px;
+                line-height: 1;
+            }
+            
+            .email-confirmation .qr-product-name {
+                font-size: 14.5px;
+                font-weight: 700;
+                color: #1a1a1a;
+            }
+            
+            .email-confirmation .qr-product-date {
+                font-size: 13px;
+                color: #9a9a9a;
+            }
+            
+            .email-confirmation .qr-cta {
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                gap: 8px;
+                width: 100%;
+                background: #1f8f4f;
+                color: #ffffff;
+                font-size: 15px;
+                font-weight: 600;
+                text-decoration: none;
+                border: none;
+                border-radius: 6px;
+                padding: 15px 0;
+                box-sizing: border-box;
+                margin-bottom: 30px;
+                cursor: pointer;
+            }
+            
+            .email-confirmation .qr-cta-arrow {
+                font-size: 16px;
+                line-height: 1;
+            }
+            
+            .email-confirmation .qr-footer {
+                text-align: center;
+            }
+            
+            .email-confirmation .qr-footer-meta {
+                font-size: 12.5px;
+                color: #b0b0b0;
+                margin: 0 0 6px;
+            }
+            
+            .email-confirmation .qr-footer-meta a {
+                color: #b0b0b0;
+                text-decoration: underline;
+            }
+            
+            .email-confirmation .qr-footer-powered {
+                font-size: 13px;
+                color: #9a9a9a;
+                margin: 0;
+            }
+            
+            .email-confirmation .qr-footer-powered .qr-brand-highlight {
+                color: #1f8f4f;
+                font-weight: 700;
+            }
+        `}
+      </style>
+    </>
+  );
+}

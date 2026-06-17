@@ -125,13 +125,13 @@ model StoreSettings {
   storeId String @unique
   store   Store  @relation(fields: [storeId], references: [storeGID], onDelete: Cascade)
 
-  requestScheduling     RequestScheduling?
-  createdAt             DateTime               @default(now())
-  updatedAt             DateTime               @updatedAt
-  emailSettings         EmailSettings[]
-  publishingModerations PublishingModeration[]
-  widgetsSettings       widgetsSettings[]
-  adminNotifications    AdminNotification[]
+  requestScheduling    RequestScheduling?
+  createdAt            DateTime               @default(now())
+  updatedAt            DateTime               @updatedAt
+  emailSettings        EmailSettings[]
+  publishingModeration PublishingModeration[]
+  widgetsSettings      widgetsSettings[]
+  adminNotifications   AdminNotification[]
 }
 
 model RequestScheduling {

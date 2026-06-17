@@ -53,9 +53,24 @@ export const DEFAULT_WIDGET = {
 };
 
 export const DEFAULT_BRANDING = {
+  storeDisplayName: "Glow Store",
+  storeSenderName: "Osman from Glow Store",
+  storeWebsiteURL: "https://www.glowstore.com",
+  storeTagline: "Skincare that makes you glow",
+  storeReplyToEmail: "hello@glowstore.com",
   storeLogo: "",
-  brandColor: "#001555",
-  emailSenderName: "Store Name",
+  storeLogoPosition: "LEFT", // RIGHT // CENTER
+
+  emailPrimaryButtonColor: "#108848",
+  emailButtonTextColor: "#FFFFFF",
+  emailBackgroundColor: "#f9fafb",
+  emailHeadingColor: "#303030",
+  emailBodyTextColor: "#108848",
+  emailAccentBorderColor: "#f0f0f0",
+
+  emailFooterText: "@2026 glow store ·",
+  emailFooterLinkText: "Unsubscribe",
+  isShowFooterBadge: true,
 };
 
 export const DEFAULT_ADMIN_NOTIFICATION = {
