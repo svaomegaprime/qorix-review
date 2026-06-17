@@ -298,20 +298,16 @@ const handleChangeColors = (e) => {
         <s-option value="6 reviews">6 reviews</s-option>
         <s-option value="9 reviews">9 reviews</s-option>
         <s-option value="12 reviews">12 reviews</s-option>
+        <s-option value="12 reviews">15 reviews</s-option>
+        <s-option value="12 reviews">18 reviews</s-option>
+        <s-option value="12 reviews">24 reviews</s-option>
+
+
+
       </s-select>
     </s-stack>
 
-    <s-stack border="base" paddingInlineStart="small" borderRadius="base" padding="small">
-      <s-select
-        label="Review stats"
-        value={settings.reviewStats}
-        onChange={(e) => handleSettingChange("reviewStats", e.target.value)}
-      >
-        <s-option value="Show review count & verified badge">Show review count & verified badge</s-option>
-        <s-option value="Show verified badge only">Show verified badge only</s-option>
-        <s-option value="Show review count only">Show review count only</s-option>
-      </s-select>
-    </s-stack>
+  
   </s-stack>
 </div>
 {/* ----------Layout option end ------------ */}
@@ -431,7 +427,7 @@ const handleChangeColors = (e) => {
           {/* End----Preview Header */}
 
           
-          <ReviewHumComponent settings={settings}/>
+          <ReviewHumComponent activeDevice={activeDevice} settings={settings}/>
       
    
           {/* Start----Preview Content */}
