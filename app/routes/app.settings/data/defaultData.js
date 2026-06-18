@@ -70,7 +70,7 @@ export const DEFAULT_BRANDING = {
   emailButtonTextColor: "#FFFFFF",
   emailBackgroundColor: "#f9fafb",
   emailHeadingColor: "#303030",
-  emailBodyTextColor: "#108848",
+  emailBodyTextColor: "#0d0e0d",
   emailAccentBorderColor: "#f0f0f0",
 
   emailFooterText: "@2026 glow store ·",
