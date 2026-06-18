@@ -37,8 +37,9 @@ const brandingColorSettings = [
 
 export default function Branding() {
   const data = useRouteLoaderData("routes/app.settings");
-  console.log("qqqqqqqqqqqqqqqqqqqqqqq", data);
+
   const [brandSettings, setBrandSettings] = useState(DEFAULT_BRANDING);
+  console.log("qqqqqqqqqqqqqqqqqqqqqqq", data, brandSettings);
 
   return (
     <>
@@ -272,7 +273,12 @@ export default function Branding() {
 
           <CustomSection background="#ffffff">
             <CustomSection background="#fff">
-              <BrandingEmailPreview />
+              <BrandingEmailPreview
+                brandSettings={brandSettings}
+                outgoingRequestEmail={data.outgoingRequestEmail}
+                postRequestEmail={data.postRequestEmail}
+                smtpSetup={data.smtpSetup}
+              />
             </CustomSection>
           </CustomSection>
         </s-grid>

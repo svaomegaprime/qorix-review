@@ -1,6 +1,6 @@
 import BrandLogo from "../../../../assets/icon/brandLogo.png";
 
-export default function EmailConfirmation() {
+export default function EmailConfirmation({ postRequestEmail, brandSettings }) {
   return (
     <>
       <div class="email-confirmation">
@@ -8,15 +8,17 @@ export default function EmailConfirmation() {
           <img src={BrandLogo} alt="Brand Logo" />
         </div>
 
-        <p class="qr-tagline">Skincare that makes you glow</p>
+        {brandSettings.storeTagline && (
+          <p class="qr-tagline">{brandSettings.storeTagline}</p>
+        )}
 
         <hr class="qr-divider" />
 
-        <p class="qr-greeting">Hi Osman,</p>
-        <p class="qr-message">
-          Your review has been received. We really appreciate you taking the
-          time! Your feedback helps other shoppers make better decisions.
-        </p>
+        {/* <p class="qr-greeting">Hi Osman,</p> */}
+
+        {postRequestEmail.confirmationEmailBody && (
+          <p class="qr-message">{postRequestEmail.confirmationEmailBody}</p>
+        )}
 
         <div class="qr-product-card">
           <div class="qr-product-avatar">
@@ -46,11 +48,14 @@ export default function EmailConfirmation() {
 
         <div class="qr-footer">
           <p class="qr-footer-meta">
-            @2026 glow store &nbsp;&middot;&nbsp; <a href="#">Unsubscribe</a>
+            {brandSettings.emailFooterText}
+            <a href="#">{brandSettings.emailFooterLinkText}</a>
           </p>
-          <p class="qr-footer-powered">
-            Powered by <span class="qr-brand-highlight">Qorix</span>
-          </p>
+          {brandSettings.isShowFooterBadge && (
+            <p class="qr-footer-powered">
+              Powered by <span class="qr-brand-highlight">Qorix</span>
+            </p>
+          )}
         </div>
       </div>
       <style>

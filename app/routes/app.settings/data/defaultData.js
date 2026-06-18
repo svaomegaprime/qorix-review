@@ -18,6 +18,11 @@ export const DEFAULT_OUTGOING_REQUEST_EMAIL = {
   reminderEmailBody:
     "Hi {{first_name}}, we noticed you haven't had a chance to leave a review yet. We'd really appreciate your feedback!",
   reminderEmailButton: "Write my review →",
+
+  replyEmailSubjectLine: "We've replied to your review 💬",
+  replyEmailBody:
+    "Hi {{first_name}}, thank you for your review. We've posted a reply and would love for you to take a look.",
+  replyEmailButton: "View reply →",
 };
 
 export const DEFAULT_POST_REQUEST_EMAIL = {

@@ -5,7 +5,12 @@ import TabButton from "../../../../components/essentials/TabButton";
 import EmailRequest from "../template/EmailRequest";
 import EmailConfirmation from "../template/EmailConfirmation";
 import EmailReply from "../template/EmailReply";
-export default function BrandingEmailPreview() {
+export default function BrandingEmailPreview({
+  brandSettings,
+  outgoingRequestEmail,
+  postRequestEmail,
+  smtpSetup,
+}) {
   const [showEmailTemplate, setShowEmailTemplate] = useState({
     emailRequest: true,
     emailConfirmation: false,
@@ -71,10 +76,20 @@ export default function BrandingEmailPreview() {
       </s-grid>
 
       {/* Start---- EmailRequest Preview */}
-      {showEmailTemplate.emailRequest && <EmailRequest />}
+      {showEmailTemplate.emailRequest && (
+        <EmailRequest
+          outgoingRequestEmail={outgoingRequestEmail}
+          brandSettings={brandSettings}
+        />
+      )}
       {/* End---- EmailRequest Preview */}
       {/* Start---- EmailConfirmation Preview */}
-      {showEmailTemplate.emailConfirmation && <EmailConfirmation />}
+      {showEmailTemplate.emailConfirmation && (
+        <EmailConfirmation
+          postRequestEmail={postRequestEmail}
+          brandSettings={brandSettings}
+        />
+      )}
       {/* End---- EmailConfirmation Preview */}
       {/* Start---- EmailReply Preview */}
       {showEmailTemplate.emailReply && <EmailReply />}

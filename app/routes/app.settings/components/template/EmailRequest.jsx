@@ -1,6 +1,6 @@
 import BrandLogo from "../../../../assets/icon/brandLogo.png";
 
-export default function EmailRequest() {
+export default function EmailRequest({ outgoingRequestEmail, brandSettings }) {
   return (
     <>
       <style>
@@ -182,16 +182,15 @@ export default function EmailRequest() {
         <div class="qr-header">
           <img src={BrandLogo} alt="Brand logo" />
         </div>
-
-        <p class="qr-tagline">Skincare that makes you glow</p>
-
+        {brandSettings.storeTagline && (
+          <p class="qr-tagline">{brandSettings.storeTagline}</p>
+        )}
         <hr class="qr-divider" />
 
-        <p class="qr-greeting">Hi Osman,</p>
-        <p class="qr-message">
-          Thank you for your recent order from Qorix Review! We'd love to hear
-          what you think. It only takes 30 seconds.
-        </p>
+        {/* <p class="qr-greeting">Hi Osman,</p> */}
+        {outgoingRequestEmail.requestEmailBody && (
+          <p class="qr-message">{outgoingRequestEmail.requestEmailBody}</p>
+        )}
 
         <div class="qr-product-card">
           <div class="qr-product-thumb">
@@ -207,16 +206,22 @@ export default function EmailRequest() {
         </div>
 
         <a href="#" class="qr-cta">
-          Leave a review <span class="qr-cta-arrow">&#8594;</span>
+          {outgoingRequestEmail.requestEmailButton}{" "}
+          {/* <span class="qr-cta-arrow">&#8594;</span> */}
         </a>
 
         <div class="qr-footer">
           <p class="qr-footer-meta">
-            @2026 glow store &nbsp;&middot;&nbsp; <a href="#">Unsubscribe</a>
+            {brandSettings.emailFooterText ? brandSettings.emailFooterText : ""}{" "}
+            {brandSettings.emailFooterLinkText && (
+              <a href="#">{brandSettings.emailFooterLinkText}</a>
+            )}
           </p>
-          <p class="qr-footer-powered">
-            Powered by <span class="qr-brand-highlight">Qorix</span>
-          </p>
+          {brandSettings.isShowFooterBadge && (
+            <p class="qr-footer-powered">
+              Powered by <span class="qr-brand-highlight">Qorix</span>
+            </p>
+          )}
         </div>
       </div>
     </>

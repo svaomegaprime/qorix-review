@@ -12,7 +12,6 @@ import {
   DEFAULT_POST_REQUEST_EMAIL,
   DEFAULT_SMTP_SETUP,
 } from "../data/defaultData";
-import { useLoaderData } from "react-router";
 
 export default function EmailSettings() {
   const [emailActiveSettings, setEmailActiveSettings] = useState({
