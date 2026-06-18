@@ -6,6 +6,7 @@ import {
   DEFAULT_POST_REQUEST_EMAIL,
   DEFAULT_SMTP_SETUP,
 } from "./data/defaultData.js";
+import { useState } from "react";
 
 export async function loader() {
   return {
@@ -16,6 +17,7 @@ export async function loader() {
 }
 export default function SettingsRoot() {
   const outlet = useOutlet();
+  const [open, setOpen] = useState(false);
 
   return (
     <>
@@ -92,6 +94,105 @@ export default function SettingsRoot() {
               </s-section>
             </div>
             {/* End---- Settings Menu */}
+            {/* Start---- Settings Menu Mobile*/}
+            <div style={{ position: "relative", display: "none" }}>
+              {/* Header */}
+              <div
+                style={{
+                  display: "flex",
+                  justifyContent: "space-between",
+                  alignItems: "center",
+                  padding: "12px 16px",
+                  borderBottom: "1px solid #e5e5e5",
+                  background: "#fff",
+                }}
+              >
+                <h3 style={{ margin: 0 }}>Menu</h3>
+
+                <button
+                  onClick={() => setOpen(!open)}
+                  style={{
+                    border: "none",
+                    background: "transparent",
+                    cursor: "pointer",
+                    fontSize: "24px",
+                  }}
+                >
+                  ☰
+                </button>
+              </div>
+
+              {/* Dropdown Menu */}
+              {open && (
+                <div
+                  style={{
+                    position: "absolute",
+                    top: "60px",
+                    right: "0",
+                    width: "320px",
+                    background: "#fff",
+                    border: "1px solid #e5e5e5",
+                    borderRadius: "12px",
+                    boxShadow: "0 10px 30px rgba(0,0,0,.12)",
+                    zIndex: 999,
+                    padding: "16px",
+                  }}
+                >
+                  <s-section>
+                    <s-heading>Request reviews</s-heading>
+
+                    <Clickable
+                      title="Request scheduling"
+                      icon="receipt-dollar"
+                      url="/app/settings"
+                    />
+
+                    <Clickable
+                      title="Email settings"
+                      icon="email"
+                      url="/app/settings/email-settings"
+                    />
+
+                    <Clickable
+                      title="Publishing & moderation"
+                      icon="receipt-dollar"
+                      url="/app/settings/publishing-moderation"
+                    />
+
+                    <s-stack paddingBlock="base">
+                      <s-divider />
+                    </s-stack>
+
+                    <s-heading>Review display</s-heading>
+
+                    <Clickable
+                      title="Widgets"
+                      icon="paint-brush-flat"
+                      url="/app/settings/widgets"
+                    />
+
+                    <s-stack paddingBlock="base">
+                      <s-divider />
+                    </s-stack>
+
+                    <s-heading>General</s-heading>
+
+                    <Clickable
+                      title="Branding"
+                      icon="paint-brush-flat"
+                      url="/app/settings/branding"
+                    />
+
+                    <Clickable
+                      title="Admin notifications"
+                      icon="notification"
+                      url="/app/settings/admin-notification"
+                    />
+                  </s-section>
+                </div>
+              )}
+            </div>
+            {/* End---- Settings Menu Mobile */}
 
             {/* Start----- Setting Previews */}
             <s-box>{outlet ?? <Settings />}</s-box>

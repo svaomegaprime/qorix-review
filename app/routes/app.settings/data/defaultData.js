@@ -64,7 +64,7 @@ export const DEFAULT_BRANDING = {
   storeTagline: "Skincare that makes you glow",
   storeReplyToEmail: "hello@glowstore.com",
   storeLogo: "",
-  storeLogoPosition: "LEFT", // RIGHT // CENTER
+  storeLogoPosition: "start", // center // end
 
   emailPrimaryButtonColor: "#108848",
   emailButtonTextColor: "#FFFFFF",

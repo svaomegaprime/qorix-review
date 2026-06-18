@@ -6,7 +6,7 @@ export default function EmailRequest({ outgoingRequestEmail, brandSettings }) {
       <style>
         {`
         :root {
-          --store-logo-position: left;
+          --store-logo-position: ${brandSettings.storeLogoPosition};
           --email-button-bg-color: ${brandSettings.emailPrimaryButtonColor};
           --email-button-text-color: ${brandSettings.emailButtonTextColor};
           --email-heading-color: ${brandSettings.emailHeadingColor};
@@ -29,7 +29,7 @@ export default function EmailRequest({ outgoingRequestEmail, brandSettings }) {
         .email-request .qr-header {
             display: flex;
             align-items: center;
-
+            justify-content: var(--store-logo-position);
             gap: 10px;
             margin-bottom: 18px;
         }

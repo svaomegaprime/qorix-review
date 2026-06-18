@@ -165,9 +165,9 @@ export default function Branding() {
                           )
                         }
                       >
-                        <s-option value="START">Left</s-option>
-                        <s-option value="CENTER">Center</s-option>
-                        <s-option value="END">Right</s-option>
+                        <s-option value="start">Left</s-option>
+                        <s-option value="center">Center</s-option>
+                        <s-option value="end">Right</s-option>
                       </s-select>
                     </CustomSection>
                   </s-grid>
