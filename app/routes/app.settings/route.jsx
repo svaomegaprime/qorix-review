@@ -1,7 +1,19 @@
 import { useOutlet } from "react-router";
 import Settings from "./routes/app.index.jsx";
 import Clickable from "./components/elements/Clickable.jsx";
+import {
+  DEFAULT_OUTGOING_REQUEST_EMAIL,
+  DEFAULT_POST_REQUEST_EMAIL,
+  DEFAULT_SMTP_SETUP,
+} from "./data/defaultData.js";
 
+export async function loader() {
+  return {
+    outgoingRequestEmail: DEFAULT_OUTGOING_REQUEST_EMAIL,
+    postRequestEmail: DEFAULT_POST_REQUEST_EMAIL,
+    smtpSetup: DEFAULT_SMTP_SETUP,
+  };
+}
 export default function SettingsRoot() {
   const outlet = useOutlet();
 
@@ -79,7 +91,6 @@ export default function SettingsRoot() {
                 />
               </s-section>
             </div>
-
             {/* End---- Settings Menu */}
 
             {/* Start----- Setting Previews */}

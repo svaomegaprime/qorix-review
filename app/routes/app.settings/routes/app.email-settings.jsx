@@ -12,6 +12,7 @@ import {
   DEFAULT_POST_REQUEST_EMAIL,
   DEFAULT_SMTP_SETUP,
 } from "../data/defaultData";
+import { useLoaderData } from "react-router";
 
 export default function EmailSettings() {
   const [emailActiveSettings, setEmailActiveSettings] = useState({
@@ -27,8 +28,6 @@ export default function EmailSettings() {
     DEFAULT_POST_REQUEST_EMAIL,
   );
   const [smtpSetup, setSmtpSetup] = useState(DEFAULT_SMTP_SETUP);
-
-  console.log("DEFAULT_OUTGOING_REQUEST_EMAIL:", outgoingRequestEmail);
 
   return (
     <>

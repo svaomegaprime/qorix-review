@@ -130,8 +130,9 @@ model StoreSettings {
   updatedAt            DateTime               @updatedAt
   emailSettings        EmailSettings[]
   publishingModeration PublishingModeration[]
-  widgetsSettings      widgetsSettings[]
+  widgetsSettings      WidgetsSettings[]
   adminNotifications   AdminNotification[]
+  brandingSettings     BrandingSettings[]
 }
 
 model RequestScheduling {
@@ -196,7 +197,7 @@ model PublishingModeration {
   updatedAt DateTime @updatedAt
 }
 
-model widgetsSettings {
+model WidgetsSettings {
   id              String        @id @default(uuid()) @db.Uuid()
   storeSettingsId String
   storeSettings   StoreSettings @relation(fields: [storeSettingsId], references: [id], onDelete: Cascade)
@@ -212,6 +213,33 @@ model widgetsSettings {
   reviewSortOrder            ReviewSortOrder            @default(RECENT)
   minimumStarRatingToDisplay MinimumStarRatingToDisplay @default(ALL_RATINGS)
   isShowMediaFirst           Boolean                    @default(true)
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+model BrandingSettings {
+  id              String        @id @default(uuid()) @db.Uuid()
+  storeSettingsId String
+  storeSettings   StoreSettings @relation(fields: [storeSettingsId], references: [id], onDelete: Cascade)
+
+  storeDisplayName  String @default("Glow Store")
+  storeSenderName   String @default("Osman from Glow Store")
+  storeWebsiteURL   String @default("https://www.glowstore.com")
+  storeTagline      String @default("Skincare that makes you glow")
+  storeReplyToEmail String @default("hello@glowstore.com")
+  storeLogo         String @default("")
+  storeLogoPosition String @default("LEFT")
+
+  emailPrimaryButtonColor String  @default("#FE0606")
+  emailButtonTextColor    String  @default("#FFFFFF")
+  emailBackgroundColor    String  @default("#f9fafb")
+  emailHeadingColor       String  @default("#303030")
+  emailBodyTextColor      String  @default("#108848")
+  emailAccentBorderColor  String  @default("#f0f0f0")
+  emailFooterText         String  @default("@2026 glow store ·")
+  emailFooterLinkText     String  @default("Unsubscribe")
+  isShowFooterBadge       Boolean @default(true)
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt

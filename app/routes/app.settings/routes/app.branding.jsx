@@ -6,6 +6,7 @@ import { DEFAULT_BRANDING } from "../data/defaultData";
 import { handleStateUpdate } from "../utils/client/utils.client";
 import ColorPicker from "../../../routes/app.widgets/components/elements/ColorPicker";
 import BrandingEmailPreview from "../components/essentials/BrandingEmailPreview";
+import { useRouteLoaderData } from "react-router";
 
 const brandingColorSettings = [
   {
@@ -33,12 +34,15 @@ const brandingColorSettings = [
     label: "Accent/border color",
   },
 ];
+
 export default function Branding() {
+  const data = useRouteLoaderData("routes/app.settings");
+  console.log("qqqqqqqqqqqqqqqqqqqqqqq", data);
   const [brandSettings, setBrandSettings] = useState(DEFAULT_BRANDING);
 
   return (
     <>
-      <pre>{JSON.stringify(brandSettings, null, 2)}</pre>
+      {/* <pre>{JSON.stringify(brandSettings, null, 2)}</pre> */}
 
       <s-box>
         <Text>Branding</Text>
