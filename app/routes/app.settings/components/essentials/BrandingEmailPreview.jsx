@@ -92,7 +92,12 @@ export default function BrandingEmailPreview({
       )}
       {/* End---- EmailConfirmation Preview */}
       {/* Start---- EmailReply Preview */}
-      {showEmailTemplate.emailReply && <EmailReply />}
+      {showEmailTemplate.emailReply && (
+        <EmailReply
+          brandSettings={brandSettings}
+          outgoingRequestEmail={outgoingRequestEmail}
+        />
+      )}
       {/* End---- EmailReply Preview */}
     </>
   );

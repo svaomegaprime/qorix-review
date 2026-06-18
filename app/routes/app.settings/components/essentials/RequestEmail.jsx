@@ -1,6 +1,7 @@
 import CustomSection from "../../../../components/essentials/CustomSection";
 import CustomGridSection from "../../../../components/essentials/CustomGridSection";
 import { handleStateUpdate } from "../../utils/client/utils.client";
+
 export default function RequestEmail({
   outgoingRequestEmail,
   setOutgoingRequestEmail,
@@ -15,7 +16,7 @@ export default function RequestEmail({
           <s-grid gap="small">
             <s-heading>Email subject line</s-heading>
             <s-text-field
-              defaultValue="How did we do? Share your thoughts ⭐"
+              defaultValue={outgoingRequestEmail.requestEmailSubjectLine}
               onInput={(e) =>
                 handleStateUpdate(
                   setOutgoingRequestEmail,
@@ -23,17 +24,18 @@ export default function RequestEmail({
                   e.target.value,
                 )
               }
-              details={`Keep it short and friendly — avoid words like "feedback" which reduce open rates.`}
+              details={`Keep it short and friendly - avoid words like "feedback" which reduce open rates.`}
             />
             <s-divider />
             <s-heading>Email body message</s-heading>
             <s-text-area
-              defaultValue="Hi {{first_name}}, thank you for your recent order! We'd love to hear what you think. It only takes 30 seconds."
+              defaultValue={outgoingRequestEmail.requestEmailBody}
               onInput={(e) =>
-                setOutgoingRequestEmail((pre) => ({
-                  ...pre,
-                  requestEmailBody: e.target.value,
-                }))
+                handleStateUpdate(
+                  setOutgoingRequestEmail,
+                  "requestEmailBody",
+                  e.target.value,
+                )
               }
               details={`Use {{variables}} to personalize your email.`}
             />
@@ -46,14 +48,15 @@ export default function RequestEmail({
             <s-divider />
             <s-heading>CTA button text</s-heading>
             <s-text-field
-              defaultValue="Leave a review →"
+              defaultValue={outgoingRequestEmail.requestEmailButton}
               onInput={(e) =>
-                setOutgoingRequestEmail((pre) => ({
-                  ...pre,
-                  requestEmailButton: e.target.value,
-                }))
+                handleStateUpdate(
+                  setOutgoingRequestEmail,
+                  "requestEmailButton",
+                  e.target.value,
+                )
               }
-              details={`Action-oriented text converts better — e.g. "Leave a review" not "Click here"`}
+              details={`Action-oriented text converts better - e.g. "Leave a review" not "Click here"`}
             />
           </s-grid>
         </CustomSection>
@@ -70,23 +73,25 @@ export default function RequestEmail({
             <s-heading>Subject line</s-heading>
             <s-text-field
               onInput={(e) =>
-                setOutgoingRequestEmail((pre) => ({
-                  ...pre,
-                  reminderSubjectLine: e.target.value,
-                }))
+                handleStateUpdate(
+                  setOutgoingRequestEmail,
+                  "reminderSubjectLine",
+                  e.target.value,
+                )
               }
-              defaultValue="Still time to share your thoughts ✍️"
+              defaultValue={outgoingRequestEmail.reminderSubjectLine}
             />
             <s-divider />
             <s-heading>Email body</s-heading>
             <s-text-area
-              defaultValue="Hi {{first_name}}, we noticed you haven't had a chance to leave a review yet. We'd really appreciate your feedback!"
+              defaultValue={outgoingRequestEmail.reminderEmailBody}
               details={`Use {{variables}} to personalize your email.`}
               onInput={(e) =>
-                setOutgoingRequestEmail((pre) => ({
-                  ...pre,
-                  reminderEmailBody: e.target.value,
-                }))
+                handleStateUpdate(
+                  setOutgoingRequestEmail,
+                  "reminderEmailBody",
+                  e.target.value,
+                )
               }
             />
             <s-stack direction="inline" gap="small">
@@ -99,12 +104,13 @@ export default function RequestEmail({
 
             <s-heading>CTA button text</s-heading>
             <s-text-field
-              defaultValue="Write my review →"
+              defaultValue={outgoingRequestEmail.reminderEmailButton}
               onInput={(e) =>
-                setOutgoingRequestEmail((pre) => ({
-                  ...pre,
-                  reminderEmailButton: e.target.value,
-                }))
+                handleStateUpdate(
+                  setOutgoingRequestEmail,
+                  "reminderEmailButton",
+                  e.target.value,
+                )
               }
             />
           </s-grid>
@@ -122,23 +128,25 @@ export default function RequestEmail({
             <s-heading>Subject line</s-heading>
             <s-text-field
               onInput={(e) =>
-                setOutgoingRequestEmail((pre) => ({
-                  ...pre,
-                  replyEmailSubjectLine: e.target.value,
-                }))
+                handleStateUpdate(
+                  setOutgoingRequestEmail,
+                  "replyEmailSubjectLine",
+                  e.target.value,
+                )
               }
-              defaultValue="Still time to share your thoughts ✍️"
+              defaultValue={outgoingRequestEmail.replyEmailSubjectLine}
             />
             <s-divider />
             <s-heading>Email body</s-heading>
             <s-text-area
-              defaultValue="Hi {{first_name}}, we noticed you haven't had a chance to leave a review yet. We'd really appreciate your feedback!"
+              defaultValue={outgoingRequestEmail.replyEmailBody}
               details={`Use {{variables}} to personalize your email.`}
               onInput={(e) =>
-                setOutgoingRequestEmail((pre) => ({
-                  ...pre,
-                  replyEmailBody: e.target.value,
-                }))
+                handleStateUpdate(
+                  setOutgoingRequestEmail,
+                  "replyEmailBody",
+                  e.target.value,
+                )
               }
             />
             <s-stack direction="inline" gap="small">
@@ -151,12 +159,13 @@ export default function RequestEmail({
 
             <s-heading>CTA button text</s-heading>
             <s-text-field
-              defaultValue="Write my review →"
+              defaultValue={outgoingRequestEmail.replyEmailButton}
               onInput={(e) =>
-                setOutgoingRequestEmail((pre) => ({
-                  ...pre,
-                  replyEmailButton: e.target.value,
-                }))
+                handleStateUpdate(
+                  setOutgoingRequestEmail,
+                  "replyEmailButton",
+                  e.target.value,
+                )
               }
             />
           </s-grid>

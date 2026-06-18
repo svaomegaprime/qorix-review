@@ -1,6 +1,6 @@
 import BrandLogo from "../../../../assets/icon/brandLogo.png";
 
-export default function EmailReply() {
+export default function EmailReply({ outgoingRequestEmail, brandSettings }) {
   return (
     <>
       <div class="email-reply">
@@ -8,14 +8,12 @@ export default function EmailReply() {
           <img src={BrandLogo} alt="brand logo" />
         </div>
 
-        <p class="qr-tagline">Skincare that makes you glow</p>
+        <p class="qr-tagline">{brandSettings.storeTagline}</p>
 
         <hr class="qr-divider" />
 
-        <p class="qr-greeting">Hi Osman,</p>
-        <p class="qr-message">
-          Glow Store just replied to your review of Hydrating Eye Cream.
-        </p>
+        {/* <p class="qr-greeting">Hi Osman,</p> */}
+        <p class="qr-message">{outgoingRequestEmail.replyEmailBody}</p>
 
         <div class="qr-card">
           <div class="qr-card-avatar">
@@ -81,16 +79,21 @@ export default function EmailReply() {
         </div>
 
         <a href="#" class="qr-cta">
-          See the reply <span class="qr-cta-arrow">&#8594;</span>
+          {outgoingRequestEmail.replyEmailButton}
+          {/* <span class="qr-cta-arrow">&#8594;</span> */}
         </a>
 
         <div class="qr-footer">
           <p class="qr-footer-meta">
-            @2026 glow store &nbsp;&middot;&nbsp; <a href="#">Unsubscribe</a>
+            {brandSettings.emailFooterText}{" "}
+            <a href="#">{brandSettings.emailFooterLinkText}</a>
           </p>
-          <p class="qr-footer-powered">
-            Powered by <span class="qr-brand-highlight">Qorix</span>
-          </p>
+
+          {brandSettings.isShowFooterBadge && (
+            <p class="qr-footer-powered">
+              Powered by <span class="qr-brand-highlight">Qorix</span>
+            </p>
+          )}
         </div>
       </div>
       <style>
