@@ -36,8 +36,20 @@ export default function ColorPicker ({ data, onChange, defaultColor }) {
                         <s-color-picker defaultValue={color} onInput={handleChange} />
                     </s-box>
                 </s-popover>
-                <s-text-field defaultValue={color} onInput={handleChange} />
-            </s-grid>
+         
+                    <s-text-field defaultValue={color} onInput={handleChange} />
+    
+                  
+                    
+              
+            </s-grid> 
+
+            {data?.info && (
+                 <s-stack paddingBlockStart="small"><s-paragraph>{data?.info}</s-paragraph></s-stack>
+            )}
+
+           
+               
         </CustomSection>
     )
 }
