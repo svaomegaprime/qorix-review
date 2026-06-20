@@ -6,14 +6,97 @@ import SaveBar from "../../../components/savebar/SaveBar"
 import { useSaveBarTrigger } from "../../../components/savebar/useSaveBarTrigger"
 import { requestAppWindowClose } from "../../../utils/useAppWindowClose"
 import { useNavigation } from "react-router"
+import Header from "../../../components/Header";
+import ColorPicker from "../../../components/elements/ColorPicker";
+import QuoteLoopWidget from "../component/quite_loop_preview";
 
-export default function Index() {
+const COLOR_PICKERS_ELEMENTS = [
+    {
+        key: "STAR_COLOR",
+        label: "Star color"
+    },
+    {
+        key: "TEXT_COLOR",
+        label: "Text color"
+    },
+    {
+        key: "VERIFIED_BADGE_COLOR",
+        label: "Verified badge color"
+    },
+     {
+        key: "Card_Background_Color",
+        label: "Card background"
+    },
+    {
+        key: "Border_Color",
+        label: "Border color"
+    }
+];
+
+const DEFAULT_COLOR_VALUES = {
+    STAR_COLOR: "#34C759",
+    TEXT_COLOR: "#1A1A1A",
+    VERIFIED_BADGE_COLOR: "#1D9E75",
+    Card_Background_Color: "#FFFFFF",
+    Border_Color: "#F0F0F0"
+};
+
+
+export default function Index(VALUES = {}) {
     // Start----Default CSR loading state checking for navigation
     const navigation = useNavigation();
     const loading = navigation.state === "loading";
     // End----Default CSR loading state checking for navigation
 
     const [activeDevice, setActiveDevice] = useState("desktop");
+  
+const [settings, setSettings] = useState({
+
+  // Header option
+
+   showHeader: true,
+    headerStyle: "center", // default active
+    eyebrowLabel: "CUSTOMER REVIEWS",
+    heading: "Real reviews from real people",
+    subheading: "Watch and hear what our customers have to say.",
+    reviewStats: "Show review count & verified badge",
+
+  // Display elements
+  showStarDistribution: true,
+  showReviewerName: true,
+  showReviewTimer: true,
+  showVerifiedBadge: true,
+  showMediaAsset: true,
+  showShareOption: true,
+  showAppreciationOption: true,
+
+
+  // Layout options
+  layout: "3 column grid",
+  filterSorting: "Filter & sorting both",
+  reviewsPerPage: "9 reviews",
+  reviewStats: "Show review count & verified badge",
+
+  // color piker
+  colors: DEFAULT_COLOR_VALUES
+});
+
+const handleChangeColors = (e) => {
+
+         handleSettingChange("colors", {
+    ...settings.colors,
+    ...e,
+  });
+}
+  const handleSettingChange = (key, value) => {
+  if (typeof key !== "string") {
+    console.warn("Invalid settings key:", key);
+    return;
+  }
+  setSettings((prev) => ({ ...prev, [key]: value }));
+};
+122
+console.log("settings", settings);
 
     // Start----Handlers for hide app window
     const handleHideAppWindow = () => {
@@ -90,6 +173,156 @@ export default function Index() {
                         }}
                     >
                         {/* Start----Sidebar content */}
+
+                              <Header handleSettingChange={handleSettingChange} settings={settings}/>
+                        
+                        
+                               {/* ----------Display Elements start ------------ */}
+                        <div style={{ marginTop: "2rem" }}>
+                          <s-stack border="base" borderRadius="base" padding="large" gap="small">
+                            <s-heading level="1">Display elements</s-heading>
+                        
+                            <s-stack paddingBlockStart="small">
+                              <s-switch
+                                id="show-star-distribution"
+                                label="Show star distribution bars"
+                                checked={settings.showStarDistribution}
+                                onChange={(e) => handleSettingChange("showStarDistribution", e.target.checked)}
+                              ></s-switch>
+                            </s-stack>
+                        
+                            <s-stack>
+                              <s-switch
+                                id="show-reviewer-name"
+                                label="Show reviewer name"
+                                checked={settings.showReviewerName}
+                                onChange={(e) => handleSettingChange("showReviewerName", e.target.checked)}
+                              ></s-switch>
+                            </s-stack>
+                        
+                            <s-stack>
+                              <s-switch
+                                id="show-review-timer"
+                                label="Show review timer"
+                                checked={settings.showReviewTimer}
+                                onChange={(e) => handleSettingChange("showReviewTimer", e.target.checked)}
+                              ></s-switch>
+                            </s-stack>
+                        
+                            <s-stack>
+                              <s-switch
+                                id="show-verified-badge"
+                                label="Show verified badge"
+                                checked={settings.showVerifiedBadge}
+                                onChange={(e) => handleSettingChange("showVerifiedBadge", e.target.checked)}
+                              ></s-switch>
+                            </s-stack>
+                        
+                            <s-stack>
+                              <s-switch
+                                id="show-media-asset"
+                                label="Show media asset(if available)"
+                                checked={settings.showMediaAsset}
+                                onChange={(e) => handleSettingChange("showMediaAsset", e.target.checked)}
+                              ></s-switch>
+                            </s-stack>
+                        
+                            <s-stack>
+                              <s-switch
+                                id="show-share-option"
+                                label="Show share option"
+                                checked={settings.showShareOption}
+                                onChange={(e) => handleSettingChange("showShareOption", e.target.checked)}
+                              ></s-switch>
+                            </s-stack>
+                        
+                            <s-stack>
+                              <s-switch
+                                id="show-appreciation-option"
+                                label="Show appreciation option"
+                                checked={settings.showAppreciationOption}
+                                onChange={(e) => handleSettingChange("showAppreciationOption", e.target.checked)}
+                              ></s-switch>
+                            </s-stack>
+                          </s-stack>
+                        </div>
+                        {/* ----------Display Elements end ------------ */}
+                        
+                        
+                        {/* ----------Layout option start ------------ */}
+                        <div style={{ marginTop: "2rem" }}>
+                          <s-stack border="base" borderRadius="base" padding="large" gap="small">
+                            <s-heading level="1">Layout option</s-heading>
+                        
+                            <s-stack border="base" paddingInlineStart="small" borderRadius="base" padding="small">
+                              <s-select
+                                label="Layout"
+                                value={settings.layout}
+                                onChange={(e) => handleSettingChange("layout", e.target.value)}
+                              >
+                                <s-option value="2 column grid">2 column grid</s-option>
+                                <s-option value="3 column grid">3 column grid</s-option>
+                                <s-option value="4 column grid">4 column grid</s-option>
+                              </s-select>
+                            </s-stack>
+                        
+                            <s-stack border="base" paddingInlineStart="small" borderRadius="base" padding="small">
+                              <s-select
+                                label="Filter & sorting"
+                                value={settings.filterSorting}
+                                onChange={(e) => handleSettingChange("filterSorting", e.target.value)}
+                              >
+                                <s-option value="Filter & sorting both">Filter & sorting both</s-option>
+                                <s-option value="Filter only">Filter only</s-option>
+                                <s-option value="Sorting only">Sorting only</s-option>
+                                <s-option value="None">None</s-option>
+                              </s-select>
+                            </s-stack>
+                        
+                            <s-stack border="base" paddingInlineStart="small" borderRadius="base" padding="small">
+                              <s-select
+                                label="Reviews per page"
+                                value={settings.reviewsPerPage}
+                                onChange={(e) => handleSettingChange("reviewsPerPage", e.target.value)}
+                              >
+                                <s-option value="6 reviews">6 reviews</s-option>
+                                <s-option value="9 reviews">9 reviews</s-option>
+                                <s-option value="12 reviews">12 reviews</s-option>
+                                <s-option value="12 reviews">15 reviews</s-option>
+                                <s-option value="12 reviews">18 reviews</s-option>
+                                <s-option value="12 reviews">24 reviews</s-option>
+                        
+                        
+                        
+                              </s-select>
+                            </s-stack>
+                        
+                          
+                          </s-stack>
+                        </div>
+                        {/* ----------Layout option end ------------ */}
+                                    {/* ----------Layout option end ------------ */}
+                        
+                                    <div style={{ marginTop: "2rem" }}>
+                                       
+                                      <s-stack
+                                        border="base"
+                                        borderRadius="base"
+                                        padding="large"
+                                        gap="small"
+                                      >
+                                        <s-heading level="1">Color</s-heading>
+                        
+                                         {COLOR_PICKERS_ELEMENTS.map((picker) => (
+                                            <ColorPicker
+                                                key={picker.key}
+                                                data={picker}
+                                                defaultColor={VALUES[picker.key] ?? settings?.colors[picker.key]}
+                                                onChange={(value) => handleChangeColors({[picker.key]: value})}
+                                            />
+                                        ))}
+                                      </s-stack>
+                                    </div>
                         {/* End----Sidebar content */}
                     </div>
                 </CustomSection>
@@ -139,7 +372,7 @@ export default function Index() {
                         </s-grid>
                     </div>
                     {/* End----Preview Header */}
-
+                     <QuoteLoopWidget/>
                     {/* Start----Preview Content */}
                     {/* End----Preview Content */}
                 </div>
