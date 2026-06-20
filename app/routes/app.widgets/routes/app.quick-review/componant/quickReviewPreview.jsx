@@ -1,20 +1,22 @@
 import { useState } from "react";
 import reviewsData from "./review.json";
 
-const StarSVG = ({ filled,STAR_COLOR, size = 20 }) => (
+const StarSVG = ({ filled, STAR_COLOR, size = 20 }) => (
   console.log(STAR_COLOR),
-  <svg
-    width={size}
-    height={size}
-    viewBox="0 0 17 16"
-    fill="none"
-    xmlns="http://www.w3.org/2000/svg"
-  >
-    <path
-      fill={filled ? STAR_COLOR : "#B5B5B5"}
-      d="M9.51964 0.855C8.97604 -0.285 7.35604 -0.285 6.81244 0.855L5.14444 4.3494L1.30564 4.8546C0.0552353 5.0202 -0.446365 6.561 0.469235 7.4298L3.27724 10.0962L2.57284 13.9026C2.34244 15.1434 3.65404 16.0962 4.76284 15.495L8.16604 13.647L11.5692 15.495C12.678 16.0962 13.9896 15.1434 13.7592 13.9026L13.0548 10.0962L15.8628 7.4298C16.7772 6.561 16.2768 5.0202 15.0264 4.8546L11.1864 4.3494L9.51964 0.855Z"
-    />
-  </svg>
+  (
+    <svg
+      width={size}
+      height={size}
+      viewBox="0 0 17 16"
+      fill="none"
+      xmlns="http://www.w3.org/2000/svg"
+    >
+      <path
+        fill={filled ? STAR_COLOR : "#B5B5B5"}
+        d="M9.51964 0.855C8.97604 -0.285 7.35604 -0.285 6.81244 0.855L5.14444 4.3494L1.30564 4.8546C0.0552353 5.0202 -0.446365 6.561 0.469235 7.4298L3.27724 10.0962L2.57284 13.9026C2.34244 15.1434 3.65404 16.0962 4.76284 15.495L8.16604 13.647L11.5692 15.495C12.678 16.0962 13.9896 15.1434 13.7592 13.9026L13.0548 10.0962L15.8628 7.4298C16.7772 6.561 16.2768 5.0202 15.0264 4.8546L11.1864 4.3494L9.51964 0.855Z"
+      />
+    </svg>
+  )
 );
 
 function WriteReviewModal({ onClose, quickReview, quickReviewTab }) {
@@ -33,10 +35,17 @@ function WriteReviewModal({ onClose, quickReview, quickReviewTab }) {
     successMessage,
     successMessageTitle,
     successButtonText,
-    colorValues
+    colorValues,
   } = quickReview;
 
-  const {STAR_COLOR, TEXT_COLOR, VERIFIED_BADGE_COLOR, Card_Background_Color, Border_Color,Submit_Button_Color}=colorValues
+  const {
+    STAR_COLOR,
+    TEXT_COLOR,
+    VERIFIED_BADGE_COLOR,
+    Card_Background_Color,
+    Border_Color,
+    Submit_Button_Color,
+  } = colorValues;
   const { success } = quickReviewTab;
   return (
     <div className="rv-modal-backdrop" onClick={onClose}>
@@ -75,9 +84,7 @@ function WriteReviewModal({ onClose, quickReview, quickReviewTab }) {
               </div>
               <div class="qucik-review-success-message">
                 <h2>{successMessageTitle}</h2>
-                <p>
-                 {successMessage}
-                </p>
+                <p>{successMessage}</p>
               </div>
 
               <button class="btn">{successButtonText}</button>
@@ -116,7 +123,11 @@ function WriteReviewModal({ onClose, quickReview, quickReviewTab }) {
                   onClick={() => setSelected(s)}
                   style={{ cursor: "pointer" }}
                 >
-                  <StarSVG   filled={s <= (hovered || selected)} STAR_COLOR={STAR_COLOR} size={28} />
+                  <StarSVG
+                    filled={s <= (hovered || selected)}
+                    STAR_COLOR={STAR_COLOR}
+                    size={28}
+                  />
                 </span>
               ))}
             </div>
@@ -209,12 +220,16 @@ function WriteReviewModal({ onClose, quickReview, quickReviewTab }) {
   );
 }
 
-export default function ReviewList({ quickReview, quickReviewTab,activeDevice }) {
+export default function ReviewList({
+  quickReview,
+  quickReviewTab,
+  activeDevice,
+}) {
   const [activeFilter, setActiveFilter] = useState("All");
   const [showManuFiltering, setShowManuFiltering] = useState(true);
-  const[showFilteringPopover,setShowFilteringPopover]=useState(false)
+  const [showFilteringPopover, setShowFilteringPopover] = useState(false);
 
-const [selectedFilter, setSelectedFilter] = useState("Highest rating");
+  const [selectedFilter, setSelectedFilter] = useState("Highest rating");
   const [lightbox, setLightbox] = useState(null);
   const [showModal, setShowModal] = useState(false);
   const {
@@ -230,19 +245,19 @@ const [selectedFilter, setSelectedFilter] = useState("Highest rating");
     showRatingFilter,
     reviewPerPage,
     defaultSort,
-    colorValues
+    colorValues,
   } = quickReview;
 
-  const { 
-  STAR_COLOR,
-  TEXT_COLOR,
-  VERIFIED_BADGE_COLOR,
-  Card_Background_Color,
-  Border_Color,
-  Submit_Button_Color
-}=colorValues
+  const {
+    STAR_COLOR,
+    TEXT_COLOR,
+    VERIFIED_BADGE_COLOR,
+    Card_Background_Color,
+    Border_Color,
+    Submit_Button_Color,
+  } = colorValues;
 
-console.log("Thsi is a color Value ",colorValues)
+  console.log("Thsi is a color Value ", colorValues);
   const filters = ["All", 1, 2, 3, 4, 5];
 
   const filteredReviews =
@@ -314,7 +329,7 @@ console.log("Thsi is a color Value ",colorValues)
        
   justify-content: center;
          }
-        .rv-modal {height:${success ?  activeDevice === "mobile" ? "40%": "30%" : activeDevice === "mobile" ? "70%" : "55%"} ;margin-top: 40px; background: #fff; border-radius:${borderRadius}px; padding: 24px; width: 400px; max-width: 50vw; position: relative; overflow:; }
+        .rv-modal {height:${success ? (activeDevice === "mobile" ? "40%" : "30%") : activeDevice === "mobile" ? "70%" : "55%"} ;margin-top: 40px; background: #fff; border-radius:${borderRadius}px; padding: 24px; width: 400px; max-width: 50vw; position: relative; overflow:; }
         .rv-modal-header { display: flex; align-items: center; gap: 10px; margin-bottom: 16px; }
         .rv-modal-icon { width: 36px; height: 36px; border-radius: 50%; background:  ${Submit_Button_Color}; display: flex; align-items: center; justify-content: center; flex-shrink: 0; }
         .rv-modal-title { font-size: 16px; font-weight: 600; margin: 0 0 2px; }
@@ -426,73 +441,80 @@ console.log("Thsi is a color Value ",colorValues)
                 </svg>
               </button>
 
-            <div style={{ position: "relative", display: "inline-block" }}>
-  <button
-    onClick={() => setShowFilteringPopover(!showFilteringPopover)}
-    className="rv-icon-btn"
-    title="Filter"
-  >
-    <svg
-      xmlns="http://www.w3.org/2000/svg"
-      width="20"
-      height="20"
-      viewBox="0 0 20 20"
-      fill="none"
-    >
-      <path
-        d="M9.75 0.750003C12.505 0.750003 15.205 0.982003 17.833 1.428C18.366 1.518 18.75 1.984 18.75 2.524V3.568C18.75 3.86348 18.6918 4.15606 18.5787 4.42904C18.4657 4.70203 18.2999 4.95007 18.091 5.159L12.659 10.591C12.4501 10.7999 12.2843 11.048 12.1713 11.321C12.0582 11.5939 12 11.8865 12 12.182V15.109C12.0001 15.527 11.8837 15.9367 11.664 16.2923C11.4443 16.6478 11.1299 16.9351 10.756 17.122L7.5 18.75V12.182C7.5 11.8865 7.44181 11.5939 7.32874 11.321C7.21566 11.048 7.04993 10.7999 6.841 10.591L1.409 5.159C1.20007 4.95007 1.03434 4.70203 0.921265 4.42904C0.808193 4.15606 0.749997 3.86348 0.75 3.568V2.524C0.75 1.984 1.134 1.518 1.667 1.428C4.33757 0.975856 7.04143 0.749058 9.75 0.750003Z"
-        stroke="#4A4A4A"
-        strokeWidth="1.5"
-        strokeLinecap="round"
-        strokeLinejoin="round"
-      />
-    </svg>
-  </button>
+              <div style={{ position: "relative", display: "inline-block" }}>
+                <button
+                  onClick={() => setShowFilteringPopover(!showFilteringPopover)}
+                  className="rv-icon-btn"
+                  title="Filter"
+                >
+                  <svg
+                    xmlns="http://www.w3.org/2000/svg"
+                    width="20"
+                    height="20"
+                    viewBox="0 0 20 20"
+                    fill="none"
+                  >
+                    <path
+                      d="M9.75 0.750003C12.505 0.750003 15.205 0.982003 17.833 1.428C18.366 1.518 18.75 1.984 18.75 2.524V3.568C18.75 3.86348 18.6918 4.15606 18.5787 4.42904C18.4657 4.70203 18.2999 4.95007 18.091 5.159L12.659 10.591C12.4501 10.7999 12.2843 11.048 12.1713 11.321C12.0582 11.5939 12 11.8865 12 12.182V15.109C12.0001 15.527 11.8837 15.9367 11.664 16.2923C11.4443 16.6478 11.1299 16.9351 10.756 17.122L7.5 18.75V12.182C7.5 11.8865 7.44181 11.5939 7.32874 11.321C7.21566 11.048 7.04993 10.7999 6.841 10.591L1.409 5.159C1.20007 4.95007 1.03434 4.70203 0.921265 4.42904C0.808193 4.15606 0.749997 3.86348 0.75 3.568V2.524C0.75 1.984 1.134 1.518 1.667 1.428C4.33757 0.975856 7.04143 0.749058 9.75 0.750003Z"
+                      stroke="#4A4A4A"
+                      strokeWidth="1.5"
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                    />
+                  </svg>
+                </button>
 
-  {showFilteringPopover && (
-    <div style={{
-      position: "absolute",
-      top: "110%",
-      right: 0,
-      background: "#fff",
-      border: "1px solid #e0e0e0",
-      borderRadius: "8px",
-      boxShadow: "0 4px 16px rgba(0,0,0,0.10)",
-      minWidth: "180px",
-      zIndex: 100,
-      overflow: "hidden",
-    }}>
-      {[
-        "Highest rating",
-        "Lowest rating",
-        "Only pictures",
-        "Pictures first",
-        "Videos first",
-        "Most helpful",
-      ].map((option) => (
-        <div
-          key={option}
-          onClick={() => {
-            setSelectedFilter(option);
-            setShowFilteringPopover(false);
-          }}
-          style={{
-            padding: "10px 16px",
-            fontSize: "14px",
-            cursor: "pointer",
-            color: "#222",
-            background: selectedFilter === option ? "#f0f0f0" : "#fff",
-          }}
-          onMouseEnter={e => e.currentTarget.style.background = "#f5f5f5"}
-          onMouseLeave={e => e.currentTarget.style.background = selectedFilter === option ? "#f0f0f0" : "#fff"}
-        >
-          {option}
-        </div>
-      ))}
-    </div>
-  )}
-</div>
-          
+                {showFilteringPopover && (
+                  <div
+                    style={{
+                      position: "absolute",
+                      top: "110%",
+                      right: 0,
+                      background: "#fff",
+                      border: "1px solid #e0e0e0",
+                      borderRadius: "8px",
+                      boxShadow: "0 4px 16px rgba(0,0,0,0.10)",
+                      minWidth: "180px",
+                      zIndex: 100,
+                      overflow: "hidden",
+                    }}
+                  >
+                    {[
+                      "Highest rating",
+                      "Lowest rating",
+                      "Only pictures",
+                      "Pictures first",
+                      "Videos first",
+                      "Most helpful",
+                    ].map((option) => (
+                      <div
+                        key={option}
+                        onClick={() => {
+                          setSelectedFilter(option);
+                          setShowFilteringPopover(false);
+                        }}
+                        style={{
+                          padding: "10px 16px",
+                          fontSize: "14px",
+                          cursor: "pointer",
+                          color: "#222",
+                          background:
+                            selectedFilter === option ? "#f0f0f0" : "#fff",
+                        }}
+                        onMouseEnter={(e) =>
+                          (e.currentTarget.style.background = "#f5f5f5")
+                        }
+                        onMouseLeave={(e) =>
+                          (e.currentTarget.style.background =
+                            selectedFilter === option ? "#f0f0f0" : "#fff")
+                        }
+                      >
+                        {option}
+                      </div>
+                    ))}
+                  </div>
+                )}
+              </div>
             </div>
           </div>
 
@@ -513,7 +535,12 @@ console.log("Thsi is a color Value ",colorValues)
                       "All"
                     ) : (
                       <>
-                        {f} <StarSVG  filled={true} STAR_COLOR={STAR_COLOR} size={13} />
+                        {f}{" "}
+                        <StarSVG
+                          filled={true}
+                          STAR_COLOR={STAR_COLOR}
+                          size={13}
+                        />
                       </>
                     )}
                   </button>
@@ -533,7 +560,12 @@ console.log("Thsi is a color Value ",colorValues)
                 {showRatingFilter && (
                   <div className="rv-stars">
                     {[1, 2, 3, 4, 5].map((s) => (
-                      <StarSVG  key={s} filled={s <= review.rating} STAR_COLOR={STAR_COLOR} size={20} />
+                      <StarSVG
+                        key={s}
+                        filled={s <= review.rating}
+                        STAR_COLOR={STAR_COLOR}
+                        size={20}
+                      />
                     ))}
                   </div>
                 )}
