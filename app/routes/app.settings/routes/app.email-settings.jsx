@@ -28,8 +28,6 @@ export default function EmailSettings() {
   );
   const [smtpSetup, setSmtpSetup] = useState(DEFAULT_SMTP_SETUP);
 
-  console.log("DEFAULT_OUTGOING_REQUEST_EMAIL:", outgoingRequestEmail);
-
   return (
     <>
       <pre>{JSON.stringify(outgoingRequestEmail, null, 2)}</pre>
