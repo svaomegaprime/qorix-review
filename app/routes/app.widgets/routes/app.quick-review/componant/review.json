@@ -1,0 +1,95 @@
+[
+  {
+    "id": 1,
+    "rating": 4,
+    "name": "Abdur Razzak",
+    "avatar": "https://i.ibb.co.com/7PwsYSL/raju.jpg",
+    "time": "2 days ago",
+    "product": "Hydrating Eye Cream",
+    "review": "Good results, noticed a difference in about a week. Fast shipping too.",
+    "media": [
+      { "type": "image", "url": "https://images.unsplash.com/photo-1556228578-8c89e6adf883?w=200" },
+      { "type": "image", "url": "https://images.unsplash.com/photo-1608248543803-ba4f8c70ae0b?w=200" },
+      { "type": "video", "url": "https://www.w3schools.com/html/mov_bbb.mp4", "thumb": "https://images.unsplash.com/photo-1631729371254-42c2892f0e6e?w=200" }
+    ],
+    "verified": true
+  },
+  {
+    "id": 2,
+    "rating": 5,
+    "name": "Abir Rayhan",
+    "avatar": "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=80",
+    "time": "5 hours ago",
+    "product": "Hydrating Eye Cream",
+    "review": "Good results, noticed a difference in about a week. Fast shipping too.",
+    "media": [
+      { "type": "image", "url": "https://images.unsplash.com/photo-1556228578-8c89e6adf883?w=200" },
+      { "type": "video", "url": "https://www.w3schools.com/html/mov_bbb.mp4", "thumb": "https://images.unsplash.com/photo-1608248543803-ba4f8c70ae0b?w=200" },
+      { "type": "image", "url": "https://images.unsplash.com/photo-1631729371254-42c2892f0e6e?w=200" }
+    ],
+    "verified": true
+  },
+  {
+    "id": 3,
+    "rating": 5,
+    "name": "Osman Hasan",
+    "avatar": "https://images.unsplash.com/photo-1500648767791-00dcc994a43e?w=80",
+    "time": "1 week ago",
+    "product": "Hydrating Eye Cream",
+    "review": "Good results, noticed a difference in about a week. Fast shipping too.",
+    "media": [
+      { "type": "video", "url": "https://www.w3schools.com/html/mov_bbb.mp4", "thumb": "https://images.unsplash.com/photo-1556228578-8c89e6adf883?w=200" },
+      { "type": "video", "url": "https://www.w3schools.com/html/mov_bbb.mp4", "thumb": "https://images.unsplash.com/photo-1608248543803-ba4f8c70ae0b?w=200" },
+      { "type": "image", "url": "https://images.unsplash.com/photo-1631729371254-42c2892f0e6e?w=200" }
+    ],
+    "verified": false
+  },
+  {
+    "id": 4,
+    "rating": 3,
+    "name": "Nadia Islam",
+    "avatar": null,
+    "time": "3 days ago",
+    "product": "Hydrating Eye Cream",
+    "review": "It's okay, not what I expected but does the job. Packaging was nice.",
+    "media": [],
+    "verified": true
+  },
+  {
+    "id": 5,
+    "rating": 5,
+    "name": "Tanvir Ahmed",
+    "avatar": "https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?w=80",
+    "time": "2 weeks ago",
+    "product": "Hydrating Eye Cream",
+    "review": "Absolutely love this product! My skin feels amazing after just a few days.",
+    "media": [
+      { "type": "image", "url": "https://images.unsplash.com/photo-1556228578-8c89e6adf883?w=200" }
+    ],
+    "verified": true
+  },
+  {
+    "id": 6,
+    "rating": 1,
+    "name": "Sadia Akter",
+    "avatar": null,
+    "time": "1 month ago",
+    "product": "Hydrating Eye Cream",
+    "review": "Did not work for me at all. Returned the product.",
+    "media": [],
+    "verified": false
+  },
+  {
+    "id": 7,
+    "rating": 2,
+    "name": "Rahim Uddin",
+    "avatar": null,
+    "time": "3 weeks ago",
+    "product": "Hydrating Eye Cream",
+    "review": "Shipping was slow and the product did not meet my expectations.",
+    "media": [
+      { "type": "video", "url": "https://www.w3schools.com/html/mov_bbb.mp4", "thumb": "https://images.unsplash.com/photo-1608248543803-ba4f8c70ae0b?w=200" }
+    ],
+    "verified": true
+  }
+]
