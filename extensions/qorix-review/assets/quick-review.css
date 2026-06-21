@@ -23,6 +23,17 @@
         align-items: baseline;
         gap: 10px;
       }
+      #media-preview{
+        display: flex;
+      }
+      .cr-score b {
+        font-size: 44px;
+        font-weight: 500;
+        line-height: 1;
+        display: flex;
+        align-items: baseline;
+        gap: 10px;
+      }
       .cr-score span {
         font-size: 16px;
         color: #616161;

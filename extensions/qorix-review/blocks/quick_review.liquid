@@ -1,705 +1,355 @@
-{% comment %}
-  <link rel="preconnect" href="https://fonts.googleapis.com" />
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-  <link
-    href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&display=swap"
-    rel="stylesheet"
-  />
-{% endcomment %}
+<link rel="stylesheet" href="{{ 'quick-review.css' | asset_url }}">
 
-<link rel="stylesheet" href="{{'quick-review.css' | asset_url }}">
-<div class="wrap">
-  <!-- Top Row -->
-  <div class="top-row">
-    <div>
-      <div class="cr-title">Customer Reviews</div>
-      <div class="cr-score" id="avg-score">3.6 <span>7 reviews</span></div>
-      <button class="write-btn" onclick="openModal()">Write a review</button>
-    </div>
-    <div class="right-btns">
-      <div
-        class="icon-btn"
-        title="Toggle filters"
-        onclick="toggleFilters()"
-      >
-        <svg viewBox="0 0 24 24">
-          <line x1="21" y1="10" x2="7" y2="10" />
-          <line x1="21" y1="6" x2="3" y2="6" />
-          <line x1="21" y1="14" x2="3" y2="14" />
-          <line x1="21" y1="18" x2="7" y2="18" />
-        </svg>
+<div x-data="quickReviewWidget()">
+  <div class="wrap">
+    {% comment %} Start:: Header section summary {% endcomment %}
+
+    <div class="top-row">
+      <div>
+        <div class="cr-title">Customer Reviews</div>
+        <div class="cr-score" id="avg-score">
+          <b class="cr-score" x-text="avgScore()"></b> <span x-text="reviews.length + ' reviews'"></span>
+        </div>
+        <button class="write-btn" type="button" @click="openModal()">Write a review</button>
       </div>
-      <div
-        class="icon-btn"
-        id="filter-btn"
-        title="Filter"
-        onclick="toggleSort(event)"
-        style="position: relative"
-      >
-        <svg viewBox="0 0 24 24">
-          <polygon points="22 3 2 3 10 12.46 10 19 14 21 14 12.46 22 3" />
-        </svg>
-        <div
-          class="sort-dropdown"
-          id="sort-dd"
-          onclick="event.stopPropagation()"
+      <div class="right-btns">
+        <button
+          class="icon-btn"
+          type="button"
+          title="Toggle filters"
+          @click="filtersOpen = !filtersOpen"
         >
-          <div
-            class="sort-option selected"
-            onclick="setSort(this, 'Highest rating')"
-          >
-            Highest rating
-          </div>
-          <div class="sort-option" onclick="setSort(this, 'Lowest rating')">Lowest rating</div>
-          <div class="sort-option" onclick="setSort(this, 'Only pictures')">Only pictures</div>
-          <div
-            class="sort-option"
-            onclick="setSort(this, 'Pictures first')"
-          >
-            Pictures first
-          </div>
-          <div class="sort-option" onclick="setSort(this, 'Videos first')">Videos first</div>
-          <div class="sort-option" onclick="setSort(this, 'Most helpful')">Most helpful</div>
-        </div>
-      </div>
-    </div>
-  </div>
-
-  <!-- Filters -->
-  <div class="filter-section" id="filter-section" style="display: none">
-    <div class="filter-label">Filters</div>
-    <div class="rating-label">Rating</div>
-    <div class="filter-row" id="filter-row">
-      <button class="filter-chip active" onclick="setFilter('all', this)">All</button>
-      <button class="filter-chip" onclick="setFilter(1, this)">1 <span id="fc1"></span></button>
-      <button class="filter-chip" onclick="setFilter(2, this)">2 <span id="fc2"></span></button>
-      <button class="filter-chip" onclick="setFilter(3, this)">3 <span id="fc3"></span></button>
-      <button class="filter-chip" onclick="setFilter(4, this)">4 <span id="fc4"></span></button>
-      <button class="filter-chip" onclick="setFilter(5, this)">5 <span id="fc5"></span></button>
-    </div>
-  </div>
-
-  <!-- Reviews List -->
-  <div class="reviews-list" id="reviews-list"></div>
-</div>
-
-<!-- Media Lightbox -->
-<div class="lightbox" id="lightbox" onclick="closeLightbox(event)">
-  <button class="lightbox-close" onclick="closeLightbox()">&#x2715;</button>
-  <div class="lightbox-content" id="lightbox-content"></div>
-</div>
-
-<!-- Write Review Modal -->
-<div class="modal-overlay" id="modal-overlay" onclick="overlayClick(event)">
-  <div class="modal-box" id="modal-box">
-    <button class="modal-close" onclick="closeModal()">&#x2715;</button>
-
-    <!-- Form View -->
-    <div id="form-view">
-      <div class="modal-header">
-        <div class="modal-icon">
-          <svg viewBox="0 0 24 24" fill="#fff">
-            <path
-              d="M3 17.25V21h3.75L17.81 9.94l-3.75-3.75L3 17.25zM20.71 7.04a1 1 0 000-1.41l-2.34-2.34a1 1 0 00-1.41 0l-1.83 1.83 3.75 3.75 1.83-1.83z"
-            />
-          </svg>
-        </div>
-        <div>
-          <div class="modal-title">How was your experience?</div>
-          <div class="modal-sub">Your feedback helps others</div>
-        </div>
-      </div>
-
-      <label class="form-label">Your rating <span class="req">*</span></label>
-      <div class="star-picker" id="star-picker"></div>
-
-      <label class="form-label">Your review <span class="req">*</span></label>
-      <textarea
-        class="form-textarea"
-        id="review-text"
-        placeholder="Tell us what you loved or didn't like..."
-      ></textarea>
-
-      <label class="form-label">Your name <span class="req">*</span></label>
-      <input
-        class="form-input"
-        id="review-name"
-        type="text"
-        placeholder="Enter your name"
-      >
-
-      <label class="form-label">Add media <span style="font-weight: 400; color: #888">(optional)</span></label>
-      <input
-        type="file"
-        id="media-input"
-        accept="image/jpeg,image/png,image/webp,video/mp4,video/quicktime"
-        multiple
-        style="display: none"
-        onchange="handleMediaUpload(this)"
-      >
-      <div
-        class="upload-zone"
-        id="upload-zone"
-        onclick="document.getElementById('media-input').click()"
-        ondragover="uploadDragOver(event)"
-        ondragleave="uploadDragLeave(event)"
-        ondrop="uploadDrop(event)"
-      >
-        <svg viewBox="0 0 24 24">
-          <path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4" />
-          <polyline points="17 8 12 3 7 8" />
-          <line x1="12" y1="3" x2="12" y2="15" />
-        </svg>
-        <p>Click to upload or drag and drop</p>
-        <small>JPG, PNG, MP4, MOV up to 20MB each</small>
-      </div>
-      <div
-        id="media-preview"
-        style="
-          display: flex;
-          gap: 8px;
-          flex-wrap: wrap;
-          margin-bottom: 14px;
-        "
-      ></div>
-
-      <button class="submit-btn" onclick="submitReview()">Submit review</button>
-      <div class="modal-footer-note">
-        <svg viewBox="0 0 24 24">
-          <rect x="3" y="11" width="18" height="11" rx="2" ry="2" />
-          <path d="M7 11V7a5 5 0 0110 0v4" />
-        </svg>
-        No account required &middot; Your review is public
-      </div>
-    </div>
-
-    <!-- Success View -->
-    <div
-      id="success-view"
-      style="
-        display: none;
-        flex-direction: column;
-        align-items: center;
-        justify-content: center;
-        min-height: 320px;
-      "
-    >
-      <div class="success-box">
-        <div class="success-circle">
           <svg viewBox="0 0 24 24">
-            <path d="M5 13l4 4L19 7" />
+            <line x1="21" y1="10" x2="7" y2="10" />
+            <line x1="21" y1="6" x2="3" y2="6" />
+            <line x1="21" y1="14" x2="3" y2="14" />
+            <line x1="21" y1="18" x2="7" y2="18" />
           </svg>
+        </button>
+        <div
+          class="icon-btn"
+          id="filter-btn"
+          title="Filter"
+          style="position: relative"
+          @click="sortOpen = !sortOpen"
+          @click.outside="sortOpen = false"
+        >
+          <svg viewBox="0 0 24 24">
+            <polygon points="22 3 2 3 10 12.46 10 19 14 21 14 12.46 22 3" />
+          </svg>
+          <div
+            class="sort-dropdown"
+            id="sort-dd"
+            :class="{ open: sortOpen }"
+            @click.stop
+          >
+            <template x-for="option in sortOptions" :key="option">
+              <div
+                class="sort-option"
+                :class="{ selected: activeSort === option }"
+                @click="setSort(option)"
+                x-text="option"
+              ></div>
+            </template>
+          </div>
         </div>
-        <div class="success-title">Review submitted!</div>
-        <div class="success-sub">Thank you for your review. It has been submitted successfully.</div>
-        <button class="continue-btn" onclick="closeModal()">Continue Shopping</button>
       </div>
     </div>
+    {% comment %} End:: Header section summary {% endcomment %}
+
+    <div class="filter-section" id="filter-section" x-show="filtersOpen">
+      <div class="filter-label">Filters</div>
+      <div class="rating-label">Rating</div>
+      <div class="filter-row" id="filter-row">
+        <button
+          class="filter-chip"
+          type="button"
+          :class="{ active: activeFilter === 'all' }"
+          @click="activeFilter = 'all'"
+        >
+          All
+        </button>
+        <template x-for="rating in ratings" :key="rating">
+          <button
+            class="filter-chip"
+            type="button"
+            :class="{ active: activeFilter === rating }"
+            @click="activeFilter = rating"
+          >
+            <span x-text="rating"></span>
+            <span>
+              <svg width="17" height="17" viewBox="0 0 17 16" fill="none" xmlns="http://www.w3.org/2000/svg">
+                <path
+                  fill="#FF9500"
+                  d="M9.51964 0.855C8.97604 -0.285 7.35604 -0.285 6.81244 0.855L5.14444 4.3494L1.30564 4.8546C0.0552353 5.0202 -0.446365 6.561 0.469235 7.4298L3.27724 10.0962L2.57284 13.9026C2.34244 15.1434 3.65404 16.0962 4.76284 15.495L8.16604 13.647L11.5692 15.495C12.678 16.0962 13.9896 15.1434 13.7592 13.9026L13.0548 10.0962L15.8628 7.4298C16.7772 6.561 16.2768 5.0202 15.0264 4.8546L11.1864 4.3494L9.51964 0.855Z"
+                />
+              </svg>
+            </span>
+          </button>
+        </template>
+      </div>
+    </div>
+
+    {% comment %} Start:: Review List show {% endcomment %}
+    <div class="reviews-list" id="reviews-list">
+      <template x-for="review in filteredReviews()" :key="review.id">
+        <div class="review-item">
+          <div class="stars-row">
+            <template x-for="star in ratings" :key="'review-' + review.id + '-star-' + star">
+              <svg width="20" height="20" viewBox="0 0 17 16" fill="none" xmlns="http://www.w3.org/2000/svg">
+                <path
+                  :fill="star <= review.rating ? '#FF9500' : '#B5B5B5'"
+                  d="M9.51964 0.855C8.97604 -0.285 7.35604 -0.285 6.81244 0.855L5.14444 4.3494L1.30564 4.8546C0.0552353 5.0202 -0.446365 6.561 0.469235 7.4298L3.27724 10.0962L2.57284 13.9026C2.34244 15.1434 3.65404 16.0962 4.76284 15.495L8.16604 13.647L11.5692 15.495C12.678 16.0962 13.9896 15.1434 13.7592 13.9026L13.0548 10.0962L15.8628 7.4298C16.7772 6.561 16.2768 5.0202 15.0264 4.8546L11.1864 4.3494L9.51964 0.855Z"
+                />
+              </svg>
+            </template>
+          </div>
+
+          <div class="reviewer-row">
+            <template x-if="review.avatar">
+              <div>
+                <img
+                  class="avatar"
+                  :src="review.avatar"
+                  :alt="review.name"
+                  @error="$event.target.style.display = 'none'; $event.target.nextElementSibling.style.display = 'flex'"
+                  width="40"
+                  height="40"
+                >
+                <div class="avatar-initials" style="display: none" x-text="initials(review.name)"></div>
+              </div>
+            </template>
+            <template x-if="!review.avatar">
+              <div class="avatar-initials" x-text="initials(review.name)"></div>
+            </template>
+
+            <div>
+              <div class="reviewer-name-row">
+                <span x-text="review.name"></span>
+                <span x-show="review.verified">
+                  <svg width="16" height="16" viewBox="0 0 18 18" fill="none">
+                    <circle cx="9" cy="9" r="9" fill="#1a7d43" />
+                    <path d="M5.21 9L7.74 11.53L12.79 6.47" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" />
+                  </svg>
+                </span>
+              </div>
+              <div class="reviewer-time" x-text="review.time"></div>
+            </div>
+          </div>
+
+          <div class="quick_review_product_name">
+            <span x-text="review.product"></span>
+            <div class="review-text" x-text="review.review"></div>
+          </div>
+
+          <div class="media-row" x-show="review.media.length > 0">
+            <template x-for="media in review.media" :key="media.url + media.type">
+              <div
+                class="media-thumb-wrap"
+                :title="media.type === 'image' ? 'Click to view' : 'Click to play'"
+                @click="openLightbox(media)"
+              >
+                <img
+                  :src="media.type === 'image' ? media.url : media.thumb"
+                  :alt="media.type === 'image' ? 'review image' : 'video thumbnail'"
+                  width="80"
+                  height="80"
+                >
+                <div class="play-overlay" x-show="media.type === 'video'">
+                  <svg viewBox="0 0 24 24">
+                    <path d="M8 5v14l11-7z"></path>
+                  </svg>
+                </div>
+              </div>
+            </template>
+          </div>
+        </div>
+      </template>
+
+      <p
+        x-show="filteredReviews().length === 0"
+        style="color: #888; font-size: 14px; padding: 20px 0"
+      >
+        No reviews found.
+      </p>
+    </div>
+    {% comment %} End:: Review List show {% endcomment %}
   </div>
+  {% comment %} Start:: Popup video image {% endcomment %}
+  <div class="lightbox" id="lightbox" :class="{ open: lightboxOpen }" @click="closeLightbox($event)">
+    <button class="lightbox-close" type="button" @click="closeLightbox()">&#x2715;</button>
+    <div class="lightbox-content" id="lightbox-content">
+      <template x-if="lightboxMedia && lightboxMedia.type === 'image'">
+        <img :src="lightboxMedia.url" alt="media" width="" height="">
+      </template>
+      <template x-if="lightboxMedia && lightboxMedia.type === 'video'">
+        <video :src="lightboxMedia.url" controls autoplay></video>
+      </template>
+    </div>
+  </div>
+  {% comment %} End:: Popup video image {% endcomment %}
+
+  {% comment %} Start:: Review form and success {% endcomment %}
+
+  <div class="modal-overlay" id="modal-overlay" :class="{ open: modalOpen }" @click="overlayClick($event)">
+    <div class="modal-box" id="modal-box" x-ref="modalBox">
+      <button class="modal-close" type="button" @click="closeModal()">&#x2715;</button>
+      {% comment %} Start:: form  {% endcomment %}
+      <form id="form-view" x-show="!submitSuccess">
+        <div class="modal-header">
+          <div class="modal-icon">
+            <svg viewBox="0 0 24 24" fill="#fff">
+              <path
+                d="M3 17.25V21h3.75L17.81 9.94l-3.75-3.75L3 17.25zM20.71 7.04a1 1 0 000-1.41l-2.34-2.34a1 1 0 00-1.41 0l-1.83 1.83 3.75 3.75 1.83-1.83z"
+              />
+            </svg>
+          </div>
+          <div>
+            <div class="modal-title">How was your experience?</div>
+            <div class="modal-sub">Your feedback helps others</div>
+          </div>
+        </div>
+
+        <label class="form-label">Your rating <span class="req">*</span></label>
+        <div class="star-picker" id="star-picker">
+          <template x-for="star in ratings" :key="'picker-' + star">
+            <span
+              role="button"
+              tabindex="0"
+              @mouseenter="starHover = star"
+              @mouseleave="starHover = 0"
+              @click="starSelected = star"
+              @keydown.enter.prevent="starSelected = star"
+              @keydown.space.prevent="starSelected = star"
+              :aria-label="'Rate ' + star + ' stars'"
+            >
+              <svg width="32" height="32" viewBox="0 0 17 16" fill="none" xmlns="http://www.w3.org/2000/svg">
+                <path
+                  :fill="star <= (starHover || starSelected) ? '#FF9500' : '#B5B5B5'"
+                  d="M9.51964 0.855C8.97604 -0.285 7.35604 -0.285 6.81244 0.855L5.14444 4.3494L1.30564 4.8546C0.0552353 5.0202 -0.446365 6.561 0.469235 7.4298L3.27724 10.0962L2.57284 13.9026C2.34244 15.1434 3.65404 16.0962 4.76284 15.495L8.16604 13.647L11.5692 15.495C12.678 16.0962 13.9896 15.1434 13.7592 13.9026L13.0548 10.0962L15.8628 7.4298C16.7772 6.561 16.2768 5.0202 15.0264 4.8546L11.1864 4.3494L9.51964 0.855Z"
+                />
+              </svg>
+            </span>
+          </template>
+        </div>
+
+        <label class="form-label">Your name <span class="req">*</span></label>
+        <input
+          class="form-input"
+          id="review-name"
+          type="text"
+          placeholder="Enter your name"
+          x-model="form.name"
+        >
+
+        <label class="form-label">Email <span class="req">*</span></label>
+        <input
+          class="form-input"
+          id="review-email"
+          type="email"
+          required
+          placeholder="Enter your email"
+          x-model="form.email"
+        >
+
+        <label class="form-label">Your review <span class="req">*</span></label>
+        <textarea
+          class="form-textarea"
+          id="review-text"
+          placeholder="Tell us what you loved or didn't like..."
+          x-model="form.review"
+        ></textarea>
+        <label class="form-label">Add media <span style="font-weight: 400; color: #888">(optional)</span></label>
+        <input
+          type="file"
+          id="media-input"
+          accept="image/jpeg,image/png,image/webp,video/mp4,video/quicktime"
+          multiple
+          style="display: none"
+          x-ref="mediaInput"
+          @change="handleMediaUpload($event)"
+        >
+        <div
+          class="upload-zone"
+          id="upload-zone"
+          :class="{ 'drag-over': isDragging }"
+          @click="$refs.mediaInput.click()"
+          @dragover.prevent="isDragging = true"
+          @dragleave="isDragging = false"
+          @drop.prevent="handleDrop($event)"
+        >
+          <svg viewBox="0 0 24 24">
+            <path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4" />
+            <polyline points="17 8 12 3 7 8" />
+            <line x1="12" y1="3" x2="12" y2="15" />
+          </svg>
+          <p>Click to upload or drag and drop</p>
+          <small>JPG, PNG, MP4, MOV up to 20MB each</small>
+        </div>
+        <div
+          id="media-preview"
+          style="display: flex; gap: 8px; flex-wrap: wrap; margin-bottom: 14px"
+          x-show="uploadedFiles.length > 0"
+        >
+          <template x-for="(file, index) in uploadedFiles" :key="file.url">
+            <div class="preview-item">
+              <template x-if="file.isVideo">
+                <video :src="file.url" muted playsinline></video>
+              </template>
+              <template x-if="!file.isVideo">
+                <img :src="file.url" alt="preview" width="" height="">
+              </template>
+              <div class="preview-video-badge" x-show="file.isVideo">VIDEO</div>
+              <button class="preview-remove" type="button" @click="removeMedia(index)">&#x2715;</button>
+            </div>
+          </template>
+        </div>
+
+        <button class="submit-btn" type="button" @click="submitReview()">Submit review</button>
+        <div class="modal-footer-note">
+          <svg viewBox="0 0 24 24">
+            <rect x="3" y="11" width="18" height="11" rx="2" ry="2" />
+            <path d="M7 11V7a5 5 0 0110 0v4" />
+          </svg>
+          No account required &middot; Your review is public
+        </div>
+      </form>
+      {% comment %} End:: form  {% endcomment %}
+      {% comment %} Start:: success message  {% endcomment %}
+
+      <div
+        id="success-view"
+        :style="
+          {
+            display: submitSuccess ? 'flex' : 'none',
+            flexDirection: 'column',
+            alignItems: 'center',
+            justifyContent: 'center',
+            minHeight: '320px'
+          }
+        "
+      >
+        <div class="success-box">
+          <div class="success-circle">
+            <svg viewBox="0 0 24 24">
+              <path d="M5 13l4 4L19 7" />
+            </svg>
+          </div>
+          <div class="success-title">Review submitted!</div>
+          <div class="success-sub">Thank you for your review. It has been submitted successfully.</div>
+          <button class="continue-btn" type="button" @click="closeModal()">Continue Shopping</button>
+        </div>
+      </div>
+      {% comment %} End:: success message  {% endcomment %}
+    </div>
+  </div>
+  {% comment %} End:: Review form and success {% endcomment %}
 </div>
 
-<script>
-  const STAR_COLOR = '#FF9500';
-  let activeFilter = 'all';
-  let activeSort = 'Highest rating';
-  let starSelected = 0;
-  let starHover = 0;
+<script src="{{ 'quick-review.js'| asset_url }}" defer></script>
 
-  const reviews = [
-    {
-      id: 1,
-      rating: 4,
-      name: 'Abdur Razzak',
-      avatar: 'https://i.ibb.co.com/7PwsYSL/raju.jpg',
-      time: '2 days ago',
-      product: 'Hydrating Eye Cream',
-      review: 'Good results, noticed a difference in about a week. Fast shipping too.',
-      media: [
-        {
-          type: 'image',
-          url: 'https://images.unsplash.com/photo-1556228578-8c89e6adf883?w=200',
-        },
-        {
-          type: 'image',
-          url: 'https://images.unsplash.com/photo-1608248543803-ba4f8c70ae0b?w=200',
-        },
-        {
-          type: 'video',
-          url: 'https://www.w3schools.com/html/mov_bbb.mp4',
-          thumb: 'https://images.unsplash.com/photo-1631729371254-42c2892f0e6e?w=200',
-        },
-      ],
-      verified: true,
-    },
-    {
-      id: 2,
-      rating: 5,
-      name: 'Abir Rayhan',
-      avatar: 'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=80',
-      time: '5 hours ago',
-      product: 'Hydrating Eye Cream',
-      review: 'Good results, noticed a difference in about a week. Fast shipping too.',
-      media: [
-        {
-          type: 'image',
-          url: 'https://images.unsplash.com/photo-1556228578-8c89e6adf883?w=200',
-        },
-        {
-          type: 'video',
-          url: 'https://www.w3schools.com/html/mov_bbb.mp4',
-          thumb: 'https://images.unsplash.com/photo-1608248543803-ba4f8c70ae0b?w=200',
-        },
-        {
-          type: 'image',
-          url: 'https://images.unsplash.com/photo-1631729371254-42c2892f0e6e?w=200',
-        },
-      ],
-      verified: true,
-    },
-    {
-      id: 3,
-      rating: 5,
-      name: 'Osman Hasan',
-      avatar: 'https://images.unsplash.com/photo-1500648767791-00dcc994a43e?w=80',
-      time: '1 week ago',
-      product: 'Hydrating Eye Cream',
-      review: 'Good results, noticed a difference in about a week. Fast shipping too.',
-      media: [
-        {
-          type: 'video',
-          url: 'https://www.w3schools.com/html/mov_bbb.mp4',
-          thumb: 'https://images.unsplash.com/photo-1556228578-8c89e6adf883?w=200',
-        },
-        {
-          type: 'video',
-          url: 'https://www.w3schools.com/html/mov_bbb.mp4',
-          thumb: 'https://images.unsplash.com/photo-1608248543803-ba4f8c70ae0b?w=200',
-        },
-        {
-          type: 'image',
-          url: 'https://images.unsplash.com/photo-1631729371254-42c2892f0e6e?w=200',
-        },
-      ],
-      verified: false,
-    },
-    {
-      id: 4,
-      rating: 3,
-      name: 'Nadia Islam',
-      avatar: null,
-      time: '3 days ago',
-      product: 'Hydrating Eye Cream',
-      review: "It's okay, not what I expected but does the job. Packaging was nice.",
-      media: [],
-      verified: true,
-    },
-    {
-      id: 5,
-      rating: 5,
-      name: 'Tanvir Ahmed',
-      avatar: 'https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?w=80',
-      time: '2 weeks ago',
-      product: 'Hydrating Eye Cream',
-      review: 'Absolutely love this product! My skin feels amazing after just a few days.',
-      media: [
-        {
-          type: 'image',
-          url: 'https://images.unsplash.com/photo-1556228578-8c89e6adf883?w=200',
-        },
-      ],
-      verified: true,
-    },
-    {
-      id: 6,
-      rating: 1,
-      name: 'Sadia Akter',
-      avatar: null,
-      time: '1 month ago',
-      product: 'Hydrating Eye Cream',
-      review: 'Did not work for me at all. Returned the product.',
-      media: [],
-      verified: false,
-    },
-    {
-      id: 7,
-      rating: 2,
-      name: 'Rahim Uddin',
-      avatar: null,
-      time: '3 weeks ago',
-      product: 'Hydrating Eye Cream',
-      review: 'Shipping was slow and the product did not meet my expectations.',
-      media: [
-        {
-          type: 'video',
-          url: 'https://www.w3schools.com/html/mov_bbb.mp4',
-          thumb: 'https://images.unsplash.com/photo-1608248543803-ba4f8c70ae0b?w=200',
-        },
-      ],
-      verified: true,
-    },
-  ];
+<script src="{{ 'alpine.js' | asset_url }}" defer></script>
 
-  function starSVG(filled, size) {
-    size = size || 20;
-    return (
-      '<svg width="' +
-      size +
-      '" height="' +
-      size +
-      '" viewBox="0 0 17 16" fill="none" xmlns="http://www.w3.org/2000/svg"><path fill="' +
-      (filled ? STAR_COLOR : '#B5B5B5') +
-      '" d="M9.51964 0.855C8.97604 -0.285 7.35604 -0.285 6.81244 0.855L5.14444 4.3494L1.30564 4.8546C0.0552353 5.0202 -0.446365 6.561 0.469235 7.4298L3.27724 10.0962L2.57284 13.9026C2.34244 15.1434 3.65404 16.0962 4.76284 15.495L8.16604 13.647L11.5692 15.495C12.678 16.0962 13.9896 15.1434 13.7592 13.9026L13.0548 10.0962L15.8628 7.4298C16.7772 6.561 16.2768 5.0202 15.0264 4.8546L11.1864 4.3494L9.51964 0.855Z"/></svg>'
-    );
-  }
-
-  function verifiedBadge() {
-    return '<svg width="16" height="16" viewBox="0 0 18 18" fill="none"><circle cx="9" cy="9" r="9" fill="#1a7d43"/><path d="M5.21 9L7.74 11.53L12.79 6.47" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>';
-  }
-
-  function getAvg() {
-    const sum = reviews.reduce(function (a, r) {
-      return a + r.rating;
-    }, 0);
-    return (sum / reviews.length).toFixed(1);
-  }
-
-  function filterAndSort() {
-    var list = reviews.slice();
-    if (activeFilter !== 'all') {
-      var star = parseInt(activeFilter);
-      list = list.filter(function (r) {
-        return r.rating === star;
-      });
-    }
-    if (activeSort === 'Highest rating')
-      list.sort(function (a, b) {
-        return b.rating - a.rating;
-      });
-    else if (activeSort === 'Lowest rating')
-      list.sort(function (a, b) {
-        return a.rating - b.rating;
-      });
-    else if (activeSort === 'Only pictures')
-      list = list.filter(function (r) {
-        return r.media.some(function (m) {
-          return m.type === 'image';
-        });
-      });
-    else if (activeSort === 'Pictures first')
-      list.sort(function (a, b) {
-        return (
-          (b.media.some(function (m) {
-            return m.type === 'image';
-          })
-            ? 1
-            : 0) -
-          (a.media.some(function (m) {
-            return m.type === 'image';
-          })
-            ? 1
-            : 0)
-        );
-      });
-    else if (activeSort === 'Videos first')
-      list.sort(function (a, b) {
-        return (
-          (b.media.some(function (m) {
-            return m.type === 'video';
-          })
-            ? 1
-            : 0) -
-          (a.media.some(function (m) {
-            return m.type === 'video';
-          })
-            ? 1
-            : 0)
-        );
-      });
-    return list;
-  }
-
-  function renderReviews() {
-    var list = filterAndSort();
-    var html = '';
-    list.forEach(function (r) {
-      var avatarHtml = r.avatar
-        ? '<img class="avatar" src="' +
-          r.avatar +
-          '" alt="' +
-          r.name +
-          "\" onerror=\"this.style.display='none';this.nextSibling.style.display='flex'\">" +
-          '<div class="avatar-initials" style="display:none">' +
-          r.name[0] +
-          '</div>'
-        : '<div class="avatar-initials">' + r.name[0] + '</div>';
-
-      var starsHtml = '';
-      for (var i = 1; i <= 5; i++) starsHtml += starSVG(i <= r.rating, 20);
-
-      var badgeHtml = r.verified ? '<span>' + verifiedBadge() + '</span>' : '';
-
-      var mediaHtml = '';
-      if (r.media.length > 0) {
-        mediaHtml = '<div class="media-row">';
-        r.media.forEach(function (m) {
-          if (m.type === 'image') {
-            mediaHtml +=
-              '<div class="media-thumb-wrap" onclick="openLightbox(\'image\',\'' +
-              m.url +
-              '\')" title="Click to view"><img src="' +
-              m.url +
-              '" alt="review image"></div>';
-          } else {
-            mediaHtml +=
-              '<div class="media-thumb-wrap" onclick="openLightbox(\'video\',\'' +
-              m.url +
-              '\')" title="Click to play"><img src="' +
-              m.thumb +
-              '" alt="video thumbnail"><div class="play-overlay"><svg viewBox="0 0 24 24"><path d="M8 5v14l11-7z"/></svg></div></div>';
-          }
-        });
-        mediaHtml += '</div>';
-      }
-
-      html +=
-        '<div class="review-item">' +
-        '<div class="stars-row">' +
-        starsHtml +
-        '</div>' +
-        '<div class="reviewer-row">' +
-        avatarHtml +
-        '<div><div class="reviewer-name-row">' +
-        r.name +
-        badgeHtml +
-        '</div><div class="reviewer-time">' +
-        r.time +
-        '</div></div></div>' +
-        '<div class="quick_review_product_name">' +
-        r.product +
-        '<div class="review-text">' +
-        r.review +
-        '</div>' +
-        '</div>' +
-        mediaHtml +
-        '</div>';
-    });
-    document.getElementById('reviews-list').innerHTML =
-      html || '<p style="color:#888;font-size:14px;padding:20px 0">No reviews found.</p>';
-  }
-
-  function renderStarPicker() {
-    var html = '';
-    for (var i = 1; i <= 5; i++) {
-      html +=
-        '<span data-val="' +
-        i +
-        '" onmouseenter="hoverStar(' +
-        i +
-        ')" onmouseleave="hoverStar(0)" onclick="pickStar(' +
-        i +
-        ')">' +
-        starSVG(i <= Math.max(starHover, starSelected), 30) +
-        '</span>';
-    }
-    var el = document.getElementById('star-picker');
-    if (el) el.innerHTML = html;
-  }
-
-  // Filter chips - inject small star icon
-  for (var s = 1; s <= 5; s++) {
-    var el = document.getElementById('fc' + s);
-    if (el) el.innerHTML = starSVG(true, 17);
-  }
-
-  window.toggleFilters = function () {
-    var fs = document.getElementById('filter-section');
-    fs.style.display = fs.style.display === 'none' ? 'block' : 'none';
-  };
-
-  window.setFilter = function (val, btn) {
-    activeFilter = val;
-    document.querySelectorAll('.filter-chip').forEach(function (c) {
-      c.classList.remove('active');
-    });
-    btn.classList.add('active');
-    renderReviews();
-  };
-
-  window.toggleSort = function (e) {
-    e.stopPropagation();
-    var dd = document.getElementById('sort-dd');
-    dd.classList.toggle('open');
-  };
-
-  window.setSort = function (el, val) {
-    activeSort = val;
-    document.querySelectorAll('.sort-option').forEach(function (o) {
-      o.classList.remove('selected');
-    });
-    el.classList.add('selected');
-    document.getElementById('sort-dd').classList.remove('open');
-    renderReviews();
-  };
-
-  window.openModal = function () {
-    starSelected = 0;
-    starHover = 0;
-    uploadedFiles = [];
-    document.getElementById('review-text').value = '';
-    document.getElementById('review-name').value = '';
-    document.getElementById('media-preview').innerHTML = '';
-    document.getElementById('media-preview').style.display = 'none';
-    document.getElementById('form-view').style.display = 'block';
-    document.getElementById('success-view').style.display = 'none';
-    document.getElementById('modal-overlay').classList.add('open');
-    renderStarPicker();
-  };
-
-  window.closeModal = function () {
-    document.getElementById('modal-overlay').classList.remove('open');
-  };
-
-  window.overlayClick = function (e) {
-    if (e.target === document.getElementById('modal-overlay')) closeModal();
-  };
-
-  window.hoverStar = function (n) {
-    starHover = n;
-    renderStarPicker();
-  };
-  window.pickStar = function (n) {
-    starSelected = n;
-    starHover = n;
-    renderStarPicker();
-  };
-
-  window.submitReview = function () {
-    var name = document.getElementById('review-name').value.trim();
-    var text = document.getElementById('review-text').value.trim();
-    if (!starSelected || !text || !name) {
-      alert('Please fill in all required fields and select a star rating.');
-      return;
-    }
-    document.getElementById('form-view').style.display = 'none';
-    document.getElementById('success-view').style.display = 'flex';
-    var box = document.getElementById('modal-box');
-    if (box) box.scrollTop = 0;
-  };
-
-  document.addEventListener('click', function (e) {
-    var btn = document.getElementById('filter-btn');
-    var dd = document.getElementById('sort-dd');
-    if (!btn.contains(e.target)) dd.classList.remove('open');
-  });
-
-  var uploadedFiles = [];
-
-  window.handleMediaUpload = function (input) {
-    Array.from(input.files).forEach(function (file) {
-      if (file.size > 20 * 1024 * 1024) {
-        alert(file.name + ' is too large. Max 20MB.');
-        return;
-      }
-      uploadedFiles.push(file);
-      renderMediaPreview();
-    });
-    input.value = '';
-  };
-
-  window.removeMedia = function (idx) {
-    uploadedFiles.splice(idx, 1);
-    renderMediaPreview();
-  };
-
-  function renderMediaPreview() {
-    var container = document.getElementById('media-preview');
-    if (!container) return;
-    if (uploadedFiles.length === 0) {
-      container.style.display = 'none';
-      container.innerHTML = '';
-      return;
-    }
-    container.style.display = 'flex';
-    container.innerHTML = '';
-    uploadedFiles.forEach(function (file, i) {
-      var url = URL.createObjectURL(file);
-      var isVideo = file.type.startsWith('video/');
-      var item = document.createElement('div');
-      item.className = 'preview-item';
-      if (isVideo) {
-        item.innerHTML =
-          '<video src="' +
-          url +
-          '" muted playsinline></video>' +
-          '<div class="preview-video-badge">VIDEO</div>' +
-          '<button class="preview-remove" onclick="removeMedia(' +
-          i +
-          ')">&#x2715;</button>';
-      } else {
-        item.innerHTML =
-          '<img src="' +
-          url +
-          '" alt="preview">' +
-          '<button class="preview-remove" onclick="removeMedia(' +
-          i +
-          ')">&#x2715;</button>';
-      }
-      container.appendChild(item);
-    });
-  }
-
-  window.uploadDragOver = function (e) {
-    e.preventDefault();
-    document.getElementById('upload-zone').classList.add('drag-over');
-  };
-  window.uploadDragLeave = function () {
-    document.getElementById('upload-zone').classList.remove('drag-over');
-  };
-  window.uploadDrop = function (e) {
-    e.preventDefault();
-    document.getElementById('upload-zone').classList.remove('drag-over');
-    var input = document.getElementById('media-input');
-    var dt = e.dataTransfer;
-    Array.from(dt.files).forEach(function (file) {
-      if (file.size > 20 * 1024 * 1024) {
-        alert(file.name + ' is too large. Max 20MB.');
-        return;
-      }
-      uploadedFiles.push(file);
-    });
-    renderMediaPreview();
-  };
-
-  window.openLightbox = function (type, url) {
-    var content = document.getElementById('lightbox-content');
-    if (type === 'image') {
-      content.innerHTML = '<img src="' + url + '" alt="media">';
-    } else {
-      content.innerHTML = '<video src="' + url + '" controls autoplay></video>';
-    }
-    document.getElementById('lightbox').classList.add('open');
-    document.body.style.overflow = 'hidden';
-  };
-
-  window.closeLightbox = function (e) {
-    if (e && e.target !== document.getElementById('lightbox') && !e.target.classList.contains('lightbox-close')) return;
-    var vid = document.querySelector('#lightbox-content video');
-    if (vid) {
-      vid.pause();
-      vid.src = '';
-    }
-    document.getElementById('lightbox').classList.remove('open');
-    document.body.style.overflow = '';
-  };
-
-  document.addEventListener('keydown', function (e) {
-    if (e.key === 'Escape') closeLightbox({ target: document.getElementById('lightbox') });
-  });
-
-  // Init
-  document.getElementById('avg-score').innerHTML = getAvg() + ' <span>' + reviews.length + ' reviews</span>';
-  renderReviews();
-</script>
 {% schema %}
 {
   "name": "Quick review widget",
