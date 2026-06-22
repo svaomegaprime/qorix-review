@@ -195,7 +195,7 @@
     <div class="modal-box" id="modal-box" x-ref="modalBox">
       <button class="modal-close" type="button" @click="closeModal()">&#x2715;</button>
       {% comment %} Start:: form  {% endcomment %}
-      <form id="form-view" x-show="!submitSuccess">
+      <form id="form-view" @submit.prevent="submitReview" x-show="!submitSuccess">
         <div class="modal-header">
           <div class="modal-icon">
             <svg viewBox="0 0 24 24" fill="#fff">
@@ -305,7 +305,7 @@
           </template>
         </div>
 
-        <button class="submit-btn" type="button" @click="submitReview()">Submit review</button>
+        <button class="submit-btn" type="submit" >Submit review</button>
         <div class="modal-footer-note">
           <svg viewBox="0 0 24 24">
             <rect x="3" y="11" width="18" height="11" rx="2" ry="2" />

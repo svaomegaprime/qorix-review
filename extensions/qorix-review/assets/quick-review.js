@@ -175,6 +175,67 @@ function quickReviewWidget() {
       },
     ],
 
+    async submitReview(event) {
+      if (
+        !this.starSelected ||
+        !this.form.name.trim() ||
+        !this.form.review.trim()
+      ) {
+        alert("Please fill in all required fields and select a star rating.");
+        return;
+      }
+      console.log(
+        this.form.name,
+        this.form.email,
+        this.form.review,
+        this.starSelected,
+        this.uploadedFiles,
+      );
+
+      try {
+        const formData = new FormData();
+
+        // Text fields
+        formData.append("name", this.form.name);
+        formData.append("email", this.form.email);
+        formData.append("review", this.form.review);
+        formData.append("rating", this.starSelected);
+
+        // Images & Videos
+        this.uploadedFiles.forEach((item) => {
+          formData.append("media", item.file);
+        });
+
+        console.log("Submitting...", formData);
+
+        const response = await fetch("/apps/api/review", {
+          method: "POST",
+          body: formData,
+          
+        });
+
+        if (!response.ok) {
+          throw new Error("Failed to submit review");
+        }
+
+        const result = await response.json();
+
+        console.log("Review submit result", result);
+        console.log("Uploaded media URLs", result.urls || []);
+
+        this.submitSuccess = true;
+
+        this.$nextTick(() => {
+          if (this.$refs.modalBox) {
+            this.$refs.modalBox.scrollTop = 0;
+          }
+        });
+      } catch (error) {
+        console.error(error);
+        alert("Failed to submit review");
+      }
+    },
+
     avgScore() {
       const total = this.reviews.reduce(
         (sum, review) => sum + review.rating,
@@ -247,24 +308,6 @@ function quickReviewWidget() {
       if (event.target.id === "modal-overlay") {
         this.closeModal();
       }
-    },
-
-    submitReview() {
-      if (
-        !this.starSelected ||
-        !this.form.name.trim() ||
-        !this.form.review.trim()
-      ) {
-        alert("Please fill in all required fields and select a star rating.");
-        return;
-      }
-
-      this.submitSuccess = true;
-      this.$nextTick(() => {
-        if (this.$refs.modalBox) {
-          this.$refs.modalBox.scrollTop = 0;
-        }
-      });
     },
 
     handleMediaUpload(event) {
