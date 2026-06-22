@@ -110,6 +110,7 @@ export default function Header({ handleSettingChange, settings }) {
                 >
                   <s-text-field
                     label="Eyebrow label"
+                    maxLength="30"
                     value={eyebrowLabel}
                     onChange={(e) =>
                       handleSettingChange("eyebrowLabel", e.target.value)
@@ -126,6 +127,8 @@ export default function Header({ handleSettingChange, settings }) {
                 >
                   <s-text-field
                     label="Heading"
+                                        maxLength="50"
+
                     value={heading}
                     onChange={(e) =>
                       handleSettingChange("heading", e.target.value)
@@ -142,6 +145,8 @@ export default function Header({ handleSettingChange, settings }) {
                 >
                   <s-text-field
                     label="Subheading"
+                     maxLength="100"
+
                     value={subheading}
                     onChange={(e) =>
                       handleSettingChange("subheading", e.target.value)
