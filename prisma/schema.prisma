@@ -76,20 +76,20 @@ model Review {
 
   reviewerName  String?
   reviewerEmail String? @unique
-  reviewerPhone String  @unique
+  reviewerPhone String? @unique
   rating        Int
 
   title String?
   body  String?
 
-  status       ReviewStatus
-  source       ReviewSource
-  isVerified   Boolean      @default(false)
-  helpfulCount Int          @default(0)
+  status     ReviewStatus
+  source     ReviewSource
+  isVerified Boolean      @default(false)
 
-  createdAt   DateTime     @default(now())
-  updatedAt   DateTime     @updatedAt
-  attachments Attachment[]
+  createdAt    DateTime       @default(now())
+  updatedAt    DateTime       @updatedAt
+  attachments  Attachment[]
+  helpfulCount HelpfulCount[]
 
   @@index([storeId])
   @@index([productId])
@@ -99,13 +99,26 @@ model Review {
   @@index([createdAt])
 }
 
+model HelpfulCount {
+  id       String @id @default(uuid()) @db.Uuid()
+  reviewId String @db.Uuid()
+  review   Review @relation(fields: [reviewId], references: [id], onDelete: Cascade)
+
+  count      Int
+  customerId String
+  email      String
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
 model Attachment {
   id String @id @default(uuid()) @db.Uuid()
 
   type AttachmentType?
   url  String?
 
-  reviewId String?
+  reviewId String? @db.Uuid()
   review   Review? @relation(fields: [reviewId], references: [id])
 
   createdAt DateTime @default(now())
@@ -138,7 +151,7 @@ model StoreSettings {
 model RequestScheduling {
   id String @id @default(uuid()) @db.Uuid()
 
-  storeSettingsId String        @unique
+  storeSettingsId String        @unique @db.Uuid()
   storeSettings   StoreSettings @relation(fields: [storeSettingsId], references: [id], onDelete: Cascade)
 
   isAutomaticRequest       Boolean @default(true)
@@ -156,7 +169,7 @@ model RequestScheduling {
 model EmailSettings {
   id String @id @default(uuid()) @db.Uuid()
 
-  storeSettingsId String
+  storeSettingsId String @db.Uuid()
 
   storeSettings StoreSettings @relation(fields: [storeSettingsId], references: [id], onDelete: Cascade)
 
@@ -184,7 +197,7 @@ model EmailSettings {
 
 model PublishingModeration {
   id              String        @id @default(uuid()) @db.Uuid()
-  storeSettingsId String
+  storeSettingsId String        @db.Uuid()
   storeSettings   StoreSettings @relation(fields: [storeSettingsId], references: [id], onDelete: Cascade)
 
   autoPublishRules     AutoPublishRules @default(AUTO_PUBLISH)
@@ -199,7 +212,7 @@ model PublishingModeration {
 
 model WidgetsSettings {
   id              String        @id @default(uuid()) @db.Uuid()
-  storeSettingsId String
+  storeSettingsId String        @db.Uuid()
   storeSettings   StoreSettings @relation(fields: [storeSettingsId], references: [id], onDelete: Cascade)
 
   defaultStarColor    String @default("#F59E0B")
@@ -220,7 +233,7 @@ model WidgetsSettings {
 
 model BrandingSettings {
   id              String        @id @default(uuid()) @db.Uuid()
-  storeSettingsId String
+  storeSettingsId String        @db.Uuid()
   storeSettings   StoreSettings @relation(fields: [storeSettingsId], references: [id], onDelete: Cascade)
 
   storeDisplayName  String @default("Glow Store")
@@ -248,7 +261,7 @@ model BrandingSettings {
 model AdminNotification {
   id String @id @default(uuid()) @db.Uuid()
 
-  storeSettingsId String
+  storeSettingsId String        @db.Uuid()
   storeSettings   StoreSettings @relation(fields: [storeSettingsId], references: [id], onDelete: Cascade)
 
   isNewReviewNotify      Boolean @default(true)
@@ -265,7 +278,7 @@ model AdminNotification {
 model AdminNotificationEmail {
   id String @id @default(uuid()) @db.Uuid()
 
-  adminNotificationId String
+  adminNotificationId String            @db.Uuid()
   adminNotification   AdminNotification @relation(fields: [adminNotificationId], references: [id], onDelete: Cascade)
 
   email String @unique
