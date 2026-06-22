@@ -9,6 +9,7 @@ import { useNavigation } from "react-router";
 import Header from "../../../components/Header";
 import ColorPicker from "../../../components/elements/ColorPicker";
 import QuoteLoopWidget from "../component/quite_loop_preview";
+import Range from "../../../components/elements/Range";
 
 const COLOR_PICKERS_ELEMENTS = [
   {
@@ -22,7 +23,7 @@ const COLOR_PICKERS_ELEMENTS = [
   },
   {
     key: "QUOTE_MARK_COLOR",
-    label: "Quote mark colorr",
+    label: "Quote mark and badge color",
   },
   
   {
@@ -63,16 +64,24 @@ export default function Index(VALUES = {}) {
     showVerifiedBadge: true,
     showMediaAsset: true,
     showArrowControls: true,
-    showRotate:true,
+    showProductName:true,
+    autoSlider:false,
     showAppreciationOption: true,
-    speed:"2",
-    transition: "Slide horizontal",
+    speed:450,
+
     filterSorting: "Filter & sorting both",
     fiteringMinStart: "3 star and above",
     reviewStats: "Show review count & verified badge",
 
     // color piker
     colors: DEFAULT_COLOR_VALUES,
+
+    // Typography
+    quoteFontSize:24,
+    textLength:160,
+        // autoplay on/off
+
+    
   });
 
   const handleChangeColors = (e) => {
@@ -248,10 +257,10 @@ export default function Index(VALUES = {}) {
                 <s-stack>
                   <s-switch
                     id="show-share-option"
-                    label="Show nav dots"
-                    checked={settings.showNavDots}
+                    label="Show product Name"
+                    checked={settings.showProductName}
                     onChange={(e) =>
-                      handleSettingChange("showNavDots", e.target.checked)
+                      handleSettingChange("showProductName", e.target.checked)
                     }
                   ></s-switch>
                 </s-stack>
@@ -283,112 +292,29 @@ export default function Index(VALUES = {}) {
                   <s-switch
                     id="auto-rotate"
                     label="Auto-rotate"
-                    checked={settings.showRotate}
+                    checked={settings.autoSlider}
                     onChange={(e) =>
-                      handleSettingChange("showRotate", e.target.checked)
+                      handleSettingChange("autoSlider", e.target.checked)
                     }
                   ></s-switch>
                 </s-stack>
 
-                <s-stack>
-                  <div
-                    style={{
-                      border: "1px solid #e4e5e7",
-                      borderRadius: 8,
-                      padding: "12px 16px",
-                    }}
-                  >
-                    <p
-                      style={{
-                        margin: "0 0 10px",
-                        fontSize: 14,
-                        fontWeight: 500,
-                        color: "#202223",
-                      }}
-                    >
-                     Autoplay speed
-                    </p>
-                    <div
-                      style={{
-                        display: "flex",
-                        alignItems: "center",
-                        gap: 12,
-                      }}
-                    >
-                      <input
-                        type="range"
-                        min={0}
-                        max={5}
-                        value={settings?.speed}
-                        onChange={(e) =>
-                          setSettings((prev) => ({
-                            ...prev,
-                            speed: Number(e.target.value),
-                          }))
-                        }
-                        style={{
-                          flex: 1,
-                          height: 4,
-                          appearance: "none",
-                          WebkitAppearance: "none",
-                          background: `linear-gradient(to right, #8c8c8c ${settings?.speed * 20}%, #e4e5e7 ${settings?.speed * 2}%)`,
-                          borderRadius: 2,
-                          outline: "none",
-                          cursor: "pointer",
-                        }}
-                      />
-                      <span
-                        style={{
-                          fontSize: 13,
-                          color: "#6d7175",
-                          minWidth: 36,
-                          textAlign: "right",
-                        }}
-                      >
-                        {settings?.speed}s
-                      </span>
-                      <style>{`
-  input[type=range]::-webkit-slider-thumb {
-    -webkit-appearance: none;
-    width: 18px;
-    height: 18px;
-    border-radius: 50%;
-    background: #ddd;
-    border: none;
-    cursor: pointer;
-    box-shadow: 0 1px 4px rgba(0,0,0,0.15);
-  }
-`}</style>
-                    </div>
-                  </div>
+                   <s-stack padding="small" border="base" borderRadius="large" gap="small">
+                  <s-heading level="3">Autoplay speed</s-heading>
+                    <Range
+                      onChange={(e) =>
+                        handleSettingChange("speed", Number(e.target.value))
+                      }
+                      unit="ms"
+                      defaultValue={settings?.speed}
+                      min={400}
+                      max={600}
+                    />
                 </s-stack>
 
                
 
-                <s-stack
-                  border="base"
-                  paddingInlineStart="small"
-                  borderRadius="base"
-                  padding="small"
-                >
-                  <s-select
-                    label="Transition"
-                    value={settings.transition}
-                    onChange={(e) =>
-                      handleSettingChange("transition", e.target.value)
-                    }
-                  >
-                    <s-option value="Fade">
-                     Fade
-                    </s-option>
-                    <s-option value="Slide horizontal">Slide horizontal</s-option>
-                    <s-option value="Slide vertical">Slide vertical</s-option>
-                    <s-option value="Zoom">Zoom</s-option>
-                    <s-option value="Flip">Flip</s-option>
-                     <s-option value="None (instant)">None (instant)</s-option>
-
-                  </s-select>
-                </s-stack>
+      
 
                 <s-stack
                   border="base"
@@ -435,6 +361,45 @@ export default function Index(VALUES = {}) {
                     }
                   />
                 ))}
+              </s-stack>
+            </div>
+
+            {/* Typography & layout */}
+
+            <div style={{ padding: "1rem" }}>
+              <s-stack
+                border="base"
+                borderRadius="base"
+                padding="large"
+                gap="small"
+              >
+                <s-heading level="1">Typography & layout</s-heading>
+           
+
+                   <s-stack padding="small" border="base" borderRadius="large" gap="small">
+                  <s-heading level="3">Quote font size</s-heading>
+                    <Range
+                      onChange={(e) =>
+                        handleSettingChange("quoteFontSize", Number(e.target.value))
+                      }
+                      unit="px"
+                      defaultValue={settings?.quoteFontSize}
+                      min={20}                      max={40}
+                    />
+                </s-stack>
+
+                     <s-stack padding="small" border="base" borderRadius="large" gap="small">
+                  <s-heading level="3">Max text length</s-heading>
+                    <Range
+                      onChange={(e) =>
+                        handleSettingChange("textLength", Number(e.target.value))
+                      }
+                      unit="ch"
+                      defaultValue={settings?.textLength}
+                      max={160}
+                    />
+                </s-stack>
+              
               </s-stack>
             </div>
             {/* End----Sidebar content */}
@@ -527,7 +492,7 @@ export default function Index(VALUES = {}) {
             </s-grid>
           </div>
           {/* End----Preview Header */}
-          <QuoteLoopWidget />
+          <QuoteLoopWidget settings={settings} activeDevice={activeDevice} />
           {/* Start----Preview Content */}
           {/* End----Preview Content */}
         </div>
