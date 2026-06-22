@@ -1,0 +1,84 @@
+model TrustBarWidget {
+    id        String   @id @default(uuid()) @db.Uuid()
+    storeId   String   @db.Uuid()
+    store     Store    @relation(fields: [storeId], references: [storeGID], onDelete: Cascade)
+    createdAt DateTime @default(now())
+    updatedAt DateTime @updatedAt
+}
+
+model QuickReviewWidget {
+  id      String @id @default(uuid()) @db.Uuid()
+
+  storeId String @db.Uuid()
+  store   Store  @relation(fields: [storeId], references: [storeGID], onDelete: Cascade)
+
+  name  Boolean @default(true)
+  email Boolean @default(false)
+
+  photo Boolean @default(true)
+  video Boolean @default(true)
+
+  formTitle           String @default("How was your experience?")
+  formSubtitle        String @default("Your feedback helps others")
+  submitButtonText    String @default("Submit review")
+  successMessageTitle String @default("Review submitted!")
+  successButtonText   String @default("Continue Shopping")
+  successMessage      String @default("Thank you for your review. It has been submitted successfully.")
+
+  primaryColor   String @default("#000000")
+  secondaryColor String @default("#ffffff")
+  backgroundColor String @default("#f5f5f5")
+
+  borderRadius String @default("8px")
+
+  showReviewerName  Boolean @default(true)
+  showReviewerImage Boolean @default(true)
+  showReviewerVideo Boolean @default(true)
+  showProductName   Boolean @default(false)
+  showVerifiedBadge Boolean @default(true)
+  showReviewDate    Boolean @default(true)
+  showRatingFilter  Boolean @default(true)
+
+  reviewPerPage Int @default(10)
+
+  defaultSort String @default("Most recent")
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+// model QuickReviewWidget {
+//     id      String @id @default(uuid()) @db.Uuid()
+//     storeId String @db.Uuid()
+//     store   Store  @relation(fields: [storeId], references: [storeGID], onDelete: Cascade)
+
+//      name: true,
+//     email: false,
+
+//     photo: true,
+//     video: true,
+//     // ---from text-----
+//     formTitle: "How was your experience?",
+//     formSubtitle: "Your feedback helps others",
+//     submitButtonText: "Submit review",
+//     successMessageTitle: "Review submitted!",
+//     successButtonText: "Continue Shopping",
+//     successMessage:
+//       "Thank you for your review. It has been submitted successfully.",
+//     // -----color --------
+//     colorValues: DEFAULT_COLOR_VALUES,
+//     borderRadius,
+//     //  Review list display
+//     showReviewerName: true,
+//     showReviewerImage: true,
+//     showReviewerVideo: true,
+//     showProductName: false,
+//     showVerifiedBadge: true,
+//     showReviewDate: true,
+//     showRatingFilter: true,
+//     reviewPerPage: "10",
+//     defaultSort: "Most recent (default)",
+
+//     createdAt DateTime @default(now())
+//     updatedAt DateTime @updatedAt
+// }
