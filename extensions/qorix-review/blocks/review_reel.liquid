@@ -109,7 +109,7 @@
 
   <!-- ── Swiper ── -->
   <div class="qr-swiper-wrapper">
-    <div class="swiper mySwiperReelWidget">
+    <div class="swiper mySwiper-review-reel">
       <div class="swiper-wrapper">
         <!-- Card 1 -->
         <div class="swiper-slide">
@@ -306,9 +306,9 @@
 </section>
 
 <script src="{{ 'swiper-bundle.min.js' | asset_url }}" defer></script>
-<script defer>
+<script>
   document.addEventListener('DOMContentLoaded', () => {
-    new Swiper('.mySwiperReelWidget', {
+    new Swiper('.mySwiper-review-reel', {
       slidesPerView: 3,
       spaceBetween: 24,
       loop: true,
@@ -321,7 +321,6 @@
         clickable: true,
       },
       breakpoints: {
-        1200: { slidesPerView: 4, spaceBetween: 24 },
         961: { slidesPerView: 3, spaceBetween: 24 },
         601: { slidesPerView: 2, spaceBetween: 20 },
         0: { slidesPerView: 1, spaceBetween: 16 },

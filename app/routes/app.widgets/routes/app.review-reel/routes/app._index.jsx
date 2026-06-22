@@ -6,7 +6,6 @@ import SaveBar from "../../../components/savebar/SaveBar"
 import { useSaveBarTrigger } from "../../../components/savebar/useSaveBarTrigger"
 import { requestAppWindowClose } from "../../../utils/useAppWindowClose"
 import { useNavigation } from "react-router"
-
 export default function Index() {
     // Start----Default CSR loading state checking for navigation
     const navigation = useNavigation();
@@ -143,8 +142,10 @@ export default function Index() {
                     {/* Start----Preview Content */}
                     {/* End----Preview Content */}
                 </div>
+                
                 {/* End----Content */}
             </s-grid>
+           
         </>
     )
 }

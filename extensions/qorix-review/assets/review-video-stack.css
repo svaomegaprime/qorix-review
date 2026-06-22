@@ -87,7 +87,6 @@
   color: var(---color-gray);
 }
 
-
 [data-section="qorix-review-video-stack-widget"] .qrv-divider {
   width: 1.5px;
   height: 20px;
@@ -109,7 +108,7 @@
 
 /* ════════ CAROUSEL WRAPPER ════════ */
 [data-section="qorix-review-video-stack-widget"] .qrv-carousel {
-  width: 90vw;
+  /* width: 90vw; */
   margin: 0 auto;
   position: relative;
   /* clip only horizontal overflow so nav arrows stay visible */
@@ -165,17 +164,24 @@
   /* Pulls all left-side outer cards towards the center */
 }
 
-[data-section="qorix-review-video-stack-widget"] .qrv-swiper .swiper-slide.qrv-visible-slide {
+[data-section="qorix-review-video-stack-widget"]
+  .qrv-swiper
+  .swiper-slide.qrv-visible-slide {
   opacity: 1;
   visibility: visible;
   pointer-events: auto;
 }
 
-[data-section="qorix-review-video-stack-widget"] .qrv-swiper .swiper-slide-active {
+[data-section="qorix-review-video-stack-widget"]
+  .qrv-swiper
+  .swiper-slide-active {
   justify-content: center;
 }
 
-[data-section="qorix-review-video-stack-widget"] .qrv-swiper .swiper-slide-active~.swiper-slide {
+[data-section="qorix-review-video-stack-widget"]
+  .qrv-swiper
+  .swiper-slide-active
+  ~ .swiper-slide {
   justify-content: center;
   /* Pulls all right-side outer cards towards the center */
 }
@@ -256,9 +262,11 @@
 [data-section="qorix-review-video-stack-widget"] .qrv-overlay {
   position: absolute;
   inset: 0;
-  background: linear-gradient(180deg,
-      rgba(0, 0, 0, 0) 30%,
-      rgba(26, 26, 26, 0.88) 100%);
+  background: linear-gradient(
+    180deg,
+    rgba(0, 0, 0, 0) 30%,
+    rgba(26, 26, 26, 0.88) 100%
+  );
 }
 
 /* ── Top bar (duration pill + play button) ── */
@@ -378,9 +386,11 @@
   z-index: 20;
   box-shadow:
     inset 0px -1px 0px #b5b5b5,
-    inset 0px 0px 0px 1px rgba(0, 0, 0, 0.10),
+    inset 0px 0px 0px 1px rgba(0, 0, 0, 0.1),
     inset 0px 0.5px 0px 1.5px #fff;
-  transition: box-shadow 0.15s ease, opacity 0.15s ease;
+  transition:
+    box-shadow 0.15s ease,
+    opacity 0.15s ease;
 }
 
 [data-section="qorix-review-video-stack-widget"] .qrv-nav:hover {
@@ -421,7 +431,10 @@
   opacity: 0.28;
   cursor: pointer;
   padding: 0;
-  transition: opacity 0.2s ease, width 0.2s ease, background 0.2s ease;
+  transition:
+    opacity 0.2s ease,
+    width 0.2s ease,
+    background 0.2s ease;
 }
 
 [data-section="qorix-review-video-stack-widget"] .qrv-dot.active {
@@ -465,7 +478,9 @@
     height: 340px;
   }
 
-  [data-section="qorix-review-video-stack-widget"] .qrv-tier-adjacent .qrv-card {
+  [data-section="qorix-review-video-stack-widget"]
+    .qrv-tier-adjacent
+    .qrv-card {
     width: 190px;
     height: 410px;
   }
@@ -508,7 +523,9 @@
     height: 290px;
   }
 
-  [data-section="qorix-review-video-stack-widget"] .qrv-tier-adjacent .qrv-card {
+  [data-section="qorix-review-video-stack-widget"]
+    .qrv-tier-adjacent
+    .qrv-card {
     width: 155px;
     height: 350px;
   }
