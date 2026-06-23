@@ -12,6 +12,7 @@ import TabButton from "../../../../../components/essentials/TabButton";
 import { authenticate } from "../../../../../shopify.server";
 import prisma from "../../../../../db.server";
 import { getStoreData } from "../../../../../utils/getStoreData";
+import { setAppMetafield } from "../../../../../utils/appMetafields.server";
 
 const DEFAULT_COLOR_VALUES = {
   STAR_COLOR: "#f59e0b",
@@ -30,7 +31,8 @@ const DEFAULT_QUICK_REVIEW_STATE = {
   submitButtonText: "Submit review",
   successMessageTitle: "Review submitted!",
   successButtonText: "Continue Shopping",
-  successMessage: "Thank you for your review. It has been submitted successfully.",
+  successMessage:
+    "Thank you for your review. It has been submitted successfully.",
   colorValues: DEFAULT_COLOR_VALUES,
   borderRadius: 15,
   showReviewerName: true,
@@ -51,7 +53,9 @@ const parseBorderRadius = (value) => {
 
   if (typeof value === "string") {
     const parsed = Number.parseInt(value.replace("px", ""), 10);
-    return Number.isNaN(parsed) ? DEFAULT_QUICK_REVIEW_STATE.borderRadius : parsed;
+    return Number.isNaN(parsed)
+      ? DEFAULT_QUICK_REVIEW_STATE.borderRadius
+      : parsed;
   }
 
   return DEFAULT_QUICK_REVIEW_STATE.borderRadius;
@@ -73,10 +77,12 @@ const buildQuickReviewState = (data) => {
     submitButtonText:
       data.submitButtonText ?? DEFAULT_QUICK_REVIEW_STATE.submitButtonText,
     successMessageTitle:
-      data.successMessageTitle ?? DEFAULT_QUICK_REVIEW_STATE.successMessageTitle,
+      data.successMessageTitle ??
+      DEFAULT_QUICK_REVIEW_STATE.successMessageTitle,
     successButtonText:
       data.successButtonText ?? DEFAULT_QUICK_REVIEW_STATE.successButtonText,
-    successMessage: data.successMessage ?? DEFAULT_QUICK_REVIEW_STATE.successMessage,
+    successMessage:
+      data.successMessage ?? DEFAULT_QUICK_REVIEW_STATE.successMessage,
     colorValues: {
       ...DEFAULT_COLOR_VALUES,
       STAR_COLOR: data.starColor ?? DEFAULT_COLOR_VALUES.STAR_COLOR,
@@ -101,7 +107,8 @@ const buildQuickReviewState = (data) => {
       data.isShowReviewDate ?? DEFAULT_QUICK_REVIEW_STATE.showReviewDate,
     showRatingFilter:
       data.isShowRatingFilter ?? DEFAULT_QUICK_REVIEW_STATE.showRatingFilter,
-    reviewPerPage: data.reviewPerPage ?? DEFAULT_QUICK_REVIEW_STATE.reviewPerPage,
+    reviewPerPage:
+      data.reviewPerPage ?? DEFAULT_QUICK_REVIEW_STATE.reviewPerPage,
     defaultSort: data.defaultSort ?? DEFAULT_QUICK_REVIEW_STATE.defaultSort,
   };
 };
@@ -118,6 +125,8 @@ export async function loader({ request }) {
     },
   });
 
+  console.log("[quick-review][loader] storeId", id, "widget", res);
+
   return res;
 }
 export async function action({ request }) {
@@ -125,6 +134,8 @@ export async function action({ request }) {
 
   const data = await request.json();
   const { id } = await getStoreData(admin);
+
+  console.log("[quick-review][action] incoming payload", data);
 
   const res = await prisma.quickReviewWidget.upsert({
     where: {
@@ -143,8 +154,22 @@ export async function action({ request }) {
     },
   });
 
-  console.log(res, data, session, admin);
-  return {};
+  console.log("[quick-review][action] prisma upsert result", res);
+
+  const metafieldResult = await setAppMetafield(
+    admin,
+    "quick_review",
+    res,
+  );
+
+  console.log("[quick-review][action] metafield save result", metafieldResult);
+
+
+  return {
+    ok: true,
+    widget: res,
+    metafieldResult,
+  };
 }
 
 export default function Index(VALUES = {}) {
@@ -546,17 +571,17 @@ export default function Index(VALUES = {}) {
                             {quickReview.borderRadius}px
                           </span>
                           <style>{`
-  input[type=range]::-webkit-slider-thumb {
-    -webkit-appearance: none;
-    width: 18px;
-    height: 18px;
-    border-radius: 50%;
-    background: #ddd;
-    border: none;
-    cursor: pointer;
-    box-shadow: 0 1px 4px rgba(0,0,0,0.15);
-  }
-`}</style>
+                            input[type=range]::-webkit-slider-thumb {
+                              -webkit-appearance: none;
+                              width: 18px;
+                              height: 18px;
+                              border-radius: 50%;
+                              background: #ddd;
+                              border: none;
+                              cursor: pointer;
+                              box-shadow: 0 1px 4px rgba(0,0,0,0.15);
+                            }
+                          `}</style>
                         </div>
                       </div>
                     </s-stack>

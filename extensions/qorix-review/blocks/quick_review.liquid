@@ -1,4 +1,8 @@
+{% assign quick_review_metafield = app.metafields.qorix_review.quick_review.value %}
+
+
 <link rel="stylesheet" href="{{ 'quick-review.css' | asset_url }}">
+
 
 <div x-data="quickReviewWidget()">
   <div class="wrap">
@@ -6,7 +10,11 @@
 
     <div class="top-row">
       <div>
-        <div class="cr-title">Customer Reviews</div>
+        <div class="cr-title">
+          Customer Reviews
+
+          
+        </div>
         <div class="cr-score" id="avg-score">
           <b class="cr-score" x-text="avgScore()"></b> <span x-text="reviews.length + ' reviews'"></span>
         </div>
@@ -305,7 +313,7 @@
           </template>
         </div>
 
-        <button class="submit-btn" type="submit" >Submit review</button>
+        <button class="submit-btn" type="submit">Submit review</button>
         <div class="modal-footer-note">
           <svg viewBox="0 0 24 24">
             <rect x="3" y="11" width="18" height="11" rx="2" ry="2" />
@@ -347,12 +355,17 @@
 </div>
 
 <script src="{{ 'quick-review.js'| asset_url }}" defer></script>
+<script>
+  
+  console.log("qorix_review quick_review metafield", {{ quick_review_metafield | json }});
+</script>
 
 <script src="{{ 'alpine.js' | asset_url }}" defer></script>
 
+
 {% schema %}
 {
-  "name": "Quick review widget",
+  "name": "Quick review swidget",
   "target": "section",
   "settings": []
 }
