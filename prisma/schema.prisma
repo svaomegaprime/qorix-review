@@ -34,17 +34,19 @@ model Session {
 }
 
 model Store {
-  id         String @id @default(uuid()) @db.Uuid
-  storeGID   String @unique
+  id         String @id @default(uuid()) @db.Uuid()
+  storeGID   String @unique 
   storeURL   String
   storeEmail String
 
   reviews         Review[]
   subscription    Subscription?
-  trustBarWidgets TrustBarWidget[]
+  trustBarWidgets TrustBarWidget?
+  storeSettings   StoreSettings?
+  quickReviewWidget QuickReviewWidget?
+
   createdAt       DateTime         @default(now())
   updatedAt       DateTime?        @updatedAt
-  storeSettings   StoreSettings[]
 }
 
 model Subscription {

@@ -214,6 +214,39 @@ CREATE TABLE "TrustBarWidget" (
 );
 
 -- CreateTable
+CREATE TABLE "QuickReviewWidget" (
+    "id" UUID NOT NULL,
+    "storeId" TEXT NOT NULL,
+    "name" BOOLEAN NOT NULL DEFAULT true,
+    "email" BOOLEAN NOT NULL DEFAULT false,
+    "photo" BOOLEAN NOT NULL DEFAULT true,
+    "video" BOOLEAN NOT NULL DEFAULT true,
+    "formTitle" TEXT NOT NULL DEFAULT 'How was your experience?',
+    "formSubtitle" TEXT NOT NULL DEFAULT 'Your feedback helps others',
+    "submitButtonText" TEXT NOT NULL DEFAULT 'Submit review',
+    "successMessageTitle" TEXT NOT NULL DEFAULT 'Review submitted!',
+    "successButtonText" TEXT NOT NULL DEFAULT 'Continue Shopping',
+    "successMessage" TEXT NOT NULL DEFAULT 'Thank you for your review. It has been submitted successfully.',
+    "primaryColor" TEXT NOT NULL DEFAULT '#000000',
+    "secondaryColor" TEXT NOT NULL DEFAULT '#ffffff',
+    "backgroundColor" TEXT NOT NULL DEFAULT '#f5f5f5',
+    "borderRadius" TEXT NOT NULL DEFAULT '8px',
+    "showReviewerName" BOOLEAN NOT NULL DEFAULT true,
+    "showReviewerImage" BOOLEAN NOT NULL DEFAULT true,
+    "showReviewerVideo" BOOLEAN NOT NULL DEFAULT true,
+    "showProductName" BOOLEAN NOT NULL DEFAULT false,
+    "showVerifiedBadge" BOOLEAN NOT NULL DEFAULT true,
+    "showReviewDate" BOOLEAN NOT NULL DEFAULT true,
+    "showRatingFilter" BOOLEAN NOT NULL DEFAULT true,
+    "reviewPerPage" INTEGER NOT NULL DEFAULT 10,
+    "defaultSort" TEXT NOT NULL DEFAULT 'Most recent',
+    "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    "updatedAt" TIMESTAMP(3) NOT NULL,
+
+    CONSTRAINT "QuickReviewWidget_pkey" PRIMARY KEY ("id")
+);
+
+-- CreateTable
 CREATE TABLE "Session" (
     "id" TEXT NOT NULL,
     "shop" TEXT NOT NULL,
@@ -299,6 +332,12 @@ CREATE UNIQUE INDEX "RequestScheduling_storeSettingsId_key" ON "RequestSchedulin
 CREATE UNIQUE INDEX "AdminNotificationEmail_email_key" ON "AdminNotificationEmail"("email");
 
 -- CreateIndex
+CREATE UNIQUE INDEX "TrustBarWidget_storeId_key" ON "TrustBarWidget"("storeId");
+
+-- CreateIndex
+CREATE UNIQUE INDEX "QuickReviewWidget_storeId_key" ON "QuickReviewWidget"("storeId");
+
+-- CreateIndex
 CREATE UNIQUE INDEX "Store_storeGID_key" ON "Store"("storeGID");
 
 -- CreateIndex
@@ -342,6 +381,9 @@ ALTER TABLE "AdminNotificationEmail" ADD CONSTRAINT "AdminNotificationEmail_admi
 
 -- AddForeignKey
 ALTER TABLE "TrustBarWidget" ADD CONSTRAINT "TrustBarWidget_storeId_fkey" FOREIGN KEY ("storeId") REFERENCES "Store"("storeGID") ON DELETE CASCADE ON UPDATE CASCADE;
+
+-- AddForeignKey
+ALTER TABLE "QuickReviewWidget" ADD CONSTRAINT "QuickReviewWidget_storeId_fkey" FOREIGN KEY ("storeId") REFERENCES "Store"("storeGID") ON DELETE CASCADE ON UPDATE CASCADE;
 
 -- AddForeignKey
 ALTER TABLE "Subscription" ADD CONSTRAINT "Subscription_storeId_fkey" FOREIGN KEY ("storeId") REFERENCES "Store"("storeGID") ON DELETE CASCADE ON UPDATE CASCADE;

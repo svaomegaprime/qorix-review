@@ -1,22 +1,22 @@
 model TrustBarWidget {
-    id        String   @id @default(uuid()) @db.Uuid()
-    storeId   String   @db.Uuid()
-    store     Store    @relation(fields: [storeId], references: [storeGID], onDelete: Cascade)
-    createdAt DateTime @default(now())
-    updatedAt DateTime @updatedAt
+  id        String   @id @default(uuid()) @db.Uuid()
+  storeId   String   @unique
+  store     Store    @relation(fields: [storeId], references: [storeGID], onDelete: Cascade)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
 }
 
 model QuickReviewWidget {
-  id      String @id @default(uuid()) @db.Uuid()
+  id String @id @default(uuid()) @db.Uuid()
 
-  storeId String @db.Uuid()
+  storeId String @unique
   store   Store  @relation(fields: [storeId], references: [storeGID], onDelete: Cascade)
 
-  name  Boolean @default(true)
-  email Boolean @default(false)
+  isShowNameField  Boolean @default(true)
+  isShowEmailField Boolean @default(false)
 
-  photo Boolean @default(true)
-  video Boolean @default(true)
+  isPhotoUpload Boolean @default(true)
+  isVideoUpload Boolean @default(true)
 
   formTitle           String @default("How was your experience?")
   formSubtitle        String @default("Your feedback helps others")
@@ -25,23 +25,24 @@ model QuickReviewWidget {
   successButtonText   String @default("Continue Shopping")
   successMessage      String @default("Thank you for your review. It has been submitted successfully.")
 
-  primaryColor   String @default("#000000")
-  secondaryColor String @default("#ffffff")
-  backgroundColor String @default("#f5f5f5")
+  starColor             String?
+  buttonBackgroundColor String?
+  buttonTextColor       String?
+  verifiedBadgeColor    String?
 
   borderRadius String @default("8px")
 
-  showReviewerName  Boolean @default(true)
-  showReviewerImage Boolean @default(true)
-  showReviewerVideo Boolean @default(true)
-  showProductName   Boolean @default(false)
-  showVerifiedBadge Boolean @default(true)
-  showReviewDate    Boolean @default(true)
-  showRatingFilter  Boolean @default(true)
+  isShowReviewerName  Boolean @default(true)
+  isShowReviewerImage Boolean @default(true)
+  isShowReviewerVideo Boolean @default(true)
+  isShowProductName   Boolean @default(false)
+  isShowVerifiedBadge Boolean @default(true)
+  isShowReviewDate    Boolean @default(true)
+  isShowRatingFilter  Boolean @default(true)
 
   reviewPerPage Int @default(10)
 
-  defaultSort String @default("Most recent")
+  defaultSort String @default("MOST_RECENT")
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt

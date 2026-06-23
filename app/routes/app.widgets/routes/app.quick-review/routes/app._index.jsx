@@ -1,85 +1,236 @@
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import Loader from "../../../../../components/essentials/Loader";
 import CustomSection from "../../../../../components/essentials/CustomSection";
 import Text from "../../../../../components/essentials/elements/Text";
 import SaveBar from "../../../components/savebar/SaveBar";
 import { useSaveBarTrigger } from "../../../components/savebar/useSaveBarTrigger";
 import { requestAppWindowClose } from "../../../utils/useAppWindowClose";
-import { useNavigation } from "react-router";
+import { useFetcher, useLoaderData, useNavigation } from "react-router";
 import ColorPicker from "../../../components/elements/ColorPicker";
 import QuickReviewComponent from "../componant/quickReviewPreview";
 import TabButton from "../../../../../components/essentials/TabButton";
-
-const COLOR_PICKERS_ELEMENTS = [
-  {
-    key: "STAR_COLOR",
-    label: "Star color",
-    info: "Applies to: Widget, Form & Success Screen",
-  },
-  {
-    key: "Submit_Button_Color",
-    label: "Button background ",
-    info: "Applies to: Widget, Form & Success Screen",
-  },
-  {
-    key: "TEXT_COLOR",
-    label: "Button text color",
-    info: "Applies to: Widget, Form & Success Screen",
-  },
-
-  {
-    key: "VERIFIED_BADGE_COLOR",
-    label: "Verified badge color",
-  },
-
-
-];
+import { authenticate } from "../../../../../shopify.server";
+import prisma from "../../../../../db.server";
+import { getStoreData } from "../../../../../utils/getStoreData";
 
 const DEFAULT_COLOR_VALUES = {
   STAR_COLOR: "#f59e0b",
   TEXT_COLOR: "#fff",
   VERIFIED_BADGE_COLOR: "#1D9E75",
-  Card_Background_Color: "#FFFFFF",
-  Border_Color: "#F0F0F0",
-  Submit_Button_Color: "#1D9E75", // submit button
+  Submit_Button_Color: "#1D9E75",
 };
 
+const DEFAULT_QUICK_REVIEW_STATE = {
+  name: true,
+  email: false,
+  photo: true,
+  video: true,
+  formTitle: "How was your experience?",
+  formSubtitle: "Your feedback helps others",
+  submitButtonText: "Submit review",
+  successMessageTitle: "Review submitted!",
+  successButtonText: "Continue Shopping",
+  successMessage: "Thank you for your review. It has been submitted successfully.",
+  colorValues: DEFAULT_COLOR_VALUES,
+  borderRadius: 15,
+  showReviewerName: true,
+  showReviewerImage: true,
+  showReviewerVideo: true,
+  showProductName: false,
+  showVerifiedBadge: true,
+  showReviewDate: true,
+  showRatingFilter: true,
+  reviewPerPage: 10,
+  defaultSort: "MOST_RECENT",
+};
+
+const parseBorderRadius = (value) => {
+  if (typeof value === "number") {
+    return value;
+  }
+
+  if (typeof value === "string") {
+    const parsed = Number.parseInt(value.replace("px", ""), 10);
+    return Number.isNaN(parsed) ? DEFAULT_QUICK_REVIEW_STATE.borderRadius : parsed;
+  }
+
+  return DEFAULT_QUICK_REVIEW_STATE.borderRadius;
+};
+
+const buildQuickReviewState = (data) => {
+  if (!data) {
+    return DEFAULT_QUICK_REVIEW_STATE;
+  }
+
+  return {
+    ...DEFAULT_QUICK_REVIEW_STATE,
+    name: data.isShowNameField ?? DEFAULT_QUICK_REVIEW_STATE.name,
+    email: data.isShowEmailField ?? DEFAULT_QUICK_REVIEW_STATE.email,
+    photo: data.isPhotoUpload ?? DEFAULT_QUICK_REVIEW_STATE.photo,
+    video: data.isVideoUpload ?? DEFAULT_QUICK_REVIEW_STATE.video,
+    formTitle: data.formTitle ?? DEFAULT_QUICK_REVIEW_STATE.formTitle,
+    formSubtitle: data.formSubtitle ?? DEFAULT_QUICK_REVIEW_STATE.formSubtitle,
+    submitButtonText:
+      data.submitButtonText ?? DEFAULT_QUICK_REVIEW_STATE.submitButtonText,
+    successMessageTitle:
+      data.successMessageTitle ?? DEFAULT_QUICK_REVIEW_STATE.successMessageTitle,
+    successButtonText:
+      data.successButtonText ?? DEFAULT_QUICK_REVIEW_STATE.successButtonText,
+    successMessage: data.successMessage ?? DEFAULT_QUICK_REVIEW_STATE.successMessage,
+    colorValues: {
+      ...DEFAULT_COLOR_VALUES,
+      STAR_COLOR: data.starColor ?? DEFAULT_COLOR_VALUES.STAR_COLOR,
+      Submit_Button_Color:
+        data.buttonBackgroundColor ?? DEFAULT_COLOR_VALUES.Submit_Button_Color,
+      TEXT_COLOR: data.buttonTextColor ?? DEFAULT_COLOR_VALUES.TEXT_COLOR,
+      VERIFIED_BADGE_COLOR:
+        data.verifiedBadgeColor ?? DEFAULT_COLOR_VALUES.VERIFIED_BADGE_COLOR,
+    },
+    borderRadius: parseBorderRadius(data.borderRadius),
+    showReviewerName:
+      data.isShowReviewerName ?? DEFAULT_QUICK_REVIEW_STATE.showReviewerName,
+    showReviewerImage:
+      data.isShowReviewerImage ?? DEFAULT_QUICK_REVIEW_STATE.showReviewerImage,
+    showReviewerVideo:
+      data.isShowReviewerVideo ?? DEFAULT_QUICK_REVIEW_STATE.showReviewerVideo,
+    showProductName:
+      data.isShowProductName ?? DEFAULT_QUICK_REVIEW_STATE.showProductName,
+    showVerifiedBadge:
+      data.isShowVerifiedBadge ?? DEFAULT_QUICK_REVIEW_STATE.showVerifiedBadge,
+    showReviewDate:
+      data.isShowReviewDate ?? DEFAULT_QUICK_REVIEW_STATE.showReviewDate,
+    showRatingFilter:
+      data.isShowRatingFilter ?? DEFAULT_QUICK_REVIEW_STATE.showRatingFilter,
+    reviewPerPage: data.reviewPerPage ?? DEFAULT_QUICK_REVIEW_STATE.reviewPerPage,
+    defaultSort: data.defaultSort ?? DEFAULT_QUICK_REVIEW_STATE.defaultSort,
+  };
+};
+
+const cloneQuickReviewState = (state) => JSON.parse(JSON.stringify(state));
+
+export async function loader({ request }) {
+  const { admin, session } = await authenticate.admin(request);
+  const { id } = await getStoreData(admin);
+
+  const res = await prisma.quickReviewWidget.findUnique({
+    where: {
+      storeId: id,
+    },
+  });
+
+  return res;
+}
+export async function action({ request }) {
+  const { admin, session } = await authenticate.admin(request);
+
+  const data = await request.json();
+  const { id } = await getStoreData(admin);
+
+  const res = await prisma.quickReviewWidget.upsert({
+    where: {
+      storeId: id,
+    },
+    update: {
+      ...data,
+    },
+    create: {
+      ...data,
+      store: {
+        connect: {
+          storeGID: id,
+        },
+      },
+    },
+  });
+
+  console.log(res, data, session, admin);
+  return {};
+}
+
 export default function Index(VALUES = {}) {
+  const loaderData = useLoaderData();
+  console.log("data get value", loaderData);
+  const COLOR_PICKERS_ELEMENTS = [
+    {
+      key: "STAR_COLOR",
+      label: "Star color",
+      info: "Applies to: Widget, Form & Success Screen",
+    },
+    {
+      key: "Submit_Button_Color",
+      label: "Button background ",
+      info: "Applies to: Widget, Form & Success Screen",
+    },
+    {
+      key: "TEXT_COLOR",
+      label: "Button text color",
+      info: "Applies to: Widget, Form & Success Screen",
+    },
+
+    {
+      key: "VERIFIED_BADGE_COLOR",
+      label: "Verified badge color",
+    },
+  ];
+
   // Start----Default CSR loading state checking for navigation
   const navigation = useNavigation();
   const loading = navigation.state === "loading";
   // End----Default CSR loading state checking for navigation
-  const [borderRadius, setBorderRadius] = useState(15);
   const [activeDevice, setActiveDevice] = useState("desktop");
-  const [quickReview, setQuickReview] = useState({
-    name: true,
-    email: false,
+  const [quickReview, setQuickReview] = useState(() =>
+    buildQuickReviewState(loaderData),
+  );
 
-    photo: true,
-    video: true,
-    // ---from text-----
-    formTitle: "How was your experience?",
-    formSubtitle: "Your feedback helps others",
-    submitButtonText: "Submit review",
-successMessageTitle: "Review submitted!",
-successButtonText: "Continue Shopping",
-successMessage: "Thank you for your review. It has been submitted successfully.",
-    // -----color --------
-    colorValues: DEFAULT_COLOR_VALUES,
-    borderRadius,
-    //  Review list display
-    showReviewerName: true,
-    showReviewerImage: true,
-    showReviewerVideo: true,
-    showProductName: false,
-    showVerifiedBadge: true,
-    showReviewDate: true,
-    showRatingFilter: true,
-    reviewPerPage: "10",
-    defaultSort: "Most recent (default)",
-  });
+  const postData = {
+    // -------- form ----------
+    isShowNameField: quickReview.name,
+    isShowEmailField: quickReview.email,
+    isPhotoUpload: quickReview.photo,
+    isVideoUpload: quickReview.video,
 
-  const [activeTab, setActiveTab] = useState("PREVIEW");
+    formTitle: quickReview.formTitle,
+    formSubtitle: quickReview.formSubtitle,
+    submitButtonText: quickReview.submitButtonText,
+    // ---success-----
+    successMessageTitle: quickReview.successMessageTitle,
+    successButtonText: quickReview.successButtonText,
+    successMessage: quickReview.successMessage,
+    // ----color--------
+    starColor: quickReview.colorValues.STAR_COLOR,
+    buttonBackgroundColor: quickReview.colorValues.Submit_Button_Color,
+    buttonTextColor: quickReview.colorValues.TEXT_COLOR,
+    verifiedBadgeColor: quickReview.colorValues.VERIFIED_BADGE_COLOR,
+    // -------------- widget ---------
+    borderRadius: `${quickReview.borderRadius}px`,
+
+    isShowReviewerName: quickReview.showReviewerName,
+    isShowReviewerImage: quickReview.showReviewerImage,
+    isShowReviewerVideo: quickReview.showReviewerVideo,
+    isShowProductName: quickReview.showProductName,
+    isShowVerifiedBadge: quickReview.showVerifiedBadge,
+    isShowReviewDate: quickReview.showReviewDate,
+    isShowRatingFilter: quickReview.showRatingFilter,
+
+    reviewPerPage: Number(quickReview.reviewPerPage),
+    defaultSort: quickReview.defaultSort,
+  };
+  const fetcher = useFetcher();
+  const initQuickReviewRef = useRef(null);
+  const savePendingRef = useRef(false);
+
+  if (initQuickReviewRef.current === null) {
+    initQuickReviewRef.current = cloneQuickReviewState(quickReview);
+  }
+
+  const handelSubmit = () => {
+    savePendingRef.current = true;
+    fetcher.submit(postData, {
+      method: "post",
+      encType: "application/json",
+    });
+    // requestAppWindowClose("quick_review");
+  };
 
   const [quickReviewTab, setquickReviewTab] = useState({
     quickReview: true,
@@ -105,17 +256,39 @@ successMessage: "Thank you for your review. It has been submitted successfully."
 
   // Start----Handlers for SaveBar
   const saveBar = useSaveBarTrigger({
-    onSubmit: (formData) => {
-      console.log("SaveBar submit trigger:", formData);
-      setTimeout(() => {
-        requestAppWindowClose("quick_review");
-      }, 2000);
+    onSubmit: () => {
+      handelSubmit();
     },
-    onDiscard: (formData) => {
-      console.log("SaveBar discard trigger:", formData);
+    onDiscard: () => {
+      setQuickReview(cloneQuickReviewState(initQuickReviewRef.current));
     },
   });
   // End----Handlers for SaveBar
+
+  useEffect(() => {
+    if (
+      !savePendingRef.current ||
+      fetcher.state !== "idle" ||
+      fetcher.data === undefined
+    ) {
+      return;
+    }
+
+    initQuickReviewRef.current = cloneQuickReviewState(quickReview);
+    savePendingRef.current = false;
+  }, [fetcher.data, fetcher.state, quickReview]);
+
+  useEffect(() => {
+    const hasChanged =
+      JSON.stringify(quickReview) !==
+      JSON.stringify(initQuickReviewRef.current);
+
+    if (hasChanged) {
+      saveBar.triggerChange();
+    } else {
+      saveBar.triggerDiscard({ silent: true });
+    }
+  }, [quickReview, saveBar.triggerChange, saveBar.triggerDiscard]);
 
   // Start----Hide app window padding and remove app nav
   useEffect(() => {
@@ -125,10 +298,6 @@ successMessage: "Thank you for your review. It has been submitted successfully."
     if (appNav) appNav.remove();
   }, []);
   // End----Hide app window padding and remove app nav
-
-  if (loading) {
-    return <Loader />; // Show loader while navigating to this page or when loader is fetching data
-  }
 
   const handleSwitch = (field) => (e) => {
     setQuickReview((prev) => ({ ...prev, [field]: e.target.checked }));
@@ -148,6 +317,9 @@ successMessage: "Thank you for your review. It has been submitted successfully."
       },
     }));
   };
+  if (loading) {
+    return <Loader />; // Show loader while navigating to this page or when loader is fetching data
+  }
 
   return (
     <>
@@ -269,7 +441,7 @@ successMessage: "Thank you for your review. It has been submitted successfully."
                     >
                       <s-text-field
                         label="Form title"
-                         maxlength="70"
+                        maxlength="70"
                         value={quickReview.formTitle}
                         onchange={handleText("formTitle")}
                       ></s-text-field>
@@ -332,7 +504,7 @@ successMessage: "Thank you for your review. It has been submitted successfully."
                             color: "#202223",
                           }}
                         >
-                         Form Border radius
+                          Form Border radius
                         </p>
                         <div
                           style={{
@@ -403,7 +575,7 @@ successMessage: "Thank you for your review. It has been submitted successfully."
                   >
                     <s-text-field
                       label="Success Title"
-                       maxlength="70"
+                      maxlength="70"
                       value={quickReview?.successMessageTitle}
                       onchange={handleText("successMessageTitle")}
                     ></s-text-field>
@@ -433,7 +605,7 @@ successMessage: "Thank you for your review. It has been submitted successfully."
                   >
                     <s-text-field
                       label="Button Text"
-                       maxlength="60"
+                      maxlength="60"
                       value={quickReview?.successButtonText}
                       onchange={handleText("successButtonText")}
                     ></s-text-field>
@@ -494,7 +666,7 @@ successMessage: "Thank you for your review. It has been submitted successfully."
                       onchange={(e) =>
                         setQuickReview((prev) => ({
                           ...prev,
-                          reviewPerPage: e.target.value,
+                          reviewPerPage: Number(e.target.value),
                         }))
                       }
                     >
@@ -517,13 +689,13 @@ successMessage: "Thank you for your review. It has been submitted successfully."
                         }))
                       }
                     >
-                      <s-option value="Most recent (default)">
+                      <s-option value="MOST_RECENT">
                         Most recent (default)
                       </s-option>
-                      <s-option value="Highest rating">Highest rating</s-option>
-                      <s-option value="Only pictures">Only pictures</s-option>
-                      <s-option value="Pictures first">Pictures first</s-option>
-                      <s-option value="Most helpful">Most helpful</s-option>
+                      <s-option value="HIGHEST_RATING">Highest rating</s-option>
+                      <s-option value="ONLY_PICTURES">Only pictures</s-option>
+                      <s-option value="ONLY_VIDEO">Pictures first</s-option>
+                      <s-option value="MOST_HELPFUL">Most helpful</s-option>
                     </s-select>
                   </s-stack>
                 </s-stack>
