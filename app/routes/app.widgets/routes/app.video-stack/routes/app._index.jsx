@@ -10,7 +10,7 @@ import ColorPicker from "../../../components/elements/ColorPicker";
 import Range from "../../../components/elements/Range";
 import Header from "../../../components/Header";
 import ResetToDefaults from "../../../components/elements/ResetToDefaults";
-
+import VideoStackWidget from "../component/videoStackPreview";
 const COLOR_PICKERS_ELEMENTS = [
   {
     key: "STAR_COLOR",
@@ -527,7 +527,7 @@ export default function Index() {
             </s-grid>
           </div>
           {/* End----Preview Header */}
-
+          <VideoStackWidget/>
           {/* Start----Preview Content */}
           {/* End----Preview Content */}
         </div>
