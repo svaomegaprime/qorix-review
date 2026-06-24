@@ -1,8 +1,11 @@
 import { reviewService } from "./review.service";
-async function postReview(request) {
+async function controller(request, admin) {
   switch (request.method) {
     case "POST":
-      return await reviewService.postReview(request);
+      return await reviewService.postReview(request, admin);
+
+    case "GET":
+      return await reviewService.getReview(request, admin);
 
     default:
       return { success: false, message: "Method not allowed" };
@@ -10,5 +13,5 @@ async function postReview(request) {
 }
 
 export const reviewController = {
-  postReview,
+  controller,
 };

@@ -1,26 +1,28 @@
 model Review {
-  id            String  @id @default(uuid()) @db.Uuid()
-  storeId       String
-  store         Store   @relation(fields: [storeId], references: [storeGID], onDelete: Cascade)
+  id      String @id @default(uuid()) @db.Uuid()
+  storeId String
+  store   Store  @relation(fields: [storeId], references: [storeGID], onDelete: Cascade)
+
   productId     String?
   productHandle String?
+  productTitle  String?
 
   reviewerName  String?
-  reviewerEmail String? @unique
-  reviewerPhone String? @unique
-  rating        Int
+  reviewerEmail String? 
+  reviewerPhone String? 
+  rating        Int     @default(0)
 
   title String?
   body  String?
 
-  status     ReviewStatus
-  source     ReviewSource
-  isVerified Boolean      @default(false)
-
-  createdAt    DateTime       @default(now())
-  updatedAt    DateTime       @updatedAt
+  status       ReviewStatus @default(PENDING)
+  source       ReviewSource
+  isVerified   Boolean        @default(false)
   attachments  Attachment[]
   helpfulCount HelpfulCount[]
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
 
   @@index([storeId])
   @@index([productId])

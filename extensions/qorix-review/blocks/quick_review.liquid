@@ -1,20 +1,19 @@
 {% assign quick_review_metafield = app.metafields.qorix_review.quick_review.value %}
 
-
 <link rel="stylesheet" href="{{ 'quick-review.css' | asset_url }}">
 
-
-<div x-data="quickReviewWidget()">
+<div
+  id="quick-review"
+  x-data="quickReviewWidget()"
+  x-init="productInit($el.dataset.product)"
+  data-product="{{ product | json | escape }}"
+>
   <div class="wrap">
     {% comment %} Start:: Header section summary {% endcomment %}
 
     <div class="top-row">
       <div>
-        <div class="cr-title">
-          Customer Reviews
-
-          
-        </div>
+        <div class="cr-title">Customer Reviews</div>
         <div class="cr-score" id="avg-score">
           <b class="cr-score" x-text="avgScore()"></b> <span x-text="reviews.length + ' reviews'"></span>
         </div>
@@ -51,12 +50,12 @@
             :class="{ open: sortOpen }"
             @click.stop
           >
-            <template x-for="option in sortOptions" :key="option">
+            <template x-for="option in sortOptions" :key="option.value">
               <div
                 class="sort-option"
-                :class="{ selected: activeSort === option }"
-                @click="setSort(option)"
-                x-text="option"
+                :class="{ selected: '{{quick_review_metafield.defaultSort}}' === option.value }"
+                @click="setSort(option.value)"
+                x-text="option.label"
               ></div>
             </template>
           </div>
@@ -100,18 +99,20 @@
 
     {% comment %} Start:: Review List show {% endcomment %}
     <div class="reviews-list" id="reviews-list">
-      <template x-for="review in filteredReviews()" :key="review.id">
+      <template x-for="review in filteredReviews().slice(0, {{quick_review_metafield.reviewPerPage}})" :key="review.id">
         <div class="review-item">
-          <div class="stars-row">
-            <template x-for="star in ratings" :key="'review-' + review.id + '-star-' + star">
-              <svg width="20" height="20" viewBox="0 0 17 16" fill="none" xmlns="http://www.w3.org/2000/svg">
-                <path
-                  :fill="star <= review.rating ? '#FF9500' : '#B5B5B5'"
-                  d="M9.51964 0.855C8.97604 -0.285 7.35604 -0.285 6.81244 0.855L5.14444 4.3494L1.30564 4.8546C0.0552353 5.0202 -0.446365 6.561 0.469235 7.4298L3.27724 10.0962L2.57284 13.9026C2.34244 15.1434 3.65404 16.0962 4.76284 15.495L8.16604 13.647L11.5692 15.495C12.678 16.0962 13.9896 15.1434 13.7592 13.9026L13.0548 10.0962L15.8628 7.4298C16.7772 6.561 16.2768 5.0202 15.0264 4.8546L11.1864 4.3494L9.51964 0.855Z"
-                />
-              </svg>
-            </template>
-          </div>
+          {% if quick_review_metafield.isShowRatingFilter %}
+            <div class="stars-row">
+              <template x-for="star in ratings" :key="'review-' + review.id + '-star-' + star">
+                <svg width="20" height="20" viewBox="0 0 17 16" fill="none" xmlns="http://www.w3.org/2000/svg">
+                  <path
+                    :fill="star <= review.rating ? '#FF9500' : '#B5B5B5'"
+                    d="M9.51964 0.855C8.97604 -0.285 7.35604 -0.285 6.81244 0.855L5.14444 4.3494L1.30564 4.8546C0.0552353 5.0202 -0.446365 6.561 0.469235 7.4298L3.27724 10.0962L2.57284 13.9026C2.34244 15.1434 3.65404 16.0962 4.76284 15.495L8.16604 13.647L11.5692 15.495C12.678 16.0962 13.9896 15.1434 13.7592 13.9026L13.0548 10.0962L15.8628 7.4298C16.7772 6.561 16.2768 5.0202 15.0264 4.8546L11.1864 4.3494L9.51964 0.855Z"
+                  />
+                </svg>
+              </template>
+            </div>
+          {% endif %}
 
           <div class="reviewer-row">
             <template x-if="review.avatar">
@@ -119,58 +120,73 @@
                 <img
                   class="avatar"
                   :src="review.avatar"
-                  :alt="review.name"
+                  :alt="review.reviewerName"
                   @error="$event.target.style.display = 'none'; $event.target.nextElementSibling.style.display = 'flex'"
                   width="40"
                   height="40"
                 >
-                <div class="avatar-initials" style="display: none" x-text="initials(review.name)"></div>
+                <div class="avatar-initials" style="display: none" x-text="initials(review.reviewerName)"></div>
               </div>
             </template>
             <template x-if="!review.avatar">
-              <div class="avatar-initials" x-text="initials(review.name)"></div>
+              <div class="avatar-initials" x-text="initials(review.reviewerName)"></div>
             </template>
 
             <div>
               <div class="reviewer-name-row">
-                <span x-text="review.name"></span>
-                <span x-show="review.verified">
-                  <svg width="16" height="16" viewBox="0 0 18 18" fill="none">
-                    <circle cx="9" cy="9" r="9" fill="#1a7d43" />
-                    <path d="M5.21 9L7.74 11.53L12.79 6.47" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" />
-                  </svg>
-                </span>
+                {%- if quick_review_metafield.isShowReviewerName -%}
+                  <span x-text="review.reviewerName"></span>
+                {%- endif -%}
+                {%- if quick_review_metafield.isShowVerifiedBadge -%}
+                  <span x-show="review.verified">
+                    <svg width="16" height="16" viewBox="0 0 18 18" fill="none">
+                      <circle cx="9" cy="9" r="9" fill="#1a7d43" />
+                      <path d="M5.21 9L7.74 11.53L12.79 6.47" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" />
+                    </svg>
+                  </span>
+                {% endif %}
               </div>
-              <div class="reviewer-time" x-text="review.time"></div>
+              {%- if quick_review_metafield.isShowReviewDate -%}
+                <div class="reviewer-time" x-text="timeAgo(review.createdAt)"></div>
+              {%- endif -%}
             </div>
           </div>
 
           <div class="quick_review_product_name">
-            <span x-text="review.product"></span>
-            <div class="review-text" x-text="review.review"></div>
+            {%- if quick_review_metafield.isShowProductName -%}<span x-text="review.productTitle"></span>{%- endif -%}
+            <div class="review-text" x-text="review.body"></div>
           </div>
 
-          <div class="media-row" x-show="review.media.length > 0">
-            <template x-for="media in review.media" :key="media.url + media.type">
-              <div
-                class="media-thumb-wrap"
-                :title="media.type === 'image' ? 'Click to view' : 'Click to play'"
-                @click="openLightbox(media)"
+          <div class="media-row" x-show="review.attachments.length > 0">
+            <template x-for="media in review.attachments" :key="media.url + media.type">
+              <template
+                x-if="
+                  (media.type === 'IMAGE' && {{ quick_review_metafield.isShowReviewerImage | json }}) ||
+                  (media.type === 'VIDEO' && {{ quick_review_metafield.isShowReviewerVideo | json }})
+                "
               >
-                <img
-                  :src="media.type === 'image' ? media.url : media.thumb"
-                  :alt="media.type === 'image' ? 'review image' : 'video thumbnail'"
-                  width="80"
-                  height="80"
+                <div
+                  class="media-thumb-wrap"
+                  :title="media.type === 'IMAGE' ? 'Click to view' : 'Click to play'"
+                  @click="openLightbox(media)"
                 >
-                <div class="play-overlay" x-show="media.type === 'video'">
-                  <svg viewBox="0 0 24 24">
-                    <path d="M8 5v14l11-7z"></path>
-                  </svg>
+                  <img
+                    :src="media.type === 'IMAGE' && encodeURI(media.url)"
+                    :alt="media.type === 'IMAGE' && 'review image'"
+                    width="80"
+                    height="80"
+                  >
+
+                  <div class="play-overlay" x-show="media.type === 'VIDEO'">
+                    <svg viewBox="0 0 24 24">
+                      <path d="M8 5v14l11-7z"></path>
+                    </svg>
+                  </div>
                 </div>
-              </div>
+              </template>
             </template>
           </div>
+        
         </div>
       </template>
 
@@ -187,10 +203,10 @@
   <div class="lightbox" id="lightbox" :class="{ open: lightboxOpen }" @click="closeLightbox($event)">
     <button class="lightbox-close" type="button" @click="closeLightbox()">&#x2715;</button>
     <div class="lightbox-content" id="lightbox-content">
-      <template x-if="lightboxMedia && lightboxMedia.type === 'image'">
+      <template x-if="lightboxMedia && lightboxMedia.type === 'IMAGE'">
         <img :src="lightboxMedia.url" alt="media" width="" height="">
       </template>
-      <template x-if="lightboxMedia && lightboxMedia.type === 'video'">
+      <template x-if="lightboxMedia && lightboxMedia.type === 'VIDEO'">
         <video :src="lightboxMedia.url" controls autoplay></video>
       </template>
     </div>
@@ -203,7 +219,7 @@
     <div class="modal-box" id="modal-box" x-ref="modalBox">
       <button class="modal-close" type="button" @click="closeModal()">&#x2715;</button>
       {% comment %} Start:: form  {% endcomment %}
-      <form id="form-view" @submit.prevent="submitReview" x-show="!submitSuccess">
+      <form id="form-view" @submit.prevent='(e)=>submitReview(e)' x-show="!submitSuccess">
         <div class="modal-header">
           <div class="modal-icon">
             <svg viewBox="0 0 24 24" fill="#fff">
@@ -355,17 +371,17 @@
 </div>
 
 <script src="{{ 'quick-review.js'| asset_url }}" defer></script>
-<script>
-  
-  console.log("qorix_review quick_review metafield", {{ quick_review_metafield | json }});
-</script>
+{% comment %}
+  <script>
+    console.log("qorix_review quick_review metafield", {{ quick_review_metafield | json }});
+  </script>
+{% endcomment %}
 
 <script src="{{ 'alpine.js' | asset_url }}" defer></script>
 
-
 {% schema %}
 {
-  "name": "Quick review swidget",
+  "name": "Quick review widget",
   "target": "section",
   "settings": []
 }

@@ -713,13 +713,14 @@ export default function Index(VALUES = {}) {
                           defaultSort: e.target.value,
                         }))
                       }
+
                     >
                       <s-option value="MOST_RECENT">
                         Most recent (default)
                       </s-option>
                       <s-option value="HIGHEST_RATING">Highest rating</s-option>
                       <s-option value="ONLY_PICTURES">Only pictures</s-option>
-                      <s-option value="ONLY_VIDEO">Pictures first</s-option>
+                      <s-option value="ONLY_VIDEO">Only video</s-option>
                       <s-option value="MOST_HELPFUL">Most helpful</s-option>
                     </s-select>
                   </s-stack>
