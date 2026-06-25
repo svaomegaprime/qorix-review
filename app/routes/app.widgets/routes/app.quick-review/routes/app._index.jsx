@@ -715,6 +715,9 @@ export default function Index(VALUES = {}) {
                       }
 
                     >
+                      <s-option value="ALL">
+                        All review
+                      </s-option>
                       <s-option value="MOST_RECENT">
                         Most recent (default)
                       </s-option>

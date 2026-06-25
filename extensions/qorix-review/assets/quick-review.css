@@ -41,8 +41,8 @@
       }
       .write-btn {
         margin-top: 16px;
-        background: #1a7d43;
-        color: #fff;
+        background: var(--button-background-color);
+        color: var(--button-text-color);
         border: none;
         border-radius: 6px;
         padding: 13px 22px;
@@ -51,7 +51,7 @@
         font-family: "Inter", sans-serif;
       }
       .write-btn:hover {
-        background: #15683a;
+      background: color-mix(in srgb, var(--button-background-color) 20%, transparent);
       }
       .right-btns {
         display: flex;
@@ -118,9 +118,9 @@
         background: #f5f5f5;
       }
       .filter-chip.active {
-        background: #1a7d43;
-        color: #fff;
-        border-color: #1a7d43;
+        background: var(--button-background-color);
+        color: var(--button-text-color);
+        border-color: var(--button-background-color);
       }
       .reviews-list {
         margin-top: 24px;
@@ -322,7 +322,7 @@
       }
       .modal-box {
         background: #fff;
-        border-radius: 16px;
+        /* border-radius: 16px; */
         padding: 30px 28px;
         width: 500px;
         max-width: 95vw;

@@ -75,40 +75,124 @@ async function postReview(request, admin) {
   }
 
 }
-
 async function getReview(request, admin) {
   try {
     const url = new URL(request.url);
     const productId = url.searchParams.get("productId");
+    const sort = url.searchParams.get("sort") || "ALL";
 
-    console.log("productId", productId)
+    console.log("productId", productId);
+    console.log("sort", sort);
 
-    const { id } = await getStoreData(admin)
+    const { id } = await getStoreData(admin);
 
-    const res = await prisma.review.findMany({
+    // Base query
+    const query = {
       where: {
         storeId: id,
         ...(productId ? { productId } : {}),
       },
       include: {
         attachments: true,
+        helpfulCount: true,
       },
       orderBy: {
         createdAt: "desc",
       },
-    })
-    console.log("[REVIEW DATA]",res)
+    };
+
+    // Sorting logic
+    switch (sort) {
+      case "MOST_RECENT":
+      case "ALL":
+        query.orderBy = {
+          createdAt: "desc",
+        };
+        break;
+
+      case "HIGHEST_RATING":
+        query.orderBy = {
+          rating: "desc",
+        };
+        break;
+
+      case "ONLY_PICTURES":
+        query.where.attachments = {
+          some: {
+            type: "IMAGE",
+          },
+        };
+        break;
+
+      case "ONLY_VIDEO":
+        query.where.attachments = {
+          some: {
+            type: "VIDEO",
+          },
+        };
+        break;
+
+      case "MOST_HELPFUL":
+        query.orderBy = {
+          helpfulCount: {
+            _count: "desc",
+          },
+        };
+        break;
+
+      default:
+        query.orderBy = {
+          createdAt: "desc",
+        };
+    }
+
+    const res = await prisma.review.findMany(query);
+
+    console.log("[REVIEW DATA]", res);
 
     return {
       ok: true,
       data: res,
-    }
-
+    };
   } catch (error) {
     console.error("[ERROR::api.review.getReview]", error);
     return AppError.handle(error);
   }
 }
+// async function getReview(request, admin) {
+//   try {
+//     const url = new URL(request.url);
+//     const productId = url.searchParams.get("productId");
+//     const sort = url.searchParams.get("sort");
+
+//     console.log("productId", productId)
+
+//     const { id } = await getStoreData(admin)
+
+//     const res = await prisma.review.findMany({
+//       where: {
+//         storeId: id,
+//         ...(productId ? { productId } : {}),
+//       },
+//       include: {
+//         attachments: true,
+//       },
+//       orderBy: {
+//         createdAt: "desc",
+//       },
+//     })
+//     console.log("[REVIEW DATA]",res)
+
+//     return {
+//       ok: true,
+//       data: res,
+//     }
+
+//   } catch (error) {
+//     console.error("[ERROR::api.review.getReview]", error);
+//     return AppError.handle(error);
+//   }
+// }
 export const reviewService = {
   postReview,
   getReview,

@@ -4,6 +4,10 @@ function quickReviewWidget() {
     ratings: [1, 2, 3, 4, 5],
     sortOptions: [
       {
+        label: "All Review",
+        value: "ALL",
+      },
+      {
         label: "Most recent",
         value: "MOST_RECENT",
       },
@@ -34,6 +38,8 @@ function quickReviewWidget() {
     starSelected: 0,
     starHover: 0,
     isDragging: false,
+    allowPhotoUpload: true,
+    allowVideoUpload: true,
     uploadedFiles: [],
     form: {
       name: "",
@@ -75,7 +81,27 @@ function quickReviewWidget() {
 
     dbData: [],
 
-    async productInit(productJson) {
+    initUploadSettings(el) {
+      this.allowPhotoUpload = el.dataset.photoUpload === "true";
+      this.allowVideoUpload = el.dataset.videoUpload === "true";
+    },
+
+    isAllowedMediaFile(file) {
+      const isImage = file.type.startsWith("image/");
+      const isVideo = file.type.startsWith("video/");
+
+      if (isImage && this.allowPhotoUpload) {
+        return true;
+      }
+
+      if (isVideo && this.allowVideoUpload) {
+        return true;
+      }
+
+      return false;
+    },
+
+    async productInit(productJson,defaultSort) {
       try {
         console.log("productInit called", productJson);
 
@@ -93,9 +119,9 @@ function quickReviewWidget() {
       }
     },
 
-    async getReview() {
+    async getReview(defaultSort) {
       const productId = this.product?.id || "";
-      const response = await fetch(`/apps/api/review?productId=${encodeURIComponent(productId)}`, {
+      const response = await fetch(`/apps/api/review?productId=${encodeURIComponent(productId)}&sort=${encodeURIComponent(defaultSort)}`, {
         method: "GET",
       });
 
@@ -215,6 +241,8 @@ function quickReviewWidget() {
 
 
     avgScore() {
+      if (!this.reviews.length) return "0.0";
+        
       const total = this.reviews.reduce(
         (sum, review) => sum + review.rating,
         0,
@@ -263,6 +291,7 @@ function quickReviewWidget() {
     setSort(option) {
       this.activeSort = option;
       this.sortOpen = false;
+      this.getReview(option)
     },
 
     openModal() {
@@ -300,6 +329,11 @@ function quickReviewWidget() {
 
     addFiles(files) {
       Array.from(files).forEach((file) => {
+        if (!this.isAllowedMediaFile(file)) {
+          alert(file.name + " is not an allowed file type.");
+          return;
+        }
+
         if (file.size > 20 * 1024 * 1024) {
           alert(file.name + " is too large. Max 20MB.");
           return;
