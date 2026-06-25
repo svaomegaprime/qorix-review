@@ -33,61 +33,69 @@ const shopify = shopifyApp({
     : {}),
   hooks: {
     afterAuth: async ({ session }) => {
-  try {
-    const adminApiUrl = `https://${session.shop}/admin/api/2026-04/graphql.json`;
+      try {
+        const adminApiUrl = `https://${session.shop}/admin/api/2026-04/graphql.json`;
 
-    const response = await fetch(adminApiUrl, {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-        "X-Shopify-Access-Token": session.accessToken,
-      },
-      body: JSON.stringify({ query: GET_SHOP_BASIC_INFO }),
-    });
+        const response = await fetch(adminApiUrl, {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+            "X-Shopify-Access-Token": session.accessToken,
+          },
+          body: JSON.stringify({ query: GET_SHOP_BASIC_INFO }),
+        });
 
-   
 
-    const text = await response.text();
 
-    if (!response.ok) {
-      console.error("Shopify HTTP error:", response.status, text);
-      return;
+        const text = await response.text();
+
+        if (!response.ok) {
+          console.error("Shopify HTTP error:", response.status, text);
+          return;
+        }
+
+        const result = JSON.parse(text);
+
+        if (result.errors) {
+          console.error("Shopify GraphQL errors:", result.errors);
+          return;
+        }
+
+        const shopData = result.data?.shop;
+
+        if (!shopData) {
+          console.error("No shop data returned:", result);
+          return;
+        }
+
+        console.log("Shop info:", shopData);
+
+
+
+        await prisma.store.upsert({
+          where: { storeGID: shopData.id },
+          update: {
+            storeURL: shopData.myshopifyDomain,
+            storeEmail: shopData.email ?? "",
+          },
+          create: {
+            storeGID: shopData.id,
+            storeURL: shopData.myshopifyDomain,
+            storeEmail: shopData.email ?? "",
+          },
+        });
+
+        
+        //  fst a db te up hobe dbr deoa res dia metafield ar data update hobe
+        // Full settings install ar sathe sathe update korte hobe
+        // sob widget ar default data db te update kore metafield a rakhte hobe
+
+        //  
+
+      } catch (error) {
+        console.error("afterAuth shop fetch failed:", error);
+      }
     }
-
-    const result = JSON.parse(text);
-
-    if (result.errors) {
-      console.error("Shopify GraphQL errors:", result.errors);
-      return;
-    }
-
-    const shopData = result.data?.shop;
-
-    if (!shopData) {
-      console.error("No shop data returned:", result);
-      return;
-    }
-
-    console.log("Shop info:", shopData);
-
-    
-
-    await prisma.store.upsert({
-      where: { storeGID: shopData.id },
-      update: {
-        storeURL: shopData.myshopifyDomain,
-        storeEmail: shopData.email ?? "",
-      },
-      create: {
-        storeGID: shopData.id,
-        storeURL: shopData.myshopifyDomain,
-        storeEmail: shopData.email ?? "",
-      },
-    });
-  } catch (error) {
-    console.error("afterAuth shop fetch failed:", error);
-  }
-}
   },
 });
 

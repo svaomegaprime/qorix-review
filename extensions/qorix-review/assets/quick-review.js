@@ -49,6 +49,7 @@ function quickReviewWidget() {
     lightboxOpen: false,
     lightboxMedia: null,
     product: {},
+    loading: false,
 
     reviews: [
       {
@@ -120,6 +121,7 @@ function quickReviewWidget() {
     },
 
     async getReview(defaultSort) {
+      this.loading = true;
       const productId = this.product?.id || "";
       const response = await fetch(`/apps/api/review?productId=${encodeURIComponent(productId)}&sort=${encodeURIComponent(defaultSort)}`, {
         method: "GET",
@@ -133,6 +135,7 @@ function quickReviewWidget() {
 
       this.reviews = result.data || [];
       console.log("GET Review:", result);
+      this.loading = false;
       return result
     },
 

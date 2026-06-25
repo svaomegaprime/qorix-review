@@ -27,6 +27,9 @@
 <link rel="stylesheet" href="{{ 'quick-review.css' | asset_url }}">
 
 <div
+  dd="{{ product.metafields.qorix_review.average_rating.value }}-{{ product.metafields.qorix_review.review_count.value }}"
+  xx="{{ product.metafields.reviews.rating }} -
+{{ product.metafields.reviews.rating_count.value }}"
   id="quick-review"
   x-data="quickReviewWidget()"
   x-init="initUploadSettings($el); productInit($el.dataset.product,$el.dataset.sort)"
@@ -35,7 +38,7 @@
   data-video-upload="{{ allow_video | json }}"
   data-sort="{{ quick_review_metafield.defaultSort }}"
 >
-  <div class="wrap">
+  <div class="wrap" >
     {% comment %} Start:: Header section summary {% endcomment %}
 
     <div class="top-row">

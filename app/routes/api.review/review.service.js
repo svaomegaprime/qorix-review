@@ -3,6 +3,7 @@ import prisma from "../../db.server";
 import { uploadFile } from "../../lib/uploadFile"
 import { isFileLike } from "../../utils/isFileLike"
 import { AppError } from "../../utils/appError.server"
+import {updateProductReviewDefineMetafields} from "../../utils/updateProductReviewDefineMetafields"
 async function postReview(request, admin) {
 
 
@@ -59,6 +60,10 @@ async function postReview(request, admin) {
         attachments: true,
       },
     })
+
+    const productMedafieldResult = await updateProductReviewDefineMetafields(admin, reviewData.productId, reviewData.storeId);
+    console.log("[quick-review][action] Product metafield save result", productMedafieldResult);
+
 
 
     console.log(res)
