@@ -385,7 +385,11 @@
           </div>
         {% endif %}
 
-        <button class="submit-btn" type="submit">{{ quick_review_metafield.submitButtonText }}</button>
+        <button class="submit-btn" type="submit" :disabled="dataPostLoading">
+          <span x-show="!dataPostLoading">{{ quick_review_metafield.submitButtonText }}</span>
+          <span x-show="dataPostLoading" class="qr-loader" aria-hidden="true"></span>
+        </button>
+
         <div class="modal-footer-note">
           <svg viewBox="0 0 24 24">
             <rect x="3" y="11" width="18" height="11" rx="2" ry="2" />

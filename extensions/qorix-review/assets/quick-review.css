@@ -519,7 +519,7 @@
 .submit-btn {
   width: 100%;
   background: var(--button-background-color);
-  color: var( --button-text-color);
+  color: var(--button-text-color);
   border: none;
   border-radius: 8px;
   padding: 12px;
@@ -527,9 +527,17 @@
   cursor: pointer;
   font-family: inherit;
   margin-bottom: 10px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 46px;
 }
 .submit-btn:hover {
   background: var(--button-background-color);
+}
+.submit-btn:disabled {
+  opacity: 0.9;
+  cursor: wait;
 }
 .modal-footer-note {
   text-align: center;
@@ -557,7 +565,7 @@
   width: 64px;
   height: 64px;
   border-radius: 50%;
-  border: 2px solid var(--button-background-color);;
+  border: 2px solid var(--button-background-color);
   display: flex;
   align-items: center;
   justify-content: center;
@@ -585,7 +593,7 @@
 .continue-btn {
   width: 100%;
   background: var(--button-background-color);
-  color: var( --button-text-color);
+  color: var(--button-text-color);
   border: none;
   border-radius: 8px;
   padding: 12px;
@@ -630,4 +638,26 @@
   background: #ff944d;
   color: #fff;
   border-color: #ff944d;
+}
+
+/* Loader */
+.submit-btn .qr-loader {
+  display: inline-block;
+  width: 22px;
+  height: 22px;
+  border: 2px solid rgba(255, 255, 255, 0.35);
+  border-top-color: currentColor;
+  border-radius: 50%;
+  animation: qr-spin 0.8s linear infinite;
+  flex-shrink: 0;
+}
+
+@keyframes qr-spin {
+  from {
+    transform: rotate(0deg);
+  }
+
+  to {
+    transform: rotate(360deg);
+  }
 }

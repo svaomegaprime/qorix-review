@@ -48,6 +48,7 @@ function quickReviewWidget() {
     lightboxMedia: null,
     product: {},
     loading: false,
+    dataPostLoading: false,
 
     reviews: [
       {
@@ -162,6 +163,8 @@ function quickReviewWidget() {
         alert("Please fill in all required fields and select a star rating.");
         return;
       }
+
+      this.dataPostLoading = true;
       console.log(
         this.form.name,
         this.form.email,
@@ -208,14 +211,19 @@ function quickReviewWidget() {
 
         this.submitSuccess = true;
 
+        this.reviews.unshift(result.data);
+
         this.$nextTick(() => {
           if (this.$refs.modalBox) {
             this.$refs.modalBox.scrollTop = 0;
           }
         });
+        this.dataPostLoading = false;
       } catch (error) {
         console.error(error);
+        this.dataPostLoading = false;
         alert("Failed to submit review");
+
       }
     },
 
