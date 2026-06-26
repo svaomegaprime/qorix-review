@@ -1,5 +1,4 @@
 function quickReviewWidget() {
-
   return {
     ratings: [1, 2, 3, 4, 5],
     sortOptions: [
@@ -27,10 +26,9 @@ function quickReviewWidget() {
         label: "Most helpful",
         value: "MOST_HELPFUL",
       },
-
     ],
-    activeFilter: "all",
-    activeSort: "Highest rating",
+    activeFilter: "ALL",
+    activeSort: "MOST_RECENT",
     filtersOpen: true,
     sortOpen: false,
     modalOpen: false,
@@ -59,8 +57,7 @@ function quickReviewWidget() {
         avatar: "https://i.ibb.co.com/7PwsYSL/raju.jpg",
         createdAt: null,
         productTitle: "Hydrating Eye Cream",
-        body:
-          "Good results, noticed a difference in about a week. Fast shipping too.",
+        body: "Good results, noticed a difference in about a week. Fast shipping too.",
         attachments: [
           {
             type: "IMAGE",
@@ -77,10 +74,13 @@ function quickReviewWidget() {
         ],
         isVerified: true,
       },
-
     ],
-
-    dbData: [],
+    currentPage: 1,
+    limit: 10,
+    totalPages: 1,
+    totalReviews: 0,
+    averageRating: 0,
+    sort: "ALL",
 
     initUploadSettings(el) {
       this.allowPhotoUpload = el.dataset.photoUpload === "true";
@@ -102,9 +102,11 @@ function quickReviewWidget() {
       return false;
     },
 
-    async productInit(productJson,defaultSort) {
+    async productInit(productJson, defaultSort, limit) {
       try {
         console.log("productInit called", productJson);
+        this.limit = limit;
+        this.sort = defaultSort;
 
         if (!productJson) {
           console.warn("No product JSON found");
@@ -114,7 +116,7 @@ function quickReviewWidget() {
         this.product = JSON.parse(productJson);
         console.log("parsed product", this.product);
 
-        await this.getReview();
+        await this.getReview(defaultSort);
       } catch (error) {
         console.error("Quick review init failed", error);
       }
@@ -123,25 +125,34 @@ function quickReviewWidget() {
     async getReview(defaultSort) {
       this.loading = true;
       const productId = this.product?.id || "";
-      const response = await fetch(`/apps/api/review?productId=${encodeURIComponent(productId)}&sort=${encodeURIComponent(defaultSort)}`, {
-        method: "GET",
-      });
+      const response = await fetch(
+        `/apps/api/review?productId=${encodeURIComponent(productId)}&sort=${encodeURIComponent(defaultSort)}&page=${this.currentPage}&limit=${this.limit}`,
+        {
+          method: "GET",
+        },
+      );
 
       const result = await response.json();
+      
 
       if (!response.ok || result.ok === false) {
         throw new Error(result.message || "Failed to fetch reviews");
       }
 
       this.reviews = result.data || [];
+      this.currentPage = result.currentPage;
+      this.totalPages = result.totalPages;
+      this.totalReviews = result.totalReviews;
+      this.averageRating = result.averageRating;
+
       console.log("GET Review:", result);
       this.loading = false;
-      return result
+      return result;
     },
 
     async submitReview(event) {
       const product = this.product || {};
-      console.log("999090088888888", product)
+      console.log("999090088888888", product);
 
       if (
         !this.starSelected ||
@@ -174,9 +185,6 @@ function quickReviewWidget() {
 
         formData.append("source", "PRODUCT_PAGE");
 
-
-
-
         // Images & Videos
         this.uploadedFiles.forEach((item) => {
           formData.append("media", item.file);
@@ -187,7 +195,6 @@ function quickReviewWidget() {
         const response = await fetch("/apps/api/review", {
           method: "POST",
           body: formData,
-
         });
 
         if (!response.ok) {
@@ -212,45 +219,55 @@ function quickReviewWidget() {
       }
     },
 
+    changePage(page) {
+      if (page < 1 || page > this.totalPages) return;
+
+      this.currentPage = page;
+      this.getReview(this.sort);
+    },
+
+    nextPage() {
+      if (this.currentPage < this.totalPages) {
+        this.currentPage++;
+        this.getReview(this.sort);
+      }
+    },
+
+    prevPage() {
+      if (this.currentPage > 1) {
+        this.currentPage--;
+        this.getReview(this.sort);
+      }
+    },
+
     timeAgo(date) {
-  if (!date) return "Recently";
+      if (!date) return "Recently";
 
-  const d = new Date(date);
+      const d = new Date(date);
 
-  if (isNaN(d.getTime())) return "Recently";
+      if (isNaN(d.getTime())) return "Recently";
 
-  const seconds = Math.floor((Date.now() - d.getTime()) / 1000);
+      const seconds = Math.floor((Date.now() - d.getTime()) / 1000);
 
-  const intervals = [
-    { label: "year", seconds: 31536000 },
-    { label: "month", seconds: 2592000 },
-    { label: "week", seconds: 604800 },
-    { label: "day", seconds: 86400 },
-    { label: "hour", seconds: 3600 },
-    { label: "minute", seconds: 60 },
-    { label: "second", seconds: 1 },
-  ];
+      const intervals = [
+        { label: "year", seconds: 31536000 },
+        { label: "month", seconds: 2592000 },
+        { label: "week", seconds: 604800 },
+        { label: "day", seconds: 86400 },
+        { label: "hour", seconds: 3600 },
+        { label: "minute", seconds: 60 },
+        { label: "second", seconds: 1 },
+      ];
 
-  for (const interval of intervals) {
-    const count = Math.floor(seconds / interval.seconds);
+      for (const interval of intervals) {
+        const count = Math.floor(seconds / interval.seconds);
 
-    if (count >= 1) {
-      return `${count} ${interval.label}${count > 1 ? "s" : ""} ago`;
-    }
-  }
+        if (count >= 1) {
+          return `${count} ${interval.label}${count > 1 ? "s" : ""} ago`;
+        }
+      }
 
-  return "Just now";
-},
-
-
-    avgScore() {
-      if (!this.reviews.length) return "0.0";
-        
-      const total = this.reviews.reduce(
-        (sum, review) => sum + review.rating,
-        0,
-      );
-      return (total / this.reviews.length).toFixed(1);
+      return "Just now";
     },
 
     initials(name) {
@@ -258,43 +275,29 @@ function quickReviewWidget() {
     },
 
     hasMediaType(review, type) {
-      return review.media.some((media) => media.type === type);
+      return review.attachments.some((media) => media.type === type);
     },
 
     filteredReviews() {
-      let list = this.reviews.slice();
-
-      if (this.activeFilter !== "all") {
-        list = list.filter((review) => review.rating === this.activeFilter);
+      if (this.activeFilter === "ALL") {
+        return this.reviews;
       }
 
-      if (this.activeSort === "Highest rating") {
-        list.sort((a, b) => b.rating - a.rating);
-      } else if (this.activeSort === "Lowest rating") {
-        list.sort((a, b) => a.rating - b.rating);
-      } else if (this.activeSort === "Only pictures") {
-        list = list.filter((review) => this.hasMediaType(review, "image"));
-      } else if (this.activeSort === "Pictures first") {
-        list.sort(
-          (a, b) =>
-            Number(this.hasMediaType(b, "image")) -
-            Number(this.hasMediaType(a, "image")),
-        );
-      } else if (this.activeSort === "Videos first") {
-        list.sort(
-          (a, b) =>
-            Number(this.hasMediaType(b, "video")) -
-            Number(this.hasMediaType(a, "video")),
-        );
-      }
+      const rating = Number(this.activeFilter);
 
-      return list;
+      return this.reviews.filter(
+        (review) => Number(review.rating) === rating,
+      );
     },
 
+    setRatingFilter(rating) {
+      this.activeFilter = rating;
+    },
     setSort(option) {
       this.activeSort = option;
       this.sortOpen = false;
-      this.getReview(option)
+      this.sort = option;
+      this.getReview(option);
     },
 
     openModal() {

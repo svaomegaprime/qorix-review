@@ -3,7 +3,10 @@ import prisma from "../../db.server";
 import { uploadFile } from "../../lib/uploadFile"
 import { isFileLike } from "../../utils/isFileLike"
 import { AppError } from "../../utils/appError.server"
-import {updateProductReviewDefineMetafields} from "../../utils/updateProductReviewDefineMetafields"
+import { updateProductReviewDefineMetafields } from "../../utils/updateProductReviewDefineMetafields"
+
+
+
 async function postReview(request, admin) {
 
 
@@ -85,6 +88,8 @@ async function getReview(request, admin) {
     const url = new URL(request.url);
     const productId = url.searchParams.get("productId");
     const sort = url.searchParams.get("sort") || "ALL";
+    const page = Number(url.searchParams.get("page")) || 1;
+    const limit = Number(url.searchParams.get("limit")) || 10;
 
     console.log("productId", productId);
     console.log("sort", sort);
@@ -104,6 +109,9 @@ async function getReview(request, admin) {
       orderBy: {
         createdAt: "desc",
       },
+      skip: (page - 1) * limit,
+      take: limit,
+
     };
 
     // Sorting logic
@@ -151,13 +159,38 @@ async function getReview(request, admin) {
         };
     }
 
-    const res = await prisma.review.findMany(query);
+    // const res = await prisma.review.findMany(query);
+    const [res, info] = await Promise.all([
+      prisma.review.findMany(query),
+
+      // prisma.review.count({where: query.where}),
+      prisma.review.aggregate({
+        where: query.where,
+
+        _count: {
+          _all: true,
+        },
+
+        _avg: {
+          rating: true,
+        },
+      })
+    ]);
 
     console.log("[REVIEW DATA]", res);
 
     return {
       ok: true,
       data: res,
+      
+      totalReviews: info._count._all,
+
+      totalPages: Math.ceil(info._count._all / limit),
+      currentPage: page,
+
+      averageRating: Number(
+        (info._avg.rating || 0).toFixed(1)
+      ),
     };
   } catch (error) {
     console.error("[ERROR::api.review.getReview]", error);
