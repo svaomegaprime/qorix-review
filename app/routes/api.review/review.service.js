@@ -4,7 +4,7 @@ import { uploadFile } from "../../lib/uploadFile"
 import { isFileLike } from "../../utils/isFileLike"
 import { AppError } from "../../utils/appError.server"
 import { updateProductReviewDefineMetafields } from "../../utils/updateProductReviewDefineMetafields"
-
+import { sendEmail } from "../../utils/sendEmail"
 
 
 async function postReview(request, admin) {
@@ -70,6 +70,43 @@ async function postReview(request, admin) {
 
 
     console.log(res)
+
+
+    await sendEmail({
+      to: reviewData.reviewerEmail,
+      subject: "Thank you for your purchase!",
+      from: '"Qorix Reviews" <support@qorix.com>',
+      replyTo: "support@qorix.com",
+      templateName: "ConfirmEmail",
+
+      templateData: {
+        logoUrl: "https://via.placeholder.com/150x50?text=Qorix+Review",
+
+        customerName: reviewData.reviewerName,
+
+        product: {
+          title: "Premium Leather Backpack",
+          price: "$89.99",
+          image:
+            "https://images.unsplash.com/photo-1542291026-7eec264c27ff?w=300",
+
+          url: "https://demo-store.com/products/premium-leather-backpack",
+
+          averageRating: 4.8,
+
+          totalReviews: 127,
+        },
+
+        review: {
+          rating: 4,
+
+          comment:
+            reviewData.body,
+        },
+      },
+
+
+    });
 
 
 
@@ -182,7 +219,7 @@ async function getReview(request, admin) {
     return {
       ok: true,
       data: res,
-      
+
       totalReviews: info._count._all,
 
       totalPages: Math.ceil(info._count._all / limit),

@@ -152,6 +152,7 @@ function quickReviewWidget() {
     },
 
     async submitReview(event) {
+      if (!this.product) return ;
       const product = this.product || {};
       console.log("999090088888888", product);
 

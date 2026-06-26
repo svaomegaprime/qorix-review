@@ -1,0 +1,184 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Thank You For Your Review</title>
+</head>
+
+<body style="margin:0;padding:0;background:#f4f4f5;font-family:Arial,sans-serif;">
+
+  <table width="100%" cellpadding="0" cellspacing="0" style="padding:40px 15px;background:#f4f4f5;">
+    <tr>
+      <td align="center">
+
+        <table width="600" cellpadding="0" cellspacing="0"
+          style="background:#ffffff;border-radius:18px;overflow:hidden;">
+
+          <!-- Header -->
+          <tr>
+            <td
+              style="background:linear-gradient(90deg,#FE5012,#ff7a45);padding:20px 35px;text-align:left;">
+
+              <!-- <% if (logoUrl) { %>
+                <img src="<%= logoUrl %>"
+                  width="150"
+                  style="display:block;margin:0 auto 20px;">
+              <% } %> -->
+
+              <h1 style="margin:0;color:#fff;font-size:26px;">
+                Thank You!
+              </h1>
+
+              <p style="margin:12px 0 0;color:#fff;font-size:16px;">
+                Your review has been successfully submitted.
+              </p>
+
+            </td>
+          </tr>
+
+          <!-- Greeting -->
+          <tr>
+            <td style="padding:35px 35px 10px;">
+
+              <h2 style="margin:0 0 16px;color:#111827;">
+                Hi <%= customerName %>,
+              </h2>
+
+              <p style="margin:0;color:#4b5563;line-height:1.8;">
+                Thank you for taking the time to share your experience.
+                Your feedback helps thousands of shoppers make better
+                purchasing decisions.
+              </p>
+
+            </td>
+          </tr>
+
+          <!-- Product Card -->
+          <tr>
+            <td style="padding:20px 35px;">
+
+              <table width="100%"
+                style="border:1px solid #e5e7eb;border-radius:14px;">
+
+                <tr>
+
+                  <td width="120" style="padding:20px;padding-right: 0;">
+                    <img src="<%= product.image %>"
+                      width="100"
+                      style="border-radius:10px;">
+                  </td>
+
+                  <td style="padding:20px 20px 20px 0;">
+
+                    <h3 style="margin:0 0 8px;color:#111827;">
+                      <%= product.title %>
+                    </h3>
+
+                    <p style="margin:0 0 8px;color:#6b7280;">
+                      Price:
+                      <strong><%= product.price %></strong>
+                    </p>
+
+                    <p style="margin:0;color:#6b7280;">
+                      Average Rating:
+                      <strong>
+                        <%= product.averageRating %>/5
+                      </strong>
+                    </p>
+
+                    <p style="margin:8px 0 0;color:#6b7280;">
+                      Total Reviews:
+                      <strong>
+                        <%= product.totalReviews %>
+                      </strong>
+                    </p>
+
+                  </td>
+
+                </tr>
+
+              </table>
+
+            </td>
+          </tr>
+
+          <!-- User Rating -->
+          <tr>
+            <td style="padding:0 35px;">
+
+              <table width="100%"
+                style="background:#fff7ed;border-radius:14px;">
+
+                <tr>
+                  <td style="padding:24px;text-align:center;">
+
+                    <p style="margin:0;color:#9a3412;font-size:13px;font-weight:bold;">
+                      YOUR RATING
+                    </p>
+
+                    <div style="font-size:38px;margin:12px 0;">
+                      <%= "★".repeat(review.rating) %>
+                    </div>
+
+                    <% if (review.comment) { %>
+                      <p style="margin:0;color:#374151;font-style:italic;">
+                        "<%= review.comment %>"
+                      </p>
+                    <% } %>
+
+                  </td>
+                </tr>
+
+              </table>
+
+            </td>
+          </tr>
+
+          <!-- CTA -->
+          <tr>
+            <td align="center" style="padding:35px;">
+
+              <a href="<%= product.url %>"
+                style="
+                  display:inline-block;
+                  background:#FE5012;
+                  color:#fff;
+                  text-decoration:none;
+                  padding:16px 36px;
+                  border-radius:10px;
+                  font-weight:bold;
+                ">
+                View Product
+              </a>
+
+            </td>
+          </tr>
+
+          <!-- Footer -->
+          <tr>
+            <td style="
+              padding:30px;
+              border-top:1px solid #e5e7eb;
+              text-align:center;
+            ">
+
+              <p style="margin:0;color:#6b7280;">
+                Thank you for helping our community grow ❤️
+              </p>
+
+              <p style="margin:15px 0 0;color:#9ca3af;font-size:13px;">
+                Powered by <strong>Qorix Review</strong>
+              </p>
+
+            </td>
+          </tr>
+
+        </table>
+
+      </td>
+    </tr>
+  </table>
+
+</body>
+</html>
