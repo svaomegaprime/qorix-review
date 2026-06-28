@@ -640,77 +640,7 @@
   border-color: var(--button-background-color);
 }
 
-/* Not availabe in home page */
-.product-only-section {
-  height: 600px;
-  width: 100%;
-  padding: 20px;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  box-sizing: border-box;
-}
 
-.product-only-card {
-  max-width: 500px;
-  width: 100%;
-  background: #fff;
-  border-radius: 24px;
-  padding: 20px;
-  text-align: center;
-  box-shadow: 0 0px 0px rgba(0, 0, 0, 0.08);
-  border: 1px solid #f1f1f1;
-}
-
-.icon-wrap {
-  width: 60px;
-  height: 60px;
-  border-radius: 50%;
-  background: rgb(255 205 0 / 19%);
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  margin: 0 auto 30px;
-}
-
-.product-only-card h2 {
-  font-size: 26px;
-  color: #222;
-  margin-bottom: 16px;
-}
-
-.product-only-card p {
-  font-size: 17px;
-  line-height: 1.7;
-  color: #666;
-  max-width: 550px;
-  margin: 0 auto 16px;
-}
-
-
-.notice-box {
-  background: rgb(255 205 0 / 19%);
-  color: #8a4b14;
-  padding: 18px 24px;
-  border-radius: 14px;
-  font-size: 15px;
-  line-height: 1.6;
-}
-
-@media (max-width: 768px) {
-  .product-only-section {
-    height: auto;
-    padding: 30px 20px;
-  }
-
-  .product-only-card {
-    padding: 40px 24px;
-  }
-
-  .product-only-card h2 {
-    font-size: 28px;
-  }
-}
 /* Loader */
 .submit-btn .qr-loader {
   display: inline-block;
