@@ -89,7 +89,7 @@ export default function Settings() {
 
   function handleSave() {
     fetcher.submit(requestScheduling, {
-      method: "post",
+      method: "POST",
       encType: "application/json",
     });
   }
@@ -103,7 +103,18 @@ export default function Settings() {
       shopify.saveBar.hide("leave-confirm-save-bar");
     }
   }, [fetcher.state, fetcher.data]);
-  function handleDiscard() {}
+const [formResetKey, setFormResetKey] = useState(0);
+
+function handleDiscard() {
+  setRequestScheduling(storeSettings?.requestScheduling ?? DEFAULT_REQUEST_SCHEDULING);
+  setShowCustomFields({
+    customDeliveryDays: false,
+    customDelayDays: false,
+    customMinimumOrderValue: false,
+  });
+  setFormResetKey((pre) => pre + 1); // ✅ এটা add করো
+  shopify.saveBar.hide("leave-confirm-save-bar");
+}
 
   return (
     <>
@@ -133,7 +144,7 @@ export default function Settings() {
         </s-button>
       </s-stack>
 
-      <s-section>
+      <s-section key={formResetKey}>
         {/* <s-stack padding="base" border="base" borderRadius="base">
                 </s-stack> */}
         <CustomSection padding="0">

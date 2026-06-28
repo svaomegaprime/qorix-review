@@ -6,7 +6,7 @@ import {
 } from "@shopify/shopify-app-react-router/server";
 import { PrismaSessionStorage } from "@shopify/shopify-app-session-storage-prisma";
 import prisma from "./db.server";
-import { DEFAULT_REQUEST_SCHEDULING } from "./routes/app.settings/data/defaultData";
+import { DEFAULT_ADMIN_NOTIFICATION, DEFAULT_BRANDING, DEFAULT_OUTGOING_REQUEST_EMAIL, DEFAULT_POST_REQUEST_EMAIL, DEFAULT_PUBLISHING_MODERATION, DEFAULT_REQUEST_SCHEDULING, DEFAULT_SMTP_SETUP, DEFAULT_WIDGET } from "./routes/app.settings/data/defaultData";
 const GET_SHOP_BASIC_INFO = `#graphql
   query GetShopBasicInfo {
     shop {
@@ -94,7 +94,34 @@ const shopify = shopifyApp({
             requestScheduling: {
               create: DEFAULT_REQUEST_SCHEDULING,
             },
+            emailSettings: {
+              create: {
+                ...DEFAULT_SMTP_SETUP,
+                ...DEFAULT_OUTGOING_REQUEST_EMAIL,
+                ...DEFAULT_POST_REQUEST_EMAIL,
+              }
+            },
+            publishingModeration: {
+              create: DEFAULT_PUBLISHING_MODERATION,
+            },
+            widgetsSettings: {
+              create: DEFAULT_WIDGET,
+            },
+            brandingSettings: {
+              create: DEFAULT_BRANDING
+            },
+            adminNotification:{
+              create: DEFAULT_ADMIN_NOTIFICATION
+            }
           },
+          include: {
+            requestScheduling: true,
+            emailSettings: true,
+            publishingModeration: true,
+            widgetsSettings: true,
+            brandingSettings: true,
+            adminNotification: true
+          }
         });
 
         console.log(storeSettings)

@@ -2,7 +2,7 @@ import Text from "../../../components/essentials/elements/Text";
 import CustomSection from "../../../components/essentials/CustomSection";
 import CustomGridSection from "../../../components/essentials/CustomGridSection";
 import TabButton from "../../../components/essentials/TabButton";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import SmtpSetup from "../components/essentials/SmtpSetup";
 import RequestEmail from "../components/essentials/RequestEmail";
 import PostReviewEmail from "../components/essentials/PostReviewEmail";
@@ -12,27 +12,127 @@ import {
   DEFAULT_POST_REQUEST_EMAIL,
   DEFAULT_SMTP_SETUP,
 } from "../data/defaultData";
+import { useFetcher, useLoaderData } from "react-router";
+import { authenticate } from "../../../shopify.server";
+import { getStoreData } from "../../../utils/getStoreData";
+import prisma from "../../../db.server";
+
+export async function loader({ request }) {
+  try {
+    const { admin, session } = await authenticate.admin(request);
+    const { id } = await getStoreData(admin);
+
+    const storeSettings = await prisma.storeSettings.findFirst({
+      where: {
+        storeId: id,
+      },
+      include: {
+        emailSettings: true,
+      },
+    });
+    console.log(storeSettings);
+
+    return { storeSettings };
+  } catch (error) {
+    console.log(error);
+
+    return {};
+  }
+}
+
+export async function action({ request }) {
+  try {
+    const { admin, session } = await authenticate.admin(request);
+
+    const data = await request.json();
+    // const { id } = await getStoreData(admin);
+
+    const emailSettingsData = await prisma.emailSettings.update({
+      where: {
+        id: data.id,
+      },
+      data,
+    });
+
+    console.log(
+      "[store settings]: emailSettingsData",
+      emailSettingsData,
+    );
+
+    // console.log("[store settings:]requestScheduling", res);
+
+    return {
+      ok: true,
+      message: "upserted EmailSettingsData",
+    };
+  } catch (error) {
+    console.log(error);
+  }
+}
 
 export default function EmailSettings() {
+  const fetcher = useFetcher();
+  const { storeSettings } = useLoaderData();
+  const initialEmailSettings = storeSettings?.emailSettings ?? {
+    ...DEFAULT_SMTP_SETUP,
+    ...DEFAULT_OUTGOING_REQUEST_EMAIL,
+    ...DEFAULT_POST_REQUEST_EMAIL,
+  };
   const [emailActiveSettings, setEmailActiveSettings] = useState({
     requestEmail: false,
     postReviewEmail: false,
     SMTPSetup: true,
   });
 
-  const [outgoingRequestEmail, setOutgoingRequestEmail] = useState(
-    DEFAULT_OUTGOING_REQUEST_EMAIL,
-  );
-  const [postReviewEmail, setPostReviewEmail] = useState(
-    DEFAULT_POST_REQUEST_EMAIL,
-  );
-  const [smtpSetup, setSmtpSetup] = useState(DEFAULT_SMTP_SETUP);
+  const [emailSettings, setEmailSettings] = useState(initialEmailSettings);
+  const [formResetKey, setFormResetKey] = useState(0);
+
+  useEffect(() => {
+    const hasChanged =
+      JSON.stringify(emailSettings) !== JSON.stringify(initialEmailSettings);
+
+    if (hasChanged) {
+      shopify.saveBar.show("leave-confirm-save-bar");
+    } else {
+      shopify.saveBar.hide("leave-confirm-save-bar");
+    }
+  }, [emailSettings]);
+
+  useEffect(() => {
+    if (fetcher.state === "idle" && fetcher.data) {
+      console.log("Response:", fetcher.data);
+
+      // Save successful
+      shopify.saveBar.hide("leave-confirm-save-bar");
+    }
+  }, [fetcher.state, fetcher.data]);
+
+  function handleSave() {
+    fetcher.submit(emailSettings, {
+      method: "POST",
+      encType: "application/json",
+    });
+  }
+
+  console.log("loading:", fetcher.state);
+  function handleDiscard() {
+    setEmailSettings({ ...initialEmailSettings });
+    setFormResetKey((pre) => pre + 1);
+    shopify.saveBar.hide("leave-confirm-save-bar");
+  }
 
   return (
     <>
-      <pre>{JSON.stringify(outgoingRequestEmail, null, 2)}</pre>
-      <pre>{JSON.stringify(postReviewEmail, null, 2)}</pre>
-      <pre>{JSON.stringify(smtpSetup, null, 2)}</pre>
+     
+      <ui-save-bar id="leave-confirm-save-bar">
+        <button onClick={handleSave} variant="primary" id="save-button">
+          Save
+        </button>
+        <button onClick={handleDiscard} id="discard-button">
+          Discard
+        </button>
+      </ui-save-bar>
+      
       <s-stack
         paddingBlockEnd="base"
         direction="inline"
@@ -125,18 +225,24 @@ export default function EmailSettings() {
         <s-box paddingBlockStart="large"></s-box>
         {emailActiveSettings.requestEmail && (
           <RequestEmail
-            outgoingRequestEmail={outgoingRequestEmail}
-            setOutgoingRequestEmail={setOutgoingRequestEmail}
+            key={`request-${formResetKey}`}
+            outgoingRequestEmail={emailSettings}
+            setOutgoingRequestEmail={setEmailSettings}
           />
         )}
         {emailActiveSettings.postReviewEmail && (
           <PostReviewEmail
-            postReviewEmail={postReviewEmail}
-            setPostReviewEmail={setPostReviewEmail}
+            key={`post-${formResetKey}`}
+            postReviewEmail={emailSettings}
+            setPostReviewEmail={setEmailSettings}
           />
         )}
         {emailActiveSettings.SMTPSetup && (
-          <SmtpSetup smtpSetup={smtpSetup} setSmtpSetup={setSmtpSetup} />
+          <SmtpSetup
+            key={`smtp-${formResetKey}`}
+            smtpSetup={emailSettings}
+            setSmtpSetup={setEmailSettings}
+          />
         )}
       </s-section>
     </>
