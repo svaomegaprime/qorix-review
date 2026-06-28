@@ -48,7 +48,7 @@ export async function uploadFile(file) {
 
   return {
     originalName: file.name,
-    url: `http://bucket.zenexcloud.com:9000/${process.env.ZENEX_BUCKET_NAME}/${key}`,
+    url: `${process.env.ZENEX_PUBLIC_ENDPOINT}/${process.env.ZENEX_BUCKET_NAME}/${key}`,
     type: file.type,
     folder,
   };

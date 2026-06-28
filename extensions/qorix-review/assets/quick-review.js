@@ -2,15 +2,33 @@ function quickReviewWidget() {
   return {
     ratings: [1, 2, 3, 4, 5],
     sortOptions: [
-      "Highest rating",
-      "Lowest rating",
-      "Only pictures",
-      "Pictures first",
-      "Videos first",
-      "Most helpful",
+      {
+        label: "All Review",
+        value: "ALL",
+      },
+      {
+        label: "Most recent",
+        value: "MOST_RECENT",
+      },
+      {
+        label: "Highest rating",
+        value: "HIGHEST_RATING",
+      },
+      {
+        label: "Only pictures",
+        value: "ONLY_PICTURES",
+      },
+      {
+        label: "Only video",
+        value: "ONLY_VIDEO",
+      },
+      {
+        label: "Most helpful",
+        value: "MOST_HELPFUL",
+      },
     ],
-    activeFilter: "all",
-    activeSort: "Highest rating",
+    activeFilter: "ALL",
+    activeSort: "MOST_RECENT",
     filtersOpen: true,
     sortOpen: false,
     modalOpen: false,
@@ -18,6 +36,8 @@ function quickReviewWidget() {
     starSelected: 0,
     starHover: 0,
     isDragging: false,
+    allowPhotoUpload: true,
+    allowVideoUpload: true,
     uploadedFiles: [],
     form: {
       name: "",
@@ -26,156 +46,116 @@ function quickReviewWidget() {
     },
     lightboxOpen: false,
     lightboxMedia: null,
+    product: {},
+    loading: false,
+    dataPostLoading: false,
 
     reviews: [
       {
         id: 1,
         rating: 4,
-        name: "Abdur Razzak",
+        reviewerName: "Abdur Razzak",
         avatar: "https://i.ibb.co.com/7PwsYSL/raju.jpg",
-        time: "2 days ago",
-        product: "Hydrating Eye Cream",
-        review:
-          "Good results, noticed a difference in about a week. Fast shipping too.",
-        media: [
+        createdAt: null,
+        productTitle: "Hydrating Eye Cream",
+        body: "Good results, noticed a difference in about a week. Fast shipping too.",
+        attachments: [
           {
-            type: "image",
+            type: "IMAGE",
             url: "https://images.unsplash.com/photo-1556228578-8c89e6adf883?w=200",
           },
           {
-            type: "image",
+            type: "IMAGE",
             url: "https://images.unsplash.com/photo-1608248543803-ba4f8c70ae0b?w=200",
           },
           {
-            type: "video",
+            type: "VIDEO",
             url: "https://www.w3schools.com/html/mov_bbb.mp4",
-            thumb:
-              "https://images.unsplash.com/photo-1631729371254-42c2892f0e6e?w=200",
           },
         ],
-        verified: true,
-      },
-      {
-        id: 2,
-        rating: 5,
-        name: "Abir Rayhan",
-        avatar:
-          "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=80",
-        time: "5 hours ago",
-        product: "Hydrating Eye Cream",
-        review:
-          "Good results, noticed a difference in about a week. Fast shipping too.",
-        media: [
-          {
-            type: "image",
-            url: "https://images.unsplash.com/photo-1556228578-8c89e6adf883?w=200",
-          },
-          {
-            type: "video",
-            url: "https://www.w3schools.com/html/mov_bbb.mp4",
-            thumb:
-              "https://images.unsplash.com/photo-1608248543803-ba4f8c70ae0b?w=200",
-          },
-          {
-            type: "image",
-            url: "https://images.unsplash.com/photo-1631729371254-42c2892f0e6e?w=200",
-          },
-        ],
-        verified: true,
-      },
-      {
-        id: 3,
-        rating: 5,
-        name: "Osman Hasan",
-        avatar:
-          "https://images.unsplash.com/photo-1500648767791-00dcc994a43e?w=80",
-        time: "1 week ago",
-        product: "Hydrating Eye Cream",
-        review:
-          "Good results, noticed a difference in about a week. Fast shipping too.",
-        media: [
-          {
-            type: "video",
-            url: "https://www.w3schools.com/html/mov_bbb.mp4",
-            thumb:
-              "https://images.unsplash.com/photo-1556228578-8c89e6adf883?w=200",
-          },
-          {
-            type: "video",
-            url: "https://www.w3schools.com/html/mov_bbb.mp4",
-            thumb:
-              "https://images.unsplash.com/photo-1608248543803-ba4f8c70ae0b?w=200",
-          },
-          {
-            type: "image",
-            url: "https://images.unsplash.com/photo-1631729371254-42c2892f0e6e?w=200",
-          },
-        ],
-        verified: false,
-      },
-      {
-        id: 4,
-        rating: 3,
-        name: "Nadia Islam",
-        avatar: null,
-        time: "3 days ago",
-        product: "Hydrating Eye Cream",
-        review:
-          "It's okay, not what I expected but does the job. Packaging was nice.",
-        media: [],
-        verified: true,
-      },
-      {
-        id: 5,
-        rating: 5,
-        name: "Tanvir Ahmed",
-        avatar:
-          "https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?w=80",
-        time: "2 weeks ago",
-        product: "Hydrating Eye Cream",
-        review:
-          "Absolutely love this product! My skin feels amazing after just a few days.",
-        media: [
-          {
-            type: "image",
-            url: "https://images.unsplash.com/photo-1556228578-8c89e6adf883?w=200",
-          },
-        ],
-        verified: true,
-      },
-      {
-        id: 6,
-        rating: 1,
-        name: "Sadia Akter",
-        avatar: null,
-        time: "1 month ago",
-        product: "Hydrating Eye Cream",
-        review: "Did not work for me at all. Returned the product.",
-        media: [],
-        verified: false,
-      },
-      {
-        id: 7,
-        rating: 2,
-        name: "Rahim Uddin",
-        avatar: null,
-        time: "3 weeks ago",
-        product: "Hydrating Eye Cream",
-        review:
-          "Shipping was slow and the product did not meet my expectations.",
-        media: [
-          {
-            type: "video",
-            url: "https://www.w3schools.com/html/mov_bbb.mp4",
-            thumb:
-              "https://images.unsplash.com/photo-1608248543803-ba4f8c70ae0b?w=200",
-          },
-        ],
-        verified: true,
+        isVerified: true,
       },
     ],
+    currentPage: 1,
+    limit: 10,
+    totalPages: 1,
+    totalReviews: 0,
+    averageRating: 0,
+    sort: "ALL",
+
+    initUploadSettings(el) {
+      this.allowPhotoUpload = el.dataset.photoUpload === "true";
+      this.allowVideoUpload = el.dataset.videoUpload === "true";
+    },
+
+    isAllowedMediaFile(file) {
+      const isImage = file.type.startsWith("image/");
+      const isVideo = file.type.startsWith("video/");
+
+      if (isImage && this.allowPhotoUpload) {
+        return true;
+      }
+
+      if (isVideo && this.allowVideoUpload) {
+        return true;
+      }
+
+      return false;
+    },
+
+    async productInit(productJson, defaultSort, limit) {
+      try {
+        console.log("productInit called", productJson);
+        this.limit = limit;
+        this.sort = defaultSort;
+
+        if (!productJson) {
+          console.warn("No product JSON found");
+          return;
+        }
+
+        this.product = JSON.parse(productJson);
+        console.log("parsed product", this.product);
+
+        await this.getReview(defaultSort);
+      } catch (error) {
+        console.error("Quick review init failed", error);
+      }
+    },
+
+    async getReview(defaultSort) {
+      this.loading = true;
+      const productId = this.product?.id || "";
+      const response = await fetch(
+        `/apps/api/review?productId=${encodeURIComponent(productId)}&sort=${encodeURIComponent(defaultSort)}&page=${this.currentPage}&limit=${this.limit}`,
+        {
+          method: "GET",
+        },
+      );
+
+      const result = await response.json();
+      
+
+      if (!response.ok || result.ok === false) {
+        throw new Error(result.message || "Failed to fetch reviews");
+      }
+
+      this.reviews = result.data || [];
+      this.currentPage = result.currentPage;
+      this.totalPages = result.totalPages;
+      this.totalReviews = result.totalReviews;
+      this.averageRating = result.averageRating;
+
+      console.log("GET Review:", result);
+      this.loading = false;
+      return result;
+    },
 
     async submitReview(event) {
+      if (!this.product) return ;
+      const product = this.product || {};
+      console.log("999090088888888", product);
+
       if (
         !this.starSelected ||
         !this.form.name.trim() ||
@@ -184,6 +164,8 @@ function quickReviewWidget() {
         alert("Please fill in all required fields and select a star rating.");
         return;
       }
+
+      this.dataPostLoading = true;
       console.log(
         this.form.name,
         this.form.email,
@@ -196,10 +178,16 @@ function quickReviewWidget() {
         const formData = new FormData();
 
         // Text fields
-        formData.append("name", this.form.name);
-        formData.append("email", this.form.email);
-        formData.append("review", this.form.review);
+        formData.append("reviewerName", this.form.name);
+        formData.append("reviewerEmail", this.form.email);
+        formData.append("body", this.form.review);
         formData.append("rating", this.starSelected);
+
+        formData.append("productId", product.id ?? "");
+        formData.append("productHandle", product.handle ?? "");
+        formData.append("productTitle", product.title ?? "");
+
+        formData.append("source", "PRODUCT_PAGE");
 
         // Images & Videos
         this.uploadedFiles.forEach((item) => {
@@ -211,7 +199,6 @@ function quickReviewWidget() {
         const response = await fetch("/apps/api/review", {
           method: "POST",
           body: formData,
-          
         });
 
         if (!response.ok) {
@@ -225,23 +212,71 @@ function quickReviewWidget() {
 
         this.submitSuccess = true;
 
+        this.reviews.unshift(result.data);
+
         this.$nextTick(() => {
           if (this.$refs.modalBox) {
             this.$refs.modalBox.scrollTop = 0;
           }
         });
+        this.dataPostLoading = false;
       } catch (error) {
         console.error(error);
+        this.dataPostLoading = false;
         alert("Failed to submit review");
+
       }
     },
 
-    avgScore() {
-      const total = this.reviews.reduce(
-        (sum, review) => sum + review.rating,
-        0,
-      );
-      return (total / this.reviews.length).toFixed(1);
+    changePage(page) {
+      if (page < 1 || page > this.totalPages) return;
+
+      this.currentPage = page;
+      this.getReview(this.sort);
+    },
+
+    nextPage() {
+      if (this.currentPage < this.totalPages) {
+        this.currentPage++;
+        this.getReview(this.sort);
+      }
+    },
+
+    prevPage() {
+      if (this.currentPage > 1) {
+        this.currentPage--;
+        this.getReview(this.sort);
+      }
+    },
+
+    timeAgo(date) {
+      if (!date) return "Recently";
+
+      const d = new Date(date);
+
+      if (isNaN(d.getTime())) return "Recently";
+
+      const seconds = Math.floor((Date.now() - d.getTime()) / 1000);
+
+      const intervals = [
+        { label: "year", seconds: 31536000 },
+        { label: "month", seconds: 2592000 },
+        { label: "week", seconds: 604800 },
+        { label: "day", seconds: 86400 },
+        { label: "hour", seconds: 3600 },
+        { label: "minute", seconds: 60 },
+        { label: "second", seconds: 1 },
+      ];
+
+      for (const interval of intervals) {
+        const count = Math.floor(seconds / interval.seconds);
+
+        if (count >= 1) {
+          return `${count} ${interval.label}${count > 1 ? "s" : ""} ago`;
+        }
+      }
+
+      return "Just now";
     },
 
     initials(name) {
@@ -249,42 +284,29 @@ function quickReviewWidget() {
     },
 
     hasMediaType(review, type) {
-      return review.media.some((media) => media.type === type);
+      return review.attachments.some((media) => media.type === type);
     },
 
     filteredReviews() {
-      let list = this.reviews.slice();
-
-      if (this.activeFilter !== "all") {
-        list = list.filter((review) => review.rating === this.activeFilter);
+      if (this.activeFilter === "ALL") {
+        return this.reviews;
       }
 
-      if (this.activeSort === "Highest rating") {
-        list.sort((a, b) => b.rating - a.rating);
-      } else if (this.activeSort === "Lowest rating") {
-        list.sort((a, b) => a.rating - b.rating);
-      } else if (this.activeSort === "Only pictures") {
-        list = list.filter((review) => this.hasMediaType(review, "image"));
-      } else if (this.activeSort === "Pictures first") {
-        list.sort(
-          (a, b) =>
-            Number(this.hasMediaType(b, "image")) -
-            Number(this.hasMediaType(a, "image")),
-        );
-      } else if (this.activeSort === "Videos first") {
-        list.sort(
-          (a, b) =>
-            Number(this.hasMediaType(b, "video")) -
-            Number(this.hasMediaType(a, "video")),
-        );
-      }
+      const rating = Number(this.activeFilter);
 
-      return list;
+      return this.reviews.filter(
+        (review) => Number(review.rating) === rating,
+      );
     },
 
+    setRatingFilter(rating) {
+      this.activeFilter = rating;
+    },
     setSort(option) {
       this.activeSort = option;
       this.sortOpen = false;
+      this.sort = option;
+      this.getReview(option);
     },
 
     openModal() {
@@ -322,6 +344,11 @@ function quickReviewWidget() {
 
     addFiles(files) {
       Array.from(files).forEach((file) => {
+        if (!this.isAllowedMediaFile(file)) {
+          alert(file.name + " is not an allowed file type.");
+          return;
+        }
+
         if (file.size > 20 * 1024 * 1024) {
           alert(file.name + " is too large. Max 20MB.");
           return;

@@ -1,6 +1,43 @@
+{% assign quick_review_metafield = app.metafields.qorix_review.quick_review.value %}
+{% liquid
+  assign allow_photo = quick_review_metafield.isPhotoUpload
+  assign allow_video = quick_review_metafield.isVideoUpload
+  assign media_accept = ''
+  if allow_photo
+    assign media_accept = 'image/jpeg,image/png,image/webp'
+  endif
+  if allow_photo and allow_video
+    assign media_accept = media_accept | append: ','
+  endif
+  if allow_video
+    assign media_accept = media_accept | append: 'video/mp4,video/quicktime'
+  endif
+%}
+
+<style>
+  :root{
+    --star-color: {{ quick_review_metafield.starColor }};
+    --button-background-color: {{ quick_review_metafield.buttonBackgroundColor }};
+    --button-text-color : {{ quick_review_metafield.buttonTextColor }};
+    --verified-badge-color : {{ quick_review_metafield.verifiedBadgeColor }};
+
+  }
+</style>
+
 <link rel="stylesheet" href="{{ 'quick-review.css' | asset_url }}">
 
-<div x-data="quickReviewWidget()">
+<div
+  {% comment %} xx="{{ product.metafields.reviews.rating }} - {{ product.metafields.reviews.rating_count.value }}" {% endcomment %}
+  id="quick-review"
+  x-data="quickReviewWidget()"
+  x-init="initUploadSettings($el); productInit($el.dataset.product,$el.dataset.sort,$el.dataset.limit)"
+  data-product="{{ product | json | escape }}"
+  data-photo-upload="{{ allow_photo | json }}"
+  data-video-upload="{{ allow_video | json }}"
+  data-sort="{{ quick_review_metafield.defaultSort }}"
+  data-limit="{{ quick_review_metafield.reviewPerPage }}"
+  data-page-type="{{ template.name }}"
+>
   <div class="wrap">
     {% comment %} Start:: Header section summary {% endcomment %}
 
@@ -8,7 +45,7 @@
       <div>
         <div class="cr-title">Customer Reviews</div>
         <div class="cr-score" id="avg-score">
-          <b class="cr-score" x-text="avgScore()"></b> <span x-text="reviews.length + ' reviews'"></span>
+          <b class="cr-score" x-text="averageRating"></b> <span x-text="totalReviews + ' reviews'"></span>
         </div>
         <button class="write-btn" type="button" @click="openModal()">Write a review</button>
       </div>
@@ -43,12 +80,12 @@
             :class="{ open: sortOpen }"
             @click.stop
           >
-            <template x-for="option in sortOptions" :key="option">
+            <template x-for="option in sortOptions" :key="option.value">
               <div
                 class="sort-option"
-                :class="{ selected: activeSort === option }"
-                @click="setSort(option)"
-                x-text="option"
+                :class="{ selected: '{{quick_review_metafield.defaultSort}}' === option.value }"
+                @click="setSort(option.value)"
+                x-text="option.label"
               ></div>
             </template>
           </div>
@@ -64,8 +101,8 @@
         <button
           class="filter-chip"
           type="button"
-          :class="{ active: activeFilter === 'all' }"
-          @click="activeFilter = 'all'"
+          :class="{ active: activeFilter === 'ALL' }"
+          @click="setRatingFilter('ALL')"
         >
           All
         </button>
@@ -73,14 +110,14 @@
           <button
             class="filter-chip"
             type="button"
-            :class="{ active: activeFilter === rating }"
-            @click="activeFilter = rating"
+            :class="{ active: Number(activeFilter) === rating }"
+            @click="setRatingFilter(rating)"
           >
             <span x-text="rating"></span>
             <span>
               <svg width="17" height="17" viewBox="0 0 17 16" fill="none" xmlns="http://www.w3.org/2000/svg">
                 <path
-                  fill="#FF9500"
+                  fill="{{ quick_review_metafield.starColor }}"
                   d="M9.51964 0.855C8.97604 -0.285 7.35604 -0.285 6.81244 0.855L5.14444 4.3494L1.30564 4.8546C0.0552353 5.0202 -0.446365 6.561 0.469235 7.4298L3.27724 10.0962L2.57284 13.9026C2.34244 15.1434 3.65404 16.0962 4.76284 15.495L8.16604 13.647L11.5692 15.495C12.678 16.0962 13.9896 15.1434 13.7592 13.9026L13.0548 10.0962L15.8628 7.4298C16.7772 6.561 16.2768 5.0202 15.0264 4.8546L11.1864 4.3494L9.51964 0.855Z"
                 />
               </svg>
@@ -91,19 +128,22 @@
     </div>
 
     {% comment %} Start:: Review List show {% endcomment %}
-    <div class="reviews-list" id="reviews-list">
+    <h3 x-show="loading">Loading review data...</h3>
+    <div class="reviews-list" id="reviews-list" x-show="loading == false">
       <template x-for="review in filteredReviews()" :key="review.id">
         <div class="review-item">
-          <div class="stars-row">
-            <template x-for="star in ratings" :key="'review-' + review.id + '-star-' + star">
-              <svg width="20" height="20" viewBox="0 0 17 16" fill="none" xmlns="http://www.w3.org/2000/svg">
-                <path
-                  :fill="star <= review.rating ? '#FF9500' : '#B5B5B5'"
-                  d="M9.51964 0.855C8.97604 -0.285 7.35604 -0.285 6.81244 0.855L5.14444 4.3494L1.30564 4.8546C0.0552353 5.0202 -0.446365 6.561 0.469235 7.4298L3.27724 10.0962L2.57284 13.9026C2.34244 15.1434 3.65404 16.0962 4.76284 15.495L8.16604 13.647L11.5692 15.495C12.678 16.0962 13.9896 15.1434 13.7592 13.9026L13.0548 10.0962L15.8628 7.4298C16.7772 6.561 16.2768 5.0202 15.0264 4.8546L11.1864 4.3494L9.51964 0.855Z"
-                />
-              </svg>
-            </template>
-          </div>
+          {% if quick_review_metafield.isShowRatingFilter %}
+            <div class="stars-row">
+              <template x-for="star in ratings" :key="'review-' + review.id + '-star-' + star">
+                <svg width="20" height="20" viewBox="0 0 17 16" fill="none" xmlns="http://www.w3.org/2000/svg">
+                  <path
+                    :fill="star <= review.rating ? '{{ quick_review_metafield.starColor }}' : '#B5B5B5'"
+                    d="M9.51964 0.855C8.97604 -0.285 7.35604 -0.285 6.81244 0.855L5.14444 4.3494L1.30564 4.8546C0.0552353 5.0202 -0.446365 6.561 0.469235 7.4298L3.27724 10.0962L2.57284 13.9026C2.34244 15.1434 3.65404 16.0962 4.76284 15.495L8.16604 13.647L11.5692 15.495C12.678 16.0962 13.9896 15.1434 13.7592 13.9026L13.0548 10.0962L15.8628 7.4298C16.7772 6.561 16.2768 5.0202 15.0264 4.8546L11.1864 4.3494L9.51964 0.855Z"
+                  />
+                </svg>
+              </template>
+            </div>
+          {% endif %}
 
           <div class="reviewer-row">
             <template x-if="review.avatar">
@@ -111,56 +151,79 @@
                 <img
                   class="avatar"
                   :src="review.avatar"
-                  :alt="review.name"
+                  :alt="review.reviewerName"
                   @error="$event.target.style.display = 'none'; $event.target.nextElementSibling.style.display = 'flex'"
                   width="40"
                   height="40"
                 >
-                <div class="avatar-initials" style="display: none" x-text="initials(review.name)"></div>
+                <div class="avatar-initials" style="display: none" x-text="initials(review.reviewerName)"></div>
               </div>
             </template>
             <template x-if="!review.avatar">
-              <div class="avatar-initials" x-text="initials(review.name)"></div>
+              <div class="avatar-initials" x-text="initials(review.reviewerName)"></div>
             </template>
 
             <div>
               <div class="reviewer-name-row">
-                <span x-text="review.name"></span>
-                <span x-show="review.verified">
-                  <svg width="16" height="16" viewBox="0 0 18 18" fill="none">
-                    <circle cx="9" cy="9" r="9" fill="#1a7d43" />
-                    <path d="M5.21 9L7.74 11.53L12.79 6.47" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" />
-                  </svg>
-                </span>
+                {%- if quick_review_metafield.isShowReviewerName -%}
+                  <span x-text="review.reviewerName"></span>
+                {%- endif -%}
+                {%- if quick_review_metafield.isShowVerifiedBadge -%}
+                  <span x-show="review.isVerified">
+                    <svg width="16" height="16" viewBox="0 0 18 18" fill="none">
+                      <circle cx="9" cy="9" r="9" fill="{{ quick_review_metafield.verifiedBadgeColor }}" />
+                      <path d="M5.21 9L7.74 11.53L12.79 6.47" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" />
+                    </svg>
+                  </span>
+                {% endif %}
               </div>
-              <div class="reviewer-time" x-text="review.time"></div>
+              {%- if quick_review_metafield.isShowReviewDate -%}
+                <div class="reviewer-time" x-text="timeAgo(review.createdAt)"></div>
+              {%- endif -%}
             </div>
           </div>
 
           <div class="quick_review_product_name">
-            <span x-text="review.product"></span>
-            <div class="review-text" x-text="review.review"></div>
+            {%- if quick_review_metafield.isShowProductName -%}<span x-text="review.productTitle"></span>{%- endif -%}
+            <div class="review-text" x-text="review.body"></div>
           </div>
 
-          <div class="media-row" x-show="review.media.length > 0">
-            <template x-for="media in review.media" :key="media.url + media.type">
-              <div
-                class="media-thumb-wrap"
-                :title="media.type === 'image' ? 'Click to view' : 'Click to play'"
-                @click="openLightbox(media)"
+          <div class="media-row" x-show="review.attachments.length > 0">
+            <template x-for="media in review.attachments" :key="media.url + media.type">
+              <template
+                x-if="
+                  (media.type === 'IMAGE' && {{ quick_review_metafield.isShowReviewerImage | json }}) ||
+                  (media.type === 'VIDEO' && {{ quick_review_metafield.isShowReviewerVideo | json }})
+                "
               >
-                <img
-                  :src="media.type === 'image' ? media.url : media.thumb"
-                  :alt="media.type === 'image' ? 'review image' : 'video thumbnail'"
-                  width="80"
-                  height="80"
+                <div
+                  class="media-thumb-wrap"
+                  :title="media.type === 'IMAGE' ? 'Click to view' : 'Click to play'"
+                  @click="openLightbox(media)"
                 >
-                <div class="play-overlay" x-show="media.type === 'video'">
-                  <svg viewBox="0 0 24 24">
-                    <path d="M8 5v14l11-7z"></path>
-                  </svg>
+                  <img
+                    :src="encodeURI(media.url)"
+                    :alt="media.type === 'IMAGE' && 'review image'"
+                    x-show="media.type === 'IMAGE'"
+                    width="80"
+                    height="80"
+                  >
+                  <video
+                    x-show="media.type === 'VIDEO'"
+                    :src="encodeURI(media.url)"
+                    width="80"
+                    height="80"
+                    muted
+                    preload="metadata"
+                  ></video>
+
+                  <div class="play-overlay" x-show="media.type === 'VIDEO'">
+                    <svg viewBox="0 0 24 24">
+                      <path d="M8 5v14l11-7z"></path>
+                    </svg>
+                  </div>
                 </div>
-              </div>
+              </template>
             </template>
           </div>
         </div>
@@ -179,10 +242,10 @@
   <div class="lightbox" id="lightbox" :class="{ open: lightboxOpen }" @click="closeLightbox($event)">
     <button class="lightbox-close" type="button" @click="closeLightbox()">&#x2715;</button>
     <div class="lightbox-content" id="lightbox-content">
-      <template x-if="lightboxMedia && lightboxMedia.type === 'image'">
+      <template x-if="lightboxMedia && lightboxMedia.type === 'IMAGE'">
         <img :src="lightboxMedia.url" alt="media" width="" height="">
       </template>
-      <template x-if="lightboxMedia && lightboxMedia.type === 'video'">
+      <template x-if="lightboxMedia && lightboxMedia.type === 'VIDEO'">
         <video :src="lightboxMedia.url" controls autoplay></video>
       </template>
     </div>
@@ -192,10 +255,15 @@
   {% comment %} Start:: Review form and success {% endcomment %}
 
   <div class="modal-overlay" id="modal-overlay" :class="{ open: modalOpen }" @click="overlayClick($event)">
-    <div class="modal-box" id="modal-box" x-ref="modalBox">
+    <div
+      class="modal-box"
+      id="modal-box"
+      x-ref="modalBox"
+      style="border-radius: {{ quick_review_metafield.borderRadius }}"
+    >
       <button class="modal-close" type="button" @click="closeModal()">&#x2715;</button>
       {% comment %} Start:: form  {% endcomment %}
-      <form id="form-view" @submit.prevent="submitReview" x-show="!submitSuccess">
+      <form id="form-view" @submit.prevent="(e)=>submitReview(e)" x-show="!submitSuccess">
         <div class="modal-header">
           <div class="modal-icon">
             <svg viewBox="0 0 24 24" fill="#fff">
@@ -205,8 +273,8 @@
             </svg>
           </div>
           <div>
-            <div class="modal-title">How was your experience?</div>
-            <div class="modal-sub">Your feedback helps others</div>
+            <div class="modal-title">{{ quick_review_metafield.formTitle }}</div>
+            <div class="modal-sub">{{ quick_review_metafield.formSubtitle }}</div>
           </div>
         </div>
 
@@ -225,32 +293,35 @@
             >
               <svg width="32" height="32" viewBox="0 0 17 16" fill="none" xmlns="http://www.w3.org/2000/svg">
                 <path
-                  :fill="star <= (starHover || starSelected) ? '#FF9500' : '#B5B5B5'"
+                  :fill="star <= (starHover || starSelected) ? '{{ quick_review_metafield.starColor }}' : '#B5B5B5'"
                   d="M9.51964 0.855C8.97604 -0.285 7.35604 -0.285 6.81244 0.855L5.14444 4.3494L1.30564 4.8546C0.0552353 5.0202 -0.446365 6.561 0.469235 7.4298L3.27724 10.0962L2.57284 13.9026C2.34244 15.1434 3.65404 16.0962 4.76284 15.495L8.16604 13.647L11.5692 15.495C12.678 16.0962 13.9896 15.1434 13.7592 13.9026L13.0548 10.0962L15.8628 7.4298C16.7772 6.561 16.2768 5.0202 15.0264 4.8546L11.1864 4.3494L9.51964 0.855Z"
                 />
               </svg>
             </span>
           </template>
         </div>
+        {%- if quick_review_metafield.isShowNameField -%}
+          <label class="form-label">Your name <span class="req">*</span></label>
+          <input
+            class="form-input"
+            id="review-name"
+            type="text"
+            placeholder="Enter your name"
+            x-model="form.name"
+          >
+        {%- endif -%}
 
-        <label class="form-label">Your name <span class="req">*</span></label>
-        <input
-          class="form-input"
-          id="review-name"
-          type="text"
-          placeholder="Enter your name"
-          x-model="form.name"
-        >
-
-        <label class="form-label">Email <span class="req">*</span></label>
-        <input
-          class="form-input"
-          id="review-email"
-          type="email"
-          required
-          placeholder="Enter your email"
-          x-model="form.email"
-        >
+        {%- if quick_review_metafield.isShowEmailField -%}
+          <label class="form-label">Email <span class="req">*</span></label>
+          <input
+            class="form-input"
+            id="review-email"
+            type="email"
+            required
+            placeholder="Enter your email"
+            x-model="form.email"
+          >
+        {%- endif -%}
 
         <label class="form-label">Your review <span class="req">*</span></label>
         <textarea
@@ -259,53 +330,67 @@
           placeholder="Tell us what you loved or didn't like..."
           x-model="form.review"
         ></textarea>
-        <label class="form-label">Add media <span style="font-weight: 400; color: #888">(optional)</span></label>
-        <input
-          type="file"
-          id="media-input"
-          accept="image/jpeg,image/png,image/webp,video/mp4,video/quicktime"
-          multiple
-          style="display: none"
-          x-ref="mediaInput"
-          @change="handleMediaUpload($event)"
-        >
-        <div
-          class="upload-zone"
-          id="upload-zone"
-          :class="{ 'drag-over': isDragging }"
-          @click="$refs.mediaInput.click()"
-          @dragover.prevent="isDragging = true"
-          @dragleave="isDragging = false"
-          @drop.prevent="handleDrop($event)"
-        >
-          <svg viewBox="0 0 24 24">
-            <path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4" />
-            <polyline points="17 8 12 3 7 8" />
-            <line x1="12" y1="3" x2="12" y2="15" />
-          </svg>
-          <p>Click to upload or drag and drop</p>
-          <small>JPG, PNG, MP4, MOV up to 20MB each</small>
-        </div>
-        <div
-          id="media-preview"
-          style="display: flex; gap: 8px; flex-wrap: wrap; margin-bottom: 14px"
-          x-show="uploadedFiles.length > 0"
-        >
-          <template x-for="(file, index) in uploadedFiles" :key="file.url">
-            <div class="preview-item">
-              <template x-if="file.isVideo">
-                <video :src="file.url" muted playsinline></video>
-              </template>
-              <template x-if="!file.isVideo">
-                <img :src="file.url" alt="preview" width="" height="">
-              </template>
-              <div class="preview-video-badge" x-show="file.isVideo">VIDEO</div>
-              <button class="preview-remove" type="button" @click="removeMedia(index)">&#x2715;</button>
-            </div>
-          </template>
-        </div>
+        {% if allow_photo or allow_video %}
+          <label class="form-label">Add media <span style="font-weight: 400; color: #888">(optional)</span></label>
+          <input
+            type="file"
+            id="media-input"
+            accept="{{ media_accept }}"
+            multiple
+            style="display: none"
+            x-ref="mediaInput"
+            @change="handleMediaUpload($event)"
+          >
+          <div
+            class="upload-zone"
+            id="upload-zone"
+            :class="{ 'drag-over': isDragging }"
+            @click="$refs.mediaInput.click()"
+            @dragover.prevent="isDragging = true"
+            @dragleave="isDragging = false"
+            @drop.prevent="handleDrop($event)"
+          >
+            <svg viewBox="0 0 24 24">
+              <path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4" />
+              <polyline points="17 8 12 3 7 8" />
+              <line x1="12" y1="3" x2="12" y2="15" />
+            </svg>
+            <p>Click to upload or drag and drop</p>
+            <small>
+              {% if allow_photo and allow_video %}
+                JPG, PNG, WEBP, MP4, MOV up to 20MB each
+              {% elsif allow_photo %}
+                JPG, PNG, WEBP up to 20MB each
+              {% elsif allow_video %}
+                MP4, MOV up to 20MB each
+              {% endif %}
+            </small>
+          </div>
+          <div
+            id="media-preview"
+            style="display: flex; gap: 8px; flex-wrap: wrap; margin-bottom: 14px"
+            x-show="uploadedFiles.length > 0"
+          >
+            <template x-for="(file, index) in uploadedFiles" :key="file.url">
+              <div class="preview-item">
+                <template x-if="file.isVideo">
+                  <video :src="file.url" muted playsinline></video>
+                </template>
+                <template x-if="!file.isVideo">
+                  <img :src="file.url" alt="preview" width="" height="">
+                </template>
+                <div class="preview-video-badge" x-show="file.isVideo">VIDEO</div>
+                <button class="preview-remove" type="button" @click="removeMedia(index)">&#x2715;</button>
+              </div>
+            </template>
+          </div>
+        {% endif %}
 
-        <button class="submit-btn" type="submit" >Submit review</button>
+        <button class="submit-btn" type="submit" :disabled="dataPostLoading">
+          <span x-show="!dataPostLoading">{{ quick_review_metafield.submitButtonText }}</span>
+          <span x-show="dataPostLoading" class="qr-loader" aria-hidden="true"></span>
+        </button>
+
         <div class="modal-footer-note">
           <svg viewBox="0 0 24 24">
             <rect x="3" y="11" width="18" height="11" rx="2" ry="2" />
@@ -335,15 +420,39 @@
               <path d="M5 13l4 4L19 7" />
             </svg>
           </div>
-          <div class="success-title">Review submitted!</div>
-          <div class="success-sub">Thank you for your review. It has been submitted successfully.</div>
-          <button class="continue-btn" type="button" @click="closeModal()">Continue Shopping</button>
+          <div class="success-title">{{ quick_review_metafield.successMessageTitle }}</div>
+          <div class="success-sub">{{ quick_review_metafield.successMessage }}</div>
+          <button class="continue-btn" type="button" @click="closeModal()">
+            {{ quick_review_metafield.successButtonText }}
+          </button>
         </div>
       </div>
       {% comment %} End:: success message  {% endcomment %}
     </div>
   </div>
   {% comment %} End:: Review form and success {% endcomment %}
+  <div class="pagination">
+    <div @click="prevPage()">&#10094;</div>
+
+    <div
+      x-show="currentPage > 1"
+      x-text="currentPage - 1"
+      @click="changePage(currentPage - 1)"
+    ></div>
+
+    <div
+      class="active"
+      x-text="currentPage"
+    ></div>
+
+    <div
+      x-show="currentPage < totalPages"
+      x-text="currentPage + 1"
+      @click="changePage(currentPage + 1)"
+    ></div>
+
+    <div @click="nextPage()">&#10095;</div>
+  </div>
 </div>
 
 <script src="{{ 'quick-review.js'| asset_url }}" defer></script>
@@ -354,6 +463,9 @@
 {
   "name": "Quick review widget",
   "target": "section",
-  "settings": []
+  "settings": [],
+  "enabled_on": {
+    "templates": ["product"]
+  }
 }
 {% endschema %}

@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="UTF-8" />
+    <title>Users Data Export</title>
+  </head>
+  <body style="margin:0; padding:0; background-color:#f4f4f7; font-family:Arial, sans-serif; color:#333333;">
+    <div style="width:100%; background-color:#f4f4f7; padding:40px 0;">
+      <table
+        role="presentation"
+        cellpadding="0"
+        cellspacing="0"
+        border="0"
+        width="100%"
+        style="max-width:900px; margin:0 auto; background-color:#ffffff; border-radius:8px; overflow:hidden; border:1px solid #e5e7eb;"
+      >
+        <tr>
+          <td style="background-color:#111827; padding:24px; text-align:center;">
+            <h1 style="margin:0; font-size:24px; color:#ffffff;">Users Data Export</h1>
+          </td>
+        </tr>
+
+        <tr>
+          <td style="padding:32px;">
+            <p style="margin:0 0 24px; font-size:15px; color:#4b5563;">
+              Below is the exported users data:
+            </p>
+
+            <table
+              role="presentation"
+              cellpadding="0"
+              cellspacing="0"
+              border="0"
+              width="100%"
+              style="border-collapse:collapse; width:100%; border:1px solid #e5e7eb;"
+            >
+              <thead>
+                <tr style="background-color:#f9fafb;">
+                  <th style="padding:12px; border:1px solid #e5e7eb; text-align:left; font-size:14px;">ID</th>
+                  <th style="padding:12px; border:1px solid #e5e7eb; text-align:left; font-size:14px;">Name</th>
+                  <th style="padding:12px; border:1px solid #e5e7eb; text-align:left; font-size:14px;">Email</th>
+                  <th style="padding:12px; border:1px solid #e5e7eb; text-align:left; font-size:14px;">Phone</th>
+                  <th style="padding:12px; border:1px solid #e5e7eb; text-align:left; font-size:14px;">Created At</th>
+                </tr>
+              </thead>
+              <tbody>
+                <% users.forEach((user, index) => { %>
+                  <tr style="background-color:<%= index % 2 === 0 ? '#ffffff' : '#f9fafb' %>;">
+                    <td style="padding:12px; border:1px solid #e5e7eb; font-size:14px;">#<%= index || 'N/A' %></td>
+                    <td style="padding:12px; border:1px solid #e5e7eb; font-size:14px;"><%= user.name || 'N/A' %></td>
+                    <td style="padding:12px; border:1px solid #e5e7eb; font-size:14px;"><%= user.email || 'N/A' %></td>
+                    <td style="padding:12px; border:1px solid #e5e7eb; font-size:14px;"><%= user.phone || 'N/A' %></td>
+                    <td style="padding:12px; border:1px solid #e5e7eb; font-size:14px;"><%= user.createdAt || 'N/A' %></td>
+                  </tr>
+                <% }) %>
+              </tbody>
+            </table>
+          </td>
+        </tr>
+      </table>
+    </div>
+  </body>
+</html>
