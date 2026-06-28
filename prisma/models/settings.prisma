@@ -1,16 +1,18 @@
 model StoreSettings {
-  id      String @id @default(uuid()) @db.Uuid()
+  id String @id @default(uuid()) @db.Uuid()
+
   storeId String @unique
   store   Store  @relation(fields: [storeId], references: [storeGID], onDelete: Cascade)
 
   requestScheduling    RequestScheduling?
-  createdAt            DateTime               @default(now())
-  updatedAt            DateTime               @updatedAt
-  emailSettings        EmailSettings[]
+  emailSettings        EmailSettings?
   publishingModeration PublishingModeration[]
   widgetsSettings      WidgetsSettings[]
   adminNotifications   AdminNotification[]
   brandingSettings     BrandingSettings[]
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
 }
 
 model RequestScheduling {
@@ -34,7 +36,7 @@ model RequestScheduling {
 model EmailSettings {
   id String @id @default(uuid()) @db.Uuid()
 
-  storeSettingsId String @db.Uuid()
+  storeSettingsId String @unique @db.Uuid()
 
   storeSettings StoreSettings @relation(fields: [storeSettingsId], references: [id], onDelete: Cascade)
 

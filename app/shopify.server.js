@@ -6,6 +6,7 @@ import {
 } from "@shopify/shopify-app-react-router/server";
 import { PrismaSessionStorage } from "@shopify/shopify-app-session-storage-prisma";
 import prisma from "./db.server";
+import { DEFAULT_REQUEST_SCHEDULING } from "./routes/app.settings/data/defaultData";
 const GET_SHOP_BASIC_INFO = `#graphql
   query GetShopBasicInfo {
     shop {
@@ -45,8 +46,6 @@ const shopify = shopifyApp({
           body: JSON.stringify({ query: GET_SHOP_BASIC_INFO }),
         });
 
-
-
         const text = await response.text();
 
         if (!response.ok) {
@@ -70,8 +69,6 @@ const shopify = shopifyApp({
 
         console.log("Shop info:", shopData);
 
-
-
         await prisma.store.upsert({
           where: { storeGID: shopData.id },
           update: {
@@ -85,17 +82,31 @@ const shopify = shopifyApp({
           },
         });
 
-        
-        //  fst a db te up hobe dbr deoa res dia metafield ar data update hobe
         // Full settings install ar sathe sathe update korte hobe
+
+        const storeSettings = await prisma.storeSettings.upsert({
+          where: {
+            storeId: shopData.id,
+          },
+          update: {},
+          create: {
+            storeId: shopData.id,
+            requestScheduling: {
+              create: DEFAULT_REQUEST_SCHEDULING,
+            },
+          },
+        });
+
+        console.log(storeSettings)
+
+        //  fst a db te up hobe dbr deoa res dia metafield ar data update hobe
         // sob widget ar default data db te update kore metafield a rakhte hobe
 
-        //  
-
+        //
       } catch (error) {
         console.error("afterAuth shop fetch failed:", error);
       }
-    }
+    },
   },
 });
 
