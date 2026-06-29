@@ -123,9 +123,6 @@ const shopify = shopifyApp({
             adminNotification: true
           }
         });
-
-        console.log(storeSettings)
-
         //  fst a db te up hobe dbr deoa res dia metafield ar data update hobe
         // sob widget ar default data db te update kore metafield a rakhte hobe
 

@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import CustomGridSection from "../../../components/essentials/CustomGridSection";
 import CustomSection from "../../../components/essentials/CustomSection";
 import Text from "../../../components/essentials/elements/Text";
@@ -8,43 +8,253 @@ import ColorPicker from "../../../routes/app.widgets/components/elements/ColorPi
 import BrandingEmailPreview from "../components/essentials/BrandingEmailPreview";
 import { useRouteLoaderData } from "react-router";
 
-const brandingColorSettings = [
-  {
-    key: "emailPrimaryButtonColor",
-    label: "Primary/button color",
-  },
-  {
-    key: "emailButtonTextColor",
-    label: "Button text color",
-  },
-  {
-    key: "emailBackgroundColor",
-    label: "Email background",
-  },
-  {
-    key: "emailHeadingColor",
-    label: "Heading color",
-  },
-  {
-    key: "emailBodyTextColor",
-    label: "Body text color",
-  },
-  {
-    key: "emailAccentBorderColor",
-    label: "Accent/border color",
-  },
-];
+import { useFetcher, useLoaderData } from "react-router";
+import { authenticate } from "../../../shopify.server";
+import prisma from "../../../db.server";
+
+import { getStoreData } from "../../../utils/getStoreData";
+
+export async function loader({ request }) {
+  try {
+    const { admin, session } = await authenticate.admin(request);
+    const { id } = await getStoreData(admin);
+
+    const storeSettings = await prisma.storeSettings.findFirst({
+      where: {
+        storeId: id,
+      },
+      include: {
+        brandingSettings: true,
+      },
+    });
+    console.log(storeSettings);
+
+    return { storeSettings };
+  } catch (error) {
+    console.log(error);
+
+    return null;
+  }
+}
+
+export async function action({ request }) {
+  try {
+    const { admin, session } = await authenticate.admin(request);
+
+    const contentType = request.headers.get("content-type");
+    if (contentType && contentType.includes("multipart/form-data")) {
+      const formData = await request.formData();
+      const file = formData.get("logoFile");
+
+      if (!file || !(file instanceof File)) {
+        return Response.json(
+          { ok: false, error: "No file uploaded or invalid file format" },
+          { status: 400 },
+        );
+      }
+
+      // 2MB server-side limit check
+      if (file.size > 2 * 1024 * 1024) {
+        return Response.json(
+          { ok: false, error: "File size exceeds the 2MB maximum limit" },
+          { status: 400 },
+        );
+      }
+
+      const uploadResult = await uploadFile(file);
+      return Response.json({
+        ok: true,
+        message: "Logo uploaded successfully",
+        url: uploadResult.url,
+      });
+    }
+
+    const data = await request.json();
+    // const { id } = await getStoreData(admin);
+
+    const brandingSettingsData = await prisma.brandingSettings.update({
+      where: {
+        id: data.id,
+      },
+      data,
+    });
+
+    console.log(
+      "[store settings]: requestSchedulingData data",
+      brandingSettingsData,
+    );
+
+    // console.log("[store settings:]requestScheduling", res);
+
+    return {
+      ok: true,
+      message: "upserted BrandingSettingsData",
+    };
+  } catch (error) {
+    console.log(error);
+    return Response.json({ ok: false, error: error.message }, { status: 500 });
+  }
+}
 
 export default function Branding() {
   const data = useRouteLoaderData("routes/app.settings");
+  const { storeSettings } = useLoaderData();
+  const fetcher = useFetcher();
 
-  const [brandSettings, setBrandSettings] = useState(DEFAULT_BRANDING);
-  console.log("qqqqqqqqqqqqqqqqqqqqqqq", data, brandSettings);
+  const [brandSettings, setBrandSettings] = useState(
+    storeSettings.brandingSettings ?? DEFAULT_BRANDING,
+  );
+  const [isUploading, setIsUploading] = useState(false);
+  const [uploadError, setUploadError] = useState(null);
 
+  const handleLogoUpload = async (e) => {
+    let files = null;
+    if (e.target?.files && e.target.files.length > 0) {
+      files = e.target.files;
+    } else if (e.detail?.files && e.detail.files.length > 0) {
+      files = e.detail.files;
+    } else if (e.target?.value) {
+      files = e.target.value;
+    } else if (e.detail?.value) {
+      files = e.detail.value;
+    }
+
+    if (!files) {
+      console.log("No files detected in upload event:", e);
+      return;
+    }
+
+    const fileList =
+      files instanceof FileList || Array.isArray(files) ? files : [files];
+    const file = fileList[0];
+
+    if (!file || !(file instanceof File)) {
+      console.log("Invalid file object in upload event:", file);
+      return;
+    }
+
+    // Check size limit: 2MB (2 * 1024 * 1024 bytes)
+    const maxSizeBytes = 2 * 1024 * 1024;
+    if (file.size > maxSizeBytes) {
+      setUploadError("Image size must not exceed 2MB.");
+      if (typeof shopify !== "undefined" && shopify.toast) {
+        shopify.toast.show("Image size must not exceed 2MB.", {
+          isError: true,
+        });
+      }
+      return;
+    }
+
+    setUploadError(null);
+    setIsUploading(true);
+
+    try {
+      const formData = new FormData();
+      formData.append("logoFile", file);
+
+      const response = await fetch("/api/upload", {
+        method: "POST",
+        body: formData,
+      });
+
+      const result = await response.json();
+
+      if (result.ok) {
+        handleStateUpdate(setBrandSettings, "storeLogo", result.data[0].url);
+
+        shopify.toast.show("Logo uploaded successfully");
+      } else {
+        const errorMsg =
+          result.error || result.message || "Failed to upload logo.";
+        setUploadError(errorMsg);
+
+        shopify.toast.show(errorMsg, { isError: true });
+      }
+    } catch (err) {
+      console.error("Error uploading file:", err);
+      setUploadError("An error occurred during upload.");
+
+      shopify.toast.show("An error occurred during upload.", {
+        isError: true,
+      });
+    } finally {
+      setIsUploading(false);
+    }
+  };
+
+  const brandingColorSettings = [
+    {
+      key: "emailPrimaryButtonColor",
+      label: "Primary/button color",
+    },
+    {
+      key: "emailButtonTextColor",
+      label: "Button text color",
+    },
+    {
+      key: "emailBackgroundColor",
+      label: "Email background",
+    },
+    {
+      key: "emailHeadingColor",
+      label: "Heading color",
+    },
+    {
+      key: "emailBodyTextColor",
+      label: "Body text color",
+    },
+    {
+      key: "emailAccentBorderColor",
+      label: "Accent/border color",
+    },
+  ];
+
+  useEffect(() => {
+    const hasChanged =
+      JSON.stringify(brandSettings) !==
+      JSON.stringify(storeSettings?.brandingSettings);
+
+    if (hasChanged) {
+      shopify.saveBar.show("leave-confirm-save-bar");
+    } else {
+      shopify.saveBar.hide("leave-confirm-save-bar");
+    }
+  }, [brandSettings]);
+
+  console.log("DEFAULT_REQUEST_SCHEDULING:", brandSettings);
+
+  function handleSave() {
+    fetcher.submit(brandSettings, {
+      method: "POST",
+      encType: "application/json",
+    });
+  }
+
+ 
+  useEffect(() => {
+    if (fetcher.state === "idle" && fetcher.data) {
+      shopify.saveBar.hide("leave-confirm-save-bar");
+    }
+  }, [fetcher.state, fetcher.data]);
+  const [formResetKey, setFormResetKey] = useState(0);
+
+  function handleDiscard() {
+    setBrandSettings(storeSettings.brandingSettings ?? DEFAULT_BRANDING);
+    setFormResetKey((pre) => pre + 1);
+    shopify.saveBar.hide("leave-confirm-save-bar");
+  }
   return (
     <>
-      {/* <pre>{JSON.stringify(brandSettings, null, 2)}</pre> */}
+      <pre>{JSON.stringify(brandSettings, null, 2)}</pre>
 
+      <ui-save-bar id="leave-confirm-save-bar">
+        <button onClick={handleSave} variant="primary" id="save-button">
+          Save
+        </button>
+        <button onClick={handleDiscard} id="discard-button">
+          Discard
+        </button>
+      </ui-save-bar>
       <s-box>
         <Text>Branding</Text>
         <s-text>
@@ -57,6 +267,7 @@ export default function Branding() {
           gridTemplateColumns="@container (inline-size > 800px) '1.7fr 1.3fr', 1fr"
           gap="small"
           alignItems="start"
+          key={formResetKey}
         >
           <CustomSection background="#ffffff">
             <CustomSection padding="0">
@@ -151,9 +362,67 @@ export default function Branding() {
                       label="Recommended 240*80px. Maximum file size: 2MB (500KB recommended)."
                       accessibilityLabel="Upload image of type jpg, png, or gif"
                       accept=".jpg,.png,.gif"
-                      onChange={(e) => console.log(e)}
+                      onChange={handleLogoUpload}
                       onDropRejected="console.log('onDropRejected', event.currentTarget?.value)"
                     ></s-drop-zone>
+                    {isUploading && (
+                      <div
+                        style={{
+                          paddingBlock: "8px",
+                          fontSize: "14px",
+                          color: "#666",
+                        }}
+                      >
+                        Uploading logo...
+                      </div>
+                    )}
+                    {uploadError && (
+                      <div
+                        style={{
+                          paddingBlock: "8px",
+                          color: "#d32f2f",
+                          fontSize: "14px",
+                        }}
+                      >
+                        {uploadError}
+                      </div>
+                    )}
+                    {brandSettings.storeLogo && !isUploading && (
+                      <s-grid
+                        gridTemplateColumns="auto 1fr"
+                        gap="small"
+                        alignItems="center"
+                        style={{ marginBlock: "10px" }}
+                      >
+                        <div
+                          style={{
+                            border: "1px dashed #ccc",
+                            padding: "6px",
+                            borderRadius: "6px",
+                            background: "#fcfcfc",
+                          }}
+                        >
+                          <img
+                            src={brandSettings.storeLogo}
+                            alt="Store Logo Preview"
+                            style={{
+                              maxHeight: "60px",
+                              maxWidth: "180px",
+                              objectFit: "contain",
+                              display: "block",
+                            }}
+                          />
+                        </div>
+                        <s-button
+                          variant="secondary"
+                          onClick={() =>
+                            handleStateUpdate(setBrandSettings, "storeLogo", "")
+                          }
+                        >
+                          Remove logo
+                        </s-button>
+                      </s-grid>
+                    )}
                     <CustomSection>
                       <s-select
                         defaultValue={brandSettings.storeLogoPosition}

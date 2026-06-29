@@ -41,7 +41,7 @@ async function postReview(request, admin) {
       console.log(uploaded);
       uploadedData.push(uploaded);
     }
-    console.log({ success: true, urls: uploadedData })
+ 
 
     const attachments = uploadedData.map((item) => {
       return {
@@ -65,11 +65,11 @@ async function postReview(request, admin) {
     })
 
     const productMedafieldResult = await updateProductReviewDefineMetafields(admin, reviewData.productId, reviewData.storeId);
-    console.log("[quick-review][action] Product metafield save result", productMedafieldResult);
+ 
 
 
 
-    console.log(res)
+   
 
 
     await sendEmail({
@@ -127,9 +127,6 @@ async function getReview(request, admin) {
     const sort = url.searchParams.get("sort") || "ALL";
     const page = Number(url.searchParams.get("page")) || 1;
     const limit = Number(url.searchParams.get("limit")) || 10;
-
-    console.log("productId", productId);
-    console.log("sort", sort);
 
     const { id } = await getStoreData(admin);
 
@@ -214,7 +211,7 @@ async function getReview(request, admin) {
       })
     ]);
 
-    console.log("[REVIEW DATA]", res);
+   
 
     return {
       ok: true,

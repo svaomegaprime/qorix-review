@@ -1,5 +1,3 @@
-import BrandLogo from "../../../../assets/icon/brandLogo.png";
-
 export default function EmailRequest({ outgoingRequestEmail, brandSettings }) {
   return (
     <>
@@ -176,9 +174,12 @@ export default function EmailRequest({ outgoingRequestEmail, brandSettings }) {
     `}
       </style>
       <div class="email-request">
-        <div class="qr-header">
-          <img src={BrandLogo} alt="Brand logo" />
-        </div>
+        {brandSettings.storeLogo && (
+          <div class="qr-header">
+            <img src={brandSettings.storeLogo} alt="Brand logo" />
+          </div>
+        )}
+
         {brandSettings.storeTagline && (
           <p class="qr-tagline">{brandSettings.storeTagline}</p>
         )}

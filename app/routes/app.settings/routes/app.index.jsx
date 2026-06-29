@@ -103,18 +103,18 @@ export default function Settings() {
       shopify.saveBar.hide("leave-confirm-save-bar");
     }
   }, [fetcher.state, fetcher.data]);
-const [formResetKey, setFormResetKey] = useState(0);
+  const [formResetKey, setFormResetKey] = useState(0);
 
-function handleDiscard() {
-  setRequestScheduling(storeSettings?.requestScheduling ?? DEFAULT_REQUEST_SCHEDULING);
-  setShowCustomFields({
-    customDeliveryDays: false,
-    customDelayDays: false,
-    customMinimumOrderValue: false,
-  });
-  setFormResetKey((pre) => pre + 1); // ✅ এটা add করো
-  shopify.saveBar.hide("leave-confirm-save-bar");
-}
+  function handleDiscard() {
+    setRequestScheduling(storeSettings?.requestScheduling ?? DEFAULT_REQUEST_SCHEDULING);
+    setShowCustomFields({
+      customDeliveryDays: false,
+      customDelayDays: false,
+      customMinimumOrderValue: false,
+    });
+    setFormResetKey((pre) => pre + 1);
+    shopify.saveBar.hide("leave-confirm-save-bar");
+  }
 
   return (
     <>
