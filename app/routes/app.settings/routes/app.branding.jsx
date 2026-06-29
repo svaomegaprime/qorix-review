@@ -245,8 +245,6 @@ export default function Branding() {
   }
   return (
     <>
-      <pre>{JSON.stringify(brandSettings, null, 2)}</pre>
-
       <ui-save-bar id="leave-confirm-save-bar">
         <button onClick={handleSave} variant="primary" id="save-button">
           Save
