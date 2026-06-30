@@ -115,7 +115,6 @@ export default function Index() {
     setSettings((prev) => ({ ...prev, [key]: value }));
   };
 
-  console.log("settings", settings);
 
   // Start----Handlers for hide app window
   const handleHideAppWindow = () => {

@@ -3,15 +3,19 @@ import StatusTrack from "./essentials/StatusTrack"
 export default function RequestItem({
     data
 }) {
+
+    
+
+    
     return (
         <s-stack>
             {/* Start----Request header */}
             <s-stack direction="inline" gap="base" alignItems="center" justifyContent="space-between">
                 <s-stack direction="inline" gap="small" alignItems="center">
                     <s-avatar size="medium" borderRadius="full" src={data?.avatar} />
-                    <s-heading>{data?.name}</s-heading>
+                    <s-heading>{data?.fullName}</s-heading>
                 </s-stack>
-                <s-text>{data?.date}</s-text>
+                <s-text>{data?.timeAgo}</s-text>
             </s-stack>
             {/* End----Request header */}
             {/* Start----Request content */}
@@ -23,7 +27,7 @@ export default function RequestItem({
                 {/* End----Request email */}
                 {/* Start----Request title */}
                 <s-heading>
-                    {data?.title}
+                    {data?.products[0]?.title}
                 </s-heading>
                 {/* End----Request title */}
                 <s-paragraph>
@@ -33,15 +37,17 @@ export default function RequestItem({
             {/* End----Request content */}
 
             {/* Start----Status track */}
-            <StatusTrack status={data?.status} />
+            <StatusTrack status={"Opened"} />
             {/* End----Status track */}
+            
             
             {/* Start----Request actions */}
             <s-grid gridTemplateColumns="auto auto" paddingBlockStart="small" justifyContent="space-between" alignItems="center" gap="base">
                 {/* Start----Request status */}
                 <s-stack direction="inline" gap="small" alignItems="center">
-                    <Badges status={data?.status} reminded={data?.reminded} />
-                    <s-badge tone="info">{data?.type}</s-badge>
+                    <Badges status={"Opened"} reminded={true} />
+                    <s-badge tone="info">Automatic</s-badge>
+
                 </s-stack>
                 {/* End----Request status */}
                 {/* Start----Request action buttons */}
@@ -53,7 +59,7 @@ export default function RequestItem({
                         gap: "12px 8px",
                     }}
                 >
-                    <ActionButtons status={data?.status} reminded={data?.reminded} />
+                    <ActionButtons status={"Opened"} reminded={false} />
                 </div>
                 {/* End----Request action buttons */}
             </s-grid>
