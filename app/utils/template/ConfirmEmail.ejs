@@ -1,184 +1,114 @@
+<%
+const {
+  subject = "Email Confirmation",
+  logo = "",
+  tagline = "",
+  customerName = "",
+  emailBody = "Your review has been received. We really appreciate you taking the time!",
+  product = {},
+  review = {},
+  buttonUrl = "#",
+  buttonText = "View your review",
+  emailFooterText = "",
+  unsubscribeUrl = "#",
+  isShowFooterBadge = true,
+} = locals;
+%>
+
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Thank You For Your Review</title>
+<meta charset="UTF-8" />
+<title><%= subject %></title>
 </head>
-
-<body style="margin:0;padding:0;background:#f4f4f5;font-family:Arial,sans-serif;">
-
-  <table width="100%" cellpadding="0" cellspacing="0" style="padding:40px 15px;background:#f4f4f5;">
+<body style="margin:0;padding:0;background-color:#f3f4f6;font-family:Arial,Helvetica,sans-serif;">
+  <table role="presentation" cellpadding="0" cellspacing="0" border="0" width="100%" style="width:100%;border-collapse:collapse;background-color:#f3f4f6;margin:0;padding:24px 0;">
     <tr>
-      <td align="center">
-
-        <table width="600" cellpadding="0" cellspacing="0"
-          style="background:#ffffff;border-radius:18px;overflow:hidden;">
-
-          <!-- Header -->
+      <td align="center" style="padding:12px;">
+        <table role="presentation" cellpadding="0" cellspacing="0" border="0" width="355" style="width:355px;max-width:355px;border-collapse:separate;background-color:#f7f7f7;border:1px solid #e1e1e1;border-radius:16px;">
           <tr>
-            <td
-              style="background:linear-gradient(90deg,#FE5012,#ff7a45);padding:20px 35px;text-align:left;">
-
-              <!-- <% if (logoUrl) { %>
-                <img src="<%= logoUrl %>"
-                  width="150"
-                  style="display:block;margin:0 auto 20px;">
-              <% } %> -->
-
-              <h1 style="margin:0;color:#fff;font-size:26px;">
-                Thank You!
-              </h1>
-
-              <p style="margin:12px 0 0;color:#fff;font-size:16px;">
-                Your review has been successfully submitted.
-              </p>
-
-            </td>
-          </tr>
-
-          <!-- Greeting -->
-          <tr>
-            <td style="padding:35px 35px 10px;">
-
-              <h2 style="margin:0 0 16px;color:#111827;">
-                Hi <%= customerName %>,
-              </h2>
-
-              <p style="margin:0;color:#4b5563;line-height:1.8;">
-                Thank you for taking the time to share your experience.
-                Your feedback helps thousands of shoppers make better
-                purchasing decisions.
-              </p>
-
-            </td>
-          </tr>
-
-          <!-- Product Card -->
-          <tr>
-            <td style="padding:20px 35px;">
-
-              <table width="100%"
-                style="border:1px solid #e5e7eb;border-radius:14px;">
-
+            <td style="padding:22px 20px 18px 20px;">
+              <table role="presentation" cellpadding="0" cellspacing="0" border="0" width="100%" style="border-collapse:collapse;">
                 <tr>
-
-                  <td width="120" style="padding:20px;padding-right: 0;">
-                    <img src="<%= product.image %>"
-                      width="100"
-                      style="border-radius:10px;">
-                  </td>
-
-                  <td style="padding:20px 20px 20px 0;">
-
-                    <h3 style="margin:0 0 8px;color:#111827;">
-                      <%= product.title %>
-                    </h3>
-
-                    <p style="margin:0 0 8px;color:#6b7280;">
-                      Price:
-                      <strong><%= product.price %></strong>
-                    </p>
-
-                    <p style="margin:0;color:#6b7280;">
-                      Average Rating:
-                      <strong>
-                        <%= product.averageRating %>/5
-                      </strong>
-                    </p>
-
-                    <p style="margin:8px 0 0;color:#6b7280;">
-                      Total Reviews:
-                      <strong>
-                        <%= product.totalReviews %>
-                      </strong>
-                    </p>
-
-                  </td>
-
-                </tr>
-
-              </table>
-
-            </td>
-          </tr>
-
-          <!-- User Rating -->
-          <tr>
-            <td style="padding:0 35px;">
-
-              <table width="100%"
-                style="background:#fff7ed;border-radius:14px;">
-
-                <tr>
-                  <td style="padding:24px;text-align:center;">
-
-                    <p style="margin:0;color:#9a3412;font-size:13px;font-weight:bold;">
-                      YOUR RATING
-                    </p>
-
-                    <div style="font-size:38px;margin:12px 0;">
-                      <%= "★".repeat(review.rating) %>
-                    </div>
-
-                    <% if (review.comment) { %>
-                      <p style="margin:0;color:#374151;font-style:italic;">
-                        "<%= review.comment %>"
-                      </p>
+                  <td valign="middle" style="width:42px;padding-right:10px;">
+                    <% if (logo) { %>
+                      <img
+                        src="<%= logo %>"
+                        alt="Qorix Review"
+                        style="display:block;max-width:160px;width:auto;height:42px;object-fit:contain;"
+                      />
+                    <% } else { %>
+                      <div style="width:42px;height:42px;border-radius:50%;border:4px solid #14944c;color:#14944c;font-size:29px;line-height:34px;font-weight:400;text-align:center;box-sizing:border-box;">
+                        Q
+                      </div>
                     <% } %>
-
                   </td>
                 </tr>
-
               </table>
 
+              <% if (tagline) { %>
+                <div style="font-size:15px;line-height:22px;color:#111111;padding-top:18px;"><%= tagline %></div>
+              <% } %>
+
+              <div style="border-top:1px solid #dddddd;margin-top:18px;padding-top:22px;font-size:15px;line-height:24px;color:#111111;">
+                <%= emailBody %>
+              </div>
+
+              <table role="presentation" cellpadding="0" cellspacing="0" border="0" width="100%" style="border-collapse:separate;border:1px solid #dddddd;border-radius:8px;background-color:#fbfbfb;margin-top:22px;">
+                <tr>
+                  <td style="padding:16px 14px;">
+                    <table role="presentation" cellpadding="0" cellspacing="0" border="0" width="100%" style="border-collapse:collapse;">
+                      <tr>
+                        <td valign="middle" style="width:62px;">
+                          <div style="width:54px;height:54px;border-radius:50%;border:1px solid #d7d7d7;text-align:center;line-height:54px;color:#b5b5b5;font-size:24px;">
+                            &#9787;
+                          </div>
+                        </td>
+                        <td valign="middle">
+                          <% if (review.rating) { %>
+                            <div style="font-size:14px;line-height:14px;color:#ffb400;letter-spacing:1px;padding-bottom:6px;">
+                              <% for (let i = 0; i < review.rating; i++) { %>&#9733;<% } %>
+                            </div>
+                          <% } %>
+                          <div style="font-size:15px;line-height:20px;font-weight:700;color:#1f1f1f;"><%= product.title || "Hydrating eye cream" %></div>
+                          <% if (review.date) { %>
+                            <div style="font-size:13px;line-height:18px;color:#8a8a8a;padding-top:2px;"><%= review.date %></div>
+                          <% } %>
+                        </td>
+                      </tr>
+                    </table>
+                  </td>
+                </tr>
+              </table>
+
+              <table role="presentation" cellpadding="0" cellspacing="0" border="0" width="100%" style="border-collapse:collapse;margin-top:28px;">
+                <tr>
+                  <td align="center" bgcolor="#14944c" style="border-radius:6px;">
+                    <a href="<%= buttonUrl %>" style="display:block;padding:16px 18px;font-size:16px;line-height:20px;font-weight:700;color:#ffffff;text-decoration:none;">
+                      <%= buttonText %> &nbsp;&#8594;
+                    </a>
+                  </td>
+                </tr>
+              </table>
+
+              <div style="text-align:center;padding-top:24px;">
+                <% if (emailFooterText) { %>
+                  <div style="font-size:12px;line-height:18px;color:#555555;">
+                    <%= emailFooterText %><% if (unsubscribeUrl) { %> <span style="color:#bdbdbd;">&middot;</span> <a href="<%= unsubscribeUrl %>" style="color:#555555;text-decoration:underline;">Unsubscribe</a><% } %>
+                  </div>
+                <% } %>
+
+                <% if (isShowFooterBadge) { %>
+                  <div style="font-size:12px;line-height:18px;color:#8f8f8f;padding-top:6px;">
+                    Powered by <span style="color:#14944c;font-weight:700;">Qorix</span>
+                  </div>
+                <% } %>
+              </div>
             </td>
           </tr>
-
-          <!-- CTA -->
-          <tr>
-            <td align="center" style="padding:35px;">
-
-              <a href="<%= product.url %>"
-                style="
-                  display:inline-block;
-                  background:#FE5012;
-                  color:#fff;
-                  text-decoration:none;
-                  padding:16px 36px;
-                  border-radius:10px;
-                  font-weight:bold;
-                ">
-                View Product
-              </a>
-
-            </td>
-          </tr>
-
-          <!-- Footer -->
-          <tr>
-            <td style="
-              padding:30px;
-              border-top:1px solid #e5e7eb;
-              text-align:center;
-            ">
-
-              <p style="margin:0;color:#6b7280;">
-                Thank you for helping our community grow ❤️
-              </p>
-
-              <p style="margin:15px 0 0;color:#9ca3af;font-size:13px;">
-                Powered by <strong>Qorix Review</strong>
-              </p>
-
-            </td>
-          </tr>
-
         </table>
-
       </td>
     </tr>
   </table>
-
 </body>
 </html>

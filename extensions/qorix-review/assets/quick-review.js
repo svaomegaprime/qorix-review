@@ -188,6 +188,7 @@ function quickReviewWidget() {
         formData.append("productTitle", product.title ?? "");
 
         formData.append("source", "PRODUCT_PAGE");
+        formData.append("submittedAt", new Date().toISOString());
 
         // Images & Videos
         this.uploadedFiles.forEach((item) => {

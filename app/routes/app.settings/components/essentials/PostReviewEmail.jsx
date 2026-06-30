@@ -1,10 +1,15 @@
 import CustomSection from "../../../../components/essentials/CustomSection";
 import CustomGridSection from "../../../../components/essentials/CustomGridSection";
 
-export default function PostReviewEmail({
-  postReviewEmail,
-  setPostReviewEmail,
-}) {
+export default function PostReviewEmail({ emailSettings, onChange }) {
+  const handleBooleanChange = (field) => (e) => {
+    onChange(field, e.target.checked);
+  };
+
+  const handleInputChange = (field) => (e) => {
+    onChange(field, e.target.value);
+  };
+
   return (
     <CustomSection padding="0">
       <CustomGridSection
@@ -15,13 +20,8 @@ export default function PostReviewEmail({
           <s-grid gap="small">
             <s-grid gridTemplateColumns="1fr auto" alignItems="start">
               <s-switch
-                defaultChecked={postReviewEmail.isConfirmationReviewEmail}
-                onChange={(e) =>
-                  setPostReviewEmail((pre) => ({
-                    ...pre,
-                    isConfirmationReviewEmail: e.target.checked,
-                  }))
-                }
+                checked={emailSettings.isConfirmationReviewEmail}
+                onChange={handleBooleanChange("isConfirmationReviewEmail")}
                 label="Enable review confirmation email"
                 details="Let customers know their review was received"
               />
@@ -32,24 +32,14 @@ export default function PostReviewEmail({
             <s-divider />
             <s-heading>Email subject line</s-heading>
             <s-text-field
-              defaultValue="Thanks for your review! 🙏"
-              onInput={(e) =>
-                setPostReviewEmail((pre) => ({
-                  ...pre,
-                  confirmationEmailSubject: e.target.value,
-                }))
-              }
+              value={emailSettings.confirmationEmailSubject}
+              onInput={handleInputChange("confirmationEmailSubject")}
             />
             <s-divider />
             <s-heading>Email body message</s-heading>
             <s-text-area
-              defaultValue="Hi {{first_name}}, your review has been received. We really appreciate you taking the time!"
-              onInput={(e) =>
-                setPostReviewEmail((pre) => ({
-                  ...pre,
-                  confirmationEmailBody: e.target.value,
-                }))
-              }
+              value={emailSettings.confirmationEmailBody}
+              onInput={handleInputChange("confirmationEmailBody")}
               details="Use {{variables}} to personalize your email."
             />
             <s-stack direction="inline" gap="small">
@@ -71,25 +61,15 @@ export default function PostReviewEmail({
         <CustomSection>
           <s-grid gap="small">
             <s-switch
-              defaultChecked={postReviewEmail.isReplyReviewEmail}
-              onChange={(e) =>
-                setPostReviewEmail((pre) => ({
-                  ...pre,
-                  isReplyReviewEmail: e.target.checked,
-                }))
-              }
-              label="Enable review confirmation email"
-              details="Let customers know their review was received"
+              checked={emailSettings.isReplyReviewEmail}
+              onChange={handleBooleanChange("isReplyReviewEmail")}
+              label="Enable reply notification email"
+              details="Let customers know when you reply to their review"
             ></s-switch>
             <s-heading>Subject line</s-heading>
             <s-text-field
-              defaultValue="The store replied to your review 💬"
-              onInput={(e) =>
-                setPostReviewEmail((pre) => ({
-                  ...pre,
-                  replyReviewEmailSubject: e.target.value,
-                }))
-              }
+              value={emailSettings.replyReviewEmailSubject}
+              onInput={handleInputChange("replyReviewEmailSubject")}
             />
           </s-grid>
         </CustomSection>
