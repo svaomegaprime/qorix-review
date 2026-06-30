@@ -7,6 +7,10 @@ import Analytics from "../components/Analytics";
 import RequestItem from "../components/RequestItem";
 import { useLoaderData, useNavigation } from "react-router";
 import { useState } from "react";
+import {getOrders} from '../../../utils/sync.orders';
+import { authenticate } from "../../../shopify.server"
+
+
 
 const REQUESTS_PER_PAGE = 5;
 const MAX_VISIBLE_PAGE_BUTTONS = 4;
@@ -49,9 +53,19 @@ const TAB_CONFIG = [
     },
 ];
 
-export async function loader() {
+
+
+export async function loader({ request }) {
+     const { session ,admin} = await authenticate.admin(request);
+
+  const orders = await getOrders(
+    session.shop,
+    session.accessToken
+  );
+
+
   return {
-    requests: TEMP_REQUESTS,
+    requests:orders,
   };
 }
 
