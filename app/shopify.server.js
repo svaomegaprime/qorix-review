@@ -7,6 +7,8 @@ import {
 import { PrismaSessionStorage } from "@shopify/shopify-app-session-storage-prisma";
 import prisma from "./db.server";
 import { DEFAULT_ADMIN_NOTIFICATION, DEFAULT_BRANDING, DEFAULT_OUTGOING_REQUEST_EMAIL, DEFAULT_POST_REQUEST_EMAIL, DEFAULT_PUBLISHING_MODERATION, DEFAULT_REQUEST_SCHEDULING, DEFAULT_SMTP_SETUP, DEFAULT_WIDGET } from "./routes/app.settings/data/defaultData";
+import DEFAULT_DB_FORMATED_DATA from "./routes/app.widgets/routes/app.quick-review/data/defaultData"
+import { setAppMetafield } from "./utils/appMetafields.server";
 const GET_SHOP_BASIC_INFO = `#graphql
   query GetShopBasicInfo {
     shop {
@@ -33,7 +35,7 @@ const shopify = shopifyApp({
     ? { customShopDomains: [process.env.SHOP_CUSTOM_DOMAIN] }
     : {}),
   hooks: {
-    afterAuth: async ({ session }) => {
+    afterAuth: async ({ session, admin }) => {
       try {
         const adminApiUrl = `https://${session.shop}/admin/api/2026-04/graphql.json`;
 
@@ -110,7 +112,7 @@ const shopify = shopifyApp({
             brandingSettings: {
               create: DEFAULT_BRANDING
             },
-            adminNotification:{
+            adminNotification: {
               create: DEFAULT_ADMIN_NOTIFICATION
             }
           },
@@ -123,8 +125,33 @@ const shopify = shopifyApp({
             adminNotification: true
           }
         });
-        //  fst a db te up hobe dbr deoa res dia metafield ar data update hobe
-        // sob widget ar default data db te update kore metafield a rakhte hobe
+
+        const quickReviewWidget = await prisma.quickReviewWidget.upsert({
+          where: {
+            storeId: shopData.id
+            ,
+          },
+          update: {},
+          create: {
+            ...DEFAULT_DB_FORMATED_DATA,
+            storeId: shopData.id,
+          }
+        })
+
+        const metafieldResult = await setAppMetafield(
+          admin,
+          "quick_review",
+          quickReviewWidget,
+        );
+
+        console.log(
+          "[quick-review][action] metafield save result*************",
+          JSON.stringify(metafieldResult.data.metafieldsSet.metafields, null, 2)
+        );
+
+        console.log("[quickReviewWidget:::::]", storeSettings, ":::::::", quickReviewWidget)
+
+
 
         //
       } catch (error) {
