@@ -2,11 +2,11 @@
 import ejs from "ejs";
 import nodemailer from "nodemailer";
 import path from "path";
-const getSmtpConfig = () => {
-  const host = String(process.env.SMTP_HOST || "").trim();
-  const port = Number(process.env.SMTP_PORT || 0);
-  const user = String(process.env.SMTP_USER || "").trim();
-  const pass = String(process.env.SMTP_PASS || "").trim();
+const getSmtpConfig = (smtpConfig) => {
+  const host = String(smtpConfig.smtpHost || "").trim();
+  const port = Number(smtpConfig.smtpPort || 0);
+  const user = String(smtpConfig.smtpUser || "").trim();
+  const pass = String(smtpConfig.smtpPassword || "").trim();
 
   return {
     host,
@@ -19,10 +19,10 @@ const getSmtpConfig = () => {
 };
 
 let transporter = null;
-const getTransporter = () => {
+const getTransporter = (smtpConfig) => {
   if (transporter) return transporter;
 
-  const smtp = getSmtpConfig();
+  const smtp = getSmtpConfig(smtpConfig);
   if (!smtp.isConfigured) return null;
 
   transporter = nodemailer.createTransport({
@@ -49,7 +49,7 @@ export const sendEmail = async ({
   smtpConfig
 }) => {
   try {
-    const activeTransporter = getTransporter();
+    const activeTransporter = getTransporter(smtpConfig);
     if (!activeTransporter) {
       console.warn(
         "Email skipped: SMTP configuration missing. Please set SMTP_HOST, SMTP_PORT, SMTP_USER, and SMTP_PASS.",

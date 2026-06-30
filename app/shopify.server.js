@@ -35,11 +35,6 @@ const shopify = shopifyApp({
       callbackUrl: "/webhooks/orders/create",
     },
   },
-  hooks: {
-    afterAuth: async ({ session }) => {
-      shopify.registerWebhooks({ session });
-    },
-  },
   future: {
     expiringOfflineAccessTokens: true,
   },
@@ -49,6 +44,7 @@ const shopify = shopifyApp({
   hooks: {
     afterAuth: async ({ session, admin }) => {
       try {
+        shopify.registerWebhooks({ session });
         const adminApiUrl = `https://${session.shop}/admin/api/2026-04/graphql.json`;
 
         const response = await fetch(adminApiUrl, {

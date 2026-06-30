@@ -1,11 +1,11 @@
 import { reviewService } from "./review.service";
-async function controller(request, admin) {
+async function controller(request, session, admin) {
   switch (request.method) {
     case "POST":
-      return await reviewService.postReview(request, admin);
+      return await reviewService.postReview(request, session, admin);
 
     case "GET":
-      return await reviewService.getReview(request, admin);
+      return await reviewService.getReview(request, session, admin);
 
     default:
       return { success: false, message: "Method not allowed" };

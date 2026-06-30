@@ -5,6 +5,7 @@ import { isFileLike } from "../../utils/isFileLike"
 import { AppError } from "../../utils/appError.server"
 import { updateProductReviewDefineMetafields } from "../../utils/updateProductReviewDefineMetafields"
 import { sendEmail } from "../../utils/sendEmail"
+import checkPublishRules from "./middleware/checkPublishRules"
 
 function buildFromAddress(displayName, email) {
   const cleanEmail = String(email || "").trim();
@@ -16,14 +17,68 @@ function buildFromAddress(displayName, email) {
   return `"${cleanName.replace(/"/g, "")}" <${cleanEmail}>`;
 }
 
-async function postReview(request, admin) {
+async function getStoreContext(session, admin) {
+  const fallbackStoreData = session?.shop
+    ? await prisma.store.findFirst({
+        where: {
+          storeURL: session.shop,
+        },
+        select: {
+          storeGID: true,
+          storeURL: true,
+          storeEmail: true,
+        },
+      })
+    : null;
+
+  const storeData = await getStoreData(
+    admin,
+    fallbackStoreData
+      ? {
+          id: fallbackStoreData.storeGID,
+          name: session?.shop ?? "",
+          storeURL: fallbackStoreData.storeURL,
+          email: fallbackStoreData.storeEmail,
+        }
+      : null,
+  );
+
+  if (!storeData?.id) {
+    throw new Error("Unable to resolve store data for this request");
+  }
+
+  return storeData;
+}
+
+async function postReview(request, session, admin) {
 
 
   try {
-    const { id, name, storeURL, email } = await getStoreData(admin)
+    const { id, name, storeURL, email } = await getStoreContext(
+      session,
+      admin,
+    );
 
     const formData = await request.formData();
     // review.service.js
+
+
+    const storeSettings = await prisma.storeSettings.findFirst({
+      where: {
+        storeId: id,
+      },
+      include: {
+        emailSettings: true,
+        brandingSettings: true,
+        adminNotification: true,
+        publishingModeration: true
+      }
+    })
+
+    const brandingSettings = storeSettings?.brandingSettings ?? {};
+    const emailSettings = storeSettings?.emailSettings ?? {};
+    const publishingModeration = storeSettings?.publishingModeration ?? {};
+
     const reviewData = {
       storeId: id,
       reviewerName: formData.get("reviewerName") || null,
@@ -36,7 +91,14 @@ async function postReview(request, admin) {
       productHandle: formData.get("productHandle") || null,
       productTitle: formData.get("productTitle") || null,
     };
-    const submittedAt = formData.get("submittedAt") || null
+    const publishRules = await checkPublishRules(
+      session,
+      publishingModeration,
+      reviewData,
+    );
+    const submittedAt = formData.get("submittedAt") || null;
+
+    console.log(publishRules);
 
     const files = [
       ...formData.getAll("media"),
@@ -65,6 +127,7 @@ async function postReview(request, admin) {
     const res = await prisma.review.create({
       data: {
         ...reviewData,
+        ...publishRules,
         attachments: {
           create: attachments,
         }
@@ -76,19 +139,7 @@ async function postReview(request, admin) {
 
     await updateProductReviewDefineMetafields(admin, reviewData.productId, reviewData.storeId);
 
-    const storeSettings = await prisma.storeSettings.findFirst({
-      where: {
-        storeId: id,
-      },
-      include: {
-        emailSettings: true,
-        brandingSettings: true,
-        adminNotification: true
-      }
-    })
 
-    const brandingSettings = storeSettings?.brandingSettings ?? {};
-    const emailSettings = storeSettings?.emailSettings ?? {};
     const storeName = brandingSettings.storeDisplayName ?? name;
 
     const emailBody = (
@@ -179,6 +230,12 @@ async function postReview(request, admin) {
         isShowFooterBadge:
           brandingSettings.isShowFooterBadge ?? false,
       },
+      smtpConfig: {
+        smtpUser: emailSettings.smtpUser,
+        smtpPassword: emailSettings.smtpPassword,
+        smtpPort: emailSettings.smtpPort,
+        smtpHost: emailSettings.smtpHost,
+      }
 
     });
 
@@ -194,7 +251,7 @@ async function postReview(request, admin) {
   }
 
 }
-async function getReview(request, admin) {
+async function getReview(request, session, admin) {
   try {
     const url = new URL(request.url);
     const productId = url.searchParams.get("productId");
@@ -202,7 +259,7 @@ async function getReview(request, admin) {
     const page = Number(url.searchParams.get("page")) || 1;
     const limit = Number(url.searchParams.get("limit")) || 10;
 
-    const { id } = await getStoreData(admin);
+    const { id } = await getStoreContext(session, admin);
 
     // Base query
     const query = {
