@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import CustomGridSection from "../../../components/essentials/CustomGridSection";
 import CustomSection from "../../../components/essentials/CustomSection";
 import Text from "../../../components/essentials/elements/Text";
@@ -6,28 +6,126 @@ import selectedImage from "../../../assets/images/selected.png";
 import { DEFAULT_WIDGET } from "../data/defaultData";
 import { handleStateUpdate } from "../utils/client/utils.client";
 import Range from "../../app.widgets/components/elements/Range";
-// export const DEFAULT_WIDGET = {
-//   defaultStarColor: "#F59E0B",
-//   defaultFontSize: "14px",
-//   defaultBorderRadius: "8px",
-//   isShowVerifiedBadge: true,
-//   isShowReviewerName: true,
-//   isShowReviewerDate: true,
+import { useFetcher, useLoaderData } from "react-router";
+import { authenticate } from "../../../shopify.server";
+import prisma from "../../../db.server";
 
-//   reviewsPerPage: 10,
-//   reviewSortOrder: "RECENT", //RATED// HELPFUL
-//   minimumStarRatingToDisplay: "ALL_RATINGS", // 3_STAR // 5_STAR
-//   isShowMediaFirst: true,
-// };
+import { getStoreData } from "../../../utils/getStoreData";
+
+export async function loader({ request }) {
+  try {
+    const { admin, session } = await authenticate.admin(request);
+    const { id } = await getStoreData(admin);
+
+    const storeSettings = await prisma.storeSettings.findFirst({
+      where: {
+        storeId: id,
+      },
+      include: {
+        widgetsSettings: true,
+      },
+    });
+    console.log(storeSettings);
+
+    return { storeSettings };
+  } catch (error) {
+    console.log(error);
+
+    return null;
+  }
+}
+
+export async function action({ request }) {
+  try {
+    const { admin, session } = await authenticate.admin(request);
+
+    const data = await request.json();
+    // const { id } = await getStoreData(admin);
+
+    const widgetsSettingsData = await prisma.widgetsSettings.update({
+      where: {
+        id: data.id,
+      },
+      data,
+    });
+
+    console.log(
+      "[store settings]: requestSchedulingData data",
+      widgetsSettingsData,
+    );
+
+    // console.log("[store settings:]requestScheduling", res);
+
+    return {
+      ok: true,
+      message: "upserted PublishingModerationData",
+    };
+  } catch (error) {
+    console.log(error);
+  }
+}
+
 export default function Widgets() {
-  const [widgetSettings, setWidgetSettings] = useState(DEFAULT_WIDGET);
+  const { storeSettings } = useLoaderData();
+  const fetcher = useFetcher();
+  const [widgetSettings, setWidgetSettings] = useState(
+    storeSettings.widgetsSettings ?? DEFAULT_WIDGET,
+  );
   const [customReviewPerPage, setCustomReviewPerPage] = useState({
     isCustomReviewPerPage: false,
   });
+
+  useEffect(() => {
+    const hasChanged =
+      JSON.stringify(widgetSettings) !==
+      JSON.stringify(storeSettings?.widgetsSettings);
+
+    if (hasChanged) {
+      shopify.saveBar.show("leave-confirm-save-bar");
+    } else {
+      shopify.saveBar.hide("leave-confirm-save-bar");
+    }
+  }, [widgetSettings]);
+
+  function handleSave() {
+    fetcher.submit(widgetSettings, {
+      method: "POST",
+      encType: "application/json",
+    });
+  }
+
+  useEffect(() => {
+    if (fetcher.state === "idle" && fetcher.data) {
+      console.log("Response:", fetcher.data);
+
+      // Save successful
+      shopify.saveBar.hide("leave-confirm-save-bar");
+    }
+  }, [fetcher.state, fetcher.data]);
+
+  const [formResetKey, setFormResetKey] = useState(0);
+
+  function handleDiscard() {
+    setWidgetSettings(storeSettings.widgetsSettings ?? DEFAULT_WIDGET);
+    setCustomReviewPerPage({
+      isCustomReviewPerPage: false,
+    });
+    setFormResetKey((pre) => pre + 1);
+    shopify.saveBar.hide("leave-confirm-save-bar");
+  }
+
   return (
     <>
       <pre>{JSON.stringify(widgetSettings, null, 2)}</pre>
 
+      <ui-save-bar id="leave-confirm-save-bar">
+        <button onClick={handleSave} variant="primary" id="save-button">
+          Save
+        </button>
+        <button onClick={handleDiscard} id="discard-button">
+          Discard
+        </button>
+      </ui-save-bar>
       <s-stack
         paddingBlockEnd="base"
         direction="inline"
@@ -43,7 +141,7 @@ export default function Widgets() {
         </s-button>
       </s-stack>
 
-      <s-section>
+      <s-section key={formResetKey}>
         <CustomSection padding="0">
           <CustomGridSection
             heading="Global display default"

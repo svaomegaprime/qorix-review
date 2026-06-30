@@ -1,16 +1,18 @@
 model StoreSettings {
-  id      String @id @default(uuid()) @db.Uuid()
+  id String @id @default(uuid()) @db.Uuid()
+
   storeId String @unique
   store   Store  @relation(fields: [storeId], references: [storeGID], onDelete: Cascade)
 
   requestScheduling    RequestScheduling?
-  createdAt            DateTime               @default(now())
-  updatedAt            DateTime               @updatedAt
-  emailSettings        EmailSettings[]
-  publishingModeration PublishingModeration[]
-  widgetsSettings      WidgetsSettings[]
-  adminNotifications   AdminNotification[]
-  brandingSettings     BrandingSettings[]
+  emailSettings        EmailSettings?
+  publishingModeration PublishingModeration?
+  widgetsSettings      WidgetsSettings?
+  adminNotification    AdminNotification?
+  brandingSettings     BrandingSettings?
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
 }
 
 model RequestScheduling {
@@ -34,9 +36,8 @@ model RequestScheduling {
 model EmailSettings {
   id String @id @default(uuid()) @db.Uuid()
 
-  storeSettingsId String @db.Uuid()
-
-  storeSettings StoreSettings @relation(fields: [storeSettingsId], references: [id], onDelete: Cascade)
+  storeSettingsId String        @unique @db.Uuid()
+  storeSettings   StoreSettings @relation(fields: [storeSettingsId], references: [id], onDelete: Cascade)
 
   smtpUser     String?
   smtpPassword String?
@@ -49,6 +50,9 @@ model EmailSettings {
   reminderSubjectLine     String?
   reminderEmailBody       String?
   reminderEmailButton     String?
+  replyEmailSubjectLine   String?
+  replyEmailBody          String?
+  replyEmailButton        String?
 
   isConfirmationReviewEmail Boolean @default(true)
   confirmationEmailSubject  String?
@@ -61,8 +65,9 @@ model EmailSettings {
 }
 
 model PublishingModeration {
-  id              String        @id @default(uuid()) @db.Uuid()
-  storeSettingsId String        @db.Uuid()
+  id String @id @default(uuid()) @db.Uuid()
+
+  storeSettingsId String        @unique @db.Uuid()
   storeSettings   StoreSettings @relation(fields: [storeSettingsId], references: [id], onDelete: Cascade)
 
   autoPublishRules     AutoPublishRules @default(AUTO_PUBLISH)
@@ -77,7 +82,7 @@ model PublishingModeration {
 
 model WidgetsSettings {
   id              String        @id @default(uuid()) @db.Uuid()
-  storeSettingsId String        @db.Uuid()
+  storeSettingsId String        @unique @db.Uuid()
   storeSettings   StoreSettings @relation(fields: [storeSettingsId], references: [id], onDelete: Cascade)
 
   defaultStarColor    String @default("#F59E0B")
@@ -98,7 +103,7 @@ model WidgetsSettings {
 
 model BrandingSettings {
   id              String        @id @default(uuid()) @db.Uuid()
-  storeSettingsId String        @db.Uuid()
+  storeSettingsId String        @unique @db.Uuid()
   storeSettings   StoreSettings @relation(fields: [storeSettingsId], references: [id], onDelete: Cascade)
 
   storeDisplayName  String @default("Glow Store")
@@ -106,7 +111,7 @@ model BrandingSettings {
   storeWebsiteURL   String @default("https://www.glowstore.com")
   storeTagline      String @default("Skincare that makes you glow")
   storeReplyToEmail String @default("hello@glowstore.com")
-  storeLogo         String @default("")
+  storeLogo         String @default("https://www.glowstore.com")
   storeLogoPosition String @default("LEFT")
 
   emailPrimaryButtonColor String  @default("#FE0606")
@@ -126,27 +131,14 @@ model BrandingSettings {
 model AdminNotification {
   id String @id @default(uuid()) @db.Uuid()
 
-  storeSettingsId String        @db.Uuid()
+  storeSettingsId String        @unique @db.Uuid()
   storeSettings   StoreSettings @relation(fields: [storeSettingsId], references: [id], onDelete: Cascade)
 
-  isNewReviewNotify      Boolean @default(true)
-  isReviewApprovalNotify Boolean @default(true)
-  isLowStarReviewNotify  Boolean @default(true)
-  isWeeklySummaryNotify  Boolean @default(true)
-
-  emails AdminNotificationEmail[]
-
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
-}
-
-model AdminNotificationEmail {
-  id String @id @default(uuid()) @db.Uuid()
-
-  adminNotificationId String            @db.Uuid()
-  adminNotification   AdminNotification @relation(fields: [adminNotificationId], references: [id], onDelete: Cascade)
-
-  email String @unique
+  isNewReviewNotify        Boolean @default(true)
+  isReviewApprovalNotify   Boolean @default(true)
+  isLowStarReviewNotify    Boolean @default(true)
+  isWeeklySummaryNotify    Boolean @default(true)
+  notificationEmailAddress Json
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt

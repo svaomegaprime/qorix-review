@@ -1,13 +1,12 @@
-import BrandLogo from "../../../../assets/icon/brandLogo.png";
-
 export default function EmailReply({ outgoingRequestEmail, brandSettings }) {
   return (
     <>
       <div class="email-reply">
-        <div class="qr-header">
-          <img src={BrandLogo} alt="brand logo" />
-        </div>
-
+        {brandSettings.storeLogo && (
+          <div class="qr-header">
+            <img src={brandSettings.storeLogo} alt="brand logo" />
+          </div>
+        )}
         <p class="qr-tagline">{brandSettings.storeTagline}</p>
 
         <hr class="qr-divider" />

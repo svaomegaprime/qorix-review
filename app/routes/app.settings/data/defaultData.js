@@ -8,6 +8,13 @@ export const DEFAULT_REQUEST_SCHEDULING = {
   minimumOrderValue: 0,
 };
 
+export const DEFAULT_SMTP_SETUP = {
+  smtpUser: "",
+  smtpPassword: "",
+  smtpPort: null,
+  smtpHost: "",
+};
+
 export const DEFAULT_OUTGOING_REQUEST_EMAIL = {
   requestEmailSubjectLine: "How did we do? Share your thoughts ⭐",
   requestEmailBody:
@@ -63,7 +70,7 @@ export const DEFAULT_BRANDING = {
   storeWebsiteURL: "https://www.glowstore.com",
   storeTagline: "Skincare that makes you glow",
   storeReplyToEmail: "hello@glowstore.com",
-  storeLogo: "",
+  storeLogo: "https://www.glowstore.com",
   storeLogoPosition: "start", // center // end
 
   emailPrimaryButtonColor: "#108848",
@@ -90,9 +97,4 @@ export const DEFAULT_ADMIN_NOTIFICATION = {
   isWeeklySummaryNotify: true,
 };
 
-export const DEFAULT_SMTP_SETUP = {
-  smtpUser: "",
-  smtpPassword: "",
-  smtpPort: "",
-  smtpHost: "",
-};
+

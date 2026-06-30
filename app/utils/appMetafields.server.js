@@ -90,6 +90,8 @@ export async function setAppMetafield(
     namespace,
   );
 
+  console.log("currentAppInstallationId:::::::",currentAppInstallationId)
+
   const metafieldsToSet = [
     {
       ownerId: currentAppInstallationId,

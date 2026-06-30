@@ -1,35 +1,130 @@
-import { useLoaderData } from "react-router";
+import { useFetcher, useLoaderData } from "react-router";
 import CustomGridSection from "../../../components/essentials/CustomGridSection";
 import CustomSection from "../../../components/essentials/CustomSection";
 import Text from "../../../components/essentials/elements/Text";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { DEFAULT_REQUEST_SCHEDULING } from "../data/defaultData";
+import { getStoreData } from "../../../utils/getStoreData";
+import { authenticate } from "../../../shopify.server";
+import prisma from "../../../db.server";
 
-export function loader() {
-  return { status: true, message: "hello" };
+export async function loader({ request }) {
+  try {
+    const { admin, session } = await authenticate.admin(request);
+    const { id } = await getStoreData(admin);
+
+    const storeSettings = await prisma.storeSettings.findFirst({
+      where: {
+        storeId: id,
+      },
+      include: {
+        requestScheduling: true,
+      },
+    });
+    console.log(storeSettings);
+
+    return { storeSettings };
+  } catch (error) {
+    console.log(error);
+
+    return {};
+  }
+}
+
+export async function action({ request }) {
+  try {
+    const { admin, session } = await authenticate.admin(request);
+
+    const data = await request.json();
+    // const { id } = await getStoreData(admin);
+
+    const requestSchedulingData = await prisma.requestScheduling.update({
+      where: {
+        id: data.id,
+      },
+      data,
+    });
+
+    console.log(
+      "[store settings]: requestSchedulingData data",
+      requestSchedulingData,
+    );
+
+    // console.log("[store settings:]requestScheduling", res);
+
+    return {
+      ok: true,
+      message: "upserted RequestSchedulingData",
+    };
+  } catch (error) {
+    console.log(error);
+  }
 }
 
 export default function Settings() {
-  const data = useLoaderData();
+  const { storeSettings } = useLoaderData();
+  const fetcher = useFetcher();
+
   const [requestScheduling, setRequestScheduling] = useState(
-    DEFAULT_REQUEST_SCHEDULING,
+    storeSettings?.requestScheduling ?? DEFAULT_REQUEST_SCHEDULING,
   );
   const [showCustomFields, setShowCustomFields] = useState({
     customDeliveryDays: false,
     customDelayDays: false,
     customMinimumOrderValue: false,
   });
+  useEffect(() => {
+    const hasChanged =
+      JSON.stringify(requestScheduling) !==
+      JSON.stringify(storeSettings?.requestScheduling);
+
+    if (hasChanged) {
+      shopify.saveBar.show("leave-confirm-save-bar");
+    } else {
+      shopify.saveBar.hide("leave-confirm-save-bar");
+    }
+  }, [requestScheduling]);
 
   console.log("DEFAULT_REQUEST_SCHEDULING:", requestScheduling);
 
+  function handleSave() {
+    fetcher.submit(requestScheduling, {
+      method: "POST",
+      encType: "application/json",
+    });
+  }
+
+  console.log("loading:", fetcher.state);
+  useEffect(() => {
+    if (fetcher.state === "idle" && fetcher.data) {
+      console.log("Response:", fetcher.data);
+
+      // Save successful
+      shopify.saveBar.hide("leave-confirm-save-bar");
+    }
+  }, [fetcher.state, fetcher.data]);
+  const [formResetKey, setFormResetKey] = useState(0);
+
+  function handleDiscard() {
+    setRequestScheduling(storeSettings?.requestScheduling ?? DEFAULT_REQUEST_SCHEDULING);
+    setShowCustomFields({
+      customDeliveryDays: false,
+      customDelayDays: false,
+      customMinimumOrderValue: false,
+    });
+    setFormResetKey((pre) => pre + 1);
+    shopify.saveBar.hide("leave-confirm-save-bar");
+  }
+
   return (
     <>
-      <pre>{JSON.stringify(requestScheduling, null, 2)}</pre>
       <ui-save-bar id="leave-confirm-save-bar">
-        <button variant="primary" id="save-button">
+        <button onClick={handleSave} variant="primary" id="save-button">
           Save
         </button>
-        <button id="discard-button">Discard</button>
+        <button onClick={handleDiscard} id="discard-button">
+          Discard
+        </button>
       </ui-save-bar>
 
       <s-stack
@@ -49,7 +144,7 @@ export default function Settings() {
         </s-button>
       </s-stack>
 
-      <s-section>
+      <s-section key={formResetKey}>
         {/* <s-stack padding="base" border="base" borderRadius="base">
                 </s-stack> */}
         <CustomSection padding="0">
@@ -79,6 +174,7 @@ export default function Settings() {
                   </s-paragraph>
                   <s-box paddingBlock="small">
                     <s-select
+                      value={String(requestScheduling.sendRequestAfterDelivery)}
                       onChange={(e) => {
                         const value = e.currentTarget.value;
                         const isCustom = value === "custom";
@@ -145,6 +241,7 @@ export default function Settings() {
                   </s-paragraph>
                   <s-box paddingBlock="small">
                     <s-select
+                      value={String(requestScheduling.reminderRequestDelay)}
                       onChange={(e) => {
                         const value = e.currentTarget.value;
                         const isCustom = value === "custom";
@@ -231,6 +328,7 @@ export default function Settings() {
                       </s-paragraph>
                     </s-box>
                     <s-select
+                      value={String(requestScheduling.minimumOrderValue)}
                       onChange={(e) => {
                         const isCustom = e.target.value === "CUSTOM";
                         if (isCustom) {

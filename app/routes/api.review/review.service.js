@@ -6,12 +6,21 @@ import { AppError } from "../../utils/appError.server"
 import { updateProductReviewDefineMetafields } from "../../utils/updateProductReviewDefineMetafields"
 import { sendEmail } from "../../utils/sendEmail"
 
+function buildFromAddress(displayName, email) {
+  const cleanEmail = String(email || "").trim();
+  const cleanName = String(displayName || "").trim();
+
+  if (!cleanEmail) return "";
+  if (!cleanName) return cleanEmail;
+
+  return `"${cleanName.replace(/"/g, "")}" <${cleanEmail}>`;
+}
 
 async function postReview(request, admin) {
 
 
   try {
-    const { id } = await getStoreData(admin)
+    const { id, name, storeURL, email } = await getStoreData(admin)
 
     const formData = await request.formData();
     // review.service.js
@@ -27,6 +36,7 @@ async function postReview(request, admin) {
       productHandle: formData.get("productHandle") || null,
       productTitle: formData.get("productTitle") || null,
     };
+    const submittedAt = formData.get("submittedAt") || null
 
     const files = [
       ...formData.getAll("media"),
@@ -41,7 +51,7 @@ async function postReview(request, admin) {
       console.log(uploaded);
       uploadedData.push(uploaded);
     }
-    console.log({ success: true, urls: uploadedData })
+
 
     const attachments = uploadedData.map((item) => {
       return {
@@ -64,47 +74,111 @@ async function postReview(request, admin) {
       },
     })
 
-    const productMedafieldResult = await updateProductReviewDefineMetafields(admin, reviewData.productId, reviewData.storeId);
-    console.log("[quick-review][action] Product metafield save result", productMedafieldResult);
+    await updateProductReviewDefineMetafields(admin, reviewData.productId, reviewData.storeId);
 
+    const storeSettings = await prisma.storeSettings.findFirst({
+      where: {
+        storeId: id,
+      },
+      include: {
+        emailSettings: true,
+        brandingSettings: true,
+        adminNotification: true
+      }
+    })
 
+    const brandingSettings = storeSettings?.brandingSettings ?? {};
+    const emailSettings = storeSettings?.emailSettings ?? {};
+    const storeName = brandingSettings.storeDisplayName ?? name;
 
-    console.log(res)
+    const emailBody = (
+      emailSettings.confirmationEmailBody ??
+      "your review has been received. We really appreciate you taking the time!"
+    )
+      .replace(/{{first_name}}/g, reviewData.reviewerName ?? "")
+      .replace(/{{store_name}}/g, storeName ?? "")
+      .replace(/{{product_name}}/g, reviewData.productTitle ?? "")
+      .replace(/{{review_rating}}/g, reviewData.rating ?? "");
 
+    const formatter = new Intl.DateTimeFormat("en-US", {
+      month: "short",
+      day: "numeric",
+      year: "numeric",
+    });
+
+    const formattedDate = `Submitted ${formatter.format(
+      submittedAt ? new Date(submittedAt) : new Date()
+    )}`;
+
+    console.log(formattedDate);
+
+    const senderEmail =
+      emailSettings.smtpUser ||
+      brandingSettings.storeReplyToEmail ||
+      email ||
+      "";
+
+    const replyToEmail =
+      brandingSettings.storeReplyToEmail ||
+      emailSettings.smtpUser ||
+      email ||
+      undefined;
+
+    const productUrl =
+      storeURL && reviewData.productHandle
+        ? `https://${storeURL}/products/${reviewData.productHandle}`
+        : `https://${storeURL || "qorix.ai"}`;
+
+    const unsubscribeUrl = replyToEmail
+      ? `mailto:${replyToEmail}?subject=Unsubscribe`
+      : "";
 
     await sendEmail({
       to: reviewData.reviewerEmail,
-      subject: "Thank you for your purchase!",
-      from: '"Qorix Reviews" <support@qorix.com>',
-      replyTo: "support@qorix.com",
+      from: buildFromAddress(storeName, senderEmail),
+      replyTo: replyToEmail,
       templateName: "ConfirmEmail",
 
-      templateData: {
-        logoUrl: "https://via.placeholder.com/150x50?text=Qorix+Review",
+      subject:
+        emailSettings.confirmationEmailSubject ??
+        "Thank you for your review",
 
-        customerName: reviewData.reviewerName,
+      templateData: {
+        subject:
+          emailSettings.confirmationEmailSubject ??
+          "Thank you for your review",
+
+        logo: brandingSettings.storeLogo ?? "",
+
+        tagline:
+          brandingSettings.storeTagline ?? "",
+
+        customerName:
+          reviewData.reviewerName ?? "",
+
+        emailBody,
+
+        buttonUrl: productUrl,
+
+        buttonText: "View your review",
 
         product: {
-          title: "Premium Leather Backpack",
-          price: "$89.99",
-          image:
-            "https://images.unsplash.com/photo-1542291026-7eec264c27ff?w=300",
-
-          url: "https://demo-store.com/products/premium-leather-backpack",
-
-          averageRating: 4.8,
-
-          totalReviews: 127,
+          title: reviewData.productTitle ?? "",
         },
 
         review: {
-          rating: 4,
-
-          comment:
-            reviewData.body,
+          rating: reviewData.rating ?? 0,
+          date: formattedDate,
         },
-      },
 
+        emailFooterText:
+          brandingSettings.emailFooterText ?? "",
+
+        unsubscribeUrl,
+
+        isShowFooterBadge:
+          brandingSettings.isShowFooterBadge ?? false,
+      },
 
     });
 
@@ -127,9 +201,6 @@ async function getReview(request, admin) {
     const sort = url.searchParams.get("sort") || "ALL";
     const page = Number(url.searchParams.get("page")) || 1;
     const limit = Number(url.searchParams.get("limit")) || 10;
-
-    console.log("productId", productId);
-    console.log("sort", sort);
 
     const { id } = await getStoreData(admin);
 
@@ -214,7 +285,7 @@ async function getReview(request, admin) {
       })
     ]);
 
-    console.log("[REVIEW DATA]", res);
+
 
     return {
       ok: true,

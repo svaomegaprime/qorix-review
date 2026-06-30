@@ -4,10 +4,70 @@ import CustomSection from "../../../components/essentials/CustomSection";
 import Text from "../../../components/essentials/elements/Text";
 import { DEFAULT_ADMIN_NOTIFICATION } from "../data/defaultData";
 import { handleStateUpdate } from "../utils/client/utils.client";
+import { useFetcher, useLoaderData } from "react-router";
+import { authenticate } from "../../../shopify.server";
+import prisma from "../../../db.server";
 
+import { getStoreData } from "../../../utils/getStoreData";
+
+export async function loader({ request }) {
+  try {
+    const { admin, session } = await authenticate.admin(request);
+    const { id } = await getStoreData(admin);
+
+    const storeSettings = await prisma.storeSettings.findFirst({
+      where: {
+        storeId: id,
+      },
+      include: {
+        adminNotification: true,
+      },
+    });
+    console.log(storeSettings);
+
+    return { storeSettings };
+  } catch (error) {
+    console.log(error);
+
+    return null;
+  }
+}
+
+export async function action({ request }) {
+  try {
+    const { admin, session } = await authenticate.admin(request);
+
+    const data = await request.json();
+    // const { id } = await getStoreData(admin);
+
+    const adminNotificationData = await prisma.adminNotification.update({
+      where: {
+        id: data.id,
+      },
+      data,
+    });
+
+    console.log(
+      "[store settings]: requestSchedulingData data",
+      adminNotificationData,
+    );
+
+    // console.log("[store settings:]requestScheduling", res);
+
+    return {
+      ok: true,
+      message: "upserted AdminNotificationData",
+    };
+  } catch (error) {
+    console.log(error);
+  }
+}
 export default function AdminNotification() {
+  const { storeSettings } = useLoaderData();
+  const fetcher = useFetcher();
+
   const [adminNotification, setAdminNotification] = useState(
-    DEFAULT_ADMIN_NOTIFICATION,
+    storeSettings.adminNotification ?? DEFAULT_ADMIN_NOTIFICATION,
   );
   const [countMail, setCountMail] = useState(
     Object.entries(adminNotification.notificationEmailAddress).filter(
@@ -43,8 +103,55 @@ export default function AdminNotification() {
     }
   };
 
+  useEffect(() => {
+    const hasChanged =
+      JSON.stringify(adminNotification) !==
+      JSON.stringify(storeSettings?.adminNotification);
+
+    if (hasChanged) {
+      shopify.saveBar.show("leave-confirm-save-bar");
+    } else {
+      shopify.saveBar.hide("leave-confirm-save-bar");
+    }
+  }, [adminNotification]);
+
+  
+
+  function handleSave() {
+    fetcher.submit(adminNotification, {
+      method: "POST",
+      encType: "application/json",
+    });
+  }
+
+  console.log("loading:", fetcher.state);
+  useEffect(() => {
+    if (fetcher.state === "idle" && fetcher.data) {
+
+      shopify.saveBar.hide("leave-confirm-save-bar");
+    }
+  }, [fetcher.state, fetcher.data]);
+
+  const [formResetKey, setFormResetKey] = useState(0);
+
+  function handleDiscard() {
+    setAdminNotification(
+       storeSettings.adminNotification ?? DEFAULT_ADMIN_NOTIFICATION,
+    );
+    setFormResetKey((pre) => pre + 1); 
+    shopify.saveBar.hide("leave-confirm-save-bar");
+  }
+
   return (
     <>
+      <ui-save-bar id="leave-confirm-save-bar">
+        <button onClick={handleSave} variant="primary" id="save-button">
+          Save
+        </button>
+        <button onClick={handleDiscard} id="discard-button">
+          Discard
+        </button>
+      </ui-save-bar>
       <s-stack
         paddingBlockEnd="base"
         direction="inline"
@@ -59,7 +166,7 @@ export default function AdminNotification() {
         </s-box>
       </s-stack>
 
-      <s-section>
+      <s-section key={formResetKey}>
         {/* <s-stack padding="base" border="base" borderRadius="base">
                   </s-stack> */}
         <CustomSection padding="0">
@@ -80,7 +187,7 @@ export default function AdminNotification() {
                           adminNotification.notificationEmailAddress[key]
                         }
                         details="This is your store's admin email. You can change it at any time."
-                        onChange={(e) => handleEmails(i + 1, e.target.value)}
+                        onInput={(e) => handleEmails(i + 1, e.target.value)}
                       />
                     </>
                   );

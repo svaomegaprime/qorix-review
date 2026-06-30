@@ -46,6 +46,7 @@ export const sendEmail = async ({
   attachments,
   from,
   replyTo,
+  smtpConfig
 }) => {
   try {
     const activeTransporter = getTransporter();

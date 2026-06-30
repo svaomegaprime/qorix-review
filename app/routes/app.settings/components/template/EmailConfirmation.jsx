@@ -1,12 +1,12 @@
-import BrandLogo from "../../../../assets/icon/brandLogo.png";
-
 export default function EmailConfirmation({ postRequestEmail, brandSettings }) {
   return (
     <>
       <div class="email-confirmation">
-        <div class="qr-header">
-          <img src={BrandLogo} alt="Brand Logo" />
-        </div>
+        {brandSettings.storeLogo && (
+          <div class="qr-header">
+            <img src={brandSettings.storeLogo} alt="Brand Logo" />
+          </div>
+        )}
 
         {brandSettings.storeTagline && (
           <p class="qr-tagline">{brandSettings.storeTagline}</p>

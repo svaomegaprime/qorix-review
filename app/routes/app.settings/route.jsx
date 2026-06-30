@@ -62,17 +62,17 @@ export default function SettingsRoot() {
                   url="/app/settings/publishing-moderation"
                 />
 
-                <s-stack paddingBlock="base">
+                {/* <s-stack paddingBlock="base">
                   <s-divider />
-                </s-stack>
+                </s-stack> */}
 
-                <s-heading>Review display</s-heading>
+                {/* <s-heading>Review display</s-heading>
 
                 <Clickable
                   title="Widgets"
                   icon="paint-brush-flat"
                   url="/app/settings/widgets"
-                />
+                /> */}
 
                 <s-stack paddingBlock="base">
                   <s-divider />

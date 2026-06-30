@@ -134,7 +134,7 @@ function quickReviewWidget() {
       );
 
       const result = await response.json();
-      
+
 
       if (!response.ok || result.ok === false) {
         throw new Error(result.message || "Failed to fetch reviews");
@@ -152,7 +152,7 @@ function quickReviewWidget() {
     },
 
     async submitReview(event) {
-      if (!this.product) return ;
+      if (!this.product) return;
       const product = this.product || {};
       console.log("999090088888888", product);
 
@@ -188,6 +188,7 @@ function quickReviewWidget() {
         formData.append("productTitle", product.title ?? "");
 
         formData.append("source", "PRODUCT_PAGE");
+        formData.append("submittedAt", new Date().toISOString());
 
         // Images & Videos
         this.uploadedFiles.forEach((item) => {
@@ -343,6 +344,11 @@ function quickReviewWidget() {
     },
 
     addFiles(files) {
+      if (Array.from(files).length > 5) {
+        alert("Max 5 file upload");
+        return;
+      }
+
       Array.from(files).forEach((file) => {
         if (!this.isAllowedMediaFile(file)) {
           alert(file.name + " is not an allowed file type.");
