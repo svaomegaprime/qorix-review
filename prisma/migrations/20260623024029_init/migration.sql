@@ -20,58 +20,6 @@ CREATE TYPE "AttachmentType" AS ENUM ('VIDEO', 'IMAGE');
 CREATE TYPE "AutoPublishRules" AS ENUM ('AUTO_PUBLISH', 'VERIFIED_ONLY', 'MANUAL_PUBLISH');
 
 -- CreateTable
-CREATE TABLE "Session" (
-    "id" TEXT NOT NULL,
-    "shop" TEXT NOT NULL,
-    "state" TEXT NOT NULL,
-    "isOnline" BOOLEAN NOT NULL DEFAULT false,
-    "scope" TEXT,
-    "expires" TIMESTAMP(3),
-    "accessToken" TEXT NOT NULL,
-    "userId" BIGINT,
-    "firstName" TEXT,
-    "lastName" TEXT,
-    "email" TEXT,
-    "accountOwner" BOOLEAN NOT NULL DEFAULT false,
-    "locale" TEXT,
-    "collaborator" BOOLEAN DEFAULT false,
-    "emailVerified" BOOLEAN DEFAULT false,
-    "refreshToken" TEXT,
-    "refreshTokenExpires" TIMESTAMP(3),
-
-    CONSTRAINT "Session_pkey" PRIMARY KEY ("id")
-);
-
--- CreateTable
-CREATE TABLE "Store" (
-    "id" UUID NOT NULL,
-    "storeGID" TEXT NOT NULL,
-    "storeURL" TEXT NOT NULL,
-    "storeEmail" TEXT NOT NULL,
-    "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
-    "updatedAt" TIMESTAMP(3),
-
-    CONSTRAINT "Store_pkey" PRIMARY KEY ("id")
-);
-
--- CreateTable
-CREATE TABLE "Subscription" (
-    "id" UUID NOT NULL,
-    "storeId" TEXT NOT NULL,
-    "plan" "PlanType" NOT NULL DEFAULT 'FREE',
-    "planHandle" TEXT,
-    "subscriptionId" TEXT,
-    "status" TEXT NOT NULL,
-    "trialEndsAt" TIMESTAMP(3),
-    "startsAt" TIMESTAMP(3),
-    "endsAt" TIMESTAMP(3),
-    "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
-    "updatedAt" TIMESTAMP(3) NOT NULL,
-
-    CONSTRAINT "Subscription_pkey" PRIMARY KEY ("id")
-);
-
--- CreateTable
 CREATE TABLE "Review" (
     "id" UUID NOT NULL,
     "storeId" TEXT NOT NULL,
@@ -115,16 +63,6 @@ CREATE TABLE "Attachment" (
     "updatedAt" TIMESTAMP(3) NOT NULL,
 
     CONSTRAINT "Attachment_pkey" PRIMARY KEY ("id")
-);
-
--- CreateTable
-CREATE TABLE "TrustBarWidget" (
-    "id" UUID NOT NULL,
-    "storeId" TEXT NOT NULL,
-    "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
-    "updatedAt" TIMESTAMP(3) NOT NULL,
-
-    CONSTRAINT "TrustBarWidget_pkey" PRIMARY KEY ("id")
 );
 
 -- CreateTable
@@ -265,14 +203,100 @@ CREATE TABLE "AdminNotificationEmail" (
     CONSTRAINT "AdminNotificationEmail_pkey" PRIMARY KEY ("id")
 );
 
--- CreateIndex
-CREATE UNIQUE INDEX "Store_storeGID_key" ON "Store"("storeGID");
+-- CreateTable
+CREATE TABLE "TrustBarWidget" (
+    "id" UUID NOT NULL,
+    "storeId" TEXT NOT NULL,
+    "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    "updatedAt" TIMESTAMP(3) NOT NULL,
 
--- CreateIndex
-CREATE UNIQUE INDEX "Subscription_storeId_key" ON "Subscription"("storeId");
+    CONSTRAINT "TrustBarWidget_pkey" PRIMARY KEY ("id")
+);
 
--- CreateIndex
-CREATE INDEX "Subscription_plan_idx" ON "Subscription"("plan");
+-- CreateTable
+CREATE TABLE "QuickReviewWidget" (
+    "id" UUID NOT NULL,
+    "storeId" TEXT NOT NULL,
+    "name" BOOLEAN NOT NULL DEFAULT true,
+    "email" BOOLEAN NOT NULL DEFAULT false,
+    "photo" BOOLEAN NOT NULL DEFAULT true,
+    "video" BOOLEAN NOT NULL DEFAULT true,
+    "formTitle" TEXT NOT NULL DEFAULT 'How was your experience?',
+    "formSubtitle" TEXT NOT NULL DEFAULT 'Your feedback helps others',
+    "submitButtonText" TEXT NOT NULL DEFAULT 'Submit review',
+    "successMessageTitle" TEXT NOT NULL DEFAULT 'Review submitted!',
+    "successButtonText" TEXT NOT NULL DEFAULT 'Continue Shopping',
+    "successMessage" TEXT NOT NULL DEFAULT 'Thank you for your review. It has been submitted successfully.',
+    "primaryColor" TEXT NOT NULL DEFAULT '#000000',
+    "secondaryColor" TEXT NOT NULL DEFAULT '#ffffff',
+    "backgroundColor" TEXT NOT NULL DEFAULT '#f5f5f5',
+    "borderRadius" TEXT NOT NULL DEFAULT '8px',
+    "showReviewerName" BOOLEAN NOT NULL DEFAULT true,
+    "showReviewerImage" BOOLEAN NOT NULL DEFAULT true,
+    "showReviewerVideo" BOOLEAN NOT NULL DEFAULT true,
+    "showProductName" BOOLEAN NOT NULL DEFAULT false,
+    "showVerifiedBadge" BOOLEAN NOT NULL DEFAULT true,
+    "showReviewDate" BOOLEAN NOT NULL DEFAULT true,
+    "showRatingFilter" BOOLEAN NOT NULL DEFAULT true,
+    "reviewPerPage" INTEGER NOT NULL DEFAULT 10,
+    "defaultSort" TEXT NOT NULL DEFAULT 'Most recent',
+    "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    "updatedAt" TIMESTAMP(3) NOT NULL,
+
+    CONSTRAINT "QuickReviewWidget_pkey" PRIMARY KEY ("id")
+);
+
+-- CreateTable
+CREATE TABLE "Session" (
+    "id" TEXT NOT NULL,
+    "shop" TEXT NOT NULL,
+    "state" TEXT NOT NULL,
+    "isOnline" BOOLEAN NOT NULL DEFAULT false,
+    "scope" TEXT,
+    "expires" TIMESTAMP(3),
+    "accessToken" TEXT NOT NULL,
+    "userId" BIGINT,
+    "firstName" TEXT,
+    "lastName" TEXT,
+    "email" TEXT,
+    "accountOwner" BOOLEAN NOT NULL DEFAULT false,
+    "locale" TEXT,
+    "collaborator" BOOLEAN DEFAULT false,
+    "emailVerified" BOOLEAN DEFAULT false,
+    "refreshToken" TEXT,
+    "refreshTokenExpires" TIMESTAMP(3),
+
+    CONSTRAINT "Session_pkey" PRIMARY KEY ("id")
+);
+
+-- CreateTable
+CREATE TABLE "Store" (
+    "id" UUID NOT NULL,
+    "storeGID" TEXT NOT NULL,
+    "storeURL" TEXT NOT NULL,
+    "storeEmail" TEXT NOT NULL,
+    "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    "updatedAt" TIMESTAMP(3),
+
+    CONSTRAINT "Store_pkey" PRIMARY KEY ("id")
+);
+
+-- CreateTable
+CREATE TABLE "Subscription" (
+    "id" UUID NOT NULL,
+    "storeId" TEXT NOT NULL,
+    "plan" "PlanType" NOT NULL DEFAULT 'FREE',
+    "planHandle" TEXT,
+    "subscriptionId" TEXT,
+    "status" TEXT NOT NULL,
+    "trialEndsAt" TIMESTAMP(3),
+    "startsAt" TIMESTAMP(3),
+    "endsAt" TIMESTAMP(3),
+    "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    "updatedAt" TIMESTAMP(3) NOT NULL,
+
+    CONSTRAINT "Subscription_pkey" PRIMARY KEY ("id")
+);
 
 -- CreateIndex
 CREATE UNIQUE INDEX "Review_reviewerEmail_key" ON "Review"("reviewerEmail");
@@ -307,8 +331,20 @@ CREATE UNIQUE INDEX "RequestScheduling_storeSettingsId_key" ON "RequestSchedulin
 -- CreateIndex
 CREATE UNIQUE INDEX "AdminNotificationEmail_email_key" ON "AdminNotificationEmail"("email");
 
--- AddForeignKey
-ALTER TABLE "Subscription" ADD CONSTRAINT "Subscription_storeId_fkey" FOREIGN KEY ("storeId") REFERENCES "Store"("storeGID") ON DELETE CASCADE ON UPDATE CASCADE;
+-- CreateIndex
+CREATE UNIQUE INDEX "TrustBarWidget_storeId_key" ON "TrustBarWidget"("storeId");
+
+-- CreateIndex
+CREATE UNIQUE INDEX "QuickReviewWidget_storeId_key" ON "QuickReviewWidget"("storeId");
+
+-- CreateIndex
+CREATE UNIQUE INDEX "Store_storeGID_key" ON "Store"("storeGID");
+
+-- CreateIndex
+CREATE UNIQUE INDEX "Subscription_storeId_key" ON "Subscription"("storeId");
+
+-- CreateIndex
+CREATE INDEX "Subscription_plan_idx" ON "Subscription"("plan");
 
 -- AddForeignKey
 ALTER TABLE "Review" ADD CONSTRAINT "Review_storeId_fkey" FOREIGN KEY ("storeId") REFERENCES "Store"("storeGID") ON DELETE CASCADE ON UPDATE CASCADE;
@@ -318,9 +354,6 @@ ALTER TABLE "HelpfulCount" ADD CONSTRAINT "HelpfulCount_reviewId_fkey" FOREIGN K
 
 -- AddForeignKey
 ALTER TABLE "Attachment" ADD CONSTRAINT "Attachment_reviewId_fkey" FOREIGN KEY ("reviewId") REFERENCES "Review"("id") ON DELETE SET NULL ON UPDATE CASCADE;
-
--- AddForeignKey
-ALTER TABLE "TrustBarWidget" ADD CONSTRAINT "TrustBarWidget_storeId_fkey" FOREIGN KEY ("storeId") REFERENCES "Store"("storeGID") ON DELETE CASCADE ON UPDATE CASCADE;
 
 -- AddForeignKey
 ALTER TABLE "StoreSettings" ADD CONSTRAINT "StoreSettings_storeId_fkey" FOREIGN KEY ("storeId") REFERENCES "Store"("storeGID") ON DELETE CASCADE ON UPDATE CASCADE;
@@ -345,3 +378,12 @@ ALTER TABLE "AdminNotification" ADD CONSTRAINT "AdminNotification_storeSettingsI
 
 -- AddForeignKey
 ALTER TABLE "AdminNotificationEmail" ADD CONSTRAINT "AdminNotificationEmail_adminNotificationId_fkey" FOREIGN KEY ("adminNotificationId") REFERENCES "AdminNotification"("id") ON DELETE CASCADE ON UPDATE CASCADE;
+
+-- AddForeignKey
+ALTER TABLE "TrustBarWidget" ADD CONSTRAINT "TrustBarWidget_storeId_fkey" FOREIGN KEY ("storeId") REFERENCES "Store"("storeGID") ON DELETE CASCADE ON UPDATE CASCADE;
+
+-- AddForeignKey
+ALTER TABLE "QuickReviewWidget" ADD CONSTRAINT "QuickReviewWidget_storeId_fkey" FOREIGN KEY ("storeId") REFERENCES "Store"("storeGID") ON DELETE CASCADE ON UPDATE CASCADE;
+
+-- AddForeignKey
+ALTER TABLE "Subscription" ADD CONSTRAINT "Subscription_storeId_fkey" FOREIGN KEY ("storeId") REFERENCES "Store"("storeGID") ON DELETE CASCADE ON UPDATE CASCADE;

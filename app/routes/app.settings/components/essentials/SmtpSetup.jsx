@@ -1,56 +1,50 @@
 import CustomSection from "../../../../components/essentials/CustomSection";
 import CustomGridSection from "../../../../components/essentials/CustomGridSection";
-import { useState } from "react";
-import { DEFAULT_SMTP_SETUP } from "../../data/defaultData";
-import { handleStateUpdate } from "../../utils/client/utils.client";
 
-export default function SmtpSetup({ smtpSetup, setSmtpSetup }) {
+export default function SmtpSetup({ emailSettings, onChange }) {
+  const handleInputChange = (field) => (e) => {
+    onChange(field, e.target.value);
+  };
+
+  const handleNumberChange = (field) => (e) => {
+    const nextValue = e.target.value;
+    onChange(field, nextValue === "" ? null : Number(nextValue));
+  };
+
   return (
     <>
       <CustomSection padding="0">
         <CustomGridSection
-          heading="Request email content"
-          description="Customize what customers see in their review request."
+          heading="SMTP configuration"
+          description="Set the mailbox credentials Qorix will use to send emails."
         >
           <CustomSection>
             <s-grid gap="small">
               <s-heading>SMTP User</s-heading>
               <s-text-field
-                onInput={(e) =>
-                  handleStateUpdate(setSmtpSetup, "smtpUser", e.target.value)
-                }
+                value={emailSettings.smtpUser}
+                onInput={handleInputChange("smtpUser")}
                 placeholder="example@gmail.com"
               />
               <s-divider />
               <s-heading>SMTP Password</s-heading>
               <s-password-field
-                onInput={(e) =>
-                  handleStateUpdate(
-                    setSmtpSetup,
-                    "smtpPassword",
-                    e.target.value,
-                  )
-                }
+                value={emailSettings.smtpPassword}
+                onInput={handleInputChange("smtpPassword")}
                 placeholder="$dsf>{?:@#4"
               />
               <s-divider />
               <s-heading>SMTP Port</s-heading>
               <s-number-field
-                onInput={(e) =>
-                  handleStateUpdate(
-                    setSmtpSetup,
-                    "smtpPort",
-                    Number(e.target.value),
-                  )
-                }
+                value={emailSettings.smtpPort ?? ""}
+                onInput={handleNumberChange("smtpPort")}
                 placeholder={465}
               />
               <s-divider />
               <s-heading>SMTP Host</s-heading>
               <s-text-field
-                onInput={(e) =>
-                  handleStateUpdate(setSmtpSetup, "smtpHost", e.target.value)
-                }
+                value={emailSettings.smtpHost}
+                onInput={handleInputChange("smtpHost")}
                 placeholder="smtp.gmail.com"
               />
             </s-grid>

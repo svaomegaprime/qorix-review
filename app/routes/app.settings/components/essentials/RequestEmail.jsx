@@ -1,11 +1,11 @@
 import CustomSection from "../../../../components/essentials/CustomSection";
 import CustomGridSection from "../../../../components/essentials/CustomGridSection";
-import { handleStateUpdate } from "../../utils/client/utils.client";
 
-export default function RequestEmail({
-  outgoingRequestEmail,
-  setOutgoingRequestEmail,
-}) {
+export default function RequestEmail({ emailSettings, onChange }) {
+  const handleInputChange = (field) => (e) => {
+    onChange(field, e.target.value);
+  };
+
   return (
     <CustomSection padding="0">
       <CustomGridSection
@@ -16,27 +16,15 @@ export default function RequestEmail({
           <s-grid gap="small">
             <s-heading>Email subject line</s-heading>
             <s-text-field
-              defaultValue={outgoingRequestEmail.requestEmailSubjectLine}
-              onInput={(e) =>
-                handleStateUpdate(
-                  setOutgoingRequestEmail,
-                  "requestEmailSubjectLine",
-                  e.target.value,
-                )
-              }
+              value={emailSettings.requestEmailSubjectLine}
+              onInput={handleInputChange("requestEmailSubjectLine")}
               details={`Keep it short and friendly - avoid words like "feedback" which reduce open rates.`}
             />
             <s-divider />
             <s-heading>Email body message</s-heading>
             <s-text-area
-              defaultValue={outgoingRequestEmail.requestEmailBody}
-              onInput={(e) =>
-                handleStateUpdate(
-                  setOutgoingRequestEmail,
-                  "requestEmailBody",
-                  e.target.value,
-                )
-              }
+              value={emailSettings.requestEmailBody}
+              onInput={handleInputChange("requestEmailBody")}
               details={`Use {{variables}} to personalize your email.`}
             />
             <s-stack direction="inline" gap="small">
@@ -48,14 +36,8 @@ export default function RequestEmail({
             <s-divider />
             <s-heading>CTA button text</s-heading>
             <s-text-field
-              defaultValue={outgoingRequestEmail.requestEmailButton}
-              onInput={(e) =>
-                handleStateUpdate(
-                  setOutgoingRequestEmail,
-                  "requestEmailButton",
-                  e.target.value,
-                )
-              }
+              value={emailSettings.requestEmailButton}
+              onInput={handleInputChange("requestEmailButton")}
               details={`Action-oriented text converts better - e.g. "Leave a review" not "Click here"`}
             />
           </s-grid>
@@ -72,27 +54,15 @@ export default function RequestEmail({
           <s-grid gap="small">
             <s-heading>Subject line</s-heading>
             <s-text-field
-              onInput={(e) =>
-                handleStateUpdate(
-                  setOutgoingRequestEmail,
-                  "reminderSubjectLine",
-                  e.target.value,
-                )
-              }
-              defaultValue={outgoingRequestEmail.reminderSubjectLine}
+              value={emailSettings.reminderSubjectLine}
+              onInput={handleInputChange("reminderSubjectLine")}
             />
             <s-divider />
             <s-heading>Email body</s-heading>
             <s-text-area
-              defaultValue={outgoingRequestEmail.reminderEmailBody}
+              value={emailSettings.reminderEmailBody}
               details={`Use {{variables}} to personalize your email.`}
-              onInput={(e) =>
-                handleStateUpdate(
-                  setOutgoingRequestEmail,
-                  "reminderEmailBody",
-                  e.target.value,
-                )
-              }
+              onInput={handleInputChange("reminderEmailBody")}
             />
             <s-stack direction="inline" gap="small">
               <s-badge tone="neutral">{"{{first_name}}"}</s-badge>{" "}
@@ -104,14 +74,8 @@ export default function RequestEmail({
 
             <s-heading>CTA button text</s-heading>
             <s-text-field
-              defaultValue={outgoingRequestEmail.reminderEmailButton}
-              onInput={(e) =>
-                handleStateUpdate(
-                  setOutgoingRequestEmail,
-                  "reminderEmailButton",
-                  e.target.value,
-                )
-              }
+              value={emailSettings.reminderEmailButton}
+              onInput={handleInputChange("reminderEmailButton")}
             />
           </s-grid>
         </CustomSection>
@@ -127,27 +91,15 @@ export default function RequestEmail({
           <s-grid gap="small">
             <s-heading>Subject line</s-heading>
             <s-text-field
-              onInput={(e) =>
-                handleStateUpdate(
-                  setOutgoingRequestEmail,
-                  "replyEmailSubjectLine",
-                  e.target.value,
-                )
-              }
-              defaultValue={outgoingRequestEmail.replyEmailSubjectLine}
+              value={emailSettings.replyEmailSubjectLine}
+              onInput={handleInputChange("replyEmailSubjectLine")}
             />
             <s-divider />
             <s-heading>Email body</s-heading>
             <s-text-area
-              defaultValue={outgoingRequestEmail.replyEmailBody}
+              value={emailSettings.replyEmailBody}
               details={`Use {{variables}} to personalize your email.`}
-              onInput={(e) =>
-                handleStateUpdate(
-                  setOutgoingRequestEmail,
-                  "replyEmailBody",
-                  e.target.value,
-                )
-              }
+              onInput={handleInputChange("replyEmailBody")}
             />
             <s-stack direction="inline" gap="small">
               <s-badge tone="neutral">{"{{first_name}}"}</s-badge>{" "}
@@ -159,14 +111,8 @@ export default function RequestEmail({
 
             <s-heading>CTA button text</s-heading>
             <s-text-field
-              defaultValue={outgoingRequestEmail.replyEmailButton}
-              onInput={(e) =>
-                handleStateUpdate(
-                  setOutgoingRequestEmail,
-                  "replyEmailButton",
-                  e.target.value,
-                )
-              }
+              value={emailSettings.replyEmailButton}
+              onInput={handleInputChange("replyEmailButton")}
             />
           </s-grid>
         </CustomSection>
