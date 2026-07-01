@@ -232,18 +232,6 @@ export default function PublishingModeration() {
                   label="Personal information filter"
                   details="Replace phone numbers and emails with *** automatically"
                 />
-                <s-switch
-                  defaultChecked={publishingModeration.isSpamFilter}
-                  onChange={(e) =>
-                    handleStateUpdate(
-                      setPublishingModeration,
-                      "isSpamFilter",
-                      e.target.checked,
-                    )
-                  }
-                  label="Spam filter"
-                  details="Automatically flag suspected spam reviews for manual review"
-                />
               </s-stack>
             </CustomSection>
           </CustomGridSection>

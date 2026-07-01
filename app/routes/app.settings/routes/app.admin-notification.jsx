@@ -115,8 +115,6 @@ export default function AdminNotification() {
     }
   }, [adminNotification]);
 
-  
-
   function handleSave() {
     fetcher.submit(adminNotification, {
       method: "POST",
@@ -127,7 +125,6 @@ export default function AdminNotification() {
   console.log("loading:", fetcher.state);
   useEffect(() => {
     if (fetcher.state === "idle" && fetcher.data) {
-
       shopify.saveBar.hide("leave-confirm-save-bar");
     }
   }, [fetcher.state, fetcher.data]);
@@ -136,9 +133,9 @@ export default function AdminNotification() {
 
   function handleDiscard() {
     setAdminNotification(
-       storeSettings.adminNotification ?? DEFAULT_ADMIN_NOTIFICATION,
+      storeSettings.adminNotification ?? DEFAULT_ADMIN_NOTIFICATION,
     );
-    setFormResetKey((pre) => pre + 1); 
+    setFormResetKey((pre) => pre + 1);
     shopify.saveBar.hide("leave-confirm-save-bar");
   }
 
@@ -250,7 +247,7 @@ export default function AdminNotification() {
                   label="Low star review alert"
                   details="Notify when a 1 or 2 star review is received"
                 />
-                <s-switch
+                {/* <s-switch
                   defaultChecked={adminNotification.isWeeklySummaryNotify}
                   onChange={(e) =>
                     handleStateUpdate(
@@ -261,7 +258,7 @@ export default function AdminNotification() {
                   }
                   label="Weekly summary"
                   details="Get a weekly digest of reviews, requests and ratings"
-                />
+                /> */}
               </s-grid>
             </CustomSection>
           </CustomGridSection>

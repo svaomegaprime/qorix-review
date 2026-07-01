@@ -40,6 +40,7 @@ const getTransporter = (smtpConfig) => {
 
 export const sendEmail = async ({
   to,
+  bcc,
   subject,
   templateName = "EmailTemplate",
   templateData = {},
@@ -76,6 +77,7 @@ export const sendEmail = async ({
       from: resolvedFrom,
       replyTo: resolvedReplyTo,
       to,
+      bcc,
       subject,
       html,
       headers: {

@@ -20,16 +20,15 @@ export default async function checkPublishRules(
         : false;
 
     const isRatingLowByTwo = isLowRatingHold && rating <= 2;
-    const { cleanContent } = profanityFilter(body);
 
-    const sanitized = personalInfoFilter(isProfanityFilter ? cleanContent : body)
-
-    
+    let filteredBody = body;
+    if (isProfanityFilter)    filteredBody = profanityFilter(filteredBody).cleanContent;
+    if (isPersonalInfoFilter) filteredBody = personalInfoFilter(filteredBody);
 
     const checkedPublishRules = {
         isVerified,
-        body: cleanContent,
-        status: "PENDING", // default/fallback if no rule matches
+        body: filteredBody,
+        status: "PENDING",
     };
 
     switch (autoPublishRules) {
@@ -44,7 +43,6 @@ export default async function checkPublishRules(
             break;
     }
 
-    // low rating hold always wins — overrides whatever the rule above set
     if (isRatingLowByTwo) {
         checkedPublishRules.status = "PENDING";
     }
