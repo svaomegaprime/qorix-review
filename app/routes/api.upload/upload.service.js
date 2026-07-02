@@ -1,4 +1,4 @@
-import { uploadFile } from "../../lib/uploadFile"
+import { uploadFile } from "../../lib/s3/uploadFile"
 import { isFileLike } from "../../utils/isFileLike"
 import { AppError } from "../../utils/appError.server"
 

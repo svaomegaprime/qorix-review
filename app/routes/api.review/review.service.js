@@ -1,6 +1,6 @@
 import { getStoreData } from "../../utils/getStoreData";
 import prisma from "../../db.server";
-import { uploadFile } from "../../lib/uploadFile";
+import { uploadFile } from "../../lib/s3/uploadFile";
 import { isFileLike } from "../../utils/isFileLike";
 import { AppError } from "../../utils/appError.server";
 import { updateProductReviewDefineMetafields } from "../../utils/updateProductReviewDefineMetafields";
@@ -290,6 +290,28 @@ async function postReview(request, session, admin) {
           smtpHost: emailSettings.smtpHost,
         },
       });
+    }
+
+    // bull mq
+
+
+    async function scheduleReviewEmail(order) {
+      const DELAY_MS = 10000;
+
+      await reviewQueue.add(
+        REVIEW_TEST_JOB,
+        {
+          reviewId: order.reviewId,
+          customerEmail: order.customerEmail,
+          customerName: order.customerName,
+        },
+        {
+          delay: DELAY_MS,
+          attempts: 3,
+          removeOnComplete: true,
+          removeOnFail: false,
+        }
+      );
     }
 
     return {

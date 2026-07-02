@@ -79,6 +79,8 @@ export default function Requests() {
     const { requests } = useLoaderData();
     // End----Accessing loaded data using useLoaderData
 
+    console.log(requests)
+
     // Start----State for active tab
     const [activeTab, setActiveTab] = useState("all");
     // End----State for active tab
