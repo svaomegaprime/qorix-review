@@ -6,17 +6,16 @@ enum ReviewCheckStatus {
     FAILED
 }
 
-
-
-
-
 model Order {
     id                String            @id @default(uuid()) @db.Uuid()
     storeId           String
     store             Store             @relation(fields: [storeId], references: [storeGID], onDelete: Cascade)
     orderId           String            @unique
+    fulfillmentStatus String
+    paymentStatus     String
+    userEmail         String            @unique
+    projuctJson       Json
     reviewCheckStatus ReviewCheckStatus @default(PANDING)
     createdAt         DateTime          @default(now())
     updatedAt         DateTime          @updatedAt
 }
-

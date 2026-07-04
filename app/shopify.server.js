@@ -34,6 +34,10 @@ const shopify = shopifyApp({
       deliveryMethod: DeliveryMethod.Http,
       callbackUrl: "/webhooks/orders/create",
     },
+    ORDERS_UPDATED: {
+      deliveryMethod: DeliveryMethod.Http,
+      callbackUrl: "/webhooks/orders/updated",
+    },
   },
   future: {
     expiringOfflineAccessTokens: true,
@@ -77,7 +81,7 @@ const shopify = shopifyApp({
           return;
         }
 
-        console.log("Shop info:", shopData);
+  
 
         await prisma.store.upsert({
           where: { storeGID: shopData.id },
@@ -152,16 +156,6 @@ const shopify = shopifyApp({
           quickReviewWidget,
         );
 
-        console.log(
-          "[quick-review][action] metafield save result*************",
-          JSON.stringify(metafieldResult.data.metafieldsSet.metafields, null, 2)
-        );
-
-        console.log("[quickReviewWidget:::::]", storeSettings, ":::::::", quickReviewWidget)
-
-
-
-        //
       } catch (error) {
         console.error("afterAuth shop fetch failed:", error);
       }
