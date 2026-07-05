@@ -40,16 +40,9 @@ export async function loader({ request }) {
   };
 }
 
-export async function action({ request }) {
-  const { admin } = await authenticate.admin(request);
-  const storeData = await getStoreData(admin);
-  const formData = await request.formData();
-  const search = formData.get("search") || "";
-  const rating = formData.get("rating") || "all";
-  const productId = formData.get("productId") || "all";
-
+async function getFilteredReviews(storeId, search, rating, productId) {
   const where = {
-    storeId: storeData.id,
+    storeId,
   };
 
   if (search) {
@@ -69,15 +62,75 @@ export async function action({ request }) {
     where.productId = productId;
   }
 
-  const reviews = await prisma.review.findMany({
+  return await prisma.review.findMany({
     where,
     include: {
       attachments: true,
       reply: true,
     },
   });
+}
 
-  return { reviews };
+export async function action({ request }) {
+  const { admin } = await authenticate.admin(request);
+  const storeData = await getStoreData(admin);
+  const method = request.method.toUpperCase();
+
+  switch (method) {
+    case "GET": {
+      const url = new URL(request.url);
+      const search = url.searchParams.get("search") || "";
+      const rating = url.searchParams.get("rating") || "all";
+      const productId = url.searchParams.get("productId") || "all";
+      const reviews = await getFilteredReviews(storeData.id, search, rating, productId);
+      return { reviews };
+    }
+    case "POST": {
+      const formData = await request.formData();
+      const search = formData.get("search") || "";
+      const rating = formData.get("rating") || "all";
+      const productId = formData.get("productId") || "all";
+      const reviews = await getFilteredReviews(storeData.id, search, rating, productId);
+      return { reviews };
+    }
+    case "PATCH": {
+      const formData = await request.formData();
+      const reviewId = formData.get("reviewId");
+      const status = formData.get("status");
+
+      if (reviewId && status) {
+        await prisma.review.update({
+          where: { id: reviewId },
+          data: { status: status },
+        });
+      }
+
+      const search = formData.get("search") || "";
+      const rating = formData.get("rating") || "all";
+      const productId = formData.get("productId") || "all";
+      const reviews = await getFilteredReviews(storeData.id, search, rating, productId);
+      return { reviews };
+    }
+    case "DELETE": {
+      const formData = await request.formData();
+      const reviewId = formData.get("reviewId");
+
+      if (reviewId) {
+        await prisma.review.delete({
+          where: { id: reviewId },
+        });
+      }
+
+      const search = formData.get("search") || "";
+      const rating = formData.get("rating") || "all";
+      const productId = formData.get("productId") || "all";
+      const reviews = await getFilteredReviews(storeData.id, search, rating, productId);
+      return { reviews };
+    }
+    default: {
+      return new Response("Method Not Allowed", { status: 405 });
+    }
+  }
 }
 
 export default function Reviews() {
@@ -218,6 +271,35 @@ export default function Reviews() {
 
   }
   // End----Handle import
+
+  // Start----Handle status toggle
+  const handleStatusUpdate = (reviewId, state) => {
+    fetcher.submit(
+      {
+        reviewId,
+        status: state,
+        search: searchQuery,
+        rating: selectedRating,
+        productId: selectedProduct,
+      },
+      { method: "PATCH" }
+    );
+  };
+  // End----Handle status toggle
+
+  // Start----Handle review delete
+  const handleReviewDelete = (reviewId) => {
+    fetcher.submit(
+      {
+        reviewId,
+        search: searchQuery,
+        rating: selectedRating,
+        productId: selectedProduct,
+      },
+      { method: "DELETE" }
+    );
+  };
+  // End----Handle review delete
 
 
 
@@ -412,7 +494,7 @@ export default function Reviews() {
                   <div key={review.id}>
                     <s-grid gridTemplateColumns="auto 1fr" gap="base">
                       <s-checkbox /> {/* Checkbox for selection of reviews */}
-                      <ReviewItem data={review} />
+                      <ReviewItem data={review} handleStatusUpdate={handleStatusUpdate} handleReviewDelete={handleReviewDelete} />
                     </s-grid>
                     {index !== paginatedReviews.length - 1 && (
                       <s-stack paddingBlock="base">

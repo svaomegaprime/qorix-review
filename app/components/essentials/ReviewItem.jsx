@@ -3,7 +3,7 @@ import starEmpty from "../../assets/images/star-empty.svg";
 import "../../assets/css/swiper.css";
 import { useEffect, useRef, useState } from "react";
 
-export default function ReviewItem({ data }) {
+export default function ReviewItem({ data, handleStatusUpdate, handleReviewDelete }) {
   // Start----State for attachment modal
   const activeThumbRef = useRef(null);
   const [isAttachmentModalOpen, setIsAttachmentModalOpen] = useState(false);
@@ -410,8 +410,8 @@ export default function ReviewItem({ data }) {
             gap: "12px 8px",
           }}
         >
-          <ActionButtons reviewStatus={data.status} replied={replied} />
-          <s-button icon="delete" />
+          <ActionButtons reviewId={data.id} reviewStatus={data.status} replied={replied} handleStatusUpdate={handleStatusUpdate} />
+          <s-button icon="delete" onClick={() => handleReviewDelete(data.id)} />
         </div>
         {/* End----Review action buttons */}
       </s-grid>
@@ -420,12 +420,12 @@ export default function ReviewItem({ data }) {
   );
 }
 
-export function ActionButtons({ reviewStatus, replied }) {
+export function ActionButtons({ reviewId, reviewStatus, replied, handleStatusUpdate }) {
   if (reviewStatus === "PENDING") {
     return (
       <>
-        <s-button icon="check">Approve</s-button>
-        <s-button icon="x">Reject</s-button>
+        <s-button icon="check" onClick={() => handleStatusUpdate(reviewId, "PUBLISHED")}>Approve</s-button>
+        <s-button icon="x" onClick={() => handleStatusUpdate(reviewId, "ARCHIVE")}>Reject</s-button>
       </>
     );
   } else if (reviewStatus === "PUBLISHED") {
@@ -436,13 +436,13 @@ export function ActionButtons({ reviewStatus, replied }) {
         ) : (
           <s-button icon="chat">Reply</s-button>
         )}
-        <s-button icon="arrow-down">Unpublish</s-button>
+        <s-button icon="arrow-down" onClick={() => handleStatusUpdate(reviewId, "ARCHIVE")}>Unpublish</s-button>
       </>
     );
   } else {
     return (
       <>
-        <s-button icon="arrow-up">Republish</s-button>
+        <s-button icon="arrow-up" onClick={() => handleStatusUpdate(reviewId, "PUBLISHED")}>Re-Publish</s-button>
       </>
     );
   }
