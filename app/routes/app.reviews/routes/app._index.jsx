@@ -11,6 +11,62 @@ import prisma from "../../../db.server";
 import { getStoreData } from "../../../utils/getStoreData";
 
 const REVIEWS_PER_PAGE = 8;
+const EXPORT_PREVIEW_LIMIT = 5;
+
+function formatExportValue(value) {
+  if (value === null || value === undefined) {
+    return "";
+  }
+
+  if (Array.isArray(value)) {
+    return value.join(" | ");
+  }
+
+  return String(value);
+}
+
+function escapeCsvValue(value) {
+  const normalizedValue = formatExportValue(value).replace(/\r?\n|\r/g, " ");
+  return `"${normalizedValue.replace(/"/g, '""')}"`;
+}
+
+function formatExportDate(dateValue) {
+  if (!dateValue) {
+    return "";
+  }
+
+  const date = new Date(dateValue);
+  if (Number.isNaN(date.getTime())) {
+    return "";
+  }
+
+  return date.toISOString();
+}
+
+function buildExportRows(reviewList) {
+  return reviewList.map((review) => ({
+    id: review.id,
+    productTitle: review.productTitle || "",
+    productHandle: review.productHandle || "",
+    productId: review.productId || "",
+    reviewerName: review.reviewerName || "",
+    reviewerEmail: review.reviewerEmail || "",
+    reviewerPhone: review.reviewerPhone || "",
+    rating: review.rating ?? "",
+    title: review.title || "",
+    body: review.body || "",
+    status: review.status || "",
+    source: review.source || "",
+    isVerified: review.isVerified ? "Yes" : "No",
+    attachmentCount: review.attachments?.length ?? 0,
+    attachmentUrls:
+      review.attachments?.map((attachment) => attachment.url).filter(Boolean) ??
+      [],
+    reply: review.reply?.body || "",
+    createdAt: formatExportDate(review.createdAt),
+    updatedAt: formatExportDate(review.updatedAt),
+  }));
+}
 
 export async function loader({ request }) {
   const { admin } = await authenticate.admin(request);
@@ -201,6 +257,33 @@ export default function Reviews() {
   const searchTimeoutRef = useRef(null);
 
   const baseReviews = fetcher.data?.reviews ?? reviews;
+  const exportRows = buildExportRows(
+    [...reviews].sort(
+      (a, b) =>
+        new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime(),
+    ),
+  );
+  const exportPreviewRows = exportRows.slice(0, EXPORT_PREVIEW_LIMIT);
+  const exportColumns = [
+    "id",
+    "productTitle",
+    "productHandle",
+    "productId",
+    "reviewerName",
+    "reviewerEmail",
+    "reviewerPhone",
+    "rating",
+    "title",
+    "body",
+    "status",
+    "source",
+    "isVerified",
+    "attachmentCount",
+    "attachmentUrls",
+    "reply",
+    "createdAt",
+    "updatedAt",
+  ];
 
   // Extract unique products from all loaded reviews
   const uniqueProducts = [];
@@ -307,7 +390,28 @@ export default function Reviews() {
   // End----Debugging loaded data
 
   // Start----Handle import
-  function handleImport() {}
+  function handleExportReview() {
+    const csvLines = [
+      exportColumns.join(","),
+      ...exportRows.map((row) =>
+        exportColumns.map((column) => escapeCsvValue(row[column])).join(","),
+      ),
+    ];
+    const csvContent = csvLines.join("\n");
+    const blob = new Blob([csvContent], {
+      type: "text/csv;charset=utf-8;",
+    });
+    const downloadUrl = URL.createObjectURL(blob);
+    const link = document.createElement("a");
+    const dateSuffix = new Date().toISOString().slice(0, 10);
+
+    link.href = downloadUrl;
+    link.download = `reviews-export-${dateSuffix}.csv`;
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+    URL.revokeObjectURL(downloadUrl);
+  }
   // End----Handle import
 
   // Start----Handle status toggle
@@ -356,7 +460,7 @@ export default function Reviews() {
 
   return (
     <>
-      <s-modal id="import-reviews-modal" heading="Import Reviews" open>
+      {/* <s-modal id="import-reviews-modal" heading="Import Reviews" open>
         <s-stack>
           <s-drop-zone
             label="Upload reviews CSV file"
@@ -379,9 +483,98 @@ export default function Reviews() {
         >
           Save
         </s-button>
-      </s-modal>
-      <s-modal id="export-reviews-modal">
-        <s-text>Hello, Export Reviews!</s-text>
+      </s-modal> */}
+      <s-modal id="export-reviews-modal" heading="Export Reviews">
+        <s-stack gap="base">
+          <s-text>
+            Download all reviews as a CSV file. Previewing the first{" "}
+            {Math.min(exportPreviewRows.length, EXPORT_PREVIEW_LIMIT)} of{" "}
+            {exportRows.length} reviews.
+          </s-text>
+          <div
+            style={{
+              overflowX: "auto",
+              border: "1px solid #d9d9d9",
+              borderRadius: "12px",
+              maxHeight: "320px",
+            }}
+          >
+            <table
+              style={{
+                width: "100%",
+                borderCollapse: "collapse",
+                fontSize: "14px",
+                minWidth: "1100px",
+              }}
+            >
+              <thead>
+                <tr style={{ backgroundColor: "#f6f6f7" }}>
+                  {exportColumns.map((column) => (
+                    <th
+                      key={column}
+                      style={{
+                        textAlign: "left",
+                        padding: "10px 12px",
+                        borderBottom: "1px solid #e3e3e3",
+                        whiteSpace: "nowrap",
+                      }}
+                    >
+                      {column}
+                    </th>
+                  ))}
+                </tr>
+              </thead>
+              <tbody>
+                {exportPreviewRows.length > 0 ? (
+                  exportPreviewRows.map((row) => (
+                    <tr key={row.id}>
+                      {exportColumns.map((column) => (
+                        <td
+                          key={`${row.id}-${column}`}
+                          style={{
+                            padding: "10px 12px",
+                            borderBottom: "1px solid #f1f1f1",
+                            verticalAlign: "top",
+                          }}
+                        >
+                          {formatExportValue(row[column]) || "-"}
+                        </td>
+                      ))}
+                    </tr>
+                  ))
+                ) : (
+                  <tr>
+                    <td
+                      colSpan={exportColumns.length}
+                      style={{ padding: "16px 12px", textAlign: "center" }}
+                    >
+                      No reviews available for export.
+                    </td>
+                  </tr>
+                )}
+              </tbody>
+            </table>
+          </div>
+        </s-stack>
+
+        <s-button
+          class="close-btn"
+          slot="secondary-actions"
+          commandFor="export-reviews-modal"
+          command="--hide"
+        >
+          Close
+        </s-button>
+        <s-button
+          slot="primary-action"
+          variant="primary"
+          commandFor="export-reviews-modal"
+          command="--hide"
+          onClick={() => handleExportReview()}
+          disabled={!exportRows.length}
+        >
+          Download
+        </s-button>
       </s-modal>
       <s-page>
         {/* Start----Page Header */}
@@ -414,12 +607,12 @@ export default function Reviews() {
             gap="small"
             justifyContent="end"
           >
-            <s-button
+            {/* <s-button
               icon="download"
               onClick={() => shopify.modal.show("import-reviews-modal")}
             >
               Import
-            </s-button>
+            </s-button> */}
             <s-button
               icon="upload"
               onClick={() => shopify.modal.show("export-reviews-modal")}
