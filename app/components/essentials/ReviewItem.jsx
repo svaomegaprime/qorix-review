@@ -3,11 +3,18 @@ import starEmpty from "../../assets/images/star-empty.svg";
 import "../../assets/css/swiper.css";
 import { useEffect, useRef, useState } from "react";
 
-export default function ReviewItem({ data, handleStatusUpdate, handleReviewDelete }) {
+export default function ReviewItem({
+  data,
+  handleStatusUpdate,
+  handleReviewDelete,
+  handleReviewReply,
+}) {
   // Start----State for attachment modal
   const activeThumbRef = useRef(null);
   const [isAttachmentModalOpen, setIsAttachmentModalOpen] = useState(false);
   const [activeAttachmentIndex, setActiveAttachmentIndex] = useState(0);
+  const [replyReview, setReplyReview] = useState(false);
+  const [replyBody, setReplyBody] = useState("");
   // End----State for attachment modal
   // Start----State for count & manage attachments
   const attachments = data.attachments || [];
@@ -21,7 +28,7 @@ export default function ReviewItem({ data, handleStatusUpdate, handleReviewDelet
   // End----State for pagination
   // Start----State for review status
   const replied = data.reply;
-  const reply = data.reply;
+  const reply = data?.reply?.body;
   // End----State for review status
 
   // Start----Review date
@@ -228,8 +235,7 @@ export default function ReviewItem({ data, handleStatusUpdate, handleReviewDelet
         {/* Start----Review description */}
         <s-paragraph color="subdued">{data.body}</s-paragraph>
         {/* End----Review description */}
-        {/* Start----Review reply */}
-        {replied && (
+        {(replied || replyReview) && (
           <div
             style={{
               paddingLeft: "12px",
@@ -249,8 +255,36 @@ export default function ReviewItem({ data, handleStatusUpdate, handleReviewDelet
                 backgroundColor: "rgba(0, 191, 122, 1)",
               }}
             />
-            <s-heading>Your reply</s-heading>
-            <s-paragraph color="subdued">{reply}</s-paragraph>
+            {replied && <s-heading>Your reply</s-heading>}
+            {replied && !replyReview && (
+              <s-paragraph color="subdued">{reply}</s-paragraph>
+            )}
+            {replyReview && (
+              <div
+                style={{
+                  display: "grid",
+                  gap: "14px",
+                  gridTemplateColumns: "1fr auto",
+                  maxWidth: "425px",
+                  marginTop: replied ? "8px" : "0",
+                }}
+              >
+                <s-text-field
+                  onInput={(e) => setReplyBody(e.target.value)}
+                  placeholder="Write your reply"
+                  value={reply}
+                />
+                <s-button
+                  onClick={() => {
+                    handleReviewReply(data.id, replyBody);
+                    setReplyReview(false);
+                  }}
+                  variant="primary"
+                >
+                  Save
+                </s-button>
+              </div>
+            )}
           </div>
         )}
         {/* End----Review reply */}
@@ -410,7 +444,14 @@ export default function ReviewItem({ data, handleStatusUpdate, handleReviewDelet
             gap: "12px 8px",
           }}
         >
-          <ActionButtons reviewId={data.id} reviewStatus={data.status} replied={replied} handleStatusUpdate={handleStatusUpdate} />
+          <ActionButtons
+            reviewId={data.id}
+            reviewStatus={data.status}
+            replied={replied}
+            handleStatusUpdate={handleStatusUpdate}
+            replyReview={replyReview}
+            setReplyReview={setReplyReview}
+          />
           <s-button icon="delete" onClick={() => handleReviewDelete(data.id)} />
         </div>
         {/* End----Review action buttons */}
@@ -420,29 +461,66 @@ export default function ReviewItem({ data, handleStatusUpdate, handleReviewDelet
   );
 }
 
-export function ActionButtons({ reviewId, reviewStatus, replied, handleStatusUpdate }) {
+export function ActionButtons({
+  reviewId,
+  reviewStatus,
+  replied,
+  handleStatusUpdate,
+  replyReview,
+  setReplyReview,
+}) {
   if (reviewStatus === "PENDING") {
     return (
       <>
-        <s-button icon="check" onClick={() => handleStatusUpdate(reviewId, "PUBLISHED")}>Approve</s-button>
-        <s-button icon="x" onClick={() => handleStatusUpdate(reviewId, "ARCHIVE")}>Reject</s-button>
+        <s-button
+          icon="check"
+          onClick={() => handleStatusUpdate(reviewId, "PUBLISHED")}
+        >
+          Approve
+        </s-button>
+        <s-button
+          icon="x"
+          onClick={() => handleStatusUpdate(reviewId, "ARCHIVE")}
+        >
+          Reject
+        </s-button>
       </>
     );
   } else if (reviewStatus === "PUBLISHED") {
     return (
       <>
         {replied ? (
-          <s-button icon="edit">Edit reply</s-button>
+          <s-button
+            icon={replyReview ? "x" : "chat"}
+            onClick={() => setReplyReview((pre) => !pre)}
+          >
+            {replyReview ? "Cancel" : "Edit reply"}
+          </s-button>
         ) : (
-          <s-button icon="chat">Reply</s-button>
+          <s-button
+            icon={replyReview ? "x" : "chat"}
+            onClick={() => setReplyReview((pre) => !pre)}
+          >
+            {replyReview ? "Cancel" : "Reply"}
+          </s-button>
         )}
-        <s-button icon="arrow-down" onClick={() => handleStatusUpdate(reviewId, "ARCHIVE")}>Unpublish</s-button>
+        <s-button
+          icon="arrow-down"
+          onClick={() => handleStatusUpdate(reviewId, "ARCHIVE")}
+        >
+          Unpublish
+        </s-button>
       </>
     );
   } else {
     return (
       <>
-        <s-button icon="arrow-up" onClick={() => handleStatusUpdate(reviewId, "PUBLISHED")}>Re-Publish</s-button>
+        <s-button
+          icon="arrow-up"
+          onClick={() => handleStatusUpdate(reviewId, "PUBLISHED")}
+        >
+          Re-Publish
+        </s-button>
       </>
     );
   }

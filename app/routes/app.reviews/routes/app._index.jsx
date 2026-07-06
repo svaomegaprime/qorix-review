@@ -11,7 +11,6 @@ import prisma from "../../../db.server";
 import { getStoreData } from "../../../utils/getStoreData";
 
 const REVIEWS_PER_PAGE = 8;
-const MAX_VISIBLE_PAGE_BUTTONS = 4;
 
 export async function loader({ request }) {
   const { admin } = await authenticate.admin(request);
@@ -82,7 +81,12 @@ export async function action({ request }) {
       const search = url.searchParams.get("search") || "";
       const rating = url.searchParams.get("rating") || "all";
       const productId = url.searchParams.get("productId") || "all";
-      const reviews = await getFilteredReviews(storeData.id, search, rating, productId);
+      const reviews = await getFilteredReviews(
+        storeData.id,
+        search,
+        rating,
+        productId,
+      );
       return { reviews };
     }
     case "POST": {
@@ -90,7 +94,12 @@ export async function action({ request }) {
       const search = formData.get("search") || "";
       const rating = formData.get("rating") || "all";
       const productId = formData.get("productId") || "all";
-      const reviews = await getFilteredReviews(storeData.id, search, rating, productId);
+      const reviews = await getFilteredReviews(
+        storeData.id,
+        search,
+        rating,
+        productId,
+      );
       return { reviews };
     }
     case "PATCH": {
@@ -108,7 +117,12 @@ export async function action({ request }) {
       const search = formData.get("search") || "";
       const rating = formData.get("rating") || "all";
       const productId = formData.get("productId") || "all";
-      const reviews = await getFilteredReviews(storeData.id, search, rating, productId);
+      const reviews = await getFilteredReviews(
+        storeData.id,
+        search,
+        rating,
+        productId,
+      );
       return { reviews };
     }
     case "DELETE": {
@@ -124,7 +138,35 @@ export async function action({ request }) {
       const search = formData.get("search") || "";
       const rating = formData.get("rating") || "all";
       const productId = formData.get("productId") || "all";
-      const reviews = await getFilteredReviews(storeData.id, search, rating, productId);
+      const reviews = await getFilteredReviews(
+        storeData.id,
+        search,
+        rating,
+        productId,
+      );
+      return { reviews };
+    }
+    case "PUT": {
+      const formData = await request.formData();
+      const reviewId = formData.get("reviewId");
+      const body = formData.get("body");
+
+      if (reviewId && body) {
+        await prisma.review.update({
+          where: { id: reviewId },
+          data: { reply: { create: { body } } },
+        });
+      }
+
+      const search = formData.get("search") || "";
+      const rating = formData.get("rating") || "all";
+      const productId = formData.get("productId") || "all";
+      const reviews = await getFilteredReviews(
+        storeData.id,
+        search,
+        rating,
+        productId,
+      );
       return { reviews };
     }
     default: {
@@ -175,10 +217,7 @@ export default function Reviews() {
 
   const triggerFilter = (search, rating, product) => {
     setCurrentPage(1);
-    fetcher.submit(
-      { search, rating, productId: product },
-      { method: "POST" }
-    );
+    fetcher.submit({ search, rating, productId: product }, { method: "POST" });
   };
 
   const handleSearchChange = (val) => {
@@ -214,9 +253,10 @@ export default function Reviews() {
     archive: "ARCHIVE",
   };
 
-  const filteredReviews = activeTab === "all"
-    ? baseReviews
-    : baseReviews.filter((review) => review.status === statusMap[activeTab]);
+  const filteredReviews =
+    activeTab === "all"
+      ? baseReviews
+      : baseReviews.filter((review) => review.status === statusMap[activeTab]);
 
   // Sort reviews based on sortOrder
   const sortedReviews = [...filteredReviews].sort((a, b) => {
@@ -267,9 +307,7 @@ export default function Reviews() {
   // End----Debugging loaded data
 
   // Start----Handle import
-  function handleImport() {
-
-  }
+  function handleImport() {}
   // End----Handle import
 
   // Start----Handle status toggle
@@ -282,7 +320,7 @@ export default function Reviews() {
         rating: selectedRating,
         productId: selectedProduct,
       },
-      { method: "PATCH" }
+      { method: "PATCH" },
     );
   };
   // End----Handle status toggle
@@ -296,14 +334,21 @@ export default function Reviews() {
         rating: selectedRating,
         productId: selectedProduct,
       },
-      { method: "DELETE" }
+      { method: "DELETE" },
     );
   };
   // End----Handle review delete
-
-
-
-
+  // Start----Handle review reply
+  const handleReviewReply = (reviewId, body) => {
+    fetcher.submit(
+      {
+        reviewId,
+        body,
+      },
+      { method: "PUT" },
+    );
+  };
+  // End----Handle review delete
 
   if (loading) {
     return <Loader />; // Show loader while navigating to this page or when loader is fetching data
@@ -322,7 +367,6 @@ export default function Reviews() {
             onDropRejected="console.log('onDropRejected', event.currentTarget?.value)"
           ></s-drop-zone>
         </s-stack>
-
 
         <s-button slot="secondary-actions" commandFor="modal" command="--hide">
           Close
@@ -349,8 +393,20 @@ export default function Reviews() {
         >
           <s-stack direction="inline" alignItems="center" gap="small">
             <Text as="h2">Reviews</Text>
-            <s-badge tone={storeSettings?.publishingModeration.autoPublishRules === "AUTO_PUBLISH" ? "success" : "default"} color="strong">
-              Auto-Publish: {storeSettings?.publishingModeration.autoPublishRules === "AUTO_PUBLISH" ? "On" : "Off"}
+            <s-badge
+              tone={
+                storeSettings?.publishingModeration.autoPublishRules ===
+                "AUTO_PUBLISH"
+                  ? "success"
+                  : "default"
+              }
+              color="strong"
+            >
+              Auto-Publish:{" "}
+              {storeSettings?.publishingModeration.autoPublishRules ===
+              "AUTO_PUBLISH"
+                ? "On"
+                : "Off"}
             </s-badge>
           </s-stack>
           <s-grid
@@ -358,8 +414,18 @@ export default function Reviews() {
             gap="small"
             justifyContent="end"
           >
-            <s-button icon="download" onClick={() => shopify.modal.show('import-reviews-modal')}>Import</s-button>
-            <s-button icon="upload" onClick={() => shopify.modal.show('export-reviews-modal')}>Export</s-button>
+            <s-button
+              icon="download"
+              onClick={() => shopify.modal.show("import-reviews-modal")}
+            >
+              Import
+            </s-button>
+            <s-button
+              icon="upload"
+              onClick={() => shopify.modal.show("export-reviews-modal")}
+            >
+              Export
+            </s-button>
           </s-grid>
         </s-grid>
         {/* End----Page Header */}
@@ -389,7 +455,10 @@ export default function Reviews() {
               >
                 Pending{" "}
                 <s-badge tone="warning" color="strong">
-                  {baseReviews.filter((review) => review.status === "PENDING").length}
+                  {
+                    baseReviews.filter((review) => review.status === "PENDING")
+                      .length
+                  }
                 </s-badge>
               </TabButton>
               {/* End----Pending reviews button */}
@@ -401,8 +470,9 @@ export default function Reviews() {
                 Published{" "}
                 <s-badge tone="success" color="strong">
                   {
-                    baseReviews.filter((review) => review.status === "PUBLISHED")
-                      .length
+                    baseReviews.filter(
+                      (review) => review.status === "PUBLISHED",
+                    ).length
                   }
                 </s-badge>
               </TabButton>
@@ -425,7 +495,10 @@ export default function Reviews() {
               >
                 Archive{" "}
                 <s-badge tone="neutral" color="strong">
-                  {baseReviews.filter((review) => review.status === "ARCHIVE").length}
+                  {
+                    baseReviews.filter((review) => review.status === "ARCHIVE")
+                      .length
+                  }
                 </s-badge>
               </TabButton>
               {/* End----Archive reviews button */}
@@ -444,14 +517,14 @@ export default function Reviews() {
                 placeholder="Search reviews,"
                 value={searchQuery}
                 onInput={(e) => handleSearchChange(e.currentTarget.value)}
-
               />
               {/* End----Search field */}
               {/* Start----Filter options by rating */}
-              <s-select value={selectedRating} onChange={(e) => handleRatingChange(e.currentTarget.value)}>
-                <s-option value="all">
-                  All ratings
-                </s-option>
+              <s-select
+                value={selectedRating}
+                onChange={(e) => handleRatingChange(e.currentTarget.value)}
+              >
+                <s-option value="all">All ratings</s-option>
                 <s-option value="5">5 stars</s-option>
                 <s-option value="4">4 stars</s-option>
                 <s-option value="3">3 stars</s-option>
@@ -460,7 +533,10 @@ export default function Reviews() {
               </s-select>
               {/* End----Filter options by rating */}
               {/* Start----Filter options by product */}
-              <s-select value={selectedProduct} onChange={(e) => handleProductChange(e.currentTarget.value)}>
+              <s-select
+                value={selectedProduct}
+                onChange={(e) => handleProductChange(e.currentTarget.value)}
+              >
                 <s-option value="all">All products</s-option>
                 {uniqueProducts.map((prod) => (
                   <s-option key={prod.id} value={prod.id}>
@@ -494,7 +570,12 @@ export default function Reviews() {
                   <div key={review.id}>
                     <s-grid gridTemplateColumns="auto 1fr" gap="base">
                       <s-checkbox /> {/* Checkbox for selection of reviews */}
-                      <ReviewItem data={review} handleStatusUpdate={handleStatusUpdate} handleReviewDelete={handleReviewDelete} />
+                      <ReviewItem
+                        data={review}
+                        handleStatusUpdate={handleStatusUpdate}
+                        handleReviewDelete={handleReviewDelete}
+                        handleReviewReply={handleReviewReply}
+                      />
                     </s-grid>
                     {index !== paginatedReviews.length - 1 && (
                       <s-stack paddingBlock="base">
@@ -542,8 +623,7 @@ export default function Reviews() {
               {visiblePages
                 .filter(
                   (page) =>
-                    page >= safeCurrentPage - 1 &&
-                    page <= safeCurrentPage + 1
+                    page >= safeCurrentPage - 1 && page <= safeCurrentPage + 1,
                 )
                 .map((page) => (
                   <s-press-button
@@ -579,6 +659,5 @@ export default function Reviews() {
         {/* End----Page main content */}
       </s-page>
     </>
-
   );
 }

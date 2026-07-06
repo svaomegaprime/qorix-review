@@ -292,26 +292,7 @@ async function postReview(request, session, admin) {
       });
     }
 
-    // bull mq
-
-    async function scheduleReviewEmail(order) {
-      const DELAY_MS = 10000;
-
-      await reviewQueue.add(
-        REVIEW_TEST_JOB,
-        {
-          reviewId: order.reviewId,
-          customerEmail: order.customerEmail,
-          customerName: order.customerName,
-        },
-        {
-          delay: DELAY_MS,
-          attempts: 3,
-          removeOnComplete: true,
-          removeOnFail: false,
-        },
-      );
-    }
+    
 
     return {
       ok: true,
