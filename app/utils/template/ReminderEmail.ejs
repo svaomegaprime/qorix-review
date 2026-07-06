@@ -4,8 +4,8 @@ const {
   storeLogo = "",
   storeTagline = "",
   name = "",
-  requestEmailBody = "",
-  requestEmailButton = "Share Your Experience",
+  reminderEmailBody = "",
+  reminderEmailButton = "Share Your Experience",
   emailPrimaryButtonColor = "#108848",
   emailButtonTextColor = "#ffffff",
   emailBackgroundColor = "#f9fafb",
@@ -121,7 +121,7 @@ const {
                     >
                       <p style="font-weight: 550; margin: 0 0 8px">Hi <%= name %>,</p>
                       <p style="font-weight: 400; margin: 0">
-                       <%= requestEmailBody %>
+                       <%= reminderEmailBody %>
                       </p>
                     </td>
                   </tr>
@@ -222,7 +222,7 @@ const {
                                     display: inline-block;
                                   "
                                 >
-                                  <%= requestEmailButton %>
+                                  <%= reminderEmailButton %>
                                   <span
                                     style="
                                       display: inline-block;

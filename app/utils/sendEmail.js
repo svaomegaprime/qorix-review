@@ -2,11 +2,11 @@
 import ejs from "ejs";
 import nodemailer from "nodemailer";
 import path from "path";
-const getSmtpConfig = () => {
-  const host = String(process.env.SMTP_HOST || "").trim();
-  const port = Number(process.env.SMTP_PORT || 0);
-  const user = String(process.env.SMTP_USER || "").trim();
-  const pass = String(process.env.SMTP_PASS || "").trim();
+const getSmtpConfig = (smtpConfig) => {
+  const host = String(smtpConfig.smtpHost || "").trim();
+  const port = Number(smtpConfig.smtpPort || 0);
+  const user = String(smtpConfig.smtpUser || "").trim();
+  const pass = String(smtpConfig.smtpPassword || "").trim();
 
   return {
     host,
@@ -19,10 +19,10 @@ const getSmtpConfig = () => {
 };
 
 let transporter = null;
-const getTransporter = () => {
+const getTransporter = (smtpConfig) => {
   if (transporter) return transporter;
 
-  const smtp = getSmtpConfig();
+  const smtp = getSmtpConfig(smtpConfig);
   if (!smtp.isConfigured) return null;
 
   transporter = nodemailer.createTransport({
@@ -40,16 +40,17 @@ const getTransporter = () => {
 
 export const sendEmail = async ({
   to,
+  bcc,
   subject,
   templateName = "EmailTemplate",
   templateData = {},
   attachments,
   from,
   replyTo,
-  smtpConfig
+  smtpConfig,
 }) => {
   try {
-    const activeTransporter = getTransporter();
+    const activeTransporter = getTransporter(smtpConfig);
     if (!activeTransporter) {
       console.warn(
         "Email skipped: SMTP configuration missing. Please set SMTP_HOST, SMTP_PORT, SMTP_USER, and SMTP_PASS.",
@@ -66,16 +67,14 @@ export const sendEmail = async ({
       `${templateName}.ejs`,
     );
     const html = await ejs.renderFile(templatePath, templateData);
-    const resolvedFrom =
-      from ||
-      String(process.env.SMTP_FROM || "").trim() ||
-      String(process.env.SMTP_USER || "").trim();
+    const resolvedFrom = from ?? "";
     const resolvedReplyTo = String(replyTo || "").trim() || undefined;
 
     const info = await activeTransporter.sendMail({
       from: resolvedFrom,
       replyTo: resolvedReplyTo,
       to,
+      bcc,
       subject,
       html,
       headers: {
@@ -89,7 +88,7 @@ export const sendEmail = async ({
       })),
     });
 
-    console.log(info)
+    console.log(info);
     return { ok: true, messageId: info.messageId };
   } catch (error) {
     console.error("Email sending error:", error?.message || error);

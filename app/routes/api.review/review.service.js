@@ -1,10 +1,11 @@
 import { getStoreData } from "../../utils/getStoreData";
 import prisma from "../../db.server";
-import { uploadFile } from "../../lib/uploadFile"
-import { isFileLike } from "../../utils/isFileLike"
-import { AppError } from "../../utils/appError.server"
-import { updateProductReviewDefineMetafields } from "../../utils/updateProductReviewDefineMetafields"
-import { sendEmail } from "../../utils/sendEmail"
+import { uploadFile } from "../../lib/s3/uploadFile";
+import { isFileLike } from "../../utils/isFileLike";
+import { AppError } from "../../utils/appError.server";
+import { updateProductReviewDefineMetafields } from "../../utils/updateProductReviewDefineMetafields";
+import { sendEmail } from "../../utils/sendEmail";
+import checkPublishRules from "./middleware/checkPublishRules";
 
 function buildFromAddress(displayName, email) {
   const cleanEmail = String(email || "").trim();
@@ -16,14 +17,63 @@ function buildFromAddress(displayName, email) {
   return `"${cleanName.replace(/"/g, "")}" <${cleanEmail}>`;
 }
 
-async function postReview(request, admin) {
+async function getStoreContext(session, admin) {
+  const fallbackStoreData = session?.shop
+    ? await prisma.store.findFirst({
+        where: {
+          storeURL: session.shop,
+        },
+        select: {
+          storeGID: true,
+          storeURL: true,
+          storeEmail: true,
+        },
+      })
+    : null;
 
+  const storeData = await getStoreData(
+    admin,
+    fallbackStoreData
+      ? {
+          id: fallbackStoreData.storeGID,
+          name: session?.shop ?? "",
+          storeURL: fallbackStoreData.storeURL,
+          email: fallbackStoreData.storeEmail,
+        }
+      : null,
+  );
 
+  if (!storeData?.id) {
+    throw new Error("Unable to resolve store data for this request");
+  }
+
+  return storeData;
+}
+
+async function postReview(request, session, admin) {
   try {
-    const { id, name, storeURL, email } = await getStoreData(admin)
+    const { id, name, storeURL, email } = await getStoreContext(session, admin);
 
     const formData = await request.formData();
     // review.service.js
+
+    const storeSettings = await prisma.storeSettings.findFirst({
+      where: {
+        storeId: id,
+      },
+      include: {
+        emailSettings: true,
+        brandingSettings: true,
+        adminNotification: true,
+        publishingModeration: true,
+      },
+    });
+
+    const brandingSettings = storeSettings?.brandingSettings ?? {};
+    const emailSettings = storeSettings?.emailSettings ?? {};
+    const publishingModeration = storeSettings?.publishingModeration ?? {};
+    const adminNotification = storeSettings?.adminNotification ?? {};
+
     const reviewData = {
       storeId: id,
       reviewerName: formData.get("reviewerName") || null,
@@ -36,7 +86,14 @@ async function postReview(request, admin) {
       productHandle: formData.get("productHandle") || null,
       productTitle: formData.get("productTitle") || null,
     };
-    const submittedAt = formData.get("submittedAt") || null
+    const publishRules = await checkPublishRules(
+      session,
+      publishingModeration,
+      reviewData,
+    );
+    const submittedAt = formData.get("submittedAt") || null;
+
+    console.log(publishRules);
 
     const files = [
       ...formData.getAll("media"),
@@ -52,43 +109,32 @@ async function postReview(request, admin) {
       uploadedData.push(uploaded);
     }
 
-
     const attachments = uploadedData.map((item) => {
       return {
-        type: item.type.startsWith("video/")
-          ? "VIDEO"
-          : "IMAGE",
-        url: item.url
-      }
-    })
+        type: item.type.startsWith("video/") ? "VIDEO" : "IMAGE",
+        url: item.url,
+      };
+    });
 
     const res = await prisma.review.create({
       data: {
         ...reviewData,
+        ...publishRules,
         attachments: {
           create: attachments,
-        }
+        },
       },
       include: {
         attachments: true,
       },
-    })
+    });
 
-    await updateProductReviewDefineMetafields(admin, reviewData.productId, reviewData.storeId);
+    await updateProductReviewDefineMetafields(
+      admin,
+      reviewData.productId,
+      reviewData.storeId,
+    );
 
-    const storeSettings = await prisma.storeSettings.findFirst({
-      where: {
-        storeId: id,
-      },
-      include: {
-        emailSettings: true,
-        brandingSettings: true,
-        adminNotification: true
-      }
-    })
-
-    const brandingSettings = storeSettings?.brandingSettings ?? {};
-    const emailSettings = storeSettings?.emailSettings ?? {};
     const storeName = brandingSettings.storeDisplayName ?? name;
 
     const emailBody = (
@@ -107,7 +153,7 @@ async function postReview(request, admin) {
     });
 
     const formattedDate = `Submitted ${formatter.format(
-      submittedAt ? new Date(submittedAt) : new Date()
+      submittedAt ? new Date(submittedAt) : new Date(),
     )}`;
 
     console.log(formattedDate);
@@ -127,62 +173,146 @@ async function postReview(request, admin) {
     const productUrl =
       storeURL && reviewData.productHandle
         ? `https://${storeURL}/products/${reviewData.productHandle}`
-        : `https://${storeURL || "qorix.ai"}`;
+        : "#";
 
     const unsubscribeUrl = replyToEmail
       ? `mailto:${replyToEmail}?subject=Unsubscribe`
       : "";
+    // client mail
 
-    await sendEmail({
-      to: reviewData.reviewerEmail,
-      from: buildFromAddress(storeName, senderEmail),
-      replyTo: replyToEmail,
-      templateName: "ConfirmEmail",
-
-      subject:
-        emailSettings.confirmationEmailSubject ??
-        "Thank you for your review",
-
-      templateData: {
+    if (reviewData.reviewerEmail) {
+      await sendEmail({
+        to: reviewData.reviewerEmail,
+        from: buildFromAddress(storeName, senderEmail),
+        replyTo: replyToEmail,
+        templateName: "ConfirmEmail",
         subject:
-          emailSettings.confirmationEmailSubject ??
-          "Thank you for your review",
-
-        logo: brandingSettings.storeLogo ?? "",
-
-        tagline:
-          brandingSettings.storeTagline ?? "",
-
-        customerName:
-          reviewData.reviewerName ?? "",
-
-        emailBody,
-
-        buttonUrl: productUrl,
-
-        buttonText: "View your review",
-
-        product: {
-          title: reviewData.productTitle ?? "",
+          emailSettings.confirmationEmailSubject ?? "Thank you for your review",
+        templateData: {
+          subject:
+            emailSettings.confirmatisonEmailSubject ??
+            "Thank you for your review",
+          logo: brandingSettings.storeLogo ?? "",
+          tagline: brandingSettings.storeTagline ?? "",
+          customerName: reviewData.reviewerName ?? "",
+          emailBody,
+          buttonUrl: productUrl,
+          buttonText: "View your review",
+          product: {
+            title: reviewData.productTitle ?? "",
+          },
+          review: {
+            rating: reviewData.rating ?? 0,
+            date: formattedDate,
+          },
+          emailFooterText: brandingSettings.emailFooterText ?? "",
+          unsubscribeUrl,
+          isShowFooterBadge: brandingSettings.isShowFooterBadge ?? false,
         },
+        smtpConfig: {
+          smtpUser: emailSettings.smtpUser,
+          smtpPassword: emailSettings.smtpPassword,
+          smtpPort: emailSettings.smtpPort,
+          smtpHost: emailSettings.smtpHost,
+        },
+      });
+    }
 
-        review: {
+    // admin mail
+    const adminEmails = Object.values(
+      adminNotification?.notificationEmailAddress ?? {},
+    ).filter(Boolean);
+
+    if (!adminEmails.length && email) adminEmails.push(email);
+
+    // admin mail — condition check based on adminNotification settings
+    const isNewReview = adminNotification?.isNewReviewNotify ?? true;
+    const isApprovalNeeded = adminNotification?.isReviewApprovalNotify ?? true;
+    const isLowStar = adminNotification?.isLowStarReviewNotify ?? true;
+
+    const isReviewPending = res.status === "PENDING";
+    const isLowStarReview = (reviewData.rating ?? 0) <= 2;
+
+    // Determine if we should send the admin notification at all
+    const shouldNotifyNewReview = isNewReview;
+    const shouldNotifyApproval = isApprovalNeeded && isReviewPending;
+    const shouldNotifyLowStar = isLowStar && isLowStarReview;
+
+    const shouldSendAdminEmail =
+      shouldNotifyNewReview || shouldNotifyApproval || shouldNotifyLowStar;
+
+    // Build subject and body based on which condition is the most specific
+    let adminSubject;
+    let adminEmailBody;
+
+    if (shouldNotifyLowStar) {
+      // Low-star review — highest priority / most specific alert
+      adminSubject = `⚠️ Low Star Alert: ${reviewData.rating ?? 0}★ review on "${reviewData.productTitle || "your product"}"`;
+      adminEmailBody = `A low star review (${reviewData.rating ?? 0} star${(reviewData.rating ?? 0) === 1 ? "" : "s"}) was submitted by ${reviewData.reviewerName ?? "a customer"} for "${reviewData.productTitle || "your product"}". Please review it and decide whether to publish or reject.`;
+    } else if (shouldNotifyApproval) {
+      // Review held for moderation
+      adminSubject = `🔍 Review Needs Moderation: "${reviewData.productTitle || "your product"}"`;
+      adminEmailBody = `A new review was submitted by ${reviewData.reviewerName ?? "a customer"} for "${reviewData.productTitle || "your product"}" and is currently held for your approval. Please log in to your dashboard to approve or reject it.`;
+    } else {
+      // Generic new review notification
+      adminSubject = `📬 New Review: "${reviewData.productTitle || "your product"}"`;
+      adminEmailBody = `A new review was submitted by ${reviewData.reviewerName ?? "a customer"} for "${reviewData.productTitle || "your product"}".`;
+    }
+
+    if (adminEmails.length && shouldSendAdminEmail) {
+      await sendEmail({
+        to: adminEmails[0],
+        bcc: adminEmails.slice(1),
+        from: buildFromAddress(storeName, senderEmail),
+        replyTo: replyToEmail,
+        templateName: "AdminNotify",
+        subject: adminSubject,
+        templateData: {
+          subject: adminSubject,
+          storeName,
+          logo: brandingSettings.storeLogo ?? "",
+          tagline: brandingSettings.storeTagline ?? "",
+          reviewerName: reviewData.reviewerName ?? "Anonymous",
+          reviewerEmail: reviewData.reviewerEmail ?? "",
           rating: reviewData.rating ?? 0,
-          date: formattedDate,
+          reviewBody: res.body ?? "",
+          status: res.status ?? "PENDING",
+          productTitle: reviewData.productTitle ?? "",
+          productUrl,
+          manageUrl: `https://${storeURL}/admin/apps/qorix-review/app/reviews`,
+          submittedDate: formattedDate,
+          adminEmailBody,
         },
+        smtpConfig: {
+          smtpUser: emailSettings.smtpUser,
+          smtpPassword: emailSettings.smtpPassword,
+          smtpPort: emailSettings.smtpPort,
+          smtpHost: emailSettings.smtpHost,
+        },
+      });
+    }
 
-        emailFooterText:
-          brandingSettings.emailFooterText ?? "",
-
-        unsubscribeUrl,
-
-        isShowFooterBadge:
-          brandingSettings.isShowFooterBadge ?? false,
-      },
-
-    });
+    // bull mq
 
 
+    async function scheduleReviewEmail(order) {
+      const DELAY_MS = 10000;
+
+      await reviewQueue.add(
+        REVIEW_TEST_JOB,
+        {
+          reviewId: order.reviewId,
+          customerEmail: order.customerEmail,
+          customerName: order.customerName,
+        },
+        {
+          delay: DELAY_MS,
+          attempts: 3,
+          removeOnComplete: true,
+          removeOnFail: false,
+        }
+      );
+    }
 
     return {
       ok: true,
@@ -192,9 +322,8 @@ async function postReview(request, admin) {
     console.error("[ERROR::api.review]", error);
     return AppError.handle(error);
   }
-
 }
-async function getReview(request, admin) {
+async function getReview(request, session, admin) {
   try {
     const url = new URL(request.url);
     const productId = url.searchParams.get("productId");
@@ -202,7 +331,7 @@ async function getReview(request, admin) {
     const page = Number(url.searchParams.get("page")) || 1;
     const limit = Number(url.searchParams.get("limit")) || 10;
 
-    const { id } = await getStoreData(admin);
+    const { id } = await getStoreContext(session, admin);
 
     // Base query
     const query = {
@@ -219,7 +348,6 @@ async function getReview(request, admin) {
       },
       skip: (page - 1) * limit,
       take: limit,
-
     };
 
     // Sorting logic
@@ -282,10 +410,8 @@ async function getReview(request, admin) {
         _avg: {
           rating: true,
         },
-      })
+      }),
     ]);
-
-
 
     return {
       ok: true,
@@ -296,49 +422,14 @@ async function getReview(request, admin) {
       totalPages: Math.ceil(info._count._all / limit),
       currentPage: page,
 
-      averageRating: Number(
-        (info._avg.rating || 0).toFixed(1)
-      ),
+      averageRating: Number((info._avg.rating || 0).toFixed(1)),
     };
   } catch (error) {
     console.error("[ERROR::api.review.getReview]", error);
     return AppError.handle(error);
   }
 }
-// async function getReview(request, admin) {
-//   try {
-//     const url = new URL(request.url);
-//     const productId = url.searchParams.get("productId");
-//     const sort = url.searchParams.get("sort");
 
-//     console.log("productId", productId)
-
-//     const { id } = await getStoreData(admin)
-
-//     const res = await prisma.review.findMany({
-//       where: {
-//         storeId: id,
-//         ...(productId ? { productId } : {}),
-//       },
-//       include: {
-//         attachments: true,
-//       },
-//       orderBy: {
-//         createdAt: "desc",
-//       },
-//     })
-//     console.log("[REVIEW DATA]",res)
-
-//     return {
-//       ok: true,
-//       data: res,
-//     }
-
-//   } catch (error) {
-//     console.error("[ERROR::api.review.getReview]", error);
-//     return AppError.handle(error);
-//   }
-// }
 export const reviewService = {
   postReview,
   getReview,

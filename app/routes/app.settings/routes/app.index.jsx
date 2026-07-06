@@ -8,6 +8,26 @@ import { getStoreData } from "../../../utils/getStoreData";
 import { authenticate } from "../../../shopify.server";
 import prisma from "../../../db.server";
 
+const DELIVERY_DAY_OPTIONS = [5, 7, 15];
+const REMINDER_DAY_OPTIONS = [5, 7, 10, 15];
+const MINIMUM_ORDER_VALUE_OPTIONS = [0, 100, 500, 1000];
+
+function getCustomFieldState(scheduling) {
+  const currentScheduling = scheduling ?? DEFAULT_REQUEST_SCHEDULING;
+
+  return {
+    customDeliveryDays: !DELIVERY_DAY_OPTIONS.includes(
+      Number(currentScheduling.sendRequestAfterDelivery),
+    ),
+    customDelayDays: !REMINDER_DAY_OPTIONS.includes(
+      Number(currentScheduling.reminderRequestDelay),
+    ),
+    customMinimumOrderValue: !MINIMUM_ORDER_VALUE_OPTIONS.includes(
+      Number(currentScheduling.minimumOrderValue),
+    ),
+  };
+}
+
 export async function loader({ request }) {
   try {
     const { admin, session } = await authenticate.admin(request);
@@ -68,11 +88,9 @@ export default function Settings() {
   const [requestScheduling, setRequestScheduling] = useState(
     storeSettings?.requestScheduling ?? DEFAULT_REQUEST_SCHEDULING,
   );
-  const [showCustomFields, setShowCustomFields] = useState({
-    customDeliveryDays: false,
-    customDelayDays: false,
-    customMinimumOrderValue: false,
-  });
+  const [showCustomFields, setShowCustomFields] = useState(() =>
+    getCustomFieldState(storeSettings?.requestScheduling),
+  );
   useEffect(() => {
     const hasChanged =
       JSON.stringify(requestScheduling) !==
@@ -106,12 +124,10 @@ export default function Settings() {
   const [formResetKey, setFormResetKey] = useState(0);
 
   function handleDiscard() {
-    setRequestScheduling(storeSettings?.requestScheduling ?? DEFAULT_REQUEST_SCHEDULING);
-    setShowCustomFields({
-      customDeliveryDays: false,
-      customDelayDays: false,
-      customMinimumOrderValue: false,
-    });
+    const resetScheduling =
+      storeSettings?.requestScheduling ?? DEFAULT_REQUEST_SCHEDULING;
+    setRequestScheduling(resetScheduling);
+    setShowCustomFields(getCustomFieldState(resetScheduling));
     setFormResetKey((pre) => pre + 1);
     shopify.saveBar.hide("leave-confirm-save-bar");
   }
@@ -174,7 +190,11 @@ export default function Settings() {
                   </s-paragraph>
                   <s-box paddingBlock="small">
                     <s-select
-                      value={String(requestScheduling.sendRequestAfterDelivery)}
+                      value={
+                        showCustomFields.customDeliveryDays
+                          ? "custom"
+                          : String(requestScheduling.sendRequestAfterDelivery)
+                      }
                       onChange={(e) => {
                         const value = e.currentTarget.value;
                         const isCustom = value === "custom";
@@ -195,6 +215,7 @@ export default function Settings() {
                             }));
                       }}
                     >
+                      <s-option value="0">Immediately</s-option>
                       <s-option value="5">5 days after delivery</s-option>
                       <s-option value="7">7 days after delivery</s-option>
                       <s-option value="15">15 days after delivery</s-option>
@@ -241,7 +262,11 @@ export default function Settings() {
                   </s-paragraph>
                   <s-box paddingBlock="small">
                     <s-select
-                      value={String(requestScheduling.reminderRequestDelay)}
+                      value={
+                        showCustomFields.customDelayDays
+                          ? "custom"
+                          : String(requestScheduling.reminderRequestDelay)
+                      }
                       onChange={(e) => {
                         const value = e.currentTarget.value;
                         const isCustom = value === "custom";
@@ -260,6 +285,7 @@ export default function Settings() {
                             }));
                       }}
                     >
+                      <s-option value="0">Immediately</s-option>
                       <s-option value="5">5 days later</s-option>
                       <s-option value="7">7 days later</s-option>
                       <s-option value="10">10 days later</s-option>
@@ -328,7 +354,11 @@ export default function Settings() {
                       </s-paragraph>
                     </s-box>
                     <s-select
-                      value={String(requestScheduling.minimumOrderValue)}
+                      value={
+                        showCustomFields.customMinimumOrderValue
+                          ? "CUSTOM"
+                          : String(requestScheduling.minimumOrderValue)
+                      }
                       onChange={(e) => {
                         const isCustom = e.target.value === "CUSTOM";
                         if (isCustom) {

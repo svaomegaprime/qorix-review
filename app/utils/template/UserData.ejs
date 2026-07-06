@@ -1,63 +1,147 @@
-<!DOCTYPE html>
-<html>
+<% const { subject="New Review Received" , storeName="Your Store" , logo="" , tagline="" , reviewerName="Anonymous" ,
+  reviewerEmail="" , rating=0, reviewBody="" , status="PENDING" , productTitle="" , productUrl="#" , manageUrl="#" ,
+  submittedDate="" , adminEmailBody="" , }=locals; %>
+
+  <!DOCTYPE html>
+  <html lang="en">
+
   <head>
-    <meta charset="UTF-8" />
-    <title>Users Data Export</title>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>
+      <%= subject %>
+    </title>
   </head>
-  <body style="margin:0; padding:0; background-color:#f4f4f7; font-family:Arial, sans-serif; color:#333333;">
-    <div style="width:100%; background-color:#f4f4f7; padding:40px 0;">
-      <table
-        role="presentation"
-        cellpadding="0"
-        cellspacing="0"
-        border="0"
-        width="100%"
-        style="max-width:900px; margin:0 auto; background-color:#ffffff; border-radius:8px; overflow:hidden; border:1px solid #e5e7eb;"
-      >
-        <tr>
-          <td style="background-color:#111827; padding:24px; text-align:center;">
-            <h1 style="margin:0; font-size:24px; color:#ffffff;">Users Data Export</h1>
-          </td>
-        </tr>
 
-        <tr>
-          <td style="padding:32px;">
-            <p style="margin:0 0 24px; font-size:15px; color:#4b5563;">
-              Below is the exported users data:
-            </p>
+  <body style="margin:0; padding:160px 16px; background:#eef0ee; font-family: Inter; display:flex; justify-content:center;">
+    <div style="width:100%; max-width:500px; background:#ffffff; border-radius:18px; padding:28px 24px 24px; box-shadow:0 2px 10px rgba(0,0,0,0.06); box-sizing:border-box;">
 
-            <table
-              role="presentation"
-              cellpadding="0"
-              cellspacing="0"
-              border="0"
-              width="100%"
-              style="border-collapse:collapse; width:100%; border:1px solid #e5e7eb;"
-            >
-              <thead>
-                <tr style="background-color:#f9fafb;">
-                  <th style="padding:12px; border:1px solid #e5e7eb; text-align:left; font-size:14px;">ID</th>
-                  <th style="padding:12px; border:1px solid #e5e7eb; text-align:left; font-size:14px;">Name</th>
-                  <th style="padding:12px; border:1px solid #e5e7eb; text-align:left; font-size:14px;">Email</th>
-                  <th style="padding:12px; border:1px solid #e5e7eb; text-align:left; font-size:14px;">Phone</th>
-                  <th style="padding:12px; border:1px solid #e5e7eb; text-align:left; font-size:14px;">Created At</th>
-                </tr>
-              </thead>
-              <tbody>
-                <% users.forEach((user, index) => { %>
-                  <tr style="background-color:<%= index % 2 === 0 ? '#ffffff' : '#f9fafb' %>;">
-                    <td style="padding:12px; border:1px solid #e5e7eb; font-size:14px;">#<%= index || 'N/A' %></td>
-                    <td style="padding:12px; border:1px solid #e5e7eb; font-size:14px;"><%= user.name || 'N/A' %></td>
-                    <td style="padding:12px; border:1px solid #e5e7eb; font-size:14px;"><%= user.email || 'N/A' %></td>
-                    <td style="padding:12px; border:1px solid #e5e7eb; font-size:14px;"><%= user.phone || 'N/A' %></td>
-                    <td style="padding:12px; border:1px solid #e5e7eb; font-size:14px;"><%= user.createdAt || 'N/A' %></td>
-                  </tr>
-                <% }) %>
-              </tbody>
-            </table>
-          </td>
-        </tr>
-      </table>
+      <div style="display:flex; flex-direction:column; align-items:start; gap:16px; border-bottom:1px solid #EBEBEB; padding-bottom:20px; margin-bottom:20px;">
+        <% if (logo) { %>
+          <img src="<%= logo %>" alt="<%= storeName %>" style="height: 100%; max-height: 48px; object-fit: contain;">
+          <% } else { %>
+            <h1>
+              <%= storeName %>
+            </h1>
+            <% } %>
+              <% if (tagline) { %>
+                <div class="tagline">
+                  <%= tagline %>
+                </div>
+                <% } %>
+                  <div style="font-size:13px; color:#616161;">Skincare that makes you glow</div>
+      </div>
+
+      <!-- <div style="display:flex; flex-direction:column; gap:24px;">
+
+        <% if (adminEmailBody) { %>
+          <div class="admin-note">
+            <%= adminEmailBody %>
+          </div>
+          <% } %>
+
+            <div class="status-wrapper">
+              <% if (status==='PUBLISHED' ) { %>
+                <span class="badge published">✓ Auto-Published</span>
+                <% } else { %>
+                  <span class="badge pending">⚡️ Pending Moderation</span>
+                  <% } %>
+            </div>
+
+            <div class="section-title">Review Details</div>
+
+            <h3 class="product-title">
+              <a href="<%= productUrl %>">
+                <%= productTitle %>
+              </a>
+            </h3>
+
+            <div class="star-rating">
+              <% for (let i=1; i <=5; i++) { %>
+                <%= i <=rating ? '★' : '☆' %>
+                  <% } %>
+            </div>
+
+            <% if (reviewBody) { %>
+              <div class="review-quote">
+                "<%= reviewBody %>"
+              </div>
+              <% } else { %>
+                <div class="empty-quote">No text feedback was provided by the customer.</div>
+                <% } %>
+
+                  <table class="meta-table">
+                    <tr>
+                      <td class="meta-label">Customer</td>
+                      <td class="meta-value">
+                        <%= reviewerName %>
+                      </td>
+                    </tr>
+                    <% if (reviewerEmail) { %>
+                      <tr>
+                        <td class="meta-label">Email</td>
+                        <td class="meta-value">
+                          <a href="mailto:<%= reviewerEmail %>" style="color: #0066FF; text-decoration: none;">
+                            <%= reviewerEmail %>
+                          </a>
+                        </td>
+                      </tr>
+                      <% } %>
+                        <% if (submittedDate) { %>
+                          <tr>
+                            <td class="meta-label">Submitted On</td>
+                            <td class="meta-value">
+                              <%= submittedDate %>
+                            </td>
+                          </tr>
+                          <% } %>
+                  </table>
+
+                  <div class="cta-container">
+                    <a href="<%= manageUrl %>" class="btn">Manage in Dashboard &rarr;</a>
+                  </div>
+
+      </div> -->
+
+      <div style="display:flex; flex-direction:column; gap:24px;">
+      <!-- Greeting -->
+      <div style="font-size:13px; line-height: 16px; color:#303030;">
+        <p style="font-weight:550; margin:0 0 8px;">Hi Osman,</p>
+        <p style="font-weight:400;">
+          Thank you for your recent order from Qorix Review! We'd love to hear what you think. It only takes 30 seconds.
+        </p>
+      </div>
+
+      <!-- Product box -->
+      <div style="display:flex; flex-direction:column; gap:16px;">
+
+        <div
+          style="display:flex; align-items:center; gap:14px; border:1px solid #ececec; border-radius:12px; padding:12px; box-sizing:border-box;">
+          <img src="https://images.unsplash.com/photo-1571781926291-c477ebfd024b?w=120&h=120&fit=crop"
+            alt="Hydrating eye cream"
+            style="width:72px; height:72px; border-radius:8px; object-fit:cover; flex-shrink:0; background:#D9D9D9;">
+          <div style="display:flex; flex-direction:column; gap:9px; font-size:13px; line-height: 16px;">
+            <a href="<%= productUrl %>" style="font-weight:550; color:#303030; "><%= productTitle %></a>
+            <span style="font-weight:400; color:#616161;">Ordered, march 14, 2026</span>
+          </div>
+        </div>
+
+      </div>
+
+      <!-- CTA button -->
+      <a href="<%= manageUrl %>" style="display:inline-flex; align-items:center; justify-content:center; gap:8px; width:100%; background:#108848; color:#ffffff; text-decoration:none; font-size:16px; line-height: 20px; font-weight:500; padding:12px; border-radius:12px; box-sizing:border-box;">Leave
+        a review &rarr; </a>
+    </div>
+
+      <!-- Footer -->
+      <div style="text-align:center; border-top:1px solid #EBEBEB; margin-top:40px; padding-top:16px;">
+        <div style="font-size:13px; font-weight:500; color:#616161; line-height: 1.2;">@2026 <%= storeName %> &nbsp;·&nbsp; 
+          <a href="#" style="color:#616161; text-decoration:underline;">Unsubscribe</a>
+        </div>
+        <div style="margin-top:16px; font-weight:500; font-size:13px;  line-height: 1.2; color:#303030;">Powered by
+          <span style="color:#108848;">Qorix</span></div>
+      </div>
+
     </div>
   </body>
-</html>
+  </html>

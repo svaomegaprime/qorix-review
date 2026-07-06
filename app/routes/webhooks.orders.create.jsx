@@ -1,9 +1,8 @@
 import crypto from "crypto";
-import { authenticate } from "../shopify.server";
-
-
+import { authenticate, unauthenticated } from "../shopify.server";
+import prisma from "../db.server";
+import { getStoreData } from "../utils/getStoreData";
 export const action = async ({ request }) => {
-    
   const { topic, shop, payload } = await authenticate.webhook(request);
 
   console.log(`Received ${topic} webhook for ${shop}`);
@@ -11,8 +10,32 @@ export const action = async ({ request }) => {
   if (topic === "ORDERS_CREATE") {
     const order = payload;
     const formattedOrder = formatOrder(order);
+    const { admin } = await unauthenticated.admin(shop);
+    const { id } = await getStoreData(admin);
 
-    console.log("New order data:", formattedOrder);
+    const orderFields = {
+      orderId: formattedOrder.orderId,
+      fulfillmentStatus: formattedOrder.fulfillmentStatus ?? "unfulfilled",
+      paymentStatus: formattedOrder.status,
+      userEmail: formattedOrder.email,
+      projuctJson: formattedOrder.products,
+      reviewCheckStatus: "PANDING",
+      totalPrice: formattedOrder.totalPrice,
+      currency: formattedOrder.currency,
+    };
+    const res = await prisma.order.upsert({
+      where: {
+        storeId_orderId: {
+          storeId: id,
+          orderId: formattedOrder.orderId,
+        },
+      },
+      update: orderFields,
+      create: {
+        ...orderFields,
+        store: { connect: { storeGID: id } },
+      },
+    });
 
     return new Response(JSON.stringify(formattedOrder), {
       status: 200,
@@ -38,19 +61,6 @@ function formatOrder(order) {
     .digest("hex");
   const avatar = `https://www.gravatar.com/avatar/${emailHash}?d=identicon`;
 
-  console.log("webhooks data",{
-
-    orderId: order.name,
-    fullName,
-    email,
-    emailVerified: customer.verified_email || false,
-    avatar,
-    status: order.financial_status,
-    fulfillmentStatus: order.fulfillment_status,
-    createdAt: order.created_at,
-    timeAgo: getRelativeTime(order.created_at),
-  });
-
   return {
     orderId: order.name,
     fullName,
@@ -61,10 +71,16 @@ function formatOrder(order) {
     fulfillmentStatus: order.fulfillment_status,
     createdAt: order.created_at,
     timeAgo: getRelativeTime(order.created_at),
+
+    totalPrice: order.current_total_price,
+    currency: order.subtotal_price_set.shop_money.currency_code,
+
     products: (order.line_items || []).map((item) => ({
       title: item.title,
       productId: item.product_id,
+      productHandle: item.handle,
       quantity: item.quantity,
+      url: item.url,
     })),
   };
 }
@@ -84,6 +100,7 @@ function getRelativeTime(dateString) {
   if (diffMin < 60) return `${diffMin} minute${diffMin > 1 ? "s" : ""} ago`;
   if (diffHour < 24) return `${diffHour} hour${diffHour > 1 ? "s" : ""} ago`;
   if (diffDay < 30) return `${diffDay} day${diffDay > 1 ? "s" : ""} ago`;
-  if (diffMonth < 12) return `${diffMonth} month${diffMonth > 1 ? "s" : ""} ago`;
+  if (diffMonth < 12)
+    return `${diffMonth} month${diffMonth > 1 ? "s" : ""} ago`;
   return `${diffYear} year${diffYear > 1 ? "s" : ""} ago`;
 }

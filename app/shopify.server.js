@@ -34,10 +34,13 @@ const shopify = shopifyApp({
       deliveryMethod: DeliveryMethod.Http,
       callbackUrl: "/webhooks/orders/create",
     },
-  },
-  hooks: {
-    afterAuth: async ({ session }) => {
-      shopify.registerWebhooks({ session });
+    ORDERS_UPDATED: {
+      deliveryMethod: DeliveryMethod.Http,
+      callbackUrl: "/webhooks/orders/updated",
+    },
+    ORDERS_CANCELLED: {
+      deliveryMethod: DeliveryMethod.Http,
+      callbackUrl: "/webhooks/orders/cancelled",
     },
   },
   future: {
@@ -49,6 +52,7 @@ const shopify = shopifyApp({
   hooks: {
     afterAuth: async ({ session, admin }) => {
       try {
+        shopify.registerWebhooks({ session });
         const adminApiUrl = `https://${session.shop}/admin/api/2026-04/graphql.json`;
 
         const response = await fetch(adminApiUrl, {
@@ -81,7 +85,7 @@ const shopify = shopifyApp({
           return;
         }
 
-        console.log("Shop info:", shopData);
+  
 
         await prisma.store.upsert({
           where: { storeGID: shopData.id },
@@ -156,16 +160,6 @@ const shopify = shopifyApp({
           quickReviewWidget,
         );
 
-        console.log(
-          "[quick-review][action] metafield save result*************",
-          JSON.stringify(metafieldResult.data.metafieldsSet.metafields, null, 2)
-        );
-
-        console.log("[quickReviewWidget:::::]", storeSettings, ":::::::", quickReviewWidget)
-
-
-
-        //
       } catch (error) {
         console.error("afterAuth shop fetch failed:", error);
       }
