@@ -135,7 +135,6 @@ function quickReviewWidget() {
 
       const result = await response.json();
 
-
       if (!response.ok || result.ok === false) {
         throw new Error(result.message || "Failed to fetch reviews");
       }
@@ -213,7 +212,12 @@ function quickReviewWidget() {
 
         this.submitSuccess = true;
 
-        this.reviews.unshift(result.data);
+        this.reviews = [result.data, ...this.reviews];
+        this.totalReviews++;
+        const newRating =
+          (this.averageRating * (this.totalReviews - 1) + this.starSelected) /
+          this.totalReviews;
+        this.averageRating = Number(newRating.toFixed(1));
 
         this.$nextTick(() => {
           if (this.$refs.modalBox) {
@@ -225,7 +229,6 @@ function quickReviewWidget() {
         console.error(error);
         this.dataPostLoading = false;
         alert("Failed to submit review");
-
       }
     },
 
@@ -295,9 +298,7 @@ function quickReviewWidget() {
 
       const rating = Number(this.activeFilter);
 
-      return this.reviews.filter(
-        (review) => Number(review.rating) === rating,
-      );
+      return this.reviews.filter((review) => Number(review.rating) === rating);
     },
 
     setRatingFilter(rating) {

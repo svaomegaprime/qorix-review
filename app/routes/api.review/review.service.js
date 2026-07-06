@@ -80,7 +80,6 @@ async function postReview(request, session, admin) {
       reviewerEmail: formData.get("reviewerEmail") || null,
       body: formData.get("body") || null,
       rating: Number(formData.get("rating") || 0),
-      status: "PUBLISHED",
       source: formData.get("source") || "PRODUCT_PAGE",
       productId: formData.get("productId") || null,
       productHandle: formData.get("productHandle") || null,
@@ -119,6 +118,7 @@ async function postReview(request, session, admin) {
     const res = await prisma.review.create({
       data: {
         ...reviewData,
+        status: publishRules.status,
         ...publishRules,
         attachments: {
           create: attachments,
@@ -294,7 +294,6 @@ async function postReview(request, session, admin) {
 
     // bull mq
 
-
     async function scheduleReviewEmail(order) {
       const DELAY_MS = 10000;
 
@@ -310,7 +309,7 @@ async function postReview(request, session, admin) {
           attempts: 3,
           removeOnComplete: true,
           removeOnFail: false,
-        }
+        },
       );
     }
 
