@@ -12,6 +12,12 @@ export async function getOrders(shop, token) {
             createdAt
             displayFinancialStatus
             displayFulfillmentStatus
+            currentTotalPriceSet {
+            shopMoney {
+              amount
+              currencyCode
+              }
+            }
             customer {
               firstName
               lastName
@@ -86,10 +92,14 @@ export async function getOrders(shop, token) {
       fulfillmentStatus: order.displayFulfillmentStatus,
       createdAt: order.createdAt,
       timeAgo: getRelativeTime(order.createdAt),
+      totalPrice: order.currentTotalPriceSet?.shopMoney?.amount || "0.00",
+      currency: order.currentTotalPriceSet?.shopMoney?.currencyCode,
       products: (order.lineItems?.edges || []).map(({ node: item }) => ({
         title: item.title,
         productId: item.product?.id || null,
         quantity: item.quantity,
+        handle: item.product?.handle || null,
+        url: item.product?.url || null,
       })),
     };
   });

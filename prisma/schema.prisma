@@ -44,6 +44,7 @@ model Store {
   trustBarWidgets TrustBarWidget?
   storeSettings   StoreSettings?
   quickReviewWidget QuickReviewWidget?
+  order Order[]
 
   createdAt       DateTime         @default(now())
   updatedAt       DateTime?        @updatedAt

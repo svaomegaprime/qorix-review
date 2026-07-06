@@ -1,9 +1,20 @@
-async function scheduleEmailSend(data) {
-    return data;
+import { sendEmail } from "../../utils/sendEmail";
+
+async function scheduleEmailSend(emailData) {
+  await sendEmail(emailData);
+  console.log("email sent successfully");
+  return;
+}
+async function reminderEmailSend(emailData) {
+  await sendEmail(emailData);
+
+  console.log("email sent successfully");
+  return;
 }
 
 const bullmqService = {
-    scheduleEmailSend
-}
+  scheduleEmailSend,
+  reminderEmailSend,
+};
 
 export default bullmqService;

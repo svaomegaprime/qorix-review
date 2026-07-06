@@ -1,16 +1,253 @@
 import crypto from "crypto";
-import { authenticate } from "../shopify.server";
-
+import { authenticate, unauthenticated } from "../shopify.server";
+import prisma from "../db.server";
+import { getStoreData } from "../utils/getStoreData";
+import { sendEmail } from "../utils/sendEmail";
+import { addJobInQueue } from "../lib/bullmq/bullmq.queue";
+import { reviewQueue } from "../lib/bullmq/bullmq.queue";
 export const action = async ({ request }) => {
   const { topic, shop, payload } = await authenticate.webhook(request);
-
   console.log(`Received ${topic} webhook for ${shop}`);
 
   if (topic === "ORDERS_UPDATED") {
-    const order = payload;
-    const formattedOrder = formatOrder(order);
+    const formattedOrder = formatOrder(payload);
 
-    console.log("Updated order data:", formattedOrder);
+    // Start:: Get store identification data
+    // Get store ID via unauthenticated admin client (correct for webhooks)
+    const { admin } = await unauthenticated.admin(shop);
+    const storeData = await getStoreData(admin);
+    const storeId = storeData?.id;
+    // End:: Comment
+
+    // Start:: Fetch store settings database
+    const storeSettings = await prisma.storeSettings.findFirst({
+      where: {
+        storeId,
+      },
+      include: {
+        requestScheduling: true,
+        emailSettings: true,
+        publishingModeration: true,
+        widgetsSettings: true,
+        brandingSettings: true,
+        adminNotification: true,
+      },
+    });
+    // End:: Comment
+
+    // Start:: Validate order scheduling options
+    // fulfilled
+
+    const isFulfilled =
+      storeSettings?.requestScheduling?.isAutomaticRequest &&
+      formattedOrder.fulfillmentStatus === "fulfilled";
+
+    const isRefunded =
+      storeSettings.requestScheduling.isSkipRefundedOrder &&
+      (formattedOrder.status === "partially_refunded" ||
+        formattedOrder.status === "refunded");
+
+    const isCorrectOrderValue =
+      Number(storeSettings.requestScheduling.minimumOrderValue) <=
+      Number(formattedOrder.totalPrice);
+
+    const requestEmailDelayMs =
+      Number(storeSettings?.requestScheduling?.sendRequestAfterDelivery) *
+      24 *
+      60 *
+      60 *
+      1000;
+    const reminderEmailDelayMs =
+      requestEmailDelayMs +
+      Number(storeSettings?.requestScheduling?.reminderRequestDelay) *
+        24 *
+        60 *
+        60 *
+        1000;
+    console.log(isFulfilled, !isRefunded, isCorrectOrderValue);
+    // End:: Comment
+    // Start:: Check existing customer review
+    let isReviewExists = false;
+
+    const res = await prisma.review.findFirst({
+      where: {
+        storeId: storeData.id,
+        productId: formattedOrder?.products?.[0]?.productId
+          ? String(formattedOrder?.products?.[0]?.productId)
+          : undefined,
+        reviewerEmail: formattedOrder?.email,
+      },
+    });
+    if (res?.reviewerEmail === formattedOrder?.email) {
+      isReviewExists = true;
+    }
+    // End:: Comment
+
+    // Start:: Format email message body
+    function formetEmailBody(message) {
+      return message
+        .replace(/{{first_name}}/g, "")
+        .replace(
+          /{{store_name}}/g,
+          storeSettings.brandingSettings.storeDisplayName ?? "",
+        )
+        .replace(
+          /{{product_name}}/g,
+          formattedOrder?.products?.[0]?.title ?? "",
+        );
+    }
+    // End:: Comment
+    const isOrderCancel =
+      storeSettings.requestScheduling.isSkipCancelledOrder &&
+      formattedOrder.status === "cancelled";
+    // Start:: check order is eligible for review request and add jobs in queue
+    if (
+      isFulfilled &&
+      !isRefunded &&
+      isCorrectOrderValue &&
+      !isReviewExists &&
+      !isOrderCancel
+    ) {
+      // Start:: Prepare email templates data
+      const requestEmailData = {
+        to: formattedOrder.email,
+        from: storeSettings?.emailSettings?.smtpUser,
+        replyTo: storeSettings?.brandingSettings?.storeReplyToEmail,
+        templateName: "RequestsEmail",
+        subject: storeSettings?.emailSettings?.requestEmailSubjectLine,
+        smtpConfig: {
+          smtpHost: storeSettings?.emailSettings?.smtpHost,
+          smtpPort: storeSettings?.emailSettings?.smtpPort,
+          smtpUser: storeSettings?.emailSettings?.smtpUser,
+          smtpPassword: storeSettings?.emailSettings?.smtpPassword,
+        },
+        templateData: {
+          name: formattedOrder?.fullName,
+          storeTagline: storeSettings?.brandingSettings?.storeTagline,
+          timeAgo: formattedOrder?.timeAgo,
+
+          products: formattedOrder?.products ?? [],
+
+          storeName: storeSettings?.brandingSettings?.storeDisplayName,
+
+          requestEmailBody: formetEmailBody(
+            storeSettings?.emailSettings?.reminderEmailBody,
+          ),
+          requestEmailButton: storeSettings?.emailSettings?.reminderEmailButton,
+
+          storeFooterText: storeSettings?.brandingSettings?.storeFooterText,
+          storeFooterLinkText:
+            storeSettings?.brandingSettings?.storeFooterLinkText,
+          isShowFooterBadge: storeSettings?.brandingSettings?.isShowFooterBadge,
+
+          storeLogo: storeSettings?.brandingSettings?.storeLogo,
+          storeLogoPosition: storeSettings?.brandingSettings?.storeLogoPosition,
+          emailPrimaryButtonColor:
+            storeSettings?.brandingSettings?.emailPrimaryButtonColor,
+          emailButtonTextColor:
+            storeSettings?.brandingSettings?.emailButtonTextColor,
+          emailBackgroundColor:
+            storeSettings?.brandingSettings?.emailBackgroundColor,
+          emailHeadingColor: storeSettings?.brandingSettings?.emailHeadingColor,
+          emailBodyTextColor:
+            storeSettings?.brandingSettings?.emailBodyTextColor,
+          emailAccentBorderColor:
+            storeSettings?.brandingSettings?.emailAccentBorderColor,
+        },
+      };
+
+      const reminderEmailData = {
+        to: formattedOrder.email,
+        from: storeSettings?.emailSettings?.smtpUser,
+        replyTo: storeSettings?.brandingSettings?.storeReplyToEmail,
+        templateName: "ReminderEmail",
+        subject: storeSettings?.emailSettings?.reminderSubjectLine,
+        smtpConfig: {
+          smtpHost: storeSettings?.emailSettings?.smtpHost,
+          smtpPort: storeSettings?.emailSettings?.smtpPort,
+          smtpUser: storeSettings?.emailSettings?.smtpUser,
+          smtpPassword: storeSettings?.emailSettings?.smtpPassword,
+        },
+        templateData: {
+          name: formattedOrder?.fullName,
+          storeTagline: storeSettings?.brandingSettings?.storeTagline,
+          timeAgo: formattedOrder?.timeAgo,
+
+          products: formattedOrder?.products ?? [],
+
+          storeName: storeSettings?.brandingSettings?.storeDisplayName,
+
+          reminderEmailBody: formetEmailBody(
+            storeSettings?.emailSettings?.reminderEmailBody,
+          ),
+          reminderEmailButton:
+            storeSettings?.emailSettings?.reminderEmailButton,
+
+          storeFooterText: storeSettings?.brandingSettings?.storeFooterText,
+          storeFooterLinkText:
+            storeSettings?.brandingSettings?.storeFooterLinkText,
+          isShowFooterBadge: storeSettings?.brandingSettings?.isShowFooterBadge,
+
+          storeLogo: storeSettings?.brandingSettings?.storeLogo,
+          storeLogoPosition: storeSettings?.brandingSettings?.storeLogoPosition,
+          emailPrimaryButtonColor:
+            storeSettings?.brandingSettings?.emailPrimaryButtonColor,
+          emailButtonTextColor:
+            storeSettings?.brandingSettings?.emailButtonTextColor,
+          emailBackgroundColor:
+            storeSettings?.brandingSettings?.emailBackgroundColor,
+          emailHeadingColor: storeSettings?.brandingSettings?.emailHeadingColor,
+          emailBodyTextColor:
+            storeSettings?.brandingSettings?.emailBodyTextColor,
+          emailAccentBorderColor:
+            storeSettings?.brandingSettings?.emailAccentBorderColor,
+        },
+      };
+      // End:: Comment
+
+      // Start:: Add jobs to queue
+      const scheduledJobResponse = await addJobInQueue(
+        reviewQueue,
+        "JOB_SCHEDULE_EMAIL",
+        requestEmailData,
+        requestEmailDelayMs,
+      );
+
+      const reminderJobResponse = await addJobInQueue(
+        reviewQueue,
+        "JOB_REMINDER_EMAIL",
+        reminderEmailData,
+        reminderEmailDelayMs,
+      );
+      // End:: Comment
+
+      console.log(
+        "job----added done-------------=========&&&&&",
+        scheduledJobResponse,
+        reminderJobResponse,
+      );
+
+      // Start:: Update order job IDs
+      await prisma.order.update({
+        where: {
+          storeId_orderId: {
+            storeId: storeId,
+            orderId: formattedOrder.orderId,
+          },
+        },
+        data: {
+          fulfillmentStatus: formattedOrder.fulfillmentStatus ?? "unfulfilled",
+          paymentStatus: formattedOrder.status,
+          reviewCheckStatus: "SENT",
+          redisBullmqJobId: {
+            reviewRequestId: scheduledJobResponse?.id,
+            reminderJobId: reminderJobResponse?.id,
+          },
+        },
+      });
+      // End:: Comment
+    }
+    // End:: check order is eligible for review request and add jobs in queue
 
     return new Response(JSON.stringify(formattedOrder), {
       status: 200,
@@ -36,18 +273,6 @@ function formatOrder(order) {
     .digest("hex");
   const avatar = `https://www.gravatar.com/avatar/${emailHash}?d=identicon`;
 
-  console.log("webhooks data", {
-    orderId: order.name,
-    fullName,
-    email,
-    emailVerified: customer.verified_email || false,
-    avatar,
-    status: order.financial_status,
-    fulfillmentStatus: order.fulfillment_status,
-    createdAt: order.created_at,
-    timeAgo: getRelativeTime(order.created_at),
-  });
-
   return {
     orderId: order.name,
     fullName,
@@ -58,11 +283,17 @@ function formatOrder(order) {
     fulfillmentStatus: order.fulfillment_status,
     createdAt: order.created_at,
     timeAgo: getRelativeTime(order.created_at),
+
+    totalPrice: order.current_total_price,
+
+    currency: order.subtotal_price_set.shop_money.currency_code,
+
     products: (order.line_items || []).map((item) => ({
       title: item.title,
       productId: item.product_id,
-      productHandle: item.productHandle,
+      productHandle: item.handle,
       quantity: item.quantity,
+      url: item.url,
     })),
   };
 }
@@ -82,6 +313,7 @@ function getRelativeTime(dateString) {
   if (diffMin < 60) return `${diffMin} minute${diffMin > 1 ? "s" : ""} ago`;
   if (diffHour < 24) return `${diffHour} hour${diffHour > 1 ? "s" : ""} ago`;
   if (diffDay < 30) return `${diffDay} day${diffDay > 1 ? "s" : ""} ago`;
-  if (diffMonth < 12) return `${diffMonth} month${diffMonth > 1 ? "s" : ""} ago`;
+  if (diffMonth < 12)
+    return `${diffMonth} month${diffMonth > 1 ? "s" : ""} ago`;
   return `${diffYear} year${diffYear > 1 ? "s" : ""} ago`;
 }

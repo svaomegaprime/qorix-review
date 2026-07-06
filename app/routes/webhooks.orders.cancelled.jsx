@@ -2,40 +2,64 @@ import crypto from "crypto";
 import { authenticate, unauthenticated } from "../shopify.server";
 import prisma from "../db.server";
 import { getStoreData } from "../utils/getStoreData";
+
 export const action = async ({ request }) => {
   const { topic, shop, payload } = await authenticate.webhook(request);
-
   console.log(`Received ${topic} webhook for ${shop}`);
 
-  if (topic === "ORDERS_CREATE") {
-    const order = payload;
-    const formattedOrder = formatOrder(order);
-    const { admin } = await unauthenticated.admin(shop);
-    const { id } = await getStoreData(admin);
+  if (topic === "ORDERS_CANCELLED") {
+    const formattedOrder = formatOrder(payload);
 
-    const orderFields = {
-      orderId: formattedOrder.orderId,
-      fulfillmentStatus: formattedOrder.fulfillmentStatus ?? "unfulfilled",
-      paymentStatus: formattedOrder.status,
-      userEmail: formattedOrder.email,
-      projuctJson: formattedOrder.products,
-      reviewCheckStatus: "PANDING",
-      totalPrice: formattedOrder.totalPrice,
-      currency: formattedOrder.currency,
-    };
-    const res = await prisma.order.upsert({
+    console.log("Order cancelled:", payload);
+
+    // Get store ID via unauthenticated admin client (correct for webhooks)
+    const { admin } = await unauthenticated.admin(shop);
+    const storeData = await getStoreData(admin);
+    const storeId = storeData?.id;
+
+    const storeSettings = await prisma.storeSettings.findFirst({
       where: {
-        storeId_orderId: {
-          storeId: id,
-          orderId: formattedOrder.orderId,
-        },
+        storeId,
       },
-      update: orderFields,
-      create: {
-        ...orderFields,
-        store: { connect: { storeGID: id } },
+      include: {
+        requestScheduling: true,
+        emailSettings: true,
+        publishingModeration: true,
+        widgetsSettings: true,
+        brandingSettings: true,
+        adminNotification: true,
       },
     });
+
+    if (!storeSettings) {
+      console.warn("No storeSettings found for storeId:", storeId);
+      return new Response(null, { status: 200 });
+    }
+
+    const settingConfig = {
+      isAutomaticRequest: storeSettings.requestScheduling.isAutomaticRequest,
+      isReminderRequest: storeSettings.requestScheduling.isReminderRequest,
+      isSkipRefundedOrder: storeSettings.requestScheduling.isSkipRefundedOrder,
+      isSkipCancelledOrder:
+        storeSettings.requestScheduling.isSkipCancelledOrder,
+      minimumOrderValue: storeSettings.requestScheduling.minimumOrderValue,
+      sendRequestAfterDelivery:
+        storeSettings.requestScheduling.sendRequestAfterDelivery,
+      reminderRequestDelay:
+        storeSettings.requestScheduling.reminderRequestDelay,
+    };
+
+    const isCancelled =
+      settingConfig.isSkipCancelledOrder &&
+      formattedOrder.cancelReason !== null;
+
+    console.log("========================================================");
+    console.log("Setting config:", settingConfig);
+    console.log("Is Cancelled (should skip?):", isCancelled);
+    console.log("========================================================");
+
+    // TODO: add cancellation business logic here
+    // e.g. cancel pending review request emails / jobs
 
     return new Response(JSON.stringify(formattedOrder), {
       status: 200,
@@ -68,13 +92,13 @@ function formatOrder(order) {
     emailVerified: customer.verified_email || false,
     avatar,
     status: order.financial_status,
+    cancelReason: order.cancel_reason ?? null,
+    cancelledAt: order.cancelled_at ?? null,
     fulfillmentStatus: order.fulfillment_status,
     createdAt: order.created_at,
     timeAgo: getRelativeTime(order.created_at),
-
     totalPrice: order.current_total_price,
-    currency: order.subtotal_price_set.shop_money.currency_code,
-
+    currency: order.subtotal_price_set?.shop_money?.currency_code ?? "N/A",
     products: (order.line_items || []).map((item) => ({
       title: item.title,
       productId: item.product_id,

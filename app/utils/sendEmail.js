@@ -47,7 +47,7 @@ export const sendEmail = async ({
   attachments,
   from,
   replyTo,
-  smtpConfig
+  smtpConfig,
 }) => {
   try {
     const activeTransporter = getTransporter(smtpConfig);
@@ -67,10 +67,7 @@ export const sendEmail = async ({
       `${templateName}.ejs`,
     );
     const html = await ejs.renderFile(templatePath, templateData);
-    const resolvedFrom =
-      from ||
-      String(process.env.SMTP_FROM || "").trim() ||
-      String(process.env.SMTP_USER || "").trim();
+    const resolvedFrom = from ?? "";
     const resolvedReplyTo = String(replyTo || "").trim() || undefined;
 
     const info = await activeTransporter.sendMail({
@@ -91,7 +88,7 @@ export const sendEmail = async ({
       })),
     });
 
-    console.log(info)
+    console.log(info);
     return { ok: true, messageId: info.messageId };
   } catch (error) {
     console.error("Email sending error:", error?.message || error);
