@@ -1,114 +1,315 @@
 <%
 const {
-  subject = "Email Confirmation",
-  logo = "",
-  tagline = "",
-  customerName = "",
-  emailBody = "Your review has been received. We really appreciate you taking the time!",
-  product = {},
-  review = {},
-  buttonUrl = "#",
-  buttonText = "View your review",
-  emailFooterText = "",
-  unsubscribeUrl = "#",
+  subject = "How did we do? Share your thoughts ⭐",
+  storeLogo = "",
+  storeTagline = "",
+  name = "",
+  requestEmailBody = "",
+  requestEmailButton = "Share Your Experience",
+  emailPrimaryButtonColor = "#108848",
+  emailButtonTextColor = "#ffffff",
+  emailBackgroundColor = "#f9fafb",
+  emailHeadingColor = "#303030",
+  emailBodyTextColor = "#0d0e0d",
+  emailAccentBorderColor = "#f0f0f0",
+  storeFooterText = "",
+  storeFooterLinkText = "",
   isShowFooterBadge = true,
+  products = [],
+  timeAgo = "recently",
 } = locals;
 %>
 
 <!DOCTYPE html>
 <html lang="en">
-<head>
-<meta charset="UTF-8" />
-<title><%= subject %></title>
-</head>
-<body style="margin:0;padding:0;background-color:#f3f4f6;font-family:Arial,Helvetica,sans-serif;">
-  <table role="presentation" cellpadding="0" cellspacing="0" border="0" width="100%" style="width:100%;border-collapse:collapse;background-color:#f3f4f6;margin:0;padding:24px 0;">
-    <tr>
-      <td align="center" style="padding:12px;">
-        <table role="presentation" cellpadding="0" cellspacing="0" border="0" width="355" style="width:355px;max-width:355px;border-collapse:separate;background-color:#f7f7f7;border:1px solid #e1e1e1;border-radius:16px;">
-          <tr>
-            <td style="padding:22px 20px 18px 20px;">
-              <table role="presentation" cellpadding="0" cellspacing="0" border="0" width="100%" style="border-collapse:collapse;">
-                <tr>
-                  <td valign="middle" style="width:42px;padding-right:10px;">
-                    <% if (logo) { %>
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title><%= subject %></title>
+  </head>
+
+  <body
+    style="
+      margin: 0;
+      padding: 0;
+      background: #d9d9d9;
+      color: <%= emailBodyTextColor %>;
+      font-family: Inter, Arial, sans-serif;
+    "
+  >
+    <!-- Outer wrapper table: centers content, works in Outlook -->
+    <table
+      role="presentation"
+      width="100%"
+      cellpadding="0"
+      cellspacing="0"
+      border="0"
+      style="background: #d9d9d9; border: 1px solid <%= emailAccentBorderColor %>"
+    >
+      <tr>
+        <td align="center" style="padding: 160px 16px">
+          <!-- Card -->
+          <table
+            role="presentation"
+            width="100%"
+            cellpadding="0"
+            cellspacing="0"
+            border="0"
+            style="
+              max-width: 500px;
+              background: #ffffff;
+              border-radius: 18px;
+              box-shadow: 0 2px 10px rgba(0, 0, 0, 0.06);
+            "
+          >
+            <tr>
+              <td style="padding: 28px 24px 24px; box-sizing: border-box">
+                <!-- Header -->
+                <table
+                  role="presentation"
+                  width="100%"
+                  cellpadding="0"
+                  cellspacing="0"
+                  border="0"
+                  style="background:  <%= emailBackgroundColor %>; color:<% emailBodyTextColor %>; border-bottom: 1px solid <%= emailAccentBorderColor %>"
+                >
+                  <tr>
+                    <td style="padding-bottom: 16px">
                       <img
-                        src="<%= logo %>"
-                        alt="Qorix Review"
-                        style="display:block;max-width:160px;width:auto;height:42px;object-fit:contain;"
+                        src="<%= storeLogo %>"
+                        alt="<%= storeName %>"
+                        style="
+                          height: 48px;
+                          max-height: 48px;
+                          object-fit: contain;
+                          display: block;
+                        "
                       />
-                    <% } else { %>
-                      <div style="width:42px;height:42px;border-radius:50%;border:4px solid #14944c;color:#14944c;font-size:29px;line-height:34px;font-weight:400;text-align:center;box-sizing:border-box;">
-                        Q
-                      </div>
-                    <% } %>
-                  </td>
-                </tr>
-              </table>
+                    </td>
+                  </tr>
+                  <tr>
+                    <td
+                      style="
+                        padding-bottom: 20px;
+                        font-size: 16px;
+                        color: <%= emailBodyTextColor %>;
+                        font-family: Inter, Arial, sans-serif;
+                      "
+                    >
+                      <%= storeTagline %>
+                    </td>
+                  </tr>
+                </table>
 
-              <% if (tagline) { %>
-                <div style="font-size:15px;line-height:22px;color:#111111;padding-top:18px;"><%= tagline %></div>
-              <% } %>
+                <!-- Greeting -->
+                <table
+                  role="presentation"
+                  width="100%"
+                  cellpadding="0"
+                  cellspacing="0"
+                  border="0"
+                >
+                  <tr>
+                    <td
+                      style="
+                        padding-top: 24px;
+                        font-size: 16px;
+                        line-height: 1.4;
+                        color: <%= emailHeadingColor %>;
+                        font-family: Inter, Arial, sans-serif;
+                      "
+                    >
+                      <p style="font-weight: 550; margin: 0 0 8px">Hi <%= name %>,</p>
+                      <p style="font-weight: 400; margin: 0">
+                       <%= requestEmailBody %>
+                      </p>
+                    </td>
+                  </tr>
+                </table>
 
-              <div style="border-top:1px solid #dddddd;margin-top:18px;padding-top:22px;font-size:15px;line-height:24px;color:#111111;">
-                <%= emailBody %>
-              </div>
-
-              <table role="presentation" cellpadding="0" cellspacing="0" border="0" width="100%" style="border-collapse:separate;border:1px solid #dddddd;border-radius:8px;background-color:#fbfbfb;margin-top:22px;">
-                <tr>
-                  <td style="padding:16px 14px;">
-                    <table role="presentation" cellpadding="0" cellspacing="0" border="0" width="100%" style="border-collapse:collapse;">
+                <% if (products && products.length > 0) { %>
+                  <% products.forEach(function(product) { %>
+                    <!-- Product box -->
+                    <table
+                      role="presentation"
+                      width="100%"
+                      cellpadding="0"
+                      cellspacing="0"
+                      border="0"
+                      style="
+                        margin-top: 24px;
+                        border: 1px solid <%= emailAccentBorderColor %>;
+                        border-radius: 12px;
+                      "
+                    >
                       <tr>
-                        <td valign="middle" style="width:62px;">
-                          <div style="width:54px;height:54px;border-radius:50%;border:1px solid #d7d7d7;text-align:center;line-height:54px;color:#b5b5b5;font-size:24px;">
-                            &#9787;
-                          </div>
+                        <!-- Product image -->
+                        <td
+                          width="72"
+                          valign="middle"
+                          style="padding: 12px 0 12px 12px"
+                        >
+                          <img
+                            src="<%= product.image || 'https://images.unsplash.com/photo-1571781926291-c477ebfd024b?w=120&h=120&fit=crop' %>"
+                            alt="<%= product.title %>"
+                            width="72"
+                            height="72"
+                            style="
+                              width: 72px;
+                              height: 72px;
+                              border-radius: 8px;
+                              object-fit: cover;
+                              display: block;
+                              background: #d9d9d9;
+                            "
+                          />
                         </td>
-                        <td valign="middle">
-                          <% if (review.rating) { %>
-                            <div style="font-size:14px;line-height:14px;color:#ffb400;letter-spacing:1px;padding-bottom:6px;">
-                              <% for (let i = 0; i < review.rating; i++) { %>&#9733;<% } %>
-                            </div>
-                          <% } %>
-                          <div style="font-size:15px;line-height:20px;font-weight:700;color:#1f1f1f;"><%= product.title || "Hydrating eye cream" %></div>
-                          <% if (review.date) { %>
-                            <div style="font-size:13px;line-height:18px;color:#8a8a8a;padding-top:2px;"><%= review.date %></div>
-                          <% } %>
+
+                        <!-- Product title / date -->
+                        <td
+                          valign="middle"
+                          style="
+                            padding: 12px;
+                            font-size: 16px;
+                            line-height: 1.4;
+                            font-family: Inter, Arial, sans-serif;
+                          "
+                        >
+                          <a
+                            href="<%= product.url || '#' %>"
+                            style="
+                              font-weight: 550;
+                              color: <%= emailHeadingColor %>;
+                              text-decoration: none;
+                              display: block;
+                              margin-bottom: 6px;
+                            "
+                          ><%= product.title %></a>
+                          <span style="font-weight: 400; color: <%= emailBodyTextColor %>"
+                            >Ordered: <%= timeAgo %></span
+                          >
+                        </td>
+                      </tr>
+
+                      <!-- CTA button (own row so it never gets squeezed) -->
+                      <tr>
+                        <td colspan="2" style="padding: 0 12px 12px 12px">
+                          <table
+                            role="presentation"
+                            width="100%"
+                            cellpadding="0"
+                            cellspacing="0"
+                            border="0"
+                          >
+                            <tr>
+                              <td
+                                align="center"
+                                bgcolor="<%= emailPrimaryButtonColor %>"
+                                style="
+                                  border-radius: 12px;
+                                  padding: 12px;
+                                  font-family: Inter, Arial, sans-serif;
+                                "
+                              >
+                                <a
+                                  href="<%= product.url || '#' %>"
+                                  style="
+                                    color: <%= emailButtonTextColor %>;
+                                    text-decoration: none;
+                                    font-size: 18px;
+                                    line-height: 20px;
+                                    font-weight: 500;
+                                    display: inline-block;
+                                  "
+                                >
+                                  <%= requestEmailButton %>
+                                  <span
+                                    style="
+                                      display: inline-block;
+                                      vertical-align: middle;
+                                      margin-left: 6px;
+                                    "
+                                  >
+                                    <svg
+                                      width="16"
+                                      height="16"
+                                      viewBox="0 0 17 16"
+                                      fill="none"
+                                      xmlns="http://www.w3.org/2000/svg"
+                                      style="vertical-align: middle"
+                                    >
+                                      <path
+                                        d="M9.51964 0.855C8.97604 -0.285 7.35604 -0.285 6.81244 0.855L5.14444 4.3494L1.30564 4.8546C0.0552353 5.0202 -0.446365 6.561 0.469235 7.4298L3.27724 10.0962L2.57284 13.9026C2.34244 15.1434 3.65404 16.0962 4.76284 15.495L8.16604 13.647L11.5692 15.495C12.678 16.0962 13.9896 15.1434 13.7592 13.9026L13.0548 10.0962L15.8628 7.4298C16.7772 6.561 16.2768 5.0202 15.0264 4.8546L11.1864 4.3494L9.51964 0.855Z"
+                                        fill="#f5a623"
+                                      />
+                                    </svg>
+                                  </span>
+                                </a>
+                              </td>
+                            </tr>
+                          </table>
                         </td>
                       </tr>
                     </table>
-                  </td>
-                </tr>
-              </table>
-
-              <table role="presentation" cellpadding="0" cellspacing="0" border="0" width="100%" style="border-collapse:collapse;margin-top:28px;">
-                <tr>
-                  <td align="center" bgcolor="#14944c" style="border-radius:6px;">
-                    <a href="<%= buttonUrl %>" style="display:block;padding:16px 18px;font-size:16px;line-height:20px;font-weight:700;color:#ffffff;text-decoration:none;">
-                      <%= buttonText %> &nbsp;&#8594;
-                    </a>
-                  </td>
-                </tr>
-              </table>
-
-              <div style="text-align:center;padding-top:24px;">
-                <% if (emailFooterText) { %>
-                  <div style="font-size:12px;line-height:18px;color:#555555;">
-                    <%= emailFooterText %><% if (unsubscribeUrl) { %> <span style="color:#bdbdbd;">&middot;</span> <a href="<%= unsubscribeUrl %>" style="color:#555555;text-decoration:underline;">Unsubscribe</a><% } %>
-                  </div>
+                  <% }); %>
                 <% } %>
+                
 
-                <% if (isShowFooterBadge) { %>
-                  <div style="font-size:12px;line-height:18px;color:#8f8f8f;padding-top:6px;">
-                    Powered by <span style="color:#14944c;font-weight:700;">Qorix</span>
-                  </div>
-                <% } %>
-              </div>
-            </td>
-          </tr>
-        </table>
-      </td>
-    </tr>
-  </table>
-</body>
+                <!-- Footer -->
+                <table
+                  role="presentation"
+                  width="100%"
+                  cellpadding="0"
+                  cellspacing="0"
+                  border="0"
+                  style="border-top: 1px solid <%= emailAccentBorderColor %>; margin-top: 40px"
+                >
+                <% if(storeFooterText || storeFooterLinkText) { %>
+                  <tr>
+                    <td
+                      align="center"
+                      style="
+                        padding-top: 16px;
+                        font-size: 16px;
+                        font-weight: 500;
+                        color: <%= emailBodyTextColor %>;
+                        line-height: 1.2;
+                        font-family: Inter, Arial, sans-serif;
+                      "
+                    >
+                      <%= storeFooterText %> &nbsp;&middot;&nbsp;
+                      <a
+                        href="#"
+                        style="color: <%= emailBodyTextColor %>; text-decoration: underline"
+                        ><%= storeFooterLinkText %></a
+                      >
+                    </td>
+                  </tr>
+                  <% } %>
+                  <% if(isShowFooterBadge) { %>
+                  <tr>
+                    <td
+                      align="center"
+                      style="
+                        padding-top: 16px;
+                        font-weight: 500;
+                        font-size: 16px;
+                        line-height: 1.2;
+                        color: <%= emailHeadingColor %>;
+                        font-family: Inter, Arial, sans-serif;
+                      "
+                    >
+                      Powered by <span style="color: #108848">Qorix</span>
+                    </td>
+                  </tr>
+                  <% } %>
+                </table>
+              </td>
+            </tr>
+          </table>
+          <!-- /Card -->
+        </td>
+      </tr>
+    </table>
+  </body>
 </html>

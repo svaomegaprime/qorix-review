@@ -152,9 +152,10 @@ export const action = async ({ request }) => {
           ),
           requestEmailButton: storeSettings?.emailSettings?.reminderEmailButton,
 
-          storeFooterText: storeSettings?.brandingSettings?.storeFooterText,
+          storeFooterText:
+            storeSettings?.brandingSettings?.emailFooterText ?? "",
           storeFooterLinkText:
-            storeSettings?.brandingSettings?.storeFooterLinkText,
+            storeSettings?.brandingSettings?.emailFooterLinkText ?? "",
           isShowFooterBadge: storeSettings?.brandingSettings?.isShowFooterBadge,
 
           storeLogo: storeSettings?.brandingSettings?.storeLogo,
@@ -200,9 +201,10 @@ export const action = async ({ request }) => {
           reminderEmailButton:
             storeSettings?.emailSettings?.reminderEmailButton,
 
-          storeFooterText: storeSettings?.brandingSettings?.storeFooterText,
+          storeFooterText:
+            storeSettings?.brandingSettings?.emailFooterText ?? "",
           storeFooterLinkText:
-            storeSettings?.brandingSettings?.storeFooterLinkText,
+            storeSettings?.brandingSettings?.emailFooterLinkText ?? "",
           isShowFooterBadge: storeSettings?.brandingSettings?.isShowFooterBadge,
 
           storeLogo: storeSettings?.brandingSettings?.storeLogo,
