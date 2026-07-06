@@ -2,15 +2,24 @@ import crypto from "crypto";
 import { authenticate, unauthenticated } from "../shopify.server";
 import prisma from "../db.server";
 import { getStoreData } from "../utils/getStoreData";
-import { sendEmail } from "../utils/sendEmail";
 import { addJobInQueue } from "../lib/bullmq/bullmq.queue";
 import { reviewQueue } from "../lib/bullmq/bullmq.queue";
+
 export const action = async ({ request }) => {
   const { topic, shop, payload } = await authenticate.webhook(request);
   console.log(`Received ${topic} webhook for ${shop}`);
 
   if (topic === "ORDERS_UPDATED") {
     const formattedOrder = formatOrder(payload);
+    if (
+      formattedOrder.status === "refunded" ||
+      formattedOrder.fulfillmentStatus !== "fulfilled"
+    ) {
+      return new Response(JSON.stringify({ message: "refunded" }), {
+        status: 200,
+        headers: { "Content-Type": "application/json" },
+      });
+    }
 
     // Start:: Get store identification data
     // Get store ID via unauthenticated admin client (correct for webhooks)
@@ -64,7 +73,6 @@ export const action = async ({ request }) => {
         60 *
         60 *
         1000;
-    console.log(isFulfilled, !isRefunded, isCorrectOrderValue);
     // End:: Comment
     // Start:: Check existing customer review
     let isReviewExists = false;
@@ -99,8 +107,17 @@ export const action = async ({ request }) => {
     // End:: Comment
     const isOrderCancel =
       storeSettings.requestScheduling.isSkipCancelledOrder &&
-      formattedOrder.status === "cancelled";
+      formattedOrder.status === "refunded";
     // Start:: check order is eligible for review request and add jobs in queue
+    console.log(
+      "FROM update:",
+      isFulfilled,
+      !isRefunded,
+      isCorrectOrderValue,
+      !isReviewExists,
+      !isOrderCancel,
+    );
+
     if (
       isFulfilled &&
       !isRefunded &&
@@ -223,8 +240,8 @@ export const action = async ({ request }) => {
 
       console.log(
         "job----added done-------------=========&&&&&",
-        scheduledJobResponse,
-        reminderJobResponse,
+        scheduledJobResponse.id,
+        reminderJobResponse.id,
       );
 
       // Start:: Update order job IDs
