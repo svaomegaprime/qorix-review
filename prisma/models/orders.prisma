@@ -1,9 +1,15 @@
 enum ReviewCheckStatus {
     SENT
     OPENED
-    PANDING
+    PENDING
     REVIEWED
     FAILED
+}
+
+enum RequestType {
+    AUTOMATIC
+    MANUAL
+    REMINDER
 }
 
 model Order {
@@ -16,7 +22,8 @@ model Order {
     paymentStatus     String
     userEmail         String?
     projuctJson       Json?
-    reviewCheckStatus ReviewCheckStatus @default(PANDING)
+    reviewCheckStatus ReviewCheckStatus @default(PENDING)
+    requestType       RequestType       @default(AUTOMATIC)
     totalPrice        String?
     currency          String?
 

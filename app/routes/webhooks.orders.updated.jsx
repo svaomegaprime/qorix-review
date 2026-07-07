@@ -46,6 +46,15 @@ export const action = async ({ request }) => {
 
     // Start:: Validate order scheduling options
     // fulfilled
+    if (!storeSettings.requestScheduling?.isAutomaticRequest) {
+      return new Response(
+        JSON.stringify({ message: "Automatic request is disabled" }),
+        {
+          status: 200,
+          headers: { "Content-Type": "application/json" },
+        },
+      );
+    }
 
     const isFulfilled =
       storeSettings?.requestScheduling?.isAutomaticRequest &&
@@ -231,19 +240,21 @@ export const action = async ({ request }) => {
         requestEmailData,
         requestEmailDelayMs,
       );
-
-      const reminderJobResponse = await addJobInQueue(
-        reviewQueue,
-        "JOB_REMINDER_EMAIL",
-        reminderEmailData,
-        reminderEmailDelayMs,
-      );
+      let reminderJobResponse;
+      if (storeSettings?.requestScheduling?.isReminderRequest) {
+        reminderJobResponse = await addJobInQueue(
+          reviewQueue,
+          "JOB_REMINDER_EMAIL",
+          reminderEmailData,
+          reminderEmailDelayMs,
+        );
+      }
       // End:: Comment
 
       console.log(
         "job----added done-------------=========&&&&&",
         scheduledJobResponse.id,
-        reminderJobResponse.id,
+        reminderJobResponse?.id,
       );
 
       // Start:: Update order job IDs
@@ -257,10 +268,11 @@ export const action = async ({ request }) => {
         data: {
           fulfillmentStatus: formattedOrder.fulfillmentStatus ?? "unfulfilled",
           paymentStatus: formattedOrder.status,
-          reviewCheckStatus: "SENT",
+          reviewCheckStatus: "PENDING",
+          requestType: "AUTOMATIC",
           redisBullmqJobId: {
-            reviewRequestId: scheduledJobResponse?.id,
-            reminderJobId: reminderJobResponse?.id,
+            reviewRequestId: scheduledJobResponse?.id ?? null,
+            reminderJobId: reminderJobResponse?.id ?? null,
           },
         },
       });

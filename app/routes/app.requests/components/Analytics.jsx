@@ -3,7 +3,9 @@ import { Text } from "@shopify/polaris";
 import CustomText from "../../../components/essentials/elements/Text";
 
 const countByStatus = (requests, statuses) => (
-    requests.filter((request) => statuses.includes(request.status)).length
+    requests.filter((request) =>
+        statuses.includes(request.reviewCheckStatus),
+    ).length
 );
 
 const formatRate = (value, total) => {
@@ -37,20 +39,18 @@ const getTrendMeta = (value) => {
 
 export default function Analytics({ data = [] }) {
     const totalRequests = data.length;
-    const openedRequests = countByStatus(data, ["Opened", "Clicked", "Reviewed"]);
-    const clickedRequests = countByStatus(data, ["Clicked", "Reviewed"]);
-    const reviewedRequests = countByStatus(data, ["Reviewed"]);
-    const failedRequests = countByStatus(data, ["Failed"]);
+    const openedRequests = countByStatus(data, ["OPENED", "REVIEWED"]);
+    const reviewedRequests = countByStatus(data, ["REVIEWED"]);
+    const failedRequests = countByStatus(data, ["FAILED"]);
     const totalTrend = getTrendMeta(totalRequests);
     const openedTrend = getTrendMeta(openedRequests);
-    const clickedTrend = getTrendMeta(clickedRequests);
     const reviewedTrend = getTrendMeta(reviewedRequests);
     const failedTrend = getTrendMeta(failedRequests > 0 ? -failedRequests : 0);
 
     return (
         <s-stack paddingBlock="small base">
             <s-query-container>
-                <s-grid gap="base" gridTemplateColumns="@container (inline-size > 500px) 'repeat(5, 1fr)', 'repeat(2, 1fr)'">
+                <s-grid gap="base" gridTemplateColumns="@container (inline-size > 500px) 'repeat(4, 1fr)', 'repeat(2, 1fr)'">
                     {/* Total requests sent start */}
                     <s-section>
                         <s-heading>Total sent</s-heading>
@@ -69,15 +69,7 @@ export default function Analytics({ data = [] }) {
                         </CustomText>
                     </s-section>
                     {/* Total open rate end */}
-                    {/* Total click rate start */}
-                    <s-section>
-                        <s-heading>Click rate</s-heading>
-                        <Text as="h2">{formatRate(clickedRequests, totalRequests)}</Text>
-                        <CustomText as="p" color={clickedTrend.color}>
-                            {clickedTrend.arrow} {clickedRequests} clicked
-                        </CustomText>
-                    </s-section>
-                    {/* Total click rate end */}
+                   
                     {/* Total conversion rate start */}
                     <s-section>
                         <s-heading>Conversion</s-heading>

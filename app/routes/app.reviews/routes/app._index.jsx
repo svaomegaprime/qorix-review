@@ -602,11 +602,7 @@ export default function Reviews() {
                 : "Off"}
             </s-badge>
           </s-stack>
-          <s-grid
-            gridTemplateColumns="auto auto auto"
-            gap="small"
-            justifyContent="end"
-          >
+          <s-grid gridTemplateColumns="auto auto auto" justifyContent="end">
             {/* <s-button
               icon="download"
               onClick={() => shopify.modal.show("import-reviews-modal")}
