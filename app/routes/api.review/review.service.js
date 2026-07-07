@@ -135,7 +135,7 @@ async function postReview(request, session, admin) {
       reviewData.storeId,
     );
 
-    const storeName = brandingSettings.storeDisplayName ?? name;
+    const storeName = brandingSettings.storeDisplayName ?? name ?? "";
 
     const emailBody = (
       emailSettings.confirmationEmailBody ??
@@ -192,6 +192,7 @@ async function postReview(request, session, admin) {
           subject:
             emailSettings.confirmatisonEmailSubject ??
             "Thank you for your review",
+          storeName,
           logo: brandingSettings.storeLogo ?? "",
           tagline: brandingSettings.storeTagline ?? "",
           customerName: reviewData.reviewerName ?? "",
@@ -291,8 +292,6 @@ async function postReview(request, session, admin) {
         },
       });
     }
-
-    
 
     return {
       ok: true,

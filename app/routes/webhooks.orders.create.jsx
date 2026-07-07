@@ -19,11 +19,11 @@ export const action = async ({ request }) => {
       paymentStatus: formattedOrder.status,
       userEmail: formattedOrder.email,
       projuctJson: formattedOrder.products,
-      reviewCheckStatus: "PANDING",
+      reviewCheckStatus: "PENDING",
       totalPrice: formattedOrder.totalPrice,
       currency: formattedOrder.currency,
     };
-    const res = await prisma.order.upsert({
+    await prisma.order.upsert({
       where: {
         storeId_orderId: {
           storeId: id,
@@ -78,9 +78,9 @@ function formatOrder(order) {
     products: (order.line_items || []).map((item) => ({
       title: item.title,
       productId: item.product_id,
-      productHandle: item.handle,
+      productHandle: item.handle ?? null,
       quantity: item.quantity,
-      url: item.url,
+      url: item.url ?? null,
     })),
   };
 }
