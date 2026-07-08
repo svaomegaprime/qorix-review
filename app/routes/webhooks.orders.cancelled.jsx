@@ -204,7 +204,13 @@ export const action = async ({ request }) => {
       const scheduledJobResponse = await addJobInQueue(
         reviewQueue,
         "JOB_SCHEDULE_EMAIL",
-        requestEmailData,
+        {
+          emailData: requestEmailData,
+          payload: {
+            storeId,
+            orderId: formattedOrder.orderId,
+          },
+        },
         requestEmailDelayMs,
         `request_${storeId}_${formattedOrder.orderId}`,
       );
@@ -212,7 +218,13 @@ export const action = async ({ request }) => {
       const reminderJobResponse = await addJobInQueue(
         reviewQueue,
         "JOB_REMINDER_EMAIL",
-        reminderEmailData,
+        {
+          emailData: reminderEmailData,
+          payload: {
+            storeId,
+            orderId: formattedOrder.orderId,
+          },
+        },
         reminderEmailDelayMs,
         `reminder_${storeId}_${formattedOrder.orderId}`,
       );

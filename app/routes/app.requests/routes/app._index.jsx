@@ -245,7 +245,13 @@ export async function action({ request }) {
           const scheduledJobResponse = await addJobInQueue(
             reviewQueue,
             "JOB_SCHEDULE_EMAIL",
-            requestEmailData,
+            {
+              emailData: requestEmailData,
+              payload: {
+                storeId: id,
+                orderId: formattedOrder.orderId,
+              },
+            },
             0,
           );
 
