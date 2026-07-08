@@ -65,13 +65,6 @@ export async function action({ request }) {
       data,
     });
 
-    console.log(
-      "[store settings]: requestSchedulingData data",
-      requestSchedulingData,
-    );
-
-    // console.log("[store settings:]requestScheduling", res);
-
     return {
       ok: true,
       message: "upserted RequestSchedulingData",
@@ -103,8 +96,6 @@ export default function Settings() {
     }
   }, [requestScheduling]);
 
-  console.log("DEFAULT_REQUEST_SCHEDULING:", requestScheduling);
-
   function handleSave() {
     fetcher.submit(requestScheduling, {
       method: "POST",
@@ -112,11 +103,8 @@ export default function Settings() {
     });
   }
 
-  console.log("loading:", fetcher.state);
   useEffect(() => {
     if (fetcher.state === "idle" && fetcher.data) {
-      console.log("Response:", fetcher.data);
-
       // Save successful
       shopify.saveBar.hide("leave-confirm-save-bar");
     }

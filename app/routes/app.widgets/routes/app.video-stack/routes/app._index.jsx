@@ -86,7 +86,6 @@ export default function Index() {
     OVERLAY_TINT_COLOR: "overlayTintColor", // OVERLAY_TINT_COLOR → overlayTintColor
   };
 
-  console.log("colorValues", colorValues);
   const handleChangeColorPiker = (newColor) => {
     const [key, value] = Object.entries(newColor)[0];
     setSettings((prev) => ({
@@ -115,7 +114,6 @@ export default function Index() {
     setSettings((prev) => ({ ...prev, [key]: value }));
   };
 
-
   // Start----Handlers for hide app window
   const handleHideAppWindow = () => {
     requestAppWindowClose("video_stack");
@@ -125,7 +123,6 @@ export default function Index() {
   // Start----Handlers for SaveBar
   const saveBar = useSaveBarTrigger({
     onSubmit: (formData) => {
-      console.log("SaveBar submit trigger:", formData);
       setTimeout(() => {
         requestAppWindowClose("video_stack");
       }, 2000);
@@ -526,7 +523,7 @@ export default function Index() {
             </s-grid>
           </div>
           {/* End----Preview Header */}
-          <VideoStackWidget/>
+          <VideoStackWidget />
           {/* Start----Preview Content */}
           {/* End----Preview Content */}
         </div>

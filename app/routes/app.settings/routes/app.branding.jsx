@@ -27,7 +27,6 @@ export async function loader({ request }) {
         brandingSettings: true,
       },
     });
-    console.log(storeSettings);
 
     return { storeSettings };
   } catch (error) {
@@ -78,13 +77,6 @@ export async function action({ request }) {
       },
       data,
     });
-
-    console.log(
-      "[store settings]: requestSchedulingData data",
-      brandingSettingsData,
-    );
-
-    // console.log("[store settings:]requestScheduling", res);
 
     return {
       ok: true,
@@ -221,8 +213,6 @@ export default function Branding() {
     }
   }, [brandSettings]);
 
-  console.log("DEFAULT_REQUEST_SCHEDULING:", brandSettings);
-
   function handleSave() {
     fetcher.submit(brandSettings, {
       method: "POST",
@@ -230,7 +220,6 @@ export default function Branding() {
     });
   }
 
- 
   useEffect(() => {
     if (fetcher.state === "idle" && fetcher.data) {
       shopify.saveBar.hide("leave-confirm-save-bar");

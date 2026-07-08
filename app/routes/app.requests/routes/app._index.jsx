@@ -136,7 +136,7 @@ async function bulkUpsertOrders(orderRows) {
         ${row.fulfillmentStatus},
         ${row.paymentStatus},
         ${row.userEmail},
-        ${JSON.stringify(row.projuctJson)}::jsonb,
+        ${JSON.stringify(row.productsJson)}::jsonb,
         ${row.reviewCheckStatus}::"ReviewCheckStatus",
         ${row.requestType}::"RequestType",
         ${row.totalPrice},
@@ -156,7 +156,7 @@ async function bulkUpsertOrders(orderRows) {
       "fulfillmentStatus",
       "paymentStatus",
       "userEmail",
-      "projuctJson",
+      "productsJson",
       "reviewCheckStatus",
       "requestType",
       "totalPrice",
@@ -170,7 +170,7 @@ async function bulkUpsertOrders(orderRows) {
       "fulfillmentStatus" = EXCLUDED."fulfillmentStatus",
       "paymentStatus" = EXCLUDED."paymentStatus",
       "userEmail" = EXCLUDED."userEmail",
-      "projuctJson" = EXCLUDED."projuctJson",
+      "productsJson" = EXCLUDED."productsJson",
       "reviewCheckStatus" = EXCLUDED."reviewCheckStatus",
       "requestType" = EXCLUDED."requestType",
       "totalPrice" = EXCLUDED."totalPrice",
@@ -243,8 +243,6 @@ export async function action({ request }) {
           0,
         );
 
-        console.log(scheduledJobResponse);
-
         orderRows.push({
           id: randomUUID(),
           storeId: id,
@@ -290,8 +288,6 @@ export default function Requests() {
   // Start----Accessing loaded data using useLoaderData
   const { requests } = useLoaderData();
   // End----Accessing loaded data using useLoaderData
-
-  // console.log(requests);
 
   // Start----State for active tab
   const [activeTab, setActiveTab] = useState("ALL");

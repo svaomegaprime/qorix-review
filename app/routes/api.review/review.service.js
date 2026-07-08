@@ -93,8 +93,6 @@ async function postReview(request, session, admin) {
     );
     const submittedAt = formData.get("submittedAt") || null;
 
-    console.log(publishRules);
-
     const files = [
       ...formData.getAll("media"),
       ...formData.getAll("files"),
@@ -170,8 +168,6 @@ async function postReview(request, session, admin) {
     const formattedDate = `Submitted ${formatter.format(
       submittedAt ? new Date(submittedAt) : new Date(),
     )}`;
-
-    console.log(formattedDate);
 
     const senderEmail =
       emailSettings.smtpUser ||

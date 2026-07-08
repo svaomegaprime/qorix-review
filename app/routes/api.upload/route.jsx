@@ -9,8 +9,6 @@ import { reviewController } from "./upload.controller";
 
 export async function action({ request }) {
   const { admin, session } = await authenticate.admin(request);
-  console.log(admin);
 
-  
   return await reviewController.controller(request, admin);
 }

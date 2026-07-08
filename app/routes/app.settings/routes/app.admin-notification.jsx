@@ -23,7 +23,6 @@ export async function loader({ request }) {
         adminNotification: true,
       },
     });
-    console.log(storeSettings);
 
     return { storeSettings };
   } catch (error) {
@@ -46,13 +45,6 @@ export async function action({ request }) {
       },
       data,
     });
-
-    console.log(
-      "[store settings]: requestSchedulingData data",
-      adminNotificationData,
-    );
-
-    // console.log("[store settings:]requestScheduling", res);
 
     return {
       ok: true,
@@ -122,7 +114,6 @@ export default function AdminNotification() {
     });
   }
 
-  console.log("loading:", fetcher.state);
   useEffect(() => {
     if (fetcher.state === "idle" && fetcher.data) {
       shopify.saveBar.hide("leave-confirm-save-bar");

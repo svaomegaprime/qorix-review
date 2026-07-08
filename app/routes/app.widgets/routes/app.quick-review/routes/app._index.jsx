@@ -125,8 +125,6 @@ export async function loader({ request }) {
     },
   });
 
-  console.log("[quick-review][loader] storeId", id, "widget", res);
-
   return res;
 }
 export async function action({ request }) {
@@ -134,8 +132,6 @@ export async function action({ request }) {
 
   const data = await request.json();
   const { id } = await getStoreData(admin);
-
-  console.log("[quick-review][action] incoming payload", data);
 
   const res = await prisma.quickReviewWidget.upsert({
     where: {
@@ -154,16 +150,7 @@ export async function action({ request }) {
     },
   });
 
-  console.log("[quick-review][action] prisma upsert result", res);
-
-  const metafieldResult = await setAppMetafield(
-    admin,
-    "quick_review",
-    res,
-  );
-
-  console.log("[quick-review][action] metafield save result", metafieldResult);
-
+  const metafieldResult = await setAppMetafield(admin, "quick_review", res);
 
   return {
     ok: true,
@@ -174,7 +161,7 @@ export async function action({ request }) {
 
 export default function Index(VALUES = {}) {
   const loaderData = useLoaderData();
-  console.log("data get value", loaderData);
+
   const COLOR_PICKERS_ELEMENTS = [
     {
       key: "STAR_COLOR",
@@ -272,7 +259,6 @@ export default function Index(VALUES = {}) {
     });
   };
 
-  console.log("quickReview", quickReview);
   // Start----Handlers for hide app window
   const handleHideAppWindow = () => {
     requestAppWindowClose("quick_review");
@@ -713,11 +699,8 @@ export default function Index(VALUES = {}) {
                           defaultSort: e.target.value,
                         }))
                       }
-
                     >
-                      <s-option value="ALL">
-                        All review
-                      </s-option>
+                      <s-option value="ALL">All review</s-option>
                       <s-option value="MOST_RECENT">
                         Most recent (default)
                       </s-option>

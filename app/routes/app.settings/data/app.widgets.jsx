@@ -25,7 +25,6 @@ export async function loader({ request }) {
         widgetsSettings: true,
       },
     });
-    console.log(storeSettings);
 
     return { storeSettings };
   } catch (error) {
@@ -48,13 +47,6 @@ export async function action({ request }) {
       },
       data,
     });
-
-    console.log(
-      "[store settings]: requestSchedulingData data",
-      widgetsSettingsData,
-    );
-
-    // console.log("[store settings:]requestScheduling", res);
 
     return {
       ok: true,
@@ -96,8 +88,6 @@ export default function Widgets() {
 
   useEffect(() => {
     if (fetcher.state === "idle" && fetcher.data) {
-      console.log("Response:", fetcher.data);
-
       // Save successful
       shopify.saveBar.hide("leave-confirm-save-bar");
     }

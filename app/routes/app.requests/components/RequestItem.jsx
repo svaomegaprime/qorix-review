@@ -1,7 +1,6 @@
 import StatusTrack from "./essentials/StatusTrack";
 
 export default function RequestItem({ data }) {
-  console.log("🚀 ~ loader ~ requests:", data);
   return (
     <>
       <s-modal

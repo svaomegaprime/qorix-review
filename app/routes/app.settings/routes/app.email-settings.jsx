@@ -50,7 +50,6 @@ export async function loader({ request }) {
         emailSettings: true,
       },
     });
-    console.log(storeSettings);
 
     return { storeSettings };
   } catch (error) {
@@ -94,7 +93,7 @@ export async function action({ request }) {
 export default function EmailSettings() {
   const fetcher = useFetcher();
   const { storeSettings } = useLoaderData();
-  
+
   const initialEmailSettings = normalizeEmailSettings(
     storeSettings?.emailSettings,
     storeSettings?.id,
@@ -104,9 +103,8 @@ export default function EmailSettings() {
     postReviewEmail: false,
     SMTPSetup: true,
   });
-  const [savedEmailSettings, setSavedEmailSettings] = useState(
-    initialEmailSettings,
-  );
+  const [savedEmailSettings, setSavedEmailSettings] =
+    useState(initialEmailSettings);
   const [emailSettings, setEmailSettings] = useState(initialEmailSettings);
 
   useEffect(() => {

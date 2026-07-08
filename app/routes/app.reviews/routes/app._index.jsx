@@ -88,7 +88,7 @@ export async function loader({ request }) {
       publishingModeration: true,
     },
   });
-  console.log("Reviews fetched from database:", storeSettings);
+
   return {
     reviews: reviews,
     storeSettings: storeSettings,
@@ -383,11 +383,6 @@ export default function Reviews() {
   if (safeCurrentPage + 1 <= totalPages) {
     visiblePages.push(safeCurrentPage + 1);
   }
-
-  // Start----Debugging loaded data
-  console.clear();
-  console.log("Reviews data loaded:", reviews);
-  // End----Debugging loaded data
 
   // Start----Handle import
   function handleExportReview() {

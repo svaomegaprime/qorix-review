@@ -99,7 +99,6 @@ export const action = async ({ request }) => {
     const isOrderCancel =
       storeSettings.requestScheduling.isSkipCancelledOrder &&
       formattedOrder.status === "refunded";
-    console.log(formattedOrder);
 
     if (isOrderCancel) {
       // Start:: Prepare email templates data
@@ -129,7 +128,8 @@ export const action = async ({ request }) => {
           ),
           requestEmailButton: storeSettings?.emailSettings?.reminderEmailButton,
 
-          storeFooterText: storeSettings?.brandingSettings?.storeFooterText ?? "",
+          storeFooterText:
+            storeSettings?.brandingSettings?.storeFooterText ?? "",
           storeFooterLinkText:
             storeSettings?.brandingSettings?.storeFooterLinkText ?? "",
           isShowFooterBadge: storeSettings?.brandingSettings?.isShowFooterBadge,
@@ -177,7 +177,8 @@ export const action = async ({ request }) => {
           reminderEmailButton:
             storeSettings?.emailSettings?.reminderEmailButton,
 
-          storeFooterText: storeSettings?.brandingSettings?.storeFooterText ?? "",
+          storeFooterText:
+            storeSettings?.brandingSettings?.storeFooterText ?? "",
           storeFooterLinkText:
             storeSettings?.brandingSettings?.storeFooterLinkText ?? "",
           isShowFooterBadge: storeSettings?.brandingSettings?.isShowFooterBadge,

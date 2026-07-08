@@ -2,6 +2,7 @@ import crypto from "crypto";
 import { authenticate, unauthenticated } from "../shopify.server";
 import prisma from "../db.server";
 import { getStoreData } from "../utils/getStoreData";
+
 export const action = async ({ request }) => {
   const { topic, shop, payload } = await authenticate.webhook(request);
 
@@ -24,15 +25,14 @@ export const action = async ({ request }) => {
       select: { productId: true },
     });
 
-    // Build a Set of reviewed productIds for O(1) lookup
-    const reviewedProductIds = new Set(existReview.map((r) => String(r.productId)));
+    const reviewedProductIds = new Set(
+      existReview.map((r) => String(r.productId)),
+    );
 
-    // Always stamp isReviewed on every product (true or false)
     formattedOrder.products = formattedOrder.products.map((item) => ({
       ...item,
       isReviewed: reviewedProductIds.has(String(item.productId)),
     }));
-
 
     const orderFields = {
       orderId: formattedOrder.orderId,
@@ -44,19 +44,41 @@ export const action = async ({ request }) => {
       totalPrice: formattedOrder.totalPrice,
       currency: formattedOrder.currency,
     };
-    await prisma.order.upsert({
-      where: {
-        storeId_orderId: {
-          storeId: id,
-          orderId: formattedOrder.orderId,
+
+    try {
+      await prisma.order.upsert({
+        where: {
+          storeId_orderId: {
+            storeId: id,
+            orderId: formattedOrder.orderId,
+          },
         },
-      },
-      update: orderFields,
-      create: {
-        ...orderFields,
-        store: { connect: { storeGID: id } },
-      },
-    });
+        update: orderFields,
+        create: {
+          ...orderFields,
+          store: { connect: { storeGID: id } },
+        },
+      });
+    } catch (error) {
+      if (error?.code !== "P2002") {
+        throw error;
+      }
+
+      console.warn("Duplicate order create webhook, updating existing order", {
+        storeId: id,
+        orderId: formattedOrder.orderId,
+      });
+
+      await prisma.order.update({
+        where: {
+          storeId_orderId: {
+            storeId: id,
+            orderId: formattedOrder.orderId,
+          },
+        },
+        data: orderFields,
+      });
+    }
 
     return new Response(JSON.stringify(formattedOrder), {
       status: 200,

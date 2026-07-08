@@ -4,6 +4,7 @@ import prisma from "../db.server";
 import { getStoreData } from "../utils/getStoreData";
 import { addJobInQueue } from "../lib/bullmq/bullmq.queue";
 import { reviewQueue } from "../lib/bullmq/bullmq.queue";
+import { getProduct } from "../utils/getProduct";
 
 export const action = async ({ request }) => {
   const { topic, shop, payload } = await authenticate.webhook(request);
@@ -134,7 +135,50 @@ export const action = async ({ request }) => {
       !isReviewExists &&
       !isOrderCancel
     ) {
-      // Start:: Prepare email templates data
+      // Start:: Enrich products with handle and url from Shopify
+      const enrichedProducts = await Promise.all(
+        (formattedOrder.products ?? []).map(async (item) => {
+          // Webhook gives numeric productId; GID needed for GraphQL
+          const gid = item.productId
+            ? String(item.productId).startsWith("gid://")
+              ? item.productId
+              : `gid://shopify/Product/${item.productId}`
+            : null;
+
+          if (!gid) return item;
+
+          try {
+            const product = await getProduct(admin, gid);
+            const productHandle =
+              product?.handle ?? item.productHandle ?? item.handle ?? null;
+            const productUrl =
+              product?.onlineStoreUrl ??
+              (productHandle
+                ? `https://${shop}/products/${productHandle}`
+                : null);
+
+            return {
+              ...item,
+              productHandle,
+              handle: productHandle,
+              image: product?.featuredImage?.url ?? item.image ?? null,
+              url: productUrl ?? item.url ?? null,
+            };
+          } catch (error) {
+            console.error("Failed to enrich order product", {
+              productId: item.productId,
+              error,
+            });
+            return item; // fallback: keep original if fetch fails
+          }
+        }),
+      );
+
+      formattedOrder.products = enrichedProducts;
+      // End:: Enrich products
+
+      console.log("enrichedProducts", enrichedProducts);
+
       const requestEmailData = {
         to: formattedOrder.email,
         from: storeSettings?.emailSettings?.smtpUser,
@@ -157,9 +201,9 @@ export const action = async ({ request }) => {
           storeName: storeSettings?.brandingSettings?.storeDisplayName,
 
           requestEmailBody: formetEmailBody(
-            storeSettings?.emailSettings?.reminderEmailBody,
+            storeSettings?.emailSettings?.requestEmailBody,
           ),
-          requestEmailButton: storeSettings?.emailSettings?.reminderEmailButton,
+          requestEmailButton: storeSettings?.emailSettings?.requestEmailButton,
 
           storeFooterText:
             storeSettings?.brandingSettings?.emailFooterText ?? "",
@@ -257,17 +301,40 @@ export const action = async ({ request }) => {
         reminderJobResponse?.id,
       );
 
-      // Start:: Update order job IDs
-      await prisma.order.update({
+      // Start:: Stamp isReviewed on each product from existing reviews
+      const existReview = await prisma.review.findMany({
+        where: {
+          storeId: storeId,
+          productId: {
+            in: formattedOrder.products.map((item) => String(item.productId)),
+          },
+          reviewerEmail: formattedOrder.email,
+        },
+        select: { productId: true },
+      });
+
+      const reviewedProductIds = new Set(
+        existReview.map((r) => String(r.productId)),
+      );
+
+      formattedOrder.products = formattedOrder.products.map((item) => ({
+        ...item,
+        isReviewed: reviewedProductIds.has(String(item.productId)),
+      }));
+      // End:: Stamp isReviewed
+
+      // Start:: Upsert order job IDs (update if exists, create if not)
+      await prisma.order.upsert({
         where: {
           storeId_orderId: {
             storeId: storeId,
             orderId: formattedOrder.orderId,
           },
         },
-        data: {
+        update: {
           fulfillmentStatus: formattedOrder.fulfillmentStatus ?? "unfulfilled",
           paymentStatus: formattedOrder.status,
+          productsJson: formattedOrder.products,
           reviewCheckStatus: "PENDING",
           requestType: "AUTOMATIC",
           redisBullmqJobId: {
@@ -275,8 +342,24 @@ export const action = async ({ request }) => {
             reminderJobId: reminderJobResponse?.id ?? null,
           },
         },
+        create: {
+          storeId: storeId,
+          orderId: formattedOrder.orderId,
+          fulfillmentStatus: formattedOrder.fulfillmentStatus ?? "unfulfilled",
+          paymentStatus: formattedOrder.status ?? "",
+          userEmail: formattedOrder.email ?? "",
+          productsJson: formattedOrder.products ?? [],
+          reviewCheckStatus: "PENDING",
+          requestType: "AUTOMATIC",
+          totalPrice: formattedOrder.totalPrice ?? null,
+          currency: formattedOrder.currency ?? null,
+          redisBullmqJobId: {
+            reviewRequestId: scheduledJobResponse?.id ?? null,
+            reminderJobId: reminderJobResponse?.id ?? null,
+          },
+        },
       });
-      // End:: Comment
+      // End:: Upsert order
     }
     // End:: check order is eligible for review request and add jobs in queue
 
