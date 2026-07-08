@@ -128,25 +128,7 @@ async function postReview(request, session, admin) {
       },
     });
 
-    // const orderUpdateRes = await prisma.order.update({
-    //   where: {
-    //     storeId: id,
-
-    //     userEmail: reviewData.reviewerEmail,
-    //     projuctJson: IN ([
-    //       reviewData.productId
-    //     ])
-    //   },
-    //   data: {
-    //     reviewCheckStatus: "REVIEWED",
-    //   },
-    // });
-
-    await updateProductReviewDefineMetafields(
-      admin,
-      reviewData.productId,
-      reviewData.storeId,
-    );
+    const sideEffectErrors = [];
 
     const storeName = brandingSettings.storeDisplayName ?? name ?? "";
 
@@ -191,55 +173,73 @@ async function postReview(request, session, admin) {
       : "";
     // client mail
 
+    try {
+      await updateProductReviewDefineMetafields(
+        admin,
+        reviewData.productId,
+        reviewData.storeId,
+      );
+    } catch (error) {
+      console.error("[WARN::api.review.metafields]", error);
+      sideEffectErrors.push("metafields");
+    }
+
     if (reviewData.reviewerEmail) {
-      await sendEmail({
-        to: reviewData.reviewerEmail,
-        from: buildFromAddress(storeName, senderEmail),
-        replyTo: replyToEmail,
-        templateName: "ConfirmEmail",
-        subject:
-          emailSettings.confirmationEmailSubject ?? "Thank you for your review",
-        templateData: {
+      try {
+        await sendEmail({
+          to: reviewData.reviewerEmail,
+          from: buildFromAddress(storeName, senderEmail),
+          replyTo: replyToEmail,
+          templateName: "ConfirmEmail",
           subject:
-            emailSettings.confirmatisonEmailSubject ??
+            emailSettings.confirmationEmailSubject ??
             "Thank you for your review",
-          storeName,
-          logo: brandingSettings.storeLogo ?? "",
-          tagline: brandingSettings.storeTagline ?? "",
-          customerName: reviewData.reviewerName ?? "",
-          emailBody,
-          buttonUrl: productUrl,
-          buttonText: "View your review",
+          templateData: {
+            subject:
+              emailSettings.confirmatisonEmailSubject ??
+              "Thank you for your review",
+            storeName,
+            logo: brandingSettings.storeLogo ?? "",
+            tagline: brandingSettings.storeTagline ?? "",
+            customerName: reviewData.reviewerName ?? "",
+            emailBody,
+            buttonUrl: productUrl,
+            buttonText: "View your review",
 
-          emailPrimaryButtonColor:
-            brandingSettings.emailPrimaryButtonColor ?? "#269e1bff",
-          emailButtonTextColor:
-            brandingSettings.emailButtonTextColor ?? "#FFFFFF",
-          emailBackgroundColor:
-            brandingSettings.emailBackgroundColor ?? "#eef0ee",
-          emailHeadingColor: brandingSettings.emailHeadingColor ?? "#303030",
-          emailBodyTextColor: brandingSettings.emailBodyTextColor ?? "#108848",
-          emailAccentBorderColor:
-            brandingSettings.emailAccentBorderColor ?? "#f0f0f0",
+            emailPrimaryButtonColor:
+              brandingSettings.emailPrimaryButtonColor ?? "#269e1bff",
+            emailButtonTextColor:
+              brandingSettings.emailButtonTextColor ?? "#FFFFFF",
+            emailBackgroundColor:
+              brandingSettings.emailBackgroundColor ?? "#eef0ee",
+            emailHeadingColor: brandingSettings.emailHeadingColor ?? "#303030",
+            emailBodyTextColor:
+              brandingSettings.emailBodyTextColor ?? "#108848",
+            emailAccentBorderColor:
+              brandingSettings.emailAccentBorderColor ?? "#f0f0f0",
 
-          product: {
-            title: reviewData.productTitle ?? "",
+            product: {
+              title: reviewData.productTitle ?? "",
+            },
+            review: {
+              rating: reviewData.rating ?? 0,
+              date: formattedDate,
+            },
+            emailFooterText: brandingSettings.emailFooterText ?? "",
+            unsubscribeUrl,
+            isShowFooterBadge: brandingSettings.isShowFooterBadge ?? false,
           },
-          review: {
-            rating: reviewData.rating ?? 0,
-            date: formattedDate,
+          smtpConfig: {
+            smtpUser: emailSettings.smtpUser,
+            smtpPassword: emailSettings.smtpPassword,
+            smtpPort: emailSettings.smtpPort,
+            smtpHost: emailSettings.smtpHost,
           },
-          emailFooterText: brandingSettings.emailFooterText ?? "",
-          unsubscribeUrl,
-          isShowFooterBadge: brandingSettings.isShowFooterBadge ?? false,
-        },
-        smtpConfig: {
-          smtpUser: emailSettings.smtpUser,
-          smtpPassword: emailSettings.smtpPassword,
-          smtpPort: emailSettings.smtpPort,
-          smtpHost: emailSettings.smtpHost,
-        },
-      });
+        });
+      } catch (error) {
+        console.error("[WARN::api.review.confirmationEmail]", error);
+        sideEffectErrors.push("confirmation_email");
+      }
     }
 
     // admin mail
@@ -284,42 +284,50 @@ async function postReview(request, session, admin) {
     }
 
     if (adminEmails.length && shouldSendAdminEmail) {
-      await sendEmail({
-        to: adminEmails[0],
-        bcc: adminEmails.slice(1),
-        from: buildFromAddress(storeName, senderEmail),
-        replyTo: replyToEmail,
-        templateName: "AdminNotify",
-        subject: adminSubject,
-        templateData: {
+      try {
+        await sendEmail({
+          to: adminEmails[0],
+          bcc: adminEmails.slice(1),
+          from: buildFromAddress(storeName, senderEmail),
+          replyTo: replyToEmail,
+          templateName: "AdminNotify",
           subject: adminSubject,
-          storeName,
-          logo: brandingSettings.storeLogo ?? "",
-          tagline: brandingSettings.storeTagline ?? "",
-          reviewerName: reviewData.reviewerName ?? "Anonymous",
-          reviewerEmail: reviewData.reviewerEmail ?? "",
-          rating: reviewData.rating ?? 0,
-          reviewBody: res.body ?? "",
-          status: res.status ?? "PENDING",
-          productTitle: reviewData.productTitle ?? "",
-          productUrl,
-          manageUrl: `https://${storeURL}/admin/apps/qorix-review/app/reviews`,
-          submittedDate: formattedDate,
-          adminEmailBody,
-        },
-        smtpConfig: {
-          smtpUser: emailSettings.smtpUser,
-          smtpPassword: emailSettings.smtpPassword,
-          smtpPort: emailSettings.smtpPort,
-          smtpHost: emailSettings.smtpHost,
-        },
-      });
+          templateData: {
+            subject: adminSubject,
+            storeName,
+            logo: brandingSettings.storeLogo ?? "",
+            tagline: brandingSettings.storeTagline ?? "",
+            reviewerName: reviewData.reviewerName ?? "Anonymous",
+            reviewerEmail: reviewData.reviewerEmail ?? "",
+            rating: reviewData.rating ?? 0,
+            reviewBody: res.body ?? "",
+            status: res.status ?? "PENDING",
+            productTitle: reviewData.productTitle ?? "",
+            productUrl,
+            manageUrl: `https://${storeURL}/admin/apps/qorix-review/app/reviews`,
+            submittedDate: formattedDate,
+            adminEmailBody,
+          },
+          smtpConfig: {
+            smtpUser: emailSettings.smtpUser,
+            smtpPassword: emailSettings.smtpPassword,
+            smtpPort: emailSettings.smtpPort,
+            smtpHost: emailSettings.smtpHost,
+          },
+        });
+      } catch (error) {
+        console.error("[WARN::api.review.adminEmail]", error);
+        sideEffectErrors.push("admin_email");
+      }
     }
 
     return sendResponse(null, {
       ok: true,
       status: 201,
-      message: "Review submitted successfully",
+      message:
+        sideEffectErrors.length > 0
+          ? "Review submitted successfully"
+          : "Review submitted successfully",
       data: res,
     });
   } catch (error) {

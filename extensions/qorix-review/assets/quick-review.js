@@ -33,6 +33,8 @@ function quickReviewWidget() {
     sortOpen: false,
     modalOpen: false,
     submitSuccess: false,
+    isError: false,
+    errorMessage: "",
     starSelected: 0,
     starHover: 0,
     isDragging: false,
@@ -125,29 +127,32 @@ function quickReviewWidget() {
 
     async getReview(defaultSort) {
       this.loading = true;
-      const productId = this.product?.id || "";
-      const response = await fetch(
-        `/apps/api/review?productId=${encodeURIComponent(productId)}&sort=${encodeURIComponent(defaultSort)}&page=${this.currentPage}&limit=${this.limit}`,
-        {
-          method: "GET",
-        },
-      );
+      try {
+        const productId = this.product?.id || "";
+        const response = await fetch(
+          `/apps/api/review?productId=${encodeURIComponent(productId)}&sort=${encodeURIComponent(defaultSort)}&page=${this.currentPage}&limit=${this.limit}`,
+          {
+            method: "GET",
+          },
+        );
 
-      const result = await response.json();
+        const result = await response.json();
 
-      if (!response.ok || result.ok === false) {
-        throw new Error(result.message || "Failed to fetch reviews");
+        if (!response.ok || result.ok === false) {
+          throw new Error(result.message || "Failed to fetch reviews");
+        }
+
+        this.reviews = result.data?.reviews || [];
+        this.currentPage = result.data?.currentPage ?? 1;
+        this.totalPages = result.data?.totalPages ?? 1;
+        this.totalReviews = result.data?.totalReviews ?? 0;
+        this.averageRating = result.data?.averageRating ?? 0;
+
+        console.log("GET Review:", result);
+        return result;
+      } finally {
+        this.loading = false;
       }
-
-      this.reviews = result.data || [];
-      this.currentPage = result.currentPage;
-      this.totalPages = result.totalPages;
-      this.totalReviews = result.totalReviews;
-      this.averageRating = result.averageRating;
-
-      console.log("GET Review:", result);
-      this.loading = false;
-      return result;
     },
 
     async submitReview(event) {
@@ -160,10 +165,14 @@ function quickReviewWidget() {
         !this.form.name.trim() ||
         !this.form.review.trim()
       ) {
-        alert("Please fill in all required fields and select a star rating.");
+        this.isError = true;
+        this.errorMessage =
+          "Please fill in all required fields and select a star rating.";
         return;
       }
 
+      this.isError = false;
+      this.errorMessage = "";
       this.dataPostLoading = true;
       console.log(
         this.form.name,
@@ -201,16 +210,18 @@ function quickReviewWidget() {
           body: formData,
         });
 
-        if (!response.ok) {
-          throw new Error("Failed to submit review");
-        }
-
         const result = await response.json();
+
+        if (!response.ok || result.ok === false) {
+          throw new Error(result.message || "Failed to submit review");
+        }
 
         console.log("Review submit result", result);
         console.log("Uploaded media URLs", result.urls || []);
 
         this.submitSuccess = true;
+        this.isError = false;
+        this.errorMessage = "";
 
         this.reviews = [result.data, ...this.reviews];
         this.totalReviews++;
@@ -228,8 +239,14 @@ function quickReviewWidget() {
       } catch (error) {
         console.error(error);
         this.dataPostLoading = false;
-        alert("Failed to submit review");
+        this.isError = true;
+        this.errorMessage = error.message || "Failed to submit review";
       }
+    },
+
+    closeErrorModal() {
+      this.isError = false;
+      this.errorMessage = "";
     },
 
     changePage(page) {
@@ -315,6 +332,8 @@ function quickReviewWidget() {
       this.starSelected = 0;
       this.starHover = 0;
       this.submitSuccess = false;
+      this.isError = false;
+      this.errorMessage = "";
       this.form = {
         name: "",
         email: "",

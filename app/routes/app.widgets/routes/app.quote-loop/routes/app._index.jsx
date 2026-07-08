@@ -71,7 +71,6 @@ export default function Index(VALUES = {}) {
 
     filterSorting: "Filter & sorting both",
     fiteringMinStart: "3 star and above",
-    reviewStats: "Show review count & verified badge",
 
     // color piker
     colors: DEFAULT_COLOR_VALUES,
