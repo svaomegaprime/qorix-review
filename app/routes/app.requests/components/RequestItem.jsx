@@ -1,6 +1,7 @@
 import StatusTrack from "./essentials/StatusTrack";
 
 export default function RequestItem({ data }) {
+  console.log("🚀 ~ loader ~ requests:", data);
   return (
     <>
       <s-modal
@@ -88,17 +89,29 @@ export default function RequestItem({ data }) {
             <s-heading>Products ({data?.products?.length ?? 0})</s-heading>
             <s-stack gap="small" style={{ paddingTop: "8px" }}>
               {data?.products?.map((product, index) => (
-                <s-grid
-                  key={index}
-                  gridTemplateColumns="1fr auto"
-                  alignItems="center"
-                  gap="base"
-                >
-                  <div style={{ display: "grid", gap: "2px" }}>
-                    <s-paragraph>{product?.title}</s-paragraph>
-                    <s-text tone="subdued">Qty: {product?.quantity}</s-text>
-                  </div>
-                </s-grid>
+                <div key={product?.productId ?? index}>
+                  <s-grid
+                    gridTemplateColumns="1fr auto"
+                    alignItems="center"
+                    gap="base"
+                  >
+                    <div style={{ display: "grid", gap: "2px" }}>
+                      <s-stack
+                        direction="inline"
+                        gap="small"
+                        alignItems="center"
+                      >
+                        <s-paragraph>{product?.title}</s-paragraph>
+                        {product?.isReviewed ? (
+                          <s-badge tone="success">REVIEWED</s-badge>
+                        ) : (
+                          <s-badge tone="caution">NOT REVIEWED</s-badge>
+                        )}
+                      </s-stack>
+                      <s-text tone="subdued">Qty: {product?.quantity}</s-text>
+                    </div>
+                  </s-grid>
+                </div>
               ))}
             </s-stack>
           </s-section>
@@ -155,7 +168,7 @@ export default function RequestItem({ data }) {
           <s-paragraph>{data?.email}</s-paragraph>
           {/* End----Request email */}
           {/* Start----Request title */}
-          <s-heading>{data?.products[0]?.title}</s-heading>
+          {/* <s-heading>{data?.products[0]?.title}</s-heading> */}
           {/* End----Request title */}
           <s-paragraph>Order {data?.orderId}</s-paragraph>
         </div>

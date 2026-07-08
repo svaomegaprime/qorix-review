@@ -6,6 +6,7 @@ import { AppError } from "../../utils/appError.server";
 import { updateProductReviewDefineMetafields } from "../../utils/updateProductReviewDefineMetafields";
 import { sendEmail } from "../../utils/sendEmail";
 import checkPublishRules from "./middleware/checkPublishRules";
+import { sendResponse } from "../../utils/sendResponse";
 
 function buildFromAddress(displayName, email) {
   const cleanEmail = String(email || "").trim();
@@ -129,6 +130,20 @@ async function postReview(request, session, admin) {
       },
     });
 
+    // const orderUpdateRes = await prisma.order.update({
+    //   where: {
+    //     storeId: id,
+
+    //     userEmail: reviewData.reviewerEmail,
+    //     projuctJson: IN ([
+    //       reviewData.productId
+    //     ])
+    //   },
+    //   data: {
+    //     reviewCheckStatus: "REVIEWED",
+    //   },
+    // });
+
     await updateProductReviewDefineMetafields(
       admin,
       reviewData.productId,
@@ -199,6 +214,18 @@ async function postReview(request, session, admin) {
           emailBody,
           buttonUrl: productUrl,
           buttonText: "View your review",
+
+          emailPrimaryButtonColor:
+            brandingSettings.emailPrimaryButtonColor ?? "#269e1bff",
+          emailButtonTextColor:
+            brandingSettings.emailButtonTextColor ?? "#FFFFFF",
+          emailBackgroundColor:
+            brandingSettings.emailBackgroundColor ?? "#eef0ee",
+          emailHeadingColor: brandingSettings.emailHeadingColor ?? "#303030",
+          emailBodyTextColor: brandingSettings.emailBodyTextColor ?? "#108848",
+          emailAccentBorderColor:
+            brandingSettings.emailAccentBorderColor ?? "#f0f0f0",
+
           product: {
             title: reviewData.productTitle ?? "",
           },
@@ -293,13 +320,15 @@ async function postReview(request, session, admin) {
       });
     }
 
-    return {
+    return sendResponse(null, {
       ok: true,
+      status: 201,
+      message: "Review submitted successfully",
       data: res,
-    };
+    });
   } catch (error) {
     console.error("[ERROR::api.review]", error);
-    return AppError.handle(error);
+    return sendResponse(null, AppError.handle(error));
   }
 }
 async function getReview(request, session, admin) {
@@ -392,20 +421,21 @@ async function getReview(request, session, admin) {
       }),
     ]);
 
-    return {
+    return sendResponse(null, {
       ok: true,
-      data: res,
-
-      totalReviews: info._count._all,
-
-      totalPages: Math.ceil(info._count._all / limit),
-      currentPage: page,
-
-      averageRating: Number((info._avg.rating || 0).toFixed(1)),
-    };
+      status: 200,
+      message: "Reviews fetched successfully",
+      data: {
+        reviews: res,
+        totalReviews: info._count._all,
+        totalPages: Math.ceil(info._count._all / limit),
+        currentPage: page,
+        averageRating: Number((info._avg.rating || 0).toFixed(1)),
+      },
+    });
   } catch (error) {
     console.error("[ERROR::api.review.getReview]", error);
-    return AppError.handle(error);
+    return sendResponse(null, AppError.handle(error));
   }
 }
 

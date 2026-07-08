@@ -21,7 +21,7 @@ model Order {
     fulfillmentStatus String
     paymentStatus     String
     userEmail         String?
-    projuctJson       Json?
+    productsJson      Json?
     reviewCheckStatus ReviewCheckStatus @default(PENDING)
     requestType       RequestType       @default(AUTOMATIC)
     totalPrice        String?

@@ -13,12 +13,33 @@ export const action = async ({ request }) => {
     const { admin } = await unauthenticated.admin(shop);
     const { id } = await getStoreData(admin);
 
+    const existReview = await prisma.review.findMany({
+      where: {
+        storeId: id,
+        productId: {
+          in: formattedOrder.products.map((item) => String(item.productId)),
+        },
+        reviewerEmail: formattedOrder.email,
+      },
+      select: { productId: true },
+    });
+
+    // Build a Set of reviewed productIds for O(1) lookup
+    const reviewedProductIds = new Set(existReview.map((r) => String(r.productId)));
+
+    // Always stamp isReviewed on every product (true or false)
+    formattedOrder.products = formattedOrder.products.map((item) => ({
+      ...item,
+      isReviewed: reviewedProductIds.has(String(item.productId)),
+    }));
+
+
     const orderFields = {
       orderId: formattedOrder.orderId,
       fulfillmentStatus: formattedOrder.fulfillmentStatus ?? "unfulfilled",
       paymentStatus: formattedOrder.status,
       userEmail: formattedOrder.email,
-      projuctJson: formattedOrder.products,
+      productsJson: formattedOrder.products,
       reviewCheckStatus: "PENDING",
       totalPrice: formattedOrder.totalPrice,
       currency: formattedOrder.currency,

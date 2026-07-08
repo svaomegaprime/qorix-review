@@ -206,6 +206,7 @@ export async function action({ request }) {
         requests: getFilteredRequests(requests, search, dateRange),
       };
     }
+    // search functionality
     case "PUT": {
       const formData = await request.formData();
       const search = formData.get("search") || "";
@@ -251,7 +252,7 @@ export async function action({ request }) {
           fulfillmentStatus: formattedOrder.fulfillmentStatus ?? "unfulfilled",
           paymentStatus: formattedOrder.status ?? "",
           userEmail: formattedOrder.email ?? "",
-          projuctJson: formattedOrder.products ?? [],
+          productsJson: formattedOrder.products ?? [],
           reviewCheckStatus: "SENT",
           requestType: "MANUAL",
           totalPrice: formattedOrder.totalPrice ?? null,
