@@ -22,6 +22,8 @@ export const action = async ({ request }) => {
       });
     }
 
+    console.log(formattedOrder.fulfillmentStatus, "fulfillmentStatus");
+
     // Start:: Get store identification data
     // Get store ID via unauthenticated admin client (correct for webhooks)
     const { admin } = await unauthenticated.admin(shop);
@@ -275,7 +277,7 @@ export const action = async ({ request }) => {
             storeSettings?.brandingSettings?.emailAccentBorderColor,
         },
       };
-      
+
 
       // Start:: Add jobs to queue
       const scheduledJobResponse = await addJobInQueue(
@@ -283,6 +285,7 @@ export const action = async ({ request }) => {
         "JOB_SCHEDULE_EMAIL",
         requestEmailData,
         requestEmailDelayMs,
+        `request_${storeId}_${formattedOrder.orderId}`,
       );
       let reminderJobResponse;
       if (storeSettings?.requestScheduling?.isReminderRequest) {
@@ -291,6 +294,7 @@ export const action = async ({ request }) => {
           "JOB_REMINDER_EMAIL",
           reminderEmailData,
           reminderEmailDelayMs,
+          `reminder_${storeId}_${formattedOrder.orderId}`,
         );
       }
       // End:: Comment

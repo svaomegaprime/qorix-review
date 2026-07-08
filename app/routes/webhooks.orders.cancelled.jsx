@@ -206,6 +206,7 @@ export const action = async ({ request }) => {
         "JOB_SCHEDULE_EMAIL",
         requestEmailData,
         requestEmailDelayMs,
+        `request_${storeId}_${formattedOrder.orderId}`,
       );
 
       const reminderJobResponse = await addJobInQueue(
@@ -213,6 +214,7 @@ export const action = async ({ request }) => {
         "JOB_REMINDER_EMAIL",
         reminderEmailData,
         reminderEmailDelayMs,
+        `reminder_${storeId}_${formattedOrder.orderId}`,
       );
       // End:: Comment
 

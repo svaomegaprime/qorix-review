@@ -5,40 +5,21 @@ import starFilled from "../../../assets/images/star-filled.svg"
 import starEmpty from "../../../assets/images/star-empty.svg"
 import ReviewPipeItem from "./elements/ReviewPipeItem"
 
-const TEMP_REVIEW_DATA = [
-    {
-        id: 1,
-        reviewerName: "Osman R.",
-        reviewerAvatar: "/reviews/reviewer/reviewer-1.png",
-        rating: 4,
-        reviewDate: "2 days ago",
-        reviewTitle: "Facial Serum Vitamin C",
-        reviewDescription: "Amazing product, my skin looks so much better after just 2 weeks. Will definitely reorder.",
-        reviewStatus: "Published",
-    },
-    {
-        id: 2,
-        reviewerName: "Hasan AB",
-        reviewerAvatar: "/reviews/reviewer/reviewer-2.png",
-        rating: 5,
-        reviewDate: "5 hours ago",
-        reviewTitle: "Facial Serum Vitamin C",
-        reviewDescription: "Arrived late and packaging was damaged. Product seems fine but not impressed.",
-        reviewStatus: "Pending",
-    },
-    {
-        id: 3,
-        reviewerName: "Hasan AB",
-        reviewerAvatar: "/reviews/reviewer/reviewer-1.png",
-        rating: 5,
-        reviewDate: "1 week ago",
-        reviewTitle: "Facial Serum Vitamin C",
-        reviewDescription: "Good results, noticed a difference in about a week. Fast shipping too.",
-        reviewStatus: "Rejected",
-    }
-]
+export default function ReviewBreakdown({ reviews = [], handleStatusUpdate, handleReviewDelete, handleReviewReply }) {
+    const totalReviews = reviews.length;
+    const averageRating = totalReviews > 0
+        ? (reviews.reduce((sum, r) => sum + r.rating, 0) / totalReviews).toFixed(1)
+        : "0.0";
+    const roundedRating = Math.round(Number(averageRating));
 
-export default function ReviewBreakdown() {
+    const ratingCounts = { 5: 0, 4: 0, 3: 0, 2: 0, 1: 0 };
+    reviews.forEach((r) => {
+        const rating = Math.round(r.rating);
+        if (ratingCounts[rating] !== undefined) {
+            ratingCounts[rating]++;
+        }
+    });
+
     return (
         <>
             <s-query-container>
@@ -49,18 +30,25 @@ export default function ReviewBreakdown() {
                             <CustomText as="h3">
                                 Recent reviews
                             </CustomText>
-                            <s-button variant="tertiary">
+                            <s-button href="/app/reviews" variant="tertiary">
+
                                 <s-stack direction="inline" alignItems="center">
+
                                     <s-paragraph tone="success">View all</s-paragraph> <s-icon tone="success" type="arrow-right" />
                                 </s-stack>
+
                             </s-button>
                         </s-stack>
                         <s-grid gap="base" paddingBlockStart="base">
-                            {TEMP_REVIEW_DATA.map((review) => (
+                            {reviews?.length > 0 ? reviews.map((review) => (
                                 <CustomSection key={review.id}>
-                                    <ReviewItem data={review} />
+                                    <ReviewItem data={review} handleStatusUpdate={handleStatusUpdate} handleReviewDelete={handleReviewDelete} handleReviewReply={handleReviewReply} />
                                 </CustomSection>
-                            ))}
+                            )) : <CustomSection>
+                                <s-stack direction="inline" alignItems="center" justifyContent="center" >
+                                    <s-paragraph>No reviews found</s-paragraph>
+                                </s-stack>
+                            </CustomSection>}
                         </s-grid>
                     </s-section>
                     {/* Recent reviews end */}
@@ -75,26 +63,31 @@ export default function ReviewBreakdown() {
                                     </CustomText>
                                     <s-box>
                                         <CustomText as="h2">
-                                            4.3
+                                            {averageRating}
                                         </CustomText>
                                         <s-grid gridTemplateColumns="repeat(5, 20px)" alignItems="center">
-                                            <s-image src={starFilled} inlineSize="fill" />
-                                            <s-image src={starFilled} inlineSize="fill" />
-                                            <s-image src={starFilled} inlineSize="fill" />
-                                            <s-image src={starFilled} inlineSize="fill" />
-                                            <s-image src={starEmpty} inlineSize="fill" />
+                                            {Array.from({ length: 5 }, (_, index) => {
+                                                const starValue = index + 1;
+                                                return (
+                                                    <s-image
+                                                        key={starValue}
+                                                        src={starValue <= roundedRating ? starFilled : starEmpty}
+                                                        inlineSize="fill"
+                                                    />
+                                                );
+                                            })}
                                         </s-grid>
                                         <s-paragraph color="subdued">
-                                            14 reviews
+                                            {totalReviews} {totalReviews === 1 ? "review" : "reviews"}
                                         </s-paragraph>
                                     </s-box>
                                 </s-stack>
                                 <s-stack>
-                                    <ReviewPipeItem starFor={5} totalReviews={14} earnedReviews={8} />
-                                    <ReviewPipeItem starFor={4} totalReviews={14} earnedReviews={3} />
-                                    <ReviewPipeItem starFor={3} totalReviews={14} earnedReviews={2} />
-                                    <ReviewPipeItem starFor={2} totalReviews={14} earnedReviews={1} />
-                                    <ReviewPipeItem starFor={1} totalReviews={14} earnedReviews={0} />
+                                    <ReviewPipeItem starFor={5} totalReviews={totalReviews} earnedReviews={ratingCounts[5]} />
+                                    <ReviewPipeItem starFor={4} totalReviews={totalReviews} earnedReviews={ratingCounts[4]} />
+                                    <ReviewPipeItem starFor={3} totalReviews={totalReviews} earnedReviews={ratingCounts[3]} />
+                                    <ReviewPipeItem starFor={2} totalReviews={totalReviews} earnedReviews={ratingCounts[2]} />
+                                    <ReviewPipeItem starFor={1} totalReviews={totalReviews} earnedReviews={ratingCounts[1]} />
                                 </s-stack>
                             </s-grid>
                         </s-section>
@@ -136,7 +129,7 @@ export default function ReviewBreakdown() {
                             </CustomText>
                             <s-grid gridTemplateColumns="1fr 1fr" gap="small" paddingBlockStart="small">
                                 <s-grid-item>
-                                    <s-clickable padding="base" borderRadius="large" overflow="hidden" border="base">
+                                    <s-clickable href="/app/requests" padding="base" borderRadius="large" overflow="hidden" border="base">
                                         <s-stack gap="small">
                                             <s-avatar src="/inbox-icon.svg" />
                                             <s-heading>Request reviews</s-heading>
@@ -144,7 +137,7 @@ export default function ReviewBreakdown() {
                                     </s-clickable>
                                 </s-grid-item>
                                 <s-grid-item>
-                                    <s-clickable padding="base" borderRadius="large" overflow="hidden" border="base">
+                                    <s-clickable href="/app/settings" padding="base" borderRadius="large" overflow="hidden" border="base">
                                         <s-stack gap="small">
                                             <s-avatar src="/settings-icon.svg" />
                                             <s-heading>App settings</s-heading>
@@ -152,7 +145,7 @@ export default function ReviewBreakdown() {
                                     </s-clickable>
                                 </s-grid-item>
                                 <s-grid-item gridColumn="span 2">
-                                    <s-clickable padding="base" borderRadius="large" overflow="hidden" border="base">
+                                    <s-clickable href="/app/widgets" padding="base" borderRadius="large" overflow="hidden" border="base">
                                         <s-stack gap="small">
                                             <s-avatar src="/desktop-icon.svg" />
                                             <s-heading>Customize widget</s-heading>

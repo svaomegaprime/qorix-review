@@ -7,13 +7,17 @@ export function createQueue(name) {
   });
 }
 
-export async function addJobInQueue(queue, jobName, data, delay) {
-  return await queue.add(jobName, data, {
+export async function addJobInQueue(queue, jobName, data, delay, jobId) {
+  const options = {
     delay: delay,
     attempts: 3,
     removeOnComplete: true,
     removeOnFail: false,
-  });
+  };
+  if (jobId) {
+    options.jobId = jobId.replace(/:/g, "_");
+  }
+  return await queue.add(jobName, data, options);
 }
 
 export async function removeJobInQueue(queue, jobId) {
