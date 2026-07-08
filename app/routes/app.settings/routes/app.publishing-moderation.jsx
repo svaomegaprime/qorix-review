@@ -9,6 +9,8 @@ import { authenticate } from "../../../shopify.server";
 import prisma from "../../../db.server";
 
 import { getStoreData } from "../../../utils/getStoreData";
+import { adminErrorResponse } from "../../../utils/adminError.server";
+import { useAdminFetcherToast } from "../../../utils/useAdminFetcherToast";
 
 export async function loader({ request }) {
   try {
@@ -27,9 +29,7 @@ export async function loader({ request }) {
 
     return { storeSettings };
   } catch (error) {
-    console.log(error);
-
-    return null;
+    return adminErrorResponse(error);
   }
 }
 
@@ -51,13 +51,14 @@ export async function action({ request }) {
       message: "upserted PublishingModerationData",
     };
   } catch (error) {
-    console.log(error);
+    return adminErrorResponse(error);
   }
 }
 
 export default function PublishingModeration() {
   const { storeSettings } = useLoaderData();
   const fetcher = useFetcher();
+  useAdminFetcherToast(fetcher);
 
   const [publishingModeration, setPublishingModeration] = useState(
     storeSettings.publishingModeration ?? DEFAULT_PUBLISHING_MODERATION,
@@ -84,7 +85,7 @@ export default function PublishingModeration() {
 
   console.log("loading:", fetcher.state);
   useEffect(() => {
-    if (fetcher.state === "idle" && fetcher.data) {
+    if (fetcher.state === "idle" && fetcher.data?.ok) {
       // Save successful
       shopify.saveBar.hide("leave-confirm-save-bar");
     }

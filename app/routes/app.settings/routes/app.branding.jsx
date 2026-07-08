@@ -13,6 +13,9 @@ import { authenticate } from "../../../shopify.server";
 import prisma from "../../../db.server";
 
 import { getStoreData } from "../../../utils/getStoreData";
+import { uploadFile } from "../../../lib/s3/uploadFile";
+import { adminErrorResponse } from "../../../utils/adminError.server";
+import { useAdminFetcherToast } from "../../../utils/useAdminFetcherToast";
 
 export async function loader({ request }) {
   try {
@@ -30,9 +33,7 @@ export async function loader({ request }) {
 
     return { storeSettings };
   } catch (error) {
-    console.log(error);
-
-    return null;
+    return adminErrorResponse(error);
   }
 }
 
@@ -47,7 +48,10 @@ export async function action({ request }) {
 
       if (!file || !(file instanceof File)) {
         return Response.json(
-          { ok: false, error: "No file uploaded or invalid file format" },
+          {
+            ok: false,
+            message: "No file uploaded or invalid file format",
+          },
           { status: 400 },
         );
       }
@@ -55,7 +59,10 @@ export async function action({ request }) {
       // 2MB server-side limit check
       if (file.size > 2 * 1024 * 1024) {
         return Response.json(
-          { ok: false, error: "File size exceeds the 2MB maximum limit" },
+          {
+            ok: false,
+            message: "File size exceeds the 2MB maximum limit",
+          },
           { status: 400 },
         );
       }
@@ -83,8 +90,7 @@ export async function action({ request }) {
       message: "upserted BrandingSettingsData",
     };
   } catch (error) {
-    console.log(error);
-    return Response.json({ ok: false, error: error.message }, { status: 500 });
+    return adminErrorResponse(error);
   }
 }
 
@@ -92,6 +98,7 @@ export default function Branding() {
   const data = useRouteLoaderData("routes/app.settings");
   const { storeSettings } = useLoaderData();
   const fetcher = useFetcher();
+  useAdminFetcherToast(fetcher);
 
   const [brandSettings, setBrandSettings] = useState(
     storeSettings.brandingSettings ?? DEFAULT_BRANDING,
@@ -221,7 +228,7 @@ export default function Branding() {
   }
 
   useEffect(() => {
-    if (fetcher.state === "idle" && fetcher.data) {
+    if (fetcher.state === "idle" && fetcher.data?.ok) {
       shopify.saveBar.hide("leave-confirm-save-bar");
     }
   }, [fetcher.state, fetcher.data]);

@@ -27,7 +27,7 @@ export const action = async ({ request }) => {
     const { admin } = await unauthenticated.admin(shop);
     const storeData = await getStoreData(admin);
     const storeId = storeData?.id;
-    // End:: Comment
+    // End:: Get store identification data
 
     // Start:: Fetch store settings database
     const storeSettings = await prisma.storeSettings.findFirst({
@@ -43,7 +43,7 @@ export const action = async ({ request }) => {
         adminNotification: true,
       },
     });
-    // End:: Comment
+    // End:: Fetch store settings database
 
     // Start:: Validate order scheduling options
     // fulfilled
@@ -78,12 +78,12 @@ export const action = async ({ request }) => {
       1000;
     const reminderEmailDelayMs =
       requestEmailDelayMs +
-      Number(storeSettings?.requestScheduling?.reminderRequestDelay) *
+      (Number(storeSettings?.requestScheduling?.reminderRequestDelay) *
         24 *
         60 *
         60 *
-        1000;
-    // End:: Comment
+        1000);
+    // End:: Validate order scheduling options
     // Start:: Check existing customer review
     let isReviewExists = false;
 
@@ -99,7 +99,7 @@ export const action = async ({ request }) => {
     if (res?.reviewerEmail === formattedOrder?.email) {
       isReviewExists = true;
     }
-    // End:: Comment
+    // End:: Check existing customer review
 
     // Start:: Format email message body
     function formetEmailBody(message) {
@@ -120,12 +120,12 @@ export const action = async ({ request }) => {
       formattedOrder.status === "refunded";
     // Start:: check order is eligible for review request and add jobs in queue
     console.log(
-      "FROM update:",
-      isFulfilled,
-      !isRefunded,
-      isCorrectOrderValue,
-      !isReviewExists,
-      !isOrderCancel,
+      "FROM update: isFulfilled",
+      isFulfilled, "isRefunded",
+      !isRefunded, "isCorrectOrderValue",
+      isCorrectOrderValue, "isReviewExists",
+      !isReviewExists, "isOrderCancel",
+      !isOrderCancel
     );
 
     if (
@@ -137,7 +137,7 @@ export const action = async ({ request }) => {
     ) {
       // Start:: Enrich products with handle and url from Shopify
       const enrichedProducts = await Promise.all(
-        (formattedOrder.products ?? []).map(async (item) => {
+        (formattedOrder.products ?? [])?.map(async (item) => {
           // Webhook gives numeric productId; GID needed for GraphQL
           const gid = item.productId
             ? String(item.productId).startsWith("gid://")
@@ -275,7 +275,7 @@ export const action = async ({ request }) => {
             storeSettings?.brandingSettings?.emailAccentBorderColor,
         },
       };
-      // End:: Comment
+      
 
       // Start:: Add jobs to queue
       const scheduledJobResponse = await addJobInQueue(

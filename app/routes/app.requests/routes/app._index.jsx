@@ -14,6 +14,8 @@ import { getStoreData } from "../../../utils/getStoreData";
 import { getFilteredRequests } from "../utils/getFilteredRequests";
 import prisma from "../../../db.server";
 import { addJobInQueue, reviewQueue } from "../../../lib/bullmq/bullmq.queue";
+import { adminErrorResponse } from "../../../utils/adminError.server";
+import { useAdminFetcherToast } from "../../../utils/useAdminFetcherToast";
 const REQUESTS_PER_PAGE = 5;
 const MODAL_REQUESTS_PER_PAGE = 8;
 const MAX_VISIBLE_PAGE_BUTTONS = 4;
@@ -57,13 +59,17 @@ const TAB_CONFIG = [
 ];
 
 export async function loader({ request }) {
-  const { session, admin } = await authenticate.admin(request);
-  const { id } = await getStoreData(admin);
-  const requests = await getRequestsWithReviewStatus(session, id);
+  try {
+    const { session, admin } = await authenticate.admin(request);
+    const { id } = await getStoreData(admin);
+    const requests = await getRequestsWithReviewStatus(session, id);
 
-  return {
-    requests,
-  };
+    return {
+      requests,
+    };
+  } catch (error) {
+    return adminErrorResponse(error);
+  }
 }
 
 function formatEmailBody(message, storeSettings, formattedOrder) {
@@ -181,101 +187,105 @@ async function bulkUpsertOrders(orderRows) {
 }
 
 export async function action({ request }) {
-  const { session, admin } = await authenticate.admin(request);
-  const { id } = await getStoreData(admin);
-  const method = request.method.toUpperCase();
+  try {
+    const { session, admin } = await authenticate.admin(request);
+    const { id } = await getStoreData(admin);
+    const method = request.method.toUpperCase();
 
-  switch (method) {
-    case "GET": {
-      const url = new URL(request.url);
-      const search = url.searchParams.get("search") || "";
-      const dateRange = url.searchParams.get("dateRange") || "all";
-      const requests = await getRequestsWithReviewStatus(session, id);
+    switch (method) {
+      case "GET": {
+        const url = new URL(request.url);
+        const search = url.searchParams.get("search") || "";
+        const dateRange = url.searchParams.get("dateRange") || "all";
+        const requests = await getRequestsWithReviewStatus(session, id);
 
-      return {
-        requests: getFilteredRequests(requests, search, dateRange),
-      };
-    }
-    case "POST": {
-      const formData = await request.formData();
-      const search = formData.get("search") || "";
-      const dateRange = formData.get("dateRange") || "all";
-      const requests = await getRequestsWithReviewStatus(session, id);
+        return {
+          requests: getFilteredRequests(requests, search, dateRange),
+        };
+      }
+      case "POST": {
+        const formData = await request.formData();
+        const search = formData.get("search") || "";
+        const dateRange = formData.get("dateRange") || "all";
+        const requests = await getRequestsWithReviewStatus(session, id);
 
-      return {
-        requests: getFilteredRequests(requests, search, dateRange),
-      };
-    }
-    // search functionality
-    case "PUT": {
-      const formData = await request.formData();
-      const search = formData.get("search") || "";
-      const dateRange = formData.get("dateRange") || "all";
-      const parsedOrders = JSON.parse(String(formData.get("orders") || "[]"));
-      const selectedOrders = Array.isArray(parsedOrders) ? parsedOrders : [];
+        return {
+          requests: getFilteredRequests(requests, search, dateRange),
+        };
+      }
+      case "PUT": {
+        const formData = await request.formData();
+        const search = formData.get("search") || "";
+        const dateRange = formData.get("dateRange") || "all";
+        const parsedOrders = JSON.parse(String(formData.get("orders") || "[]"));
+        const selectedOrders = Array.isArray(parsedOrders) ? parsedOrders : [];
 
-      const storeSettings = await prisma.storeSettings.findFirst({
-        where: {
-          storeId: id,
-        },
-        include: {
-          requestScheduling: true,
-          emailSettings: true,
-          publishingModeration: true,
-          widgetsSettings: true,
-          brandingSettings: true,
-          adminNotification: true,
-        },
-      });
-
-      const orderRows = [];
-
-      for (const formattedOrder of selectedOrders) {
-        const requestEmailData = buildRequestEmailData(
-          formattedOrder,
-          storeSettings,
-        );
-
-        const scheduledJobResponse = await addJobInQueue(
-          reviewQueue,
-          "JOB_SCHEDULE_EMAIL",
-          requestEmailData,
-          0,
-        );
-
-        orderRows.push({
-          id: randomUUID(),
-          storeId: id,
-          orderId: formattedOrder.orderId,
-          fulfillmentStatus: formattedOrder.fulfillmentStatus ?? "unfulfilled",
-          paymentStatus: formattedOrder.status ?? "",
-          userEmail: formattedOrder.email ?? "",
-          productsJson: formattedOrder.products ?? [],
-          reviewCheckStatus: "SENT",
-          requestType: "MANUAL",
-          totalPrice: formattedOrder.totalPrice ?? null,
-          currency: formattedOrder.currency ?? null,
-          redisBullmqJobId: {
-            reviewRequestId: scheduledJobResponse?.id ?? null,
-            reminderJobId: null,
+        const storeSettings = await prisma.storeSettings.findFirst({
+          where: {
+            storeId: id,
+          },
+          include: {
+            requestScheduling: true,
+            emailSettings: true,
+            publishingModeration: true,
+            widgetsSettings: true,
+            brandingSettings: true,
+            adminNotification: true,
           },
         });
+
+        const orderRows = [];
+
+        for (const formattedOrder of selectedOrders) {
+          const requestEmailData = buildRequestEmailData(
+            formattedOrder,
+            storeSettings,
+          );
+
+          const scheduledJobResponse = await addJobInQueue(
+            reviewQueue,
+            "JOB_SCHEDULE_EMAIL",
+            requestEmailData,
+            0,
+          );
+
+          orderRows.push({
+            id: randomUUID(),
+            storeId: id,
+            orderId: formattedOrder.orderId,
+            fulfillmentStatus:
+              formattedOrder.fulfillmentStatus ?? "unfulfilled",
+            paymentStatus: formattedOrder.status ?? "",
+            userEmail: formattedOrder.email ?? "",
+            productsJson: formattedOrder.products ?? [],
+            reviewCheckStatus: "SENT",
+            requestType: "MANUAL",
+            totalPrice: formattedOrder.totalPrice ?? null,
+            currency: formattedOrder.currency ?? null,
+            redisBullmqJobId: {
+              reviewRequestId: scheduledJobResponse?.id ?? null,
+              reminderJobId: null,
+            },
+          });
+        }
+
+        await bulkUpsertOrders(orderRows);
+
+        const requests = await getRequestsWithReviewStatus(session, id);
+
+        return {
+          requests: getFilteredRequests(requests, search, dateRange),
+          manualRequestResult: {
+            sent: selectedOrders.length,
+          },
+        };
       }
-
-      await bulkUpsertOrders(orderRows);
-
-      const requests = await getRequestsWithReviewStatus(session, id);
-
-      return {
-        requests: getFilteredRequests(requests, search, dateRange),
-        manualRequestResult: {
-          sent: selectedOrders.length,
-        },
-      };
+      default: {
+        return new Response("Method Not Allowed", { status: 405 });
+      }
     }
-    default: {
-      return new Response("Method Not Allowed", { status: 405 });
-    }
+  } catch (error) {
+    return adminErrorResponse(error);
   }
 }
 
@@ -298,6 +308,7 @@ export default function Requests() {
 
   // Start----useFetcher and filters state
   const fetcher = useFetcher();
+  useAdminFetcherToast(fetcher);
   const [searchQuery, setSearchQuery] = useState("");
   const [selectedDateRange, setSelectedDateRange] = useState("all");
   const [sortOrder, setSortOrder] = useState("newest");

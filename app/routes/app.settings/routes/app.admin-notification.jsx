@@ -9,6 +9,8 @@ import { authenticate } from "../../../shopify.server";
 import prisma from "../../../db.server";
 
 import { getStoreData } from "../../../utils/getStoreData";
+import { adminErrorResponse } from "../../../utils/adminError.server";
+import { useAdminFetcherToast } from "../../../utils/useAdminFetcherToast";
 
 export async function loader({ request }) {
   try {
@@ -26,9 +28,7 @@ export async function loader({ request }) {
 
     return { storeSettings };
   } catch (error) {
-    console.log(error);
-
-    return null;
+    return adminErrorResponse(error);
   }
 }
 
@@ -51,12 +51,13 @@ export async function action({ request }) {
       message: "upserted AdminNotificationData",
     };
   } catch (error) {
-    console.log(error);
+    return adminErrorResponse(error);
   }
 }
 export default function AdminNotification() {
   const { storeSettings } = useLoaderData();
   const fetcher = useFetcher();
+  useAdminFetcherToast(fetcher);
 
   const [adminNotification, setAdminNotification] = useState(
     storeSettings.adminNotification ?? DEFAULT_ADMIN_NOTIFICATION,
@@ -115,7 +116,7 @@ export default function AdminNotification() {
   }
 
   useEffect(() => {
-    if (fetcher.state === "idle" && fetcher.data) {
+    if (fetcher.state === "idle" && fetcher.data?.ok) {
       shopify.saveBar.hide("leave-confirm-save-bar");
     }
   }, [fetcher.state, fetcher.data]);

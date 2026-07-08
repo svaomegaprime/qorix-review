@@ -9,6 +9,8 @@ import { useState, useRef } from "react";
 import { authenticate } from "../../../shopify.server";
 import prisma from "../../../db.server";
 import { getStoreData } from "../../../utils/getStoreData";
+import { adminErrorResponse } from "../../../utils/adminError.server";
+import { useAdminFetcherToast } from "../../../utils/useAdminFetcherToast";
 
 const REVIEWS_PER_PAGE = 8;
 const EXPORT_PREVIEW_LIMIT = 5;
@@ -69,30 +71,34 @@ function buildExportRows(reviewList) {
 }
 
 export async function loader({ request }) {
-  const { admin } = await authenticate.admin(request);
-  const storeData = await getStoreData(admin);
-  const reviews = await prisma.review.findMany({
-    where: {
-      storeId: storeData.id,
-    },
-    include: {
-      attachments: true,
-      reply: true,
-    },
-  });
-  const storeSettings = await prisma.storeSettings.findUnique({
-    where: {
-      storeId: storeData.id,
-    },
-    include: {
-      publishingModeration: true,
-    },
-  });
+  try {
+    const { admin } = await authenticate.admin(request);
+    const storeData = await getStoreData(admin);
+    const reviews = await prisma.review.findMany({
+      where: {
+        storeId: storeData.id,
+      },
+      include: {
+        attachments: true,
+        reply: true,
+      },
+    });
+    const storeSettings = await prisma.storeSettings.findUnique({
+      where: {
+        storeId: storeData.id,
+      },
+      include: {
+        publishingModeration: true,
+      },
+    });
 
-  return {
-    reviews: reviews,
-    storeSettings: storeSettings,
-  };
+    return {
+      reviews: reviews,
+      storeSettings: storeSettings,
+    };
+  } catch (error) {
+    return adminErrorResponse(error);
+  }
 }
 
 async function getFilteredReviews(storeId, search, rating, productId) {
@@ -127,107 +133,111 @@ async function getFilteredReviews(storeId, search, rating, productId) {
 }
 
 export async function action({ request }) {
-  const { admin } = await authenticate.admin(request);
-  const storeData = await getStoreData(admin);
-  const method = request.method.toUpperCase();
+  try {
+    const { admin } = await authenticate.admin(request);
+    const storeData = await getStoreData(admin);
+    const method = request.method.toUpperCase();
 
-  switch (method) {
-    case "GET": {
-      const url = new URL(request.url);
-      const search = url.searchParams.get("search") || "";
-      const rating = url.searchParams.get("rating") || "all";
-      const productId = url.searchParams.get("productId") || "all";
-      const reviews = await getFilteredReviews(
-        storeData.id,
-        search,
-        rating,
-        productId,
-      );
-      return { reviews };
-    }
-    case "POST": {
-      const formData = await request.formData();
-      const search = formData.get("search") || "";
-      const rating = formData.get("rating") || "all";
-      const productId = formData.get("productId") || "all";
-      const reviews = await getFilteredReviews(
-        storeData.id,
-        search,
-        rating,
-        productId,
-      );
-      return { reviews };
-    }
-    case "PATCH": {
-      const formData = await request.formData();
-      const reviewId = formData.get("reviewId");
-      const status = formData.get("status");
-
-      if (reviewId && status) {
-        await prisma.review.update({
-          where: { id: reviewId },
-          data: { status: status },
-        });
+    switch (method) {
+      case "GET": {
+        const url = new URL(request.url);
+        const search = url.searchParams.get("search") || "";
+        const rating = url.searchParams.get("rating") || "all";
+        const productId = url.searchParams.get("productId") || "all";
+        const reviews = await getFilteredReviews(
+          storeData.id,
+          search,
+          rating,
+          productId,
+        );
+        return { reviews };
       }
-
-      const search = formData.get("search") || "";
-      const rating = formData.get("rating") || "all";
-      const productId = formData.get("productId") || "all";
-      const reviews = await getFilteredReviews(
-        storeData.id,
-        search,
-        rating,
-        productId,
-      );
-      return { reviews };
-    }
-    case "DELETE": {
-      const formData = await request.formData();
-      const reviewId = formData.get("reviewId");
-
-      if (reviewId) {
-        await prisma.review.delete({
-          where: { id: reviewId },
-        });
+      case "POST": {
+        const formData = await request.formData();
+        const search = formData.get("search") || "";
+        const rating = formData.get("rating") || "all";
+        const productId = formData.get("productId") || "all";
+        const reviews = await getFilteredReviews(
+          storeData.id,
+          search,
+          rating,
+          productId,
+        );
+        return { reviews };
       }
+      case "PATCH": {
+        const formData = await request.formData();
+        const reviewId = formData.get("reviewId");
+        const status = formData.get("status");
 
-      const search = formData.get("search") || "";
-      const rating = formData.get("rating") || "all";
-      const productId = formData.get("productId") || "all";
-      const reviews = await getFilteredReviews(
-        storeData.id,
-        search,
-        rating,
-        productId,
-      );
-      return { reviews };
-    }
-    case "PUT": {
-      const formData = await request.formData();
-      const reviewId = formData.get("reviewId");
-      const body = formData.get("body");
+        if (reviewId && status) {
+          await prisma.review.update({
+            where: { id: reviewId },
+            data: { status: status },
+          });
+        }
 
-      if (reviewId && body) {
-        await prisma.review.update({
-          where: { id: reviewId },
-          data: { reply: { create: { body } } },
-        });
+        const search = formData.get("search") || "";
+        const rating = formData.get("rating") || "all";
+        const productId = formData.get("productId") || "all";
+        const reviews = await getFilteredReviews(
+          storeData.id,
+          search,
+          rating,
+          productId,
+        );
+        return { reviews };
       }
+      case "DELETE": {
+        const formData = await request.formData();
+        const reviewId = formData.get("reviewId");
 
-      const search = formData.get("search") || "";
-      const rating = formData.get("rating") || "all";
-      const productId = formData.get("productId") || "all";
-      const reviews = await getFilteredReviews(
-        storeData.id,
-        search,
-        rating,
-        productId,
-      );
-      return { reviews };
+        if (reviewId) {
+          await prisma.review.delete({
+            where: { id: reviewId },
+          });
+        }
+
+        const search = formData.get("search") || "";
+        const rating = formData.get("rating") || "all";
+        const productId = formData.get("productId") || "all";
+        const reviews = await getFilteredReviews(
+          storeData.id,
+          search,
+          rating,
+          productId,
+        );
+        return { reviews };
+      }
+      case "PUT": {
+        const formData = await request.formData();
+        const reviewId = formData.get("reviewId");
+        const body = formData.get("body");
+
+        if (reviewId && body) {
+          await prisma.review.update({
+            where: { id: reviewId },
+            data: { reply: { create: { body } } },
+          });
+        }
+
+        const search = formData.get("search") || "";
+        const rating = formData.get("rating") || "all";
+        const productId = formData.get("productId") || "all";
+        const reviews = await getFilteredReviews(
+          storeData.id,
+          search,
+          rating,
+          productId,
+        );
+        return { reviews };
+      }
+      default: {
+        return new Response("Method Not Allowed", { status: 405 });
+      }
     }
-    default: {
-      return new Response("Method Not Allowed", { status: 405 });
-    }
+  } catch (error) {
+    return adminErrorResponse(error);
   }
 }
 
@@ -250,6 +260,7 @@ export default function Reviews() {
 
   // Start----useFetcher and filters state
   const fetcher = useFetcher();
+  useAdminFetcherToast(fetcher);
   const [searchQuery, setSearchQuery] = useState("");
   const [selectedRating, setSelectedRating] = useState("all");
   const [selectedProduct, setSelectedProduct] = useState("all");
