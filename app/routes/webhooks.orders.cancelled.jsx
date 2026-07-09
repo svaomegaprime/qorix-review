@@ -4,6 +4,7 @@ import prisma from "../db.server";
 import { getStoreData } from "../utils/getStoreData";
 import { addJobInQueue } from "../lib/bullmq/bullmq.queue";
 import { reviewQueue } from "../lib/bullmq/bullmq.queue";
+import { getProduct } from "../utils/getProduct";
 
 export const action = async ({ request }) => {
   const { topic, shop, payload } = await authenticate.webhook(request);
@@ -101,6 +102,47 @@ export const action = async ({ request }) => {
       formattedOrder.status === "refunded";
 
     if (isOrderCancel) {
+      // Start:: Enrich products with handle and url from Shopify
+      const enrichedProducts = await Promise.all(
+        (formattedOrder.products ?? [])?.map(async (item) => {
+          const gid = item.productId
+            ? String(item.productId).startsWith("gid://")
+              ? item.productId
+              : `gid://shopify/Product/${item.productId}`
+            : null;
+
+          if (!gid) return item;
+
+          try {
+            const product = await getProduct(admin, gid);
+            const productHandle =
+              product?.handle ?? item.productHandle ?? item.handle ?? null;
+            const productUrl =
+              product?.onlineStoreUrl ??
+              (productHandle
+                ? `https://${shop}/products/${productHandle}?isOpen=true&orderId=${formattedOrder?.orderId.split("#")[1]}`
+                : null);
+
+            return {
+              ...item,
+              productHandle,
+              handle: productHandle,
+              image: product?.featuredImage?.url ?? item.image ?? null,
+              url: productUrl ?? item.url ?? null,
+            };
+          } catch (error) {
+            console.error("Failed to enrich order product", {
+              productId: item.productId,
+              error,
+            });
+            return item;
+          }
+        }),
+      );
+
+      formattedOrder.products = enrichedProducts;
+      // End:: Enrich products
+
       // Start:: Prepare email templates data
       const requestEmailData = {
         to: formattedOrder.email,
@@ -281,6 +323,7 @@ function formatOrder(order) {
   const avatar = `https://www.gravatar.com/avatar/${emailHash}?d=identicon`;
 
   return {
+    id: order.name,
     orderId: order.name,
     fullName,
     email,

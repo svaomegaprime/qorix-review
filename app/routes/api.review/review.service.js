@@ -56,6 +56,9 @@ async function postReview(request, session, admin) {
     const { id, name, storeURL, email } = await getStoreContext(session, admin);
 
     const formData = await request.formData();
+    const url = new URL(request.url);
+    const isOpen = Boolean(url.searchParams.get("isOpen")) || true;
+    const orderId = "#" + url.searchParams.get("orderId") || "";
     // review.service.js
 
     const storeSettings = await prisma.storeSettings.findFirst({
@@ -127,6 +130,60 @@ async function postReview(request, session, admin) {
         attachments: true,
       },
     });
+
+    if (isOpen) {
+      await prisma.$transaction(async (tx) => {
+        const order = await tx.order.findUnique({
+          where: {
+            storeId_orderId: {
+              storeId: id,
+              orderId,
+            },
+          },
+        });
+
+        if (!order) {
+          throw new Error("Order not found");
+        }
+
+        if (!Array.isArray(order.productsJson)) {
+          throw new Error("Invalid productsJson format");
+        }
+
+        const productIdToMatch = Number(reviewData.productId);
+
+        const productExists = order.productsJson.some(
+          (product) => product.productId === productIdToMatch,
+        );
+
+        if (!productExists) {
+          throw new Error("Product not found in order");
+        }
+
+        const updatedProducts = order.productsJson.map((product) =>
+          product.productId === productIdToMatch
+            ? { ...product, isReviewed: true }
+            : product,
+        );
+
+        const allReviewed =
+          updatedProducts.length > 0 &&
+          updatedProducts.every((product) => product.isReviewed === true);
+
+        await tx.order.update({
+          where: {
+            storeId_orderId: {
+              storeId: id,
+              orderId,
+            },
+          },
+          data: {
+            productsJson: updatedProducts,
+            ...(allReviewed && { reviewCheckStatus: "REVIEWED" }),
+          },
+        });
+      });
+    }
 
     const sideEffectErrors = [];
 
@@ -342,9 +399,26 @@ async function getReview(request, session, admin) {
     const sort = url.searchParams.get("sort") || "ALL";
     const page = Number(url.searchParams.get("page")) || 1;
     const limit = Number(url.searchParams.get("limit")) || 10;
+    const isOpen = Boolean(url.searchParams.get("isOpen")) || true;
+    const orderId = "#" + url.searchParams.get("orderId") || "";
 
     const { id } = await getStoreContext(session, admin);
+    console.log("isOpen", isOpen, orderId);
 
+    if (isOpen) {
+      await prisma.order.updateMany({
+        where: {
+          storeId: id,
+          orderId: orderId,
+          productsJson: {
+            array_contains: [{ productId: Number(productId) }],
+          },
+        },
+        data: {
+          reviewCheckStatus: "OPENED",
+        },
+      });
+    }
     // Base query
     const query = {
       where: {

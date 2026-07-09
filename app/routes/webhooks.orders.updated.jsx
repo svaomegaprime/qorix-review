@@ -80,11 +80,11 @@ export const action = async ({ request }) => {
       1000;
     const reminderEmailDelayMs =
       requestEmailDelayMs +
-      (Number(storeSettings?.requestScheduling?.reminderRequestDelay) *
+      Number(storeSettings?.requestScheduling?.reminderRequestDelay) *
         24 *
         60 *
         60 *
-        1000);
+        1000;
     // End:: Validate order scheduling options
     // Start:: Check existing customer review
     let isReviewExists = false;
@@ -123,11 +123,15 @@ export const action = async ({ request }) => {
     // Start:: check order is eligible for review request and add jobs in queue
     console.log(
       "FROM update: isFulfilled",
-      isFulfilled, "isRefunded",
-      !isRefunded, "isCorrectOrderValue",
-      isCorrectOrderValue, "isReviewExists",
-      !isReviewExists, "isOrderCancel",
-      !isOrderCancel
+      isFulfilled,
+      "isRefunded",
+      !isRefunded,
+      "isCorrectOrderValue",
+      isCorrectOrderValue,
+      "isReviewExists",
+      !isReviewExists,
+      "isOrderCancel",
+      !isOrderCancel,
     );
 
     if (
@@ -156,7 +160,7 @@ export const action = async ({ request }) => {
             const productUrl =
               product?.onlineStoreUrl ??
               (productHandle
-                ? `https://${shop}/products/${productHandle}`
+                ? `https://${shop}/products/${productHandle}?isOpen=true&orderId=${formattedOrder?.orderId.split("#")[1]}`
                 : null);
 
             return {
@@ -277,7 +281,6 @@ export const action = async ({ request }) => {
             storeSettings?.brandingSettings?.emailAccentBorderColor,
         },
       };
-
 
       // Start:: Add jobs to queue
       const scheduledJobResponse = await addJobInQueue(
@@ -404,6 +407,7 @@ function formatOrder(order) {
   const avatar = `https://www.gravatar.com/avatar/${emailHash}?d=identicon`;
 
   return {
+    id: order.name,
     orderId: order.name,
     fullName,
     email,

@@ -129,8 +129,13 @@ function quickReviewWidget() {
       this.loading = true;
       try {
         const productId = this.product?.id || "";
+        const openFromEmail = window.location.search.includes("isOpen=true");
+        const orderId = new URLSearchParams(window.location.search).get(
+          "orderId",
+        );
+
         const response = await fetch(
-          `/apps/api/review?productId=${encodeURIComponent(productId)}&sort=${encodeURIComponent(defaultSort)}&page=${this.currentPage}&limit=${this.limit}`,
+          `/apps/api/review?productId=${encodeURIComponent(productId)}&sort=${encodeURIComponent(defaultSort)}&page=${this.currentPage}&limit=${this.limit}&isOpen=${openFromEmail}&orderId=${orderId}`,
           {
             method: "GET",
           },
@@ -159,6 +164,10 @@ function quickReviewWidget() {
       if (!this.product) return;
       const product = this.product || {};
       console.log("999090088888888", product);
+      const openFromEmail = window.location.search.includes("isOpen=true");
+      const orderId = new URLSearchParams(window.location.search).get(
+        "orderId",
+      );
 
       if (
         !this.starSelected ||
@@ -205,10 +214,13 @@ function quickReviewWidget() {
 
         console.log("Submitting...", formData);
 
-        const response = await fetch("/apps/api/review", {
-          method: "POST",
-          body: formData,
-        });
+        const response = await fetch(
+          `/apps/api/review?isOpen=${openFromEmail}&orderId=${orderId}`,
+          {
+            method: "POST",
+            body: formData,
+          },
+        );
 
         const result = await response.json();
 

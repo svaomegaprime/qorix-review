@@ -6,12 +6,13 @@ import Analytics from "../components/Analytics";
 import RequestItem from "../components/RequestItem";
 import { Prisma } from "@prisma/client";
 import { useFetcher, useLoaderData, useNavigation } from "react-router";
-import { useRef, useState } from "react";
+import { useRef, useState, Fragment } from "react";
 import { randomUUID } from "crypto";
 import getRequestsWithReviewStatus from "../utils/getRequestsWithReviewStatus";
 import { authenticate } from "../../../shopify.server";
 import { getStoreData } from "../../../utils/getStoreData";
 import { getFilteredRequests } from "../utils/getFilteredRequests";
+import { getProduct } from "../../../utils/getProduct";
 import prisma from "../../../db.server";
 import { addJobInQueue, reviewQueue } from "../../../lib/bullmq/bullmq.queue";
 import { adminErrorResponse } from "../../../utils/adminError.server";
@@ -39,16 +40,16 @@ const TAB_CONFIG = [
     tone: "success",
   },
   {
-    key: "REVIEWED",
-    label: "Reviewed",
-    statuses: ["REVIEWED"],
-    tone: "success",
-  },
-  {
     key: "PENDING",
     label: "Pending",
     statuses: ["PENDING"],
     tone: "warning",
+  },
+  {
+    key: "REVIEWED",
+    label: "Reviewed",
+    statuses: ["REVIEWED"],
+    tone: "success",
   },
   {
     key: "FAILED",
@@ -237,6 +238,47 @@ export async function action({ request }) {
         const orderRows = [];
 
         for (const formattedOrder of selectedOrders) {
+          // Start:: Enrich products with handle and url from Shopify
+          const enrichedProducts = await Promise.all(
+            (formattedOrder.products ?? [])?.map(async (item) => {
+              const gid = item.productId
+                ? String(item.productId).startsWith("gid://")
+                  ? item.productId
+                  : `gid://shopify/Product/${item.productId}`
+                : null;
+
+              if (!gid) return item;
+
+              try {
+                const product = await getProduct(admin, gid);
+                const productHandle =
+                  product?.handle ?? item.productHandle ?? item.handle ?? null;
+                const productUrl =
+                  product?.onlineStoreUrl ??
+                  (productHandle
+                    ? `https://${session.shop}/products/${productHandle}?isOpen=true&orderId=${formattedOrder?.orderId.split("#")[1]}`
+                    : null);
+
+                return {
+                  ...item,
+                  productHandle,
+                  handle: productHandle,
+                  image: product?.featuredImage?.url ?? item.image ?? null,
+                  url: productUrl ?? item.url ?? null,
+                };
+              } catch (error) {
+                console.error("Failed to enrich order product", {
+                  productId: item.productId,
+                  error,
+                });
+                return item;
+              }
+            }),
+          );
+
+          formattedOrder.products = enrichedProducts;
+          // End:: Enrich products
+
           const requestEmailData = buildRequestEmailData(
             formattedOrder,
             storeSettings,
@@ -525,11 +567,11 @@ export default function Requests() {
                         textOverflow: "ellipsis",
                       }}
                     >
-                      {item.products?.map((product) => (
-                        <>
+                      {item.products?.map((product, index) => (
+                        <Fragment key={product?.productId || index}>
                           {product?.title + ", " || "-"}
                           <br />
-                        </>
+                        </Fragment>
                       ))}
                     </s-text>
                   </s-table-cell>
