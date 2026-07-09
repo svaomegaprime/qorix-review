@@ -39,45 +39,85 @@ export const action = async ({ request }) => {
       fulfillmentStatus: formattedOrder.fulfillmentStatus ?? "unfulfilled",
       paymentStatus: formattedOrder.status,
       userEmail: formattedOrder.email,
-      productsJson: formattedOrder.products,
       reviewCheckStatus: "PENDING",
       totalPrice: formattedOrder.totalPrice,
       currency: formattedOrder.currency,
     };
 
+    const upsertLineItems = async (tx, orderDbId) => {
+      await tx.orderLineItem.deleteMany({
+        where: { orderId: orderDbId },
+      });
+
+      if (formattedOrder.products && formattedOrder.products.length > 0) {
+        await tx.orderLineItem.createMany({
+          data: formattedOrder.products.map((p) => ({
+            orderId: orderDbId,
+            productId: String(p.productId),
+            title: p.title,
+            quantity: p.quantity,
+            handle: p.productHandle ?? p.handle ?? null,
+            url: p.url ?? null,
+            image: p.image ?? null,
+            isReviewed: p.isReviewed ?? false,
+          })),
+        });
+      }
+    };
+
     try {
-      await prisma.order.upsert({
-        where: {
-          storeId_orderId: {
-            storeId: id,
-            orderId: formattedOrder.orderId,
+      await prisma.$transaction(async (tx) => {
+        // Upsert order header
+        const orderDb = await tx.order.upsert({
+          where: {
+            storeId_orderId: {
+              storeId: id,
+              orderId: formattedOrder.orderId,
+            },
           },
-        },
-        update: orderFields,
-        create: {
-          ...orderFields,
-          store: { connect: { storeGID: id } },
-        },
+          update: orderFields,
+          create: {
+            ...orderFields,
+            store: { connect: { storeGID: id } },
+          },
+        });
+
+        await upsertLineItems(tx, orderDb.id);
       });
     } catch (error) {
-      if (error?.code !== "P2002") {
-        throw error;
-      }
-
-      console.warn("Duplicate order create webhook, updating existing order", {
-        storeId: id,
-        orderId: formattedOrder.orderId,
-      });
-
-      await prisma.order.update({
-        where: {
-          storeId_orderId: {
+      // P2002: duplicate webhook — the order already exists; fall back to a plain update
+      if (error?.code === "P2002") {
+        console.warn(
+          "Duplicate order create webhook, updating existing order",
+          {
             storeId: id,
             orderId: formattedOrder.orderId,
           },
-        },
-        data: orderFields,
-      });
+        );
+
+        await prisma.$transaction(async (tx) => {
+          const existingOrder = await tx.order.findUnique({
+            where: {
+              storeId_orderId: {
+                storeId: id,
+                orderId: formattedOrder.orderId,
+              },
+            },
+          });
+
+          if (existingOrder) {
+            await tx.order.update({
+              where: { id: existingOrder.id },
+              data: orderFields,
+            });
+
+            await upsertLineItems(tx, existingOrder.id);
+          }
+        });
+      } else {
+        console.error("Failed to upsert order and line items", error);
+        throw error;
+      }
     }
 
     return new Response(JSON.stringify(formattedOrder), {

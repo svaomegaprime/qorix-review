@@ -343,40 +343,63 @@ export const action = async ({ request }) => {
       // End:: Stamp isReviewed
 
       // Start:: Upsert order job IDs (update if exists, create if not)
-      await prisma.order.upsert({
-        where: {
-          storeId_orderId: {
+      await prisma.$transaction(async (tx) => {
+        const orderDb = await tx.order.upsert({
+          where: {
+            storeId_orderId: {
+              storeId: storeId,
+              orderId: formattedOrder.orderId,
+            },
+          },
+          update: {
+            fulfillmentStatus: formattedOrder.fulfillmentStatus ?? "unfulfilled",
+            paymentStatus: formattedOrder.status,
+            reviewCheckStatus: "PENDING",
+            requestType: "AUTOMATIC",
+            redisBullmqJobId: {
+              reviewRequestId: scheduledJobResponse?.id ?? null,
+              reminderJobId: reminderJobResponse?.id ?? null,
+            },
+          },
+          create: {
             storeId: storeId,
             orderId: formattedOrder.orderId,
+            fulfillmentStatus: formattedOrder.fulfillmentStatus ?? "unfulfilled",
+            paymentStatus: formattedOrder.status ?? "",
+            userEmail: formattedOrder.email ?? "",
+            reviewCheckStatus: "PENDING",
+            requestType: "AUTOMATIC",
+            totalPrice: formattedOrder.totalPrice ?? null,
+            currency: formattedOrder.currency ?? null,
+            redisBullmqJobId: {
+              reviewRequestId: scheduledJobResponse?.id ?? null,
+              reminderJobId: reminderJobResponse?.id ?? null,
+            },
           },
-        },
-        update: {
-          fulfillmentStatus: formattedOrder.fulfillmentStatus ?? "unfulfilled",
-          paymentStatus: formattedOrder.status,
-          productsJson: formattedOrder.products,
-          reviewCheckStatus: "PENDING",
-          requestType: "AUTOMATIC",
-          redisBullmqJobId: {
-            reviewRequestId: scheduledJobResponse?.id ?? null,
-            reminderJobId: reminderJobResponse?.id ?? null,
+        });
+
+        // Delete existing line items to replace with fresh ones
+        await tx.orderLineItem.deleteMany({
+          where: {
+            orderId: orderDb.id,
           },
-        },
-        create: {
-          storeId: storeId,
-          orderId: formattedOrder.orderId,
-          fulfillmentStatus: formattedOrder.fulfillmentStatus ?? "unfulfilled",
-          paymentStatus: formattedOrder.status ?? "",
-          userEmail: formattedOrder.email ?? "",
-          productsJson: formattedOrder.products ?? [],
-          reviewCheckStatus: "PENDING",
-          requestType: "AUTOMATIC",
-          totalPrice: formattedOrder.totalPrice ?? null,
-          currency: formattedOrder.currency ?? null,
-          redisBullmqJobId: {
-            reviewRequestId: scheduledJobResponse?.id ?? null,
-            reminderJobId: reminderJobResponse?.id ?? null,
-          },
-        },
+        });
+
+        // Create line items
+        if (formattedOrder.products && formattedOrder.products.length > 0) {
+          await tx.orderLineItem.createMany({
+            data: formattedOrder.products.map((p) => ({
+              orderId: orderDb.id,
+              productId: String(p.productId),
+              title: p.title,
+              quantity: p.quantity,
+              handle: p.productHandle ?? p.handle ?? null,
+              url: p.url ?? null,
+              image: p.image ?? null,
+              isReviewed: p.isReviewed ?? false,
+            })),
+          });
+        }
       });
       // End:: Upsert order
     }

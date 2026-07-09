@@ -133,7 +133,8 @@ async function bulkUpsertOrders(orderRows) {
     return;
   }
 
-  const values = Prisma.join(
+  // 1. Bulk Upsert Orders (without productsJson column)
+  const orderValues = Prisma.join(
     orderRows.map(
       (row) =>
         Prisma.sql`(
@@ -143,7 +144,6 @@ async function bulkUpsertOrders(orderRows) {
         ${row.fulfillmentStatus},
         ${row.paymentStatus},
         ${row.userEmail},
-        ${JSON.stringify(row.productsJson)}::jsonb,
         ${row.reviewCheckStatus}::"ReviewCheckStatus",
         ${row.requestType}::"RequestType",
         ${row.totalPrice},
@@ -163,7 +163,6 @@ async function bulkUpsertOrders(orderRows) {
       "fulfillmentStatus",
       "paymentStatus",
       "userEmail",
-      "productsJson",
       "reviewCheckStatus",
       "requestType",
       "totalPrice",
@@ -172,12 +171,11 @@ async function bulkUpsertOrders(orderRows) {
       "createdAt",
       "updatedAt"
     )
-    VALUES ${values}
+    VALUES ${orderValues}
     ON CONFLICT ("storeId", "orderId") DO UPDATE SET
       "fulfillmentStatus" = EXCLUDED."fulfillmentStatus",
       "paymentStatus" = EXCLUDED."paymentStatus",
       "userEmail" = EXCLUDED."userEmail",
-      "productsJson" = EXCLUDED."productsJson",
       "reviewCheckStatus" = EXCLUDED."reviewCheckStatus",
       "requestType" = EXCLUDED."requestType",
       "totalPrice" = EXCLUDED."totalPrice",
@@ -185,6 +183,102 @@ async function bulkUpsertOrders(orderRows) {
       "redisBullmqJobId" = EXCLUDED."redisBullmqJobId",
       "updatedAt" = NOW()
   `);
+
+  // 2. Query actual Order UUID PKs (in case database had existing ones)
+  const dbOrders = await prisma.order.findMany({
+    where: {
+      OR: orderRows.map((row) => ({
+        storeId: row.storeId,
+        orderId: row.orderId,
+      })),
+    },
+    select: {
+      id: true,
+      storeId: true,
+      orderId: true,
+    },
+  });
+
+  const orderIdToUuidMap = new Map(
+    dbOrders.map((o) => [`${o.storeId}-${o.orderId}`, o.id]),
+  );
+
+  // 3. Delete existing line items for these orders to refresh them
+  await prisma.orderLineItem.deleteMany({
+    where: {
+      orderId: {
+        in: dbOrders.map((o) => o.id),
+      },
+    },
+  });
+
+  // 4. Bulk Upsert OrderLineItems
+  const lineItemRows = [];
+  for (const row of orderRows) {
+    const orderUuid = orderIdToUuidMap.get(`${row.storeId}-${row.orderId}`);
+    if (!orderUuid) continue;
+
+    const products = Array.isArray(row.productsJson) ? row.productsJson : [];
+    for (const p of products) {
+      lineItemRows.push({
+        id: randomUUID(),
+        orderId: orderUuid,
+        productId: String(p.productId),
+        title: p.title,
+        quantity: p.quantity ?? 1,
+        handle: p.productHandle ?? p.handle ?? null,
+        url: p.url ?? null,
+        image: p.image ?? null,
+        isReviewed: p.isReviewed ?? false,
+      });
+    }
+  }
+
+  if (lineItemRows.length > 0) {
+    const lineItemValues = Prisma.join(
+      lineItemRows.map(
+        (row) =>
+          Prisma.sql`(
+          ${row.id}::uuid,
+          ${row.orderId}::uuid,
+          ${row.productId},
+          ${row.title},
+          ${row.quantity}::integer,
+          ${row.handle},
+          ${row.url},
+          ${row.image},
+          ${row.isReviewed}::boolean,
+          NOW(),
+          NOW()
+        )`,
+      ),
+    );
+
+    await prisma.$executeRaw(Prisma.sql`
+      INSERT INTO "OrderLineItem" (
+        "id",
+        "orderId",
+        "productId",
+        "title",
+        "quantity",
+        "handle",
+        "url",
+        "image",
+        "isReviewed",
+        "createdAt",
+        "updatedAt"
+      )
+      VALUES ${lineItemValues}
+      ON CONFLICT ("orderId", "productId") DO UPDATE SET
+        "title" = EXCLUDED."title",
+        "quantity" = EXCLUDED."quantity",
+        "handle" = EXCLUDED."handle",
+        "url" = EXCLUDED."url",
+        "image" = EXCLUDED."image",
+        "isReviewed" = EXCLUDED."isReviewed",
+        "updatedAt" = NOW()
+    `);
+  }
 }
 
 export async function action({ request }) {
@@ -279,42 +373,95 @@ export async function action({ request }) {
           formattedOrder.products = enrichedProducts;
           // End:: Enrich products
 
-          const requestEmailData = buildRequestEmailData(
-            formattedOrder,
-            storeSettings,
-          );
-
-          const scheduledJobResponse = await addJobInQueue(
-            reviewQueue,
-            "JOB_SCHEDULE_EMAIL",
-            {
-              emailData: requestEmailData,
-              payload: {
-                storeId: id,
-                orderId: formattedOrder.orderId,
+          // Start:: Check existing reviews for this store + email
+          const existReview = await prisma.review.findMany({
+            where: {
+              storeId: id,
+              productId: {
+                in: formattedOrder.products.map((item) =>
+                  String(item.productId),
+                ),
               },
+              reviewerEmail: formattedOrder.email,
             },
-            0,
+            select: { productId: true },
+          });
+
+          const reviewedProductIds = new Set(
+            existReview.map((r) => String(r.productId)),
           );
 
-          orderRows.push({
-            id: randomUUID(),
-            storeId: id,
-            orderId: formattedOrder.orderId,
-            fulfillmentStatus:
-              formattedOrder.fulfillmentStatus ?? "unfulfilled",
-            paymentStatus: formattedOrder.status ?? "",
-            userEmail: formattedOrder.email ?? "",
-            productsJson: formattedOrder.products ?? [],
-            reviewCheckStatus: "SENT",
-            requestType: "MANUAL",
-            totalPrice: formattedOrder.totalPrice ?? null,
-            currency: formattedOrder.currency ?? null,
-            redisBullmqJobId: {
-              reviewRequestId: scheduledJobResponse?.id ?? null,
-              reminderJobId: null,
-            },
-          });
+          formattedOrder.products = formattedOrder.products.map((item) => ({
+            ...item,
+            isReviewed: reviewedProductIds.has(String(item.productId)),
+          }));
+
+          const allReviewed =
+            formattedOrder.products.length > 0 &&
+            formattedOrder.products.every(
+              (product) => product.isReviewed === true,
+            );
+          // End:: Check existing reviews
+
+          if (allReviewed) {
+            // All products already reviewed — skip email, mark as REVIEWED
+            orderRows.push({
+              id: randomUUID(),
+              storeId: id,
+              orderId: formattedOrder.orderId,
+              fulfillmentStatus:
+                formattedOrder.fulfillmentStatus ?? "unfulfilled",
+              paymentStatus: formattedOrder.status ?? "",
+              userEmail: formattedOrder.email ?? "",
+              productsJson: formattedOrder.products ?? [],
+              reviewCheckStatus: "REVIEWED",
+              requestType: "MANUAL",
+              totalPrice: formattedOrder.totalPrice ?? null,
+              currency: formattedOrder.currency ?? null,
+              redisBullmqJobId: {
+                reviewRequestId: null,
+                reminderJobId: null,
+              },
+            });
+          } else {
+            // Not all reviewed — send review request email
+            const requestEmailData = buildRequestEmailData(
+              formattedOrder,
+              storeSettings,
+            );
+
+            const scheduledJobResponse = await addJobInQueue(
+              reviewQueue,
+              "JOB_SCHEDULE_EMAIL",
+              {
+                emailData: requestEmailData,
+                payload: {
+                  storeId: id,
+                  orderId: formattedOrder.orderId,
+                },
+              },
+              0,
+            );
+
+            orderRows.push({
+              id: randomUUID(),
+              storeId: id,
+              orderId: formattedOrder.orderId,
+              fulfillmentStatus:
+                formattedOrder.fulfillmentStatus ?? "unfulfilled",
+              paymentStatus: formattedOrder.status ?? "",
+              userEmail: formattedOrder.email ?? "",
+              productsJson: formattedOrder.products ?? [],
+              reviewCheckStatus: "SENT",
+              requestType: "MANUAL",
+              totalPrice: formattedOrder.totalPrice ?? null,
+              currency: formattedOrder.currency ?? null,
+              redisBullmqJobId: {
+                reviewRequestId: scheduledJobResponse?.id ?? null,
+                reminderJobId: null,
+              },
+            });
+          }
         }
 
         await bulkUpsertOrders(orderRows);

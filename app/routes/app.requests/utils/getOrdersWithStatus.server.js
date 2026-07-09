@@ -25,7 +25,7 @@ export async function getOrdersWithStatus(orders, storeId) {
       orderId: true,
       reviewCheckStatus: true,
       requestType: true,
-      productsJson: true,
+      lineItems: true,
     },
   });
 
@@ -36,8 +36,8 @@ export async function getOrdersWithStatus(orders, storeId) {
       {
         reviewCheckStatus: order.reviewCheckStatus,
         requestType: order.requestType,
-        // productsJson is stored as an array of { productId, isReviewed, ... }
-        productsJson: Array.isArray(order.productsJson) ? order.productsJson : [],
+        // Map relational lineItems to virtual productsJson for backward compatibility
+        productsJson: order.lineItems || [],
       },
     ]),
   );

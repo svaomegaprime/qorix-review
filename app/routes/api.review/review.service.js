@@ -140,48 +140,64 @@ async function postReview(request, session, admin) {
               orderId,
             },
           },
+          include: {
+            lineItems: true,
+          },
         });
 
         if (!order) {
           throw new Error("Order not found");
         }
 
-        if (!Array.isArray(order.productsJson)) {
-          throw new Error("Invalid productsJson format");
-        }
+        const extractNumericId = (val) => {
+          if (!val) return "";
+          const str = String(val);
+          if (str.includes("/")) return str.split("/").pop();
+          return str;
+        };
 
-        const productIdToMatch = Number(reviewData.productId);
+        const productIdToMatch = extractNumericId(reviewData.productId);
 
-        const productExists = order.productsJson.some(
-          (product) => product.productId === productIdToMatch,
+        const lineItem = order.lineItems.find(
+          (item) => extractNumericId(item.productId) === productIdToMatch,
         );
 
-        if (!productExists) {
+        if (!lineItem) {
           throw new Error("Product not found in order");
         }
 
-        const updatedProducts = order.productsJson.map((product) =>
-          product.productId === productIdToMatch
-            ? { ...product, isReviewed: true }
-            : product,
-        );
-
-        const allReviewed =
-          updatedProducts.length > 0 &&
-          updatedProducts.every((product) => product.isReviewed === true);
-
-        await tx.order.update({
+        // Update the specific line item
+        await tx.orderLineItem.update({
           where: {
-            storeId_orderId: {
-              storeId: id,
-              orderId,
-            },
+            id: lineItem.id,
           },
           data: {
-            productsJson: updatedProducts,
-            ...(allReviewed && { reviewCheckStatus: "REVIEWED" }),
+            isReviewed: true,
           },
         });
+
+        // Check if all line items in this order are now reviewed
+        const remainingUnreviewed = await tx.orderLineItem.count({
+          where: {
+            orderId: order.id,
+            isReviewed: false,
+            // Exclude the one we just updated
+            id: { not: lineItem.id },
+          },
+        });
+
+        const allReviewed = remainingUnreviewed === 0;
+
+        if (allReviewed) {
+          await tx.order.update({
+            where: {
+              id: order.id,
+            },
+            data: {
+              reviewCheckStatus: "REVIEWED",
+            },
+          });
+        }
       });
     }
 
@@ -406,18 +422,41 @@ async function getReview(request, session, admin) {
     console.log("isOpen", isOpen, orderId);
 
     if (isOpen) {
-      await prisma.order.updateMany({
+      const extractNumericId = (val) => {
+        if (!val) return "";
+        const str = String(val);
+        if (str.includes("/")) return str.split("/").pop();
+        return str;
+      };
+
+      const numericProductId = extractNumericId(productId);
+
+      // Find if there's an order with this orderId and a matching lineItem
+      const orderToUpdate = await prisma.order.findFirst({
         where: {
           storeId: id,
           orderId: orderId,
-          productsJson: {
-            array_contains: [{ productId: Number(productId) }],
+          lineItems: {
+            some: {
+              productId: {
+                endsWith: numericProductId,
+              },
+            },
           },
         },
-        data: {
-          reviewCheckStatus: "OPENED",
-        },
+        select: { id: true },
       });
+
+      if (orderToUpdate) {
+        await prisma.order.update({
+          where: {
+            id: orderToUpdate.id,
+          },
+          data: {
+            reviewCheckStatus: "OPENED",
+          },
+        });
+      }
     }
     // Base query
     const query = {
