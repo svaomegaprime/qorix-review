@@ -83,13 +83,11 @@ function formatEmailBody(message, storeSettings, formattedOrder) {
     .replace(/{{product_name}}/g, formattedOrder?.products?.[0]?.title ?? "");
 }
 
-function buildRequestEmailData(formattedOrder, storeSettings) {
+function buildBaseEmailData(formattedOrder, storeSettings) {
   return {
     to: formattedOrder.email,
     from: storeSettings?.emailSettings?.smtpUser,
     replyTo: storeSettings?.brandingSettings?.storeReplyToEmail,
-    templateName: "RequestsEmail",
-    subject: storeSettings?.emailSettings?.requestEmailSubjectLine,
     smtpConfig: {
       smtpHost: storeSettings?.emailSettings?.smtpHost,
       smtpPort: storeSettings?.emailSettings?.smtpPort,
@@ -102,12 +100,6 @@ function buildRequestEmailData(formattedOrder, storeSettings) {
       timeAgo: formattedOrder?.timeAgo,
       products: formattedOrder?.products ?? [],
       storeName: storeSettings?.brandingSettings?.storeDisplayName,
-      requestEmailBody: formatEmailBody(
-        storeSettings?.emailSettings?.reminderEmailBody,
-        storeSettings,
-        formattedOrder,
-      ),
-      requestEmailButton: storeSettings?.emailSettings?.reminderEmailButton,
       storeFooterText: storeSettings?.brandingSettings?.emailFooterText ?? "",
       storeFooterLinkText:
         storeSettings?.brandingSettings?.emailFooterLinkText ?? "",
@@ -125,6 +117,88 @@ function buildRequestEmailData(formattedOrder, storeSettings) {
       emailAccentBorderColor:
         storeSettings?.brandingSettings?.emailAccentBorderColor,
     },
+  };
+}
+
+function buildRequestEmailData(formattedOrder, storeSettings) {
+  const baseEmailData = buildBaseEmailData(formattedOrder, storeSettings);
+
+  return {
+    ...baseEmailData,
+    templateName: "RequestsEmail",
+    subject: storeSettings?.emailSettings?.requestEmailSubjectLine,
+    templateData: {
+      ...baseEmailData.templateData,
+      requestEmailBody: formatEmailBody(
+        storeSettings?.emailSettings?.requestEmailBody,
+        storeSettings,
+        formattedOrder,
+      ),
+      requestEmailButton: storeSettings?.emailSettings?.requestEmailButton,
+    },
+  };
+}
+
+function buildReminderEmailData(formattedOrder, storeSettings) {
+  const baseEmailData = buildBaseEmailData(formattedOrder, storeSettings);
+
+  return {
+    ...baseEmailData,
+    templateName: "ReminderEmail",
+    subject: storeSettings?.emailSettings?.reminderSubjectLine,
+    templateData: {
+      ...baseEmailData.templateData,
+      reminderEmailBody: formatEmailBody(
+        storeSettings?.emailSettings?.reminderEmailBody,
+        storeSettings,
+        formattedOrder,
+      ),
+      reminderEmailButton: storeSettings?.emailSettings?.reminderEmailButton,
+    },
+  };
+}
+
+async function enrichOrderProducts(formattedOrder, admin, shop) {
+  const enrichedProducts = await Promise.all(
+    (formattedOrder.products ?? [])?.map(async (item) => {
+      const gid = item.productId
+        ? String(item.productId).startsWith("gid://")
+          ? item.productId
+          : `gid://shopify/Product/${item.productId}`
+        : null;
+
+      if (!gid) return item;
+
+      try {
+        const product = await getProduct(admin, gid);
+        const productHandle =
+          product?.handle ?? item.productHandle ?? item.handle ?? null;
+        const productUrl =
+          product?.onlineStoreUrl ??
+          (productHandle
+            ? `https://${shop}/products/${productHandle}?isOpen=true&orderId=${formattedOrder?.orderId.split("#")[1]}`
+            : null);
+
+        return {
+          ...item,
+          productHandle,
+          handle: productHandle,
+          image: product?.featuredImage?.url ?? item.image ?? null,
+          url: productUrl ?? item.url ?? null,
+        };
+      } catch (error) {
+        console.error("Failed to enrich order product", {
+          productId: item.productId,
+          error,
+        });
+        return item;
+      }
+    }),
+  );
+
+  return {
+    ...formattedOrder,
+    products: enrichedProducts,
   };
 }
 
@@ -475,6 +549,146 @@ export async function action({ request }) {
           },
         };
       }
+      case "PATCH": {
+        const url = new URL(request.url);
+        const isReminderEmail = url.searchParams.has("isReminderEmail");
+        const isRetryEmail = url.searchParams.has("isRetryEmail");
+
+        if (!isReminderEmail && !isRetryEmail) {
+          return new Response("Missing email action", { status: 400 });
+        }
+
+        const formData = await request.formData();
+        const search = formData.get("search") || "";
+        const dateRange = formData.get("dateRange") || "all";
+        const formattedOrder = JSON.parse(String(formData.get("order") || "{}"));
+
+        if (!formattedOrder?.orderId) {
+          return new Response("order is required", { status: 400 });
+        }
+
+        const storeSettings = await prisma.storeSettings.findFirst({
+          where: {
+            storeId: id,
+          },
+          include: {
+            requestScheduling: true,
+            emailSettings: true,
+            publishingModeration: true,
+            widgetsSettings: true,
+            brandingSettings: true,
+            adminNotification: true,
+          },
+        });
+
+        const enrichedOrder = await enrichOrderProducts(
+          formattedOrder,
+          admin,
+          session.shop,
+        );
+
+        const jobName = isReminderEmail
+          ? "JOB_REMINDER_EMAIL"
+          : "JOB_SCHEDULE_EMAIL";
+        const emailData = isReminderEmail
+          ? buildReminderEmailData(enrichedOrder, storeSettings)
+          : buildRequestEmailData(enrichedOrder, storeSettings);
+        const jobPrefix = isReminderEmail ? "reminder" : "retry";
+
+        const jobResponse = await addJobInQueue(
+          reviewQueue,
+          jobName,
+          {
+            emailData,
+            payload: {
+              storeId: id,
+              orderId: enrichedOrder.orderId,
+            },
+          },
+          0,
+          `${jobPrefix}_${id}_${enrichedOrder.orderId}_${Date.now()}`,
+        );
+
+        const existingOrder = await prisma.order.findUnique({
+          where: {
+            storeId_orderId: {
+              storeId: id,
+              orderId: enrichedOrder.orderId,
+            },
+          },
+          select: {
+            id: true,
+            redisBullmqJobId: true,
+          },
+        });
+
+        const nextRedisBullmqJobId = {
+          ...(existingOrder?.redisBullmqJobId ?? {}),
+          ...(isReminderEmail
+            ? { reminderJobId: jobResponse?.id ?? null }
+            : { reviewRequestId: jobResponse?.id ?? null }),
+        };
+
+        await prisma.$transaction(async (tx) => {
+          const orderDb = await tx.order.upsert({
+            where: {
+              storeId_orderId: {
+                storeId: id,
+                orderId: enrichedOrder.orderId,
+              },
+            },
+            update: {
+              requestType: isReminderEmail ? "REMINDER" : "MANUAL",
+              redisBullmqJobId: nextRedisBullmqJobId,
+            },
+            create: {
+              storeId: id,
+              orderId: enrichedOrder.orderId,
+              fulfillmentStatus:
+                enrichedOrder.fulfillmentStatus ?? "unfulfilled",
+              paymentStatus: enrichedOrder.status ?? "",
+              userEmail: enrichedOrder.email ?? "",
+              reviewCheckStatus: enrichedOrder.reviewCheckStatus ?? "PENDING",
+              requestType: isReminderEmail ? "REMINDER" : "MANUAL",
+              totalPrice: enrichedOrder.totalPrice ?? null,
+              currency: enrichedOrder.currency ?? null,
+              redisBullmqJobId: nextRedisBullmqJobId,
+            },
+          });
+
+          await tx.orderLineItem.deleteMany({
+            where: {
+              orderId: orderDb.id,
+            },
+          });
+
+          if (enrichedOrder.products && enrichedOrder.products.length > 0) {
+            await tx.orderLineItem.createMany({
+              data: enrichedOrder.products.map((product) => ({
+                orderId: orderDb.id,
+                productId: String(product.productId),
+                title: product.title,
+                quantity: product.quantity ?? 1,
+                handle: product.productHandle ?? product.handle ?? null,
+                url: product.url ?? null,
+                image: product.image ?? null,
+                isReviewed: product.isReviewed ?? false,
+              })),
+            });
+          }
+        });
+
+        const requests = await getRequestsWithReviewStatus(session, id);
+
+        return {
+          requests: getFilteredRequests(requests, search, dateRange),
+          emailRequestResult: {
+            orderId: enrichedOrder.orderId,
+            type: isReminderEmail ? "REMINDER" : "RETRY",
+            jobId: jobResponse?.id ?? null,
+          },
+        };
+      }
       default: {
         return new Response("Method Not Allowed", { status: 405 });
       }
@@ -549,9 +763,9 @@ export default function Requests() {
     activeTab === "ALL"
       ? baseRequests
       : baseRequests.filter((request) => {
-          const tabConfig = TAB_CONFIG.find((item) => item.key === activeTab);
-          return tabConfig?.statuses?.includes(request.reviewCheckStatus);
-        });
+        const tabConfig = TAB_CONFIG.find((item) => item.key === activeTab);
+        return tabConfig?.statuses?.includes(request.reviewCheckStatus);
+      });
 
   const sortedRequests = [...filteredRequests].sort((a, b) => {
     const dateA = new Date(a.createdAt).getTime();
@@ -666,6 +880,30 @@ export default function Requests() {
     setModalSelectedOrders(new Set());
   }
 
+  function handleReminderEmailSend(order) {
+    fetcher.submit(
+      {
+        order: JSON.stringify(order),
+        search: searchQuery,
+        dateRange: selectedDateRange,
+      },
+      { method: "PATCH", action: "?index&isReminderEmail=true" },
+    );
+
+  }
+
+  function handleRetryEmailSend(order) {
+    fetcher.submit(
+      {
+        order: JSON.stringify(order),
+        search: searchQuery,
+        dateRange: selectedDateRange,
+      },
+      { method: "PATCH", action: "?index&isRetryEmail=true" },
+    );
+
+  }
+
   if (loading) {
     return <Loader />; // Show loader while navigating to this page or when loader is fetching data
   }
@@ -701,6 +939,10 @@ export default function Requests() {
                     <s-checkbox
                       checked={modalSelectedOrders.has(item.orderId)}
                       onChange={(e) => handleCheckBox(e.target.checked, item)}
+                      disabled={item.reviewCheckStatus === "SENT" ||
+                        item.reviewCheckStatus === "OPENED" ||
+                        item.reviewCheckStatus === "REVIEWED"
+                      }
                     />
                   </s-table-cell>
                   <s-table-cell>{item.orderId}</s-table-cell>
@@ -857,8 +1099,8 @@ export default function Requests() {
                   <s-badge tone={tab.tone} color="strong">
                     {tab.statuses
                       ? baseRequests.filter((request) =>
-                          tab.statuses.includes(request.reviewCheckStatus),
-                        ).length
+                        tab.statuses.includes(request.reviewCheckStatus),
+                      ).length
                       : baseRequests.length}
                   </s-badge>
                 </TabButton>
@@ -928,7 +1170,7 @@ export default function Requests() {
                   <div key={request.id}>
                     <s-grid gridTemplateColumns="auto 1fr" gap="base">
                       <s-checkbox /> {/* Checkbox for selection of requests */}
-                      <RequestItem data={request} />
+                      <RequestItem data={request} handleReminderEmailSend={handleReminderEmailSend} handleRetryEmailSend={handleRetryEmailSend} />
                     </s-grid>
                     {index !== paginatedRequests.length - 1 && (
                       <s-stack paddingBlock="base">

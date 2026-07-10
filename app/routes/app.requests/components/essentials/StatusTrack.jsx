@@ -20,13 +20,22 @@ const COLORS = {
 export default function StatusTrack({ status }) {
   const isFailed = status === "FAILED";
   const activeStepIndex = STATUS_STEP_INDEX[status] ?? 0;
+  const failedStepIndex = 1;
 
   const getStepColor = (index) => {
-    if (isFailed && index === 0) {
-      return COLORS.failed;
+    if (isFailed) {
+      if (index < failedStepIndex) {
+        return COLORS.completed;
+      }
+
+      if (index === failedStepIndex) {
+        return COLORS.failed;
+      }
+
+      return COLORS.inactive;
     }
 
-    if (index <= activeStepIndex && !isFailed) {
+    if (index <= activeStepIndex) {
       return COLORS.completed;
     }
 
@@ -34,11 +43,11 @@ export default function StatusTrack({ status }) {
   };
 
   const getConnectorColor = (index) => {
-    if (isFailed && index === 0) {
-      return COLORS.failed;
+    if (isFailed) {
+      return index < failedStepIndex ? COLORS.failed : COLORS.connectorPending;
     }
 
-    return index <= activeStepIndex && !isFailed
+    return index <= activeStepIndex
       ? COLORS.completed
       : COLORS.connectorPending;
   };
@@ -69,7 +78,7 @@ export default function StatusTrack({ status }) {
           alignItems="center"
           justifyContent="start"
         >
-          {!isFailed &&
+          {
             STEPS.map((step, index) => (
               <div
                 key={step}
@@ -117,7 +126,7 @@ export default function StatusTrack({ status }) {
                 )}
               </div>
             ))}
-          {isFailed && (
+          {/* {isFailed && (
             <div
               style={{
                 width: "fit-content",
@@ -153,7 +162,7 @@ export default function StatusTrack({ status }) {
                 </Text>
               </div>
             </div>
-          )}
+          )} */}
         </s-grid>
       </div>
     </>

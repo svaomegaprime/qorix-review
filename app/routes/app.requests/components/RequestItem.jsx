@@ -1,6 +1,6 @@
 import StatusTrack from "./essentials/StatusTrack";
 
-export default function RequestItem({ data }) {
+export default function RequestItem({ data, handleReminderEmailSend, handleRetryEmailSend }) {
   return (
     <>
       <s-modal
@@ -40,10 +40,10 @@ export default function RequestItem({ data }) {
                   <s-paragraph>
                     {data?.createdAt
                       ? new Date(data.createdAt).toLocaleDateString("en-US", {
-                          year: "numeric",
-                          month: "short",
-                          day: "numeric",
-                        })
+                        year: "numeric",
+                        month: "short",
+                        day: "numeric",
+                      })
                       : "-"}
                   </s-paragraph>
                 </div>
@@ -209,7 +209,9 @@ export default function RequestItem({ data }) {
             <ActionButtons
               data={data}
               status={data?.reviewCheckStatus}
-              reminded={false}
+              reminded={true}
+              handleReminderEmailSend={handleReminderEmailSend}
+              handleRetryEmailSend={handleRetryEmailSend}
             />
           </div>
           {/* End----Request action buttons */}
@@ -220,13 +222,13 @@ export default function RequestItem({ data }) {
   );
 }
 
-export function ActionButtons({ status, reminded, data }) {
+export function ActionButtons({ status, reminded, data, handleReminderEmailSend, handleRetryEmailSend }) {
   return (
     <>
-      {status === "OPENED" && reminded === false && (
-        <s-button icon="notification">Send reminder</s-button>
+      {status === "OPENED" && reminded && (
+        <s-button icon="notification" onClick={() => handleReminderEmailSend(data)} >Send reminder</s-button>
       )}
-      {status === "FAILED" && <s-button icon="refresh">Retry</s-button>}
+      {status === "FAILED" && <s-button icon="refresh" onClick={() => handleRetryEmailSend(data)}>Retry</s-button>}
       <s-button
         commandFor={`order-details-modal-${data?.orderId}`}
         command="--show"
