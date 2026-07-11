@@ -627,7 +627,7 @@ export default function ReviewItem({
             />
             <s-button
               icon="delete"
-              onClick={() => handleReviewDelete(data.id)}
+              onClick={() => handleReviewDelete(data.id, data?.attachments)}
             />
           </div>
           {/* End----Review action buttons */}

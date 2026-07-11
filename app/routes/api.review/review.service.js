@@ -145,58 +145,56 @@ async function postReview(request, session, admin) {
           },
         });
 
-        if (!order) {
-          throw new Error("Order not found");
-        }
+        if (order) {
+          const extractNumericId = (val) => {
+            if (!val) return "";
+            const str = String(val);
+            if (str.includes("/")) return str.split("/").pop();
+            return str;
+          };
 
-        const extractNumericId = (val) => {
-          if (!val) return "";
-          const str = String(val);
-          if (str.includes("/")) return str.split("/").pop();
-          return str;
-        };
+          const productIdToMatch = extractNumericId(reviewData.productId);
 
-        const productIdToMatch = extractNumericId(reviewData.productId);
+          const lineItem = order.lineItems.find(
+            (item) => extractNumericId(item.productId) === productIdToMatch,
+          );
 
-        const lineItem = order.lineItems.find(
-          (item) => extractNumericId(item.productId) === productIdToMatch,
-        );
+          if (!lineItem) {
+            throw new Error("Product not found in order");
+          }
 
-        if (!lineItem) {
-          throw new Error("Product not found in order");
-        }
-
-        // Update the specific line item
-        await tx.orderLineItem.update({
-          where: {
-            id: lineItem.id,
-          },
-          data: {
-            isReviewed: true,
-          },
-        });
-
-        // Check if all line items in this order are now reviewed
-        const remainingUnreviewed = await tx.orderLineItem.count({
-          where: {
-            orderId: order.id,
-            isReviewed: false,
-            // Exclude the one we just updated
-            id: { not: lineItem.id },
-          },
-        });
-
-        const allReviewed = remainingUnreviewed === 0;
-
-        if (allReviewed) {
-          await tx.order.update({
+          // Update the specific line item
+          await tx.orderLineItem.update({
             where: {
-              id: order.id,
+              id: lineItem.id,
             },
             data: {
-              reviewCheckStatus: "REVIEWED",
+              isReviewed: true,
             },
           });
+
+          // Check if all line items in this order are now reviewed
+          const remainingUnreviewed = await tx.orderLineItem.count({
+            where: {
+              orderId: order.id,
+              isReviewed: false,
+              // Exclude the one we just updated
+              id: { not: lineItem.id },
+            },
+          });
+
+          const allReviewed = remainingUnreviewed === 0;
+
+          if (allReviewed) {
+            await tx.order.update({
+              where: {
+                id: order.id,
+              },
+              data: {
+                reviewCheckStatus: "REVIEWED",
+              },
+            });
+          }
         }
       });
     }

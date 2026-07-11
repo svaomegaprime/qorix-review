@@ -2,8 +2,11 @@ import crypto from "crypto";
 import { authenticate, unauthenticated } from "../shopify.server";
 import prisma from "../db.server";
 import { getStoreData } from "../utils/getStoreData";
-import { addJobInQueue } from "../lib/bullmq/bullmq.queue";
-import { reviewQueue } from "../lib/bullmq/bullmq.queue";
+import {
+  addJobInQueue,
+  reviewQueue,
+  removeJobInQueue,
+} from "../lib/bullmq/bullmq.queue";
 import { getProduct } from "../utils/getProduct";
 
 export const action = async ({ request }) => {
@@ -34,23 +37,29 @@ export const action = async ({ request }) => {
         adminNotification: true,
       },
     });
-    // End:: Comment
+    // End:: Fetch store settings database
 
     // Start:: Validate order scheduling options
-    // fulfilled
+    // cancelled
 
-    // const isFulfilled =
-    //   storeSettings?.requestScheduling?.isAutomaticRequest &&
-    //   formattedOrder.fulfillmentStatus === "fulfilled";
+    const isRefunded =
+      !storeSettings.requestScheduling.isSkipRefundedOrder &&
+      (formattedOrder.status === "partially_refunded" ||
+        formattedOrder.status === "refunded");
 
-    // const isRefunded =
-    //   storeSettings.requestScheduling.isSkipRefundedOrder &&
-    //   (formattedOrder.status === "partially_refunded" ||
-    //     formattedOrder.status === "refunded");
+    const isOrderCancelled =
+      !storeSettings.requestScheduling.isSkipCancelledOrder &&
+      formattedOrder.status === "cancelled";
 
-    // const isCorrectOrderValue =
-    //   Number(storeSettings.requestScheduling.minimumOrderValue) <=
-    //   Number(formattedOrder.totalPrice);
+    const isCorrectOrderValue =
+      Number(storeSettings.requestScheduling.minimumOrderValue) <=
+      Number(formattedOrder.totalPrice);
+
+    const isEnableAutomaticRequest =
+      storeSettings.requestScheduling.isAutomaticRequest;
+
+    const isEnableReminderRequest =
+      storeSettings.requestScheduling.isReminderRequest;
 
     const requestEmailDelayMs =
       Number(storeSettings?.requestScheduling?.sendRequestAfterDelivery) *
@@ -81,7 +90,7 @@ export const action = async ({ request }) => {
     if (res?.reviewerEmail === formattedOrder?.email) {
       isReviewExists = true;
     }
-    // End:: Comment
+    // End:: Check existing customer review
 
     // Start:: Format email message body
     function formetEmailBody(message) {
@@ -96,12 +105,9 @@ export const action = async ({ request }) => {
           formattedOrder?.products?.[0]?.title ?? "",
         );
     }
-    // End:: Comment
-    const isOrderCancel =
-      storeSettings.requestScheduling.isSkipCancelledOrder &&
-      formattedOrder.status === "refunded";
+    // End:: Format email message body
 
-    if (isOrderCancel) {
+    if (isRefunded && isOrderCancelled && isCorrectOrderValue) {
       // Start:: Enrich products with handle and url from Shopify
       const enrichedProducts = await Promise.all(
         (formattedOrder.products ?? [])?.map(async (item) => {
@@ -243,39 +249,45 @@ export const action = async ({ request }) => {
       // End:: Comment
 
       // Start:: Add jobs to queue
-      const scheduledJobResponse = await addJobInQueue(
-        reviewQueue,
-        "JOB_SCHEDULE_EMAIL",
-        {
-          emailData: requestEmailData,
-          payload: {
-            storeId,
-            orderId: formattedOrder.orderId,
-          },
-        },
-        requestEmailDelayMs,
-        `request_${storeId}_${formattedOrder.orderId}`,
-      );
+      let scheduledJobResponse = {};
+      let reminderJobResponse = {};
 
-      const reminderJobResponse = await addJobInQueue(
-        reviewQueue,
-        "JOB_REMINDER_EMAIL",
-        {
-          emailData: reminderEmailData,
-          payload: {
-            storeId,
-            orderId: formattedOrder.orderId,
+      if (isEnableAutomaticRequest) {
+        scheduledJobResponse = await addJobInQueue(
+          reviewQueue,
+          "JOB_SCHEDULE_EMAIL",
+          {
+            emailData: requestEmailData,
+            payload: {
+              storeId: storeId,
+              orderId: formattedOrder.orderId,
+            },
           },
-        },
-        reminderEmailDelayMs,
-        `reminder_${storeId}_${formattedOrder.orderId}`,
-      );
+          requestEmailDelayMs,
+          `request_${storeId}_${formattedOrder.orderId}`,
+        );
+      }
+
+      if (isEnableReminderRequest)
+        reminderJobResponse = await addJobInQueue(
+          reviewQueue,
+          "JOB_REMINDER_EMAIL",
+          {
+            emailData: reminderEmailData,
+            payload: {
+              storeId,
+              orderId: formattedOrder.orderId,
+            },
+          },
+          reminderEmailDelayMs,
+          `reminder_${storeId}_${formattedOrder.orderId}`,
+        );
       // End:: Comment
 
       console.log(
         "job----added done-------------=========&&&&&",
-        scheduledJobResponse.id,
-        reminderJobResponse.id,
+        scheduledJobResponse?.id,
+        reminderJobResponse?.id,
       );
 
       // Start:: Update order job IDs
@@ -289,15 +301,52 @@ export const action = async ({ request }) => {
         data: {
           fulfillmentStatus: formattedOrder.fulfillmentStatus ?? "unfulfilled",
           paymentStatus: formattedOrder.status,
-          reviewCheckStatus: "SENT",
+          reviewCheckStatus: "PENDING",
           redisBullmqJobId: {
-            reviewRequestId: scheduledJobResponse?.id,
-            reminderJobId: reminderJobResponse?.id,
+            reviewRequestId: scheduledJobResponse?.id ?? null,
+            reminderJobId: reminderJobResponse?.id ?? null,
           },
         },
       });
       // End:: Comment
     }
+
+    if (!isRefunded || !isOrderCancelled) {
+      const orderData = await prisma.order.findFirst({
+        where: {
+          storeId: storeId,
+          orderId: formattedOrder.orderId,
+        },
+      });
+      if (orderData) {
+        const redisBullmqJobId = orderData?.redisBullmqJobId;
+        if (redisBullmqJobId?.reviewRequestId) {
+          await removeJobInQueue(reviewQueue, redisBullmqJobId.reviewRequestId);
+        }
+        if (redisBullmqJobId?.reminderJobId) {
+          await removeJobInQueue(reviewQueue, redisBullmqJobId.reminderJobId);
+        }
+      }
+
+      await prisma.order.update({
+        where: {
+          storeId_orderId: {
+            storeId: storeId,
+            orderId: formattedOrder.orderId,
+          },
+        },
+        data: {
+          fulfillmentStatus: formattedOrder.fulfillmentStatus ?? "unfulfilled",
+          paymentStatus: formattedOrder.status,
+          reviewCheckStatus: "PENDING",
+          redisBullmqJobId: {
+            reviewRequestId: null,
+            reminderJobId: null,
+          },
+        },
+      });
+    }
+
     return new Response(JSON.stringify(formattedOrder), {
       status: 200,
       headers: { "Content-Type": "application/json" },
