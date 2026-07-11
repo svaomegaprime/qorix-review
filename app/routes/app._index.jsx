@@ -11,6 +11,7 @@ import { authenticate } from '../shopify.server';
 import prisma from '../db.server';
 import { getStoreData } from '../utils/getStoreData';
 import { adminErrorResponse } from '../utils/adminError.server';
+import { deleteFile } from "../lib/s3/deleteFile";
 
 export async function loader({ request }) {
   try {
@@ -65,6 +66,24 @@ export async function action({ request }) {
       case "DELETE": {
         const formData = await request.formData();
         const reviewId = formData.get("reviewId");
+        const attachmentsRaw = formData.get("attachments");
+
+        if (attachmentsRaw) {
+          try {
+            const attachments = JSON.parse(attachmentsRaw);
+            console.log(attachments);
+
+            if (Array.isArray(attachments) && attachments.length > 0) {
+              for (const attachment of attachments) {
+                if (attachment?.url) {
+                  await deleteFile(attachment.url);
+                }
+              }
+            }
+          } catch (error) {
+            console.error("Failed to delete attachments:", error);
+          }
+        }
 
         if (reviewId) {
           await prisma.review.delete({
@@ -121,10 +140,11 @@ export default function Index() {
   // End----Handle status toggle
 
   // Start----Handle review delete
-  const handleReviewDelete = (reviewId) => {
+  const handleReviewDelete = (reviewId, attachments) => {
     fetcher.submit(
       {
         reviewId,
+        attachments: attachments ? JSON.stringify(attachments) : "[]",
       },
       { method: "DELETE" },
     );
