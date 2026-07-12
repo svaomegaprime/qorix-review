@@ -4,6 +4,7 @@ import prisma from "../db.server";
 import { getStoreData } from "../utils/getStoreData";
 import { addJobInQueue } from "../lib/bullmq/bullmq.queue";
 import { reviewQueue } from "../lib/bullmq/bullmq.queue";
+import { getProduct } from "../utils/getProduct";
 
 export const action = async ({ request }) => {
   const { topic, shop, payload } = await authenticate.webhook(request);
@@ -21,12 +22,14 @@ export const action = async ({ request }) => {
       });
     }
 
+    console.log(formattedOrder.fulfillmentStatus, "fulfillmentStatus");
+
     // Start:: Get store identification data
     // Get store ID via unauthenticated admin client (correct for webhooks)
     const { admin } = await unauthenticated.admin(shop);
     const storeData = await getStoreData(admin);
     const storeId = storeData?.id;
-    // End:: Comment
+    // End:: Get store identification data
 
     // Start:: Fetch store settings database
     const storeSettings = await prisma.storeSettings.findFirst({
@@ -42,10 +45,19 @@ export const action = async ({ request }) => {
         adminNotification: true,
       },
     });
-    // End:: Comment
+    // End:: Fetch store settings database
 
     // Start:: Validate order scheduling options
     // fulfilled
+    if (!storeSettings.requestScheduling?.isAutomaticRequest) {
+      return new Response(
+        JSON.stringify({ message: "Automatic request is disabled" }),
+        {
+          status: 200,
+          headers: { "Content-Type": "application/json" },
+        },
+      );
+    }
 
     const isFulfilled =
       storeSettings?.requestScheduling?.isAutomaticRequest &&
@@ -73,7 +85,7 @@ export const action = async ({ request }) => {
         60 *
         60 *
         1000;
-    // End:: Comment
+    // End:: Validate order scheduling options
     // Start:: Check existing customer review
     let isReviewExists = false;
 
@@ -89,7 +101,7 @@ export const action = async ({ request }) => {
     if (res?.reviewerEmail === formattedOrder?.email) {
       isReviewExists = true;
     }
-    // End:: Comment
+    // End:: Check existing customer review
 
     // Start:: Format email message body
     function formetEmailBody(message) {
@@ -110,11 +122,15 @@ export const action = async ({ request }) => {
       formattedOrder.status === "refunded";
     // Start:: check order is eligible for review request and add jobs in queue
     console.log(
-      "FROM update:",
+      "FROM update: isFulfilled",
       isFulfilled,
+      "isRefunded",
       !isRefunded,
+      "isCorrectOrderValue",
       isCorrectOrderValue,
+      "isReviewExists",
       !isReviewExists,
+      "isOrderCancel",
       !isOrderCancel,
     );
 
@@ -125,7 +141,50 @@ export const action = async ({ request }) => {
       !isReviewExists &&
       !isOrderCancel
     ) {
-      // Start:: Prepare email templates data
+      // Start:: Enrich products with handle and url from Shopify
+      const enrichedProducts = await Promise.all(
+        (formattedOrder.products ?? [])?.map(async (item) => {
+          // Webhook gives numeric productId; GID needed for GraphQL
+          const gid = item.productId
+            ? String(item.productId).startsWith("gid://")
+              ? item.productId
+              : `gid://shopify/Product/${item.productId}`
+            : null;
+
+          if (!gid) return item;
+
+          try {
+            const product = await getProduct(admin, gid);
+            const productHandle =
+              product?.handle ?? item.productHandle ?? item.handle ?? null;
+            const productUrl =
+              product?.onlineStoreUrl ??
+              (productHandle
+                ? `https://${shop}/products/${productHandle}?isOpen=true&orderId=${formattedOrder?.orderId.split("#")[1]}`
+                : null);
+
+            return {
+              ...item,
+              productHandle,
+              handle: productHandle,
+              image: product?.featuredImage?.url ?? item.image ?? null,
+              url: productUrl ?? item.url ?? null,
+            };
+          } catch (error) {
+            console.error("Failed to enrich order product", {
+              productId: item.productId,
+              error,
+            });
+            return item; // fallback: keep original if fetch fails
+          }
+        }),
+      );
+
+      formattedOrder.products = enrichedProducts;
+      // End:: Enrich products
+
+      console.log("enrichedProducts", enrichedProducts);
+
       const requestEmailData = {
         to: formattedOrder.email,
         from: storeSettings?.emailSettings?.smtpUser,
@@ -148,9 +207,9 @@ export const action = async ({ request }) => {
           storeName: storeSettings?.brandingSettings?.storeDisplayName,
 
           requestEmailBody: formetEmailBody(
-            storeSettings?.emailSettings?.reminderEmailBody,
+            storeSettings?.emailSettings?.requestEmailBody,
           ),
-          requestEmailButton: storeSettings?.emailSettings?.reminderEmailButton,
+          requestEmailButton: storeSettings?.emailSettings?.requestEmailButton,
 
           storeFooterText:
             storeSettings?.brandingSettings?.emailFooterText ?? "",
@@ -222,49 +281,127 @@ export const action = async ({ request }) => {
             storeSettings?.brandingSettings?.emailAccentBorderColor,
         },
       };
-      // End:: Comment
 
       // Start:: Add jobs to queue
       const scheduledJobResponse = await addJobInQueue(
         reviewQueue,
         "JOB_SCHEDULE_EMAIL",
-        requestEmailData,
+        {
+          emailData: requestEmailData,
+          payload: {
+            storeId,
+            orderId: formattedOrder.orderId,
+          },
+        },
         requestEmailDelayMs,
+        `request_${storeId}_${formattedOrder.orderId}`,
       );
-
-      const reminderJobResponse = await addJobInQueue(
-        reviewQueue,
-        "JOB_REMINDER_EMAIL",
-        reminderEmailData,
-        reminderEmailDelayMs,
-      );
+      let reminderJobResponse;
+      if (storeSettings?.requestScheduling?.isReminderRequest) {
+        reminderJobResponse = await addJobInQueue(
+          reviewQueue,
+          "JOB_REMINDER_EMAIL",
+          {
+            emailData: reminderEmailData,
+            payload: {
+              storeId,
+              orderId: formattedOrder.orderId,
+            },
+          },
+          reminderEmailDelayMs,
+          `reminder_${storeId}_${formattedOrder.orderId}`,
+        );
+      }
       // End:: Comment
 
       console.log(
         "job----added done-------------=========&&&&&",
         scheduledJobResponse.id,
-        reminderJobResponse.id,
+        reminderJobResponse?.id,
       );
 
-      // Start:: Update order job IDs
-      await prisma.order.update({
+      // Start:: Stamp isReviewed on each product from existing reviews
+      const existReview = await prisma.review.findMany({
         where: {
-          storeId_orderId: {
+          storeId: storeId,
+          productId: {
+            in: formattedOrder.products.map((item) => String(item.productId)),
+          },
+          reviewerEmail: formattedOrder.email,
+        },
+        select: { productId: true },
+      });
+
+      const reviewedProductIds = new Set(
+        existReview.map((r) => String(r.productId)),
+      );
+
+      formattedOrder.products = formattedOrder.products.map((item) => ({
+        ...item,
+        isReviewed: reviewedProductIds.has(String(item.productId)),
+      }));
+      // End:: Stamp isReviewed
+
+      // Start:: Upsert order job IDs (update if exists, create if not)
+      await prisma.$transaction(async (tx) => {
+        const orderDb = await tx.order.upsert({
+          where: {
+            storeId_orderId: {
+              storeId: storeId,
+              orderId: formattedOrder.orderId,
+            },
+          },
+          update: {
+            fulfillmentStatus: formattedOrder.fulfillmentStatus ?? "unfulfilled",
+            paymentStatus: formattedOrder.status,
+            reviewCheckStatus: "PENDING",
+            requestType: "AUTOMATIC",
+            redisBullmqJobId: {
+              reviewRequestId: scheduledJobResponse?.id ?? null,
+              reminderJobId: reminderJobResponse?.id ?? null,
+            },
+          },
+          create: {
             storeId: storeId,
             orderId: formattedOrder.orderId,
+            fulfillmentStatus: formattedOrder.fulfillmentStatus ?? "unfulfilled",
+            paymentStatus: formattedOrder.status ?? "",
+            userEmail: formattedOrder.email ?? "",
+            reviewCheckStatus: "PENDING",
+            requestType: "AUTOMATIC",
+            totalPrice: formattedOrder.totalPrice ?? null,
+            currency: formattedOrder.currency ?? null,
+            redisBullmqJobId: {
+              reviewRequestId: scheduledJobResponse?.id ?? null,
+              reminderJobId: reminderJobResponse?.id ?? null,
+            },
           },
-        },
-        data: {
-          fulfillmentStatus: formattedOrder.fulfillmentStatus ?? "unfulfilled",
-          paymentStatus: formattedOrder.status,
-          reviewCheckStatus: "SENT",
-          redisBullmqJobId: {
-            reviewRequestId: scheduledJobResponse?.id,
-            reminderJobId: reminderJobResponse?.id,
+        });
+
+        // Delete existing line items to replace with fresh ones
+        await tx.orderLineItem.deleteMany({
+          where: {
+            orderId: orderDb.id,
           },
-        },
+        });
+
+        // Create line items
+        if (formattedOrder.products && formattedOrder.products.length > 0) {
+          await tx.orderLineItem.createMany({
+            data: formattedOrder.products.map((p) => ({
+              orderId: orderDb.id,
+              productId: String(p.productId),
+              title: p.title,
+              quantity: p.quantity,
+              handle: p.productHandle ?? p.handle ?? null,
+              url: p.url ?? null,
+              image: p.image ?? null,
+              isReviewed: p.isReviewed ?? false,
+            })),
+          });
+        }
       });
-      // End:: Comment
+      // End:: Upsert order
     }
     // End:: check order is eligible for review request and add jobs in queue
 
@@ -293,6 +430,7 @@ function formatOrder(order) {
   const avatar = `https://www.gravatar.com/avatar/${emailHash}?d=identicon`;
 
   return {
+    id: order.name,
     orderId: order.name,
     fullName,
     email,

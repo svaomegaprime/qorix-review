@@ -9,6 +9,8 @@ import { authenticate } from "../../../shopify.server";
 import prisma from "../../../db.server";
 
 import { getStoreData } from "../../../utils/getStoreData";
+import { adminErrorResponse } from "../../../utils/adminError.server";
+import { useAdminFetcherToast } from "../../../utils/useAdminFetcherToast";
 
 export async function loader({ request }) {
   try {
@@ -27,9 +29,7 @@ export async function loader({ request }) {
 
     return { storeSettings };
   } catch (error) {
-    console.log(error);
-
-    return null;
+    return adminErrorResponse(error);
   }
 }
 
@@ -46,26 +46,19 @@ export async function action({ request }) {
       },
       data,
     });
-
-    console.log(
-      "[store settings]: requestSchedulingData data",
-      publishingModerationData,
-    );
-
-    // console.log("[store settings:]requestScheduling", res);
-
     return {
       ok: true,
       message: "upserted PublishingModerationData",
     };
   } catch (error) {
-    console.log(error);
+    return adminErrorResponse(error);
   }
 }
 
 export default function PublishingModeration() {
   const { storeSettings } = useLoaderData();
   const fetcher = useFetcher();
+  useAdminFetcherToast(fetcher);
 
   const [publishingModeration, setPublishingModeration] = useState(
     storeSettings.publishingModeration ?? DEFAULT_PUBLISHING_MODERATION,
@@ -83,8 +76,6 @@ export default function PublishingModeration() {
     }
   }, [publishingModeration]);
 
-  console.log("DEFAULT_REQUEST_SCHEDULING:", publishingModeration);
-
   function handleSave() {
     fetcher.submit(publishingModeration, {
       method: "POST",
@@ -94,9 +85,7 @@ export default function PublishingModeration() {
 
   console.log("loading:", fetcher.state);
   useEffect(() => {
-    if (fetcher.state === "idle" && fetcher.data) {
-      console.log("Response:", fetcher.data);
-
+    if (fetcher.state === "idle" && fetcher.data?.ok) {
       // Save successful
       shopify.saveBar.hide("leave-confirm-save-bar");
     }
@@ -113,7 +102,6 @@ export default function PublishingModeration() {
 
   return (
     <>
-      
       <ui-save-bar id="leave-confirm-save-bar">
         <button onClick={handleSave} variant="primary" id="save-button">
           Save
@@ -152,7 +140,12 @@ export default function PublishingModeration() {
                   )
                 }
               >
-                <s-choice value="AUTO_PUBLISH" selected={publishingModeration.autoPublishRules == "AUTO_PUBLISH"}>
+                <s-choice
+                  value="AUTO_PUBLISH"
+                  selected={
+                    publishingModeration.autoPublishRules == "AUTO_PUBLISH"
+                  }
+                >
                   Auto-publish all reviews
                   <s-text slot="details">
                     Every submitted review goes live immediately — maximum
@@ -160,14 +153,24 @@ export default function PublishingModeration() {
                   </s-text>
                 </s-choice>
 
-                <s-choice value="VERIFIED_ONLY" selected={publishingModeration.autoPublishRules == "VERIFIED_ONLY"}>
+                <s-choice
+                  value="VERIFIED_ONLY"
+                  selected={
+                    publishingModeration.autoPublishRules == "VERIFIED_ONLY"
+                  }
+                >
                   Auto-publish verified purchases only
                   <s-text slot="details">
                     Only reviews from confirmed buyers go live. Unverified
                     reviews are held for manual approval.
                   </s-text>
                 </s-choice>
-                <s-choice value="MANUAL_PUBLISH" selected={publishingModeration.autoPublishRules == "MANUAL_PUBLISH"}>
+                <s-choice
+                  value="MANUAL_PUBLISH"
+                  selected={
+                    publishingModeration.autoPublishRules == "MANUAL_PUBLISH"
+                  }
+                >
                   Manual approval for all reviews
                   <s-text slot="details">
                     Every review requires your approval before it appears on

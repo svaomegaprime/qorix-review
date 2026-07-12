@@ -18,14 +18,21 @@ const getSmtpConfig = (smtpConfig) => {
   };
 };
 
-let transporter = null;
-const getTransporter = (smtpConfig) => {
-  if (transporter) return transporter;
+const transporterCache = new Map();
 
+const getTransportCacheKey = (smtp) =>
+  [smtp.host, smtp.port, smtp.user, smtp.pass].join(":");
+
+const getTransporter = (smtpConfig) => {
   const smtp = getSmtpConfig(smtpConfig);
   if (!smtp.isConfigured) return null;
 
-  transporter = nodemailer.createTransport({
+  const cacheKey = getTransportCacheKey(smtp);
+  if (transporterCache.has(cacheKey)) {
+    return transporterCache.get(cacheKey);
+  }
+
+  const transporter = nodemailer.createTransport({
     host: smtp.host,
     port: smtp.port,
     secure: smtp.secure,
@@ -34,6 +41,8 @@ const getTransporter = (smtpConfig) => {
       pass: smtp.pass,
     },
   });
+
+  transporterCache.set(cacheKey, transporter);
 
   return transporter;
 };

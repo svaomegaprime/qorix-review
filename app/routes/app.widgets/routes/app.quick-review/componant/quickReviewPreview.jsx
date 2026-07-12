@@ -2,7 +2,7 @@ import { useState } from "react";
 import reviewsData from "./review.json";
 
 const StarSVG = ({ filled, STAR_COLOR, size = 20 }) => (
-  console.log(STAR_COLOR),
+  "",
   (
     <svg
       width={size}
@@ -257,7 +257,6 @@ export default function ReviewList({
     Submit_Button_Color,
   } = colorValues;
 
-  console.log("Thsi is a color Value ", colorValues);
   const filters = ["All", 1, 2, 3, 4, 5];
 
   const filteredReviews =

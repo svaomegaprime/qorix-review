@@ -1,0 +1,176 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:v="urn:schemas-microsoft-com:vml" xmlns:o="urn:schemas-microsoft-com:office:office">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="x-apple-disable-message-reformatting">
+    <title><%= storeName %> - Reply to your review</title>
+</head>
+
+<body style="margin:0; padding:0; background:#eef0ee; font-family: Inter, Arial, sans-serif;">
+
+    <!-- Outer wrapper table: centers content, works in Outlook -->
+    <table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0" style="background:#eef0ee;">
+        <tr>
+            <td align="center" style="padding:80px 16px;">
+                <!-- Card -->
+                <table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0"
+                    style="max-width:500px; width:100%; background: <%= emailBackgroundColor %>; border-radius:18px; box-shadow:0 2px 10px rgba(0,0,0,0.06); color: <%= emailBodyTextColor %>;">
+                    <tr>
+                        <td style="padding:28px 24px 24px;">
+
+                            <!-- Header -->
+                            <table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0"
+                                style="border-bottom:1px solid <%= emailAccentBorderColor %>;">
+                                <tr>
+                                    <td align="<%= (storeLogoPosition || 'LEFT') === 'CENTER' ? 'center' : ((storeLogoPosition || 'LEFT') === 'RIGHT' ? 'right' : 'left') %>" style="padding-bottom:16px;">
+                                        <% if (storeLogo) { %>
+                                        <img src="<%= storeLogo %>" alt="<%= storeName %>" width="120"
+                                            style="height:48px; max-height:48px; object-fit:contain; display:inline-block; border:0;">
+                                        <% } else { %>
+                                        <span style="font-size:22px; font-weight:700; color:<%= emailHeadingColor %>; font-family: Inter, Arial, sans-serif;"><%= storeName %></span>
+                                        <% } %>
+                                    </td>
+                                </tr>
+                                <% if (storeTagline) { %>
+                                <tr>
+                                    <td align="<%= (storeLogoPosition || 'LEFT') === 'CENTER' ? 'center' : ((storeLogoPosition || 'LEFT') === 'RIGHT' ? 'right' : 'left') %>"
+                                        style="padding-bottom:20px; font-size:16px; color:<%= emailHeadingColor %>; font-family: Inter, Arial, sans-serif;">
+                                        <%= storeTagline %>
+                                    </td>
+                                </tr>
+                                <% } %>
+                            </table>
+
+                            <!-- Greeting -->
+                            <table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0">
+                                <tr>
+                                    <td
+                                        style="padding-top:24px; font-size:16px; line-height:1.4; color:<%= emailBodyTextColor %>; font-family: Inter, Arial, sans-serif;">
+                                        <% if (name) { %>
+                                        <p style="font-weight:550; margin:0 0 8px; color:<%= emailHeadingColor %>;">Hi <%= name %>,</p>
+                                        <% } %>
+                                        <p style="font-weight:400; margin:0;">
+                                            <%- replyEmailBody %>
+                                        </p>
+                                    </td>
+                                </tr>
+                            </table>
+
+                            <!-- ===== Your review box ===== -->
+                            <table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0"
+                                style="margin-top:16px; border:1px solid <%= emailAccentBorderColor %>; border-radius:12px;">
+                                <tr>
+                                    <!-- <td width="62" valign="middle" style="padding:12px 0 12px 12px;">
+                                        <table role="presentation" cellpadding="0" cellspacing="0" border="0" width="42"
+                                            height="42"
+                                            style="border-radius:50%; border:1px solid <%= emailAccentBorderColor %>; padding:8px;">
+                                            <tr>
+                                                <td align="center" valign="middle" style="width:42px; height:42px;">
+                                                    <svg width="40" height="40" viewBox="0 0 40 40" fill="none"
+                                                        xmlns="http://www.w3.org/2000/svg">
+                                                        <path
+                                                            d="M27.1875 15.625C27.1875 11.6562 23.9688 8.4375 20 8.4375C16.0312 8.4375 12.8125 11.6562 12.8125 15.625C12.8125 19.5938 16.0312 22.8125 20 22.8125C23.9688 22.8125 27.1875 19.5938 27.1875 15.625ZM14.6875 15.625C14.6875 12.6875 17.0625 10.3125 20 10.3125C22.9375 10.3125 25.3125 12.6875 25.3125 15.625C25.3125 18.5625 22.9375 20.9375 20 20.9375C17.0625 20.9375 14.6875 18.5625 14.6875 15.625Z"
+                                                            fill="<%= emailHeadingColor %>" />
+                                                        <path
+                                                            d="M7.96788 33.8125C8.12413 33.9062 8.28038 33.9375 8.43663 33.9375C8.74913 33.9375 9.09288 33.7812 9.24913 33.4688C11.4366 29.5938 15.5616 27.1875 19.9991 27.1875C24.4366 27.1875 28.5616 29.5938 30.7804 33.4688C31.0304 33.9062 31.6241 34.0625 32.0616 33.8125C32.4991 33.5625 32.6554 32.9688 32.4054 32.5312C29.8741 28.0937 25.1241 25.3125 19.9991 25.3125C14.8741 25.3125 10.1241 28.0937 7.59288 32.5312C7.34288 32.9688 7.49913 33.5625 7.96788 33.8125Z"
+                                                            fill="<%= emailHeadingColor %>" />
+                                                    </svg>
+                                                </td>
+                                            </tr>
+                                        </table>
+                                    </td> -->
+                                    <td valign="top"
+                                        style="padding:16px 16px 16px 12px; font-family: Inter, Arial, sans-serif;">
+                                        <div
+                                            style="font-size:16px; font-weight:550; line-height:1.4; color:<%= emailHeadingColor %>; margin-bottom:12px;">
+                                            Your review</div>
+                                        <div style="margin-bottom:8px;">
+                                            <% for (let i = 1; i <= rating; i++) { %>
+                                            <svg style="margin-right:4px;" width="20" height="20" viewBox="0 0 17 16"
+                                                fill="none" xmlns="http://www.w3.org/2000/svg">
+                                                <path
+                                                    d="M9.51964 0.855C8.97604 -0.285 7.35604 -0.285 6.81244 0.855L5.14444 4.3494L1.30564 4.8546C0.0552353 5.0202 -0.446365 6.561 0.469235 7.4298L3.27724 10.0962L2.57284 13.9026C2.34244 15.1434 3.65404 16.0962 4.76284 15.495L8.16604 13.647L11.5692 15.495C12.678 16.0962 13.9896 15.1434 13.7592 13.9026L13.0548 10.0962L15.8628 7.4298C16.7772 6.561 16.2768 5.0202 15.0264 4.8546L11.1864 4.3494L9.51964 0.855Z"
+                                                    fill="#f5a623" />
+                                            </svg>
+                                            <% } %>
+                                            <% for (let i = rating + 1; i <= 5; i++) { %>
+                                            <svg style="margin-right:4px;" width="20" height="20" viewBox="0 0 17 16"
+                                                fill="none" xmlns="http://www.w3.org/2000/svg">
+                                                <path
+                                                    d="M9.51964 0.855C8.97604 -0.285 7.35604 -0.285 6.81244 0.855L5.14444 4.3494L1.30564 4.8546C0.0552353 5.0202 -0.446365 6.561 0.469235 7.4298L3.27724 10.0962L2.57284 13.9026C2.34244 15.1434 3.65404 16.0962 4.76284 15.495L8.16604 13.647L11.5692 15.495C12.678 16.0962 13.9896 15.1434 13.7592 13.9026L13.0548 10.0962L15.8628 7.4298C16.7772 6.561 16.2768 5.0202 15.0264 4.8546L11.1864 4.3494L9.51964 0.855Z"
+                                                    fill="#B5B5B5" />
+                                            </svg>
+                                            <% } %>
+                                        </div>
+                                        <div style="font-size:16px; color:<%= emailBodyTextColor %>; line-height:1.4; font-weight:400;">
+                                            <%= review %>
+                                        </div>
+                                    </td>
+                                </tr>
+                            </table>
+
+                            <!-- ===== Reply box ===== -->
+                            <table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0"
+                                style="margin-top:16px; border:1px solid <%= emailAccentBorderColor %>; border-radius:12px;">
+                                <tr>
+                                    <td valign="top"
+                                        style="padding:16px 16px 16px 12px; font-size:16px; color:<%= emailBodyTextColor %>; line-height:1.4; font-family: Inter, Arial, sans-serif;">
+                                        <div style="font-weight:550; color:<%= emailHeadingColor %>; margin-bottom:12px;">Reply from <%= replyFrom %></div>
+                                        <div style="font-weight:400; color:<%= emailBodyTextColor %>;">"<%= reply %>"</div>
+                                    </td>
+                                </tr>
+                            </table>
+
+                            <!-- ===== CTA button ===== -->
+                            <table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0"
+                                style="margin-top:24px;">
+                                <tr>
+                                    <td align="center" bgcolor="<%= emailPrimaryButtonColor %>" style="border-radius:12px;">
+                                         <!--[if !mso]><!-->
+                                         <a href="#"
+                                             style="display:block; padding:12px; color:<%= emailButtonTextColor %>; text-decoration:none; font-size:18px; line-height:20px; font-weight:500; font-family: Inter, Arial, sans-serif;">
+                                             <%= replyEmailButton %> &rarr;
+                                         </a>
+                                         <!--<![endif]-->
+                                    </td>
+                                </tr>
+                            </table>
+
+                            <!-- Footer -->
+                            <table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0"
+                                style="border-top:1px solid <%= emailAccentBorderColor %>; margin-top:40px;">
+                                <tr>
+                                    <td align="center"
+                                        style="padding-top:16px; font-size:16px; font-weight:500; color:<%= emailBodyTextColor %>; line-height:1.2; font-family: Inter, Arial, sans-serif;">
+                                        <%= storeFooterText %> &nbsp;&middot;&nbsp;
+                                        <a href="#" style="color:<%= emailBodyTextColor %>; text-decoration:underline;"><%= storeFooterLinkText %></a>
+                                    </td>
+                                </tr>
+                                <% if (isShowFooterBadge) { %>
+                                <tr>
+                                    <td align="center"
+                                        style="padding-top:16px; font-weight:500; font-size:16px; line-height:1.2; color:<%= emailHeadingColor %>; font-family: Inter, Arial, sans-serif;">
+                                        Powered by <span style="color:#108848;">Qorix</span>
+                                    </td>
+                                </tr>
+                                <% } %>
+                            </table>
+
+                        </td>
+                    </tr>
+                </table>
+                <!-- /Card -->
+
+                <!--[if mso]>
+        </td></tr></table>
+        <![endif]-->
+
+            </td>
+        </tr>
+    </table>
+
+</body>
+
+</html>

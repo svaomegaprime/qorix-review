@@ -96,7 +96,6 @@ export default function Index() {
     BADGE_COLOR: "badgeColor", // BADGE_COLOR → badgeColor
   };
 
-  console.log("colorValues", colorValues);
   const handleChangeColorPiker = (newColor) => {
     const [key, value] = Object.entries(newColor)[0];
     setSettings((prev) => ({
@@ -126,7 +125,6 @@ export default function Index() {
     setSettings((prev) => ({ ...prev, [key]: value }));
   };
 
-
   // Start----Handlers for hide app window
   const handleHideAppWindow = () => {
     requestAppWindowClose("video_stack");
@@ -136,7 +134,6 @@ export default function Index() {
   // Start----Handlers for SaveBar
   const saveBar = useSaveBarTrigger({
     onSubmit: (formData) => {
-      console.log("SaveBar submit trigger:", formData);
       setTimeout(() => {
         requestAppWindowClose("video_stack");
       }, 2000);

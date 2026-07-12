@@ -16,7 +16,7 @@ model Review {
   body  String?
 
   status       ReviewStatus   @default(PENDING)
-  source       ReviewSource
+  source       ReviewSource?
   isVerified   Boolean        @default(false)
   attachments  Attachment[]
   helpfulCount HelpfulCount[]

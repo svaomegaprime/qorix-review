@@ -15,6 +15,8 @@ import { useFetcher, useLoaderData } from "react-router";
 import { authenticate } from "../../../shopify.server";
 import { getStoreData } from "../../../utils/getStoreData";
 import prisma from "../../../db.server";
+import { adminErrorResponse } from "../../../utils/adminError.server";
+import { useAdminFetcherToast } from "../../../utils/useAdminFetcherToast";
 
 const EMAIL_SETTINGS_DEFAULTS = {
   ...DEFAULT_SMTP_SETUP,
@@ -50,13 +52,10 @@ export async function loader({ request }) {
         emailSettings: true,
       },
     });
-    console.log(storeSettings);
 
     return { storeSettings };
   } catch (error) {
-    console.log(error);
-
-    return {};
+    return adminErrorResponse(error);
   }
 }
 
@@ -87,14 +86,15 @@ export async function action({ request }) {
       emailSettings: savedEmailSettings,
     };
   } catch (error) {
-    console.log(error);
+    return adminErrorResponse(error);
   }
 }
 
 export default function EmailSettings() {
   const fetcher = useFetcher();
+  useAdminFetcherToast(fetcher);
   const { storeSettings } = useLoaderData();
-  
+
   const initialEmailSettings = normalizeEmailSettings(
     storeSettings?.emailSettings,
     storeSettings?.id,
@@ -104,9 +104,8 @@ export default function EmailSettings() {
     postReviewEmail: false,
     SMTPSetup: true,
   });
-  const [savedEmailSettings, setSavedEmailSettings] = useState(
-    initialEmailSettings,
-  );
+  const [savedEmailSettings, setSavedEmailSettings] =
+    useState(initialEmailSettings);
   const [emailSettings, setEmailSettings] = useState(initialEmailSettings);
 
   useEffect(() => {
