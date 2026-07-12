@@ -5,7 +5,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta name="x-apple-disable-message-reformatting">
-    <title>Qorix Review Confirmation Email</title>
+    <title><%= storeName %> - Reply to your review</title>
 </head>
 
 <body style="margin:0; padding:0; background:#eef0ee; font-family: Inter, Arial, sans-serif;">
@@ -16,37 +16,43 @@
             <td align="center" style="padding:80px 16px;">
                 <!-- Card -->
                 <table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0"
-                    style="max-width:500px; width:100%; background:#ffffff; border-radius:18px; box-shadow:0 2px 10px rgba(0,0,0,0.06);">
+                    style="max-width:500px; width:100%; background: <%= emailBackgroundColor %>; border-radius:18px; box-shadow:0 2px 10px rgba(0,0,0,0.06); color: <%= emailBodyTextColor %>;">
                     <tr>
                         <td style="padding:28px 24px 24px;">
 
                             <!-- Header -->
                             <table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0"
-                                style="border-bottom:1px solid #EBEBEB;">
+                                style="border-bottom:1px solid <%= emailAccentBorderColor %>;">
                                 <tr>
-                                    <td style="padding-bottom:16px;">
-                                        <img src="./img/logo.png" alt="Qorix" width="120"
-                                            style="height:48px; max-height:48px; object-fit:contain; display:block; border:0;">
+                                    <td align="<%= (storeLogoPosition || 'LEFT') === 'CENTER' ? 'center' : ((storeLogoPosition || 'LEFT') === 'RIGHT' ? 'right' : 'left') %>" style="padding-bottom:16px;">
+                                        <% if (storeLogo) { %>
+                                        <img src="<%= storeLogo %>" alt="<%= storeName %>" width="120"
+                                            style="height:48px; max-height:48px; object-fit:contain; display:inline-block; border:0;">
+                                        <% } else { %>
+                                        <span style="font-size:22px; font-weight:700; color:<%= emailHeadingColor %>; font-family: Inter, Arial, sans-serif;"><%= storeName %></span>
+                                        <% } %>
                                     </td>
                                 </tr>
+                                <% if (storeTagline) { %>
                                 <tr>
-                                    <td
-                                        style="padding-bottom:20px; font-size:16px; color:#616161; font-family: Inter, Arial, sans-serif;">
-                                        Skincare that makes you glow
+                                    <td align="<%= (storeLogoPosition || 'LEFT') === 'CENTER' ? 'center' : ((storeLogoPosition || 'LEFT') === 'RIGHT' ? 'right' : 'left') %>"
+                                        style="padding-bottom:20px; font-size:16px; color:<%= emailHeadingColor %>; font-family: Inter, Arial, sans-serif;">
+                                        <%= storeTagline %>
                                     </td>
                                 </tr>
+                                <% } %>
                             </table>
 
                             <!-- Greeting -->
                             <table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0">
                                 <tr>
                                     <td
-                                        style="padding-top:24px; font-size:16px; line-height:1.4; color:#303030; font-family: Inter, Arial, sans-serif;">
-                                        <p style="font-weight:550; margin:0 0 8px;">Hi Osman,</p>
+                                        style="padding-top:24px; font-size:16px; line-height:1.4; color:<%= emailBodyTextColor %>; font-family: Inter, Arial, sans-serif;">
+                                        <% if (name) { %>
+                                        <p style="font-weight:550; margin:0 0 8px; color:<%= emailHeadingColor %>;">Hi <%= name %>,</p>
+                                        <% } %>
                                         <p style="font-weight:400; margin:0;">
-                                            Thank you for your recent order from Qorix Review! We'd love to hear what
-                                            you think. It only takes
-                                            30 seconds.
+                                            <%- replyEmailBody %>
                                         </p>
                                     </td>
                                 </tr>
@@ -54,48 +60,52 @@
 
                             <!-- ===== Your review box ===== -->
                             <table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0"
-                                style="margin-top:16px; border:1px solid #ececec; border-radius:12px;">
+                                style="margin-top:16px; border:1px solid <%= emailAccentBorderColor %>; border-radius:12px;">
                                 <tr>
-                                    <td width="62" valign="middle" style="padding:12px 0 12px 12px;">
+                                    <!-- <td width="62" valign="middle" style="padding:12px 0 12px 12px;">
                                         <table role="presentation" cellpadding="0" cellspacing="0" border="0" width="42"
                                             height="42"
-                                            style="border-radius:50%; border:1px solid #4A4A4A; padding:8px;">
+                                            style="border-radius:50%; border:1px solid <%= emailAccentBorderColor %>; padding:8px;">
                                             <tr>
                                                 <td align="center" valign="middle" style="width:42px; height:42px;">
                                                     <svg width="40" height="40" viewBox="0 0 40 40" fill="none"
                                                         xmlns="http://www.w3.org/2000/svg">
                                                         <path
                                                             d="M27.1875 15.625C27.1875 11.6562 23.9688 8.4375 20 8.4375C16.0312 8.4375 12.8125 11.6562 12.8125 15.625C12.8125 19.5938 16.0312 22.8125 20 22.8125C23.9688 22.8125 27.1875 19.5938 27.1875 15.625ZM14.6875 15.625C14.6875 12.6875 17.0625 10.3125 20 10.3125C22.9375 10.3125 25.3125 12.6875 25.3125 15.625C25.3125 18.5625 22.9375 20.9375 20 20.9375C17.0625 20.9375 14.6875 18.5625 14.6875 15.625Z"
-                                                            fill="#4A4A4A" />
+                                                            fill="<%= emailHeadingColor %>" />
                                                         <path
                                                             d="M7.96788 33.8125C8.12413 33.9062 8.28038 33.9375 8.43663 33.9375C8.74913 33.9375 9.09288 33.7812 9.24913 33.4688C11.4366 29.5938 15.5616 27.1875 19.9991 27.1875C24.4366 27.1875 28.5616 29.5938 30.7804 33.4688C31.0304 33.9062 31.6241 34.0625 32.0616 33.8125C32.4991 33.5625 32.6554 32.9688 32.4054 32.5312C29.8741 28.0937 25.1241 25.3125 19.9991 25.3125C14.8741 25.3125 10.1241 28.0937 7.59288 32.5312C7.34288 32.9688 7.49913 33.5625 7.96788 33.8125Z"
-                                                            fill="#4A4A4A" />
+                                                            fill="<%= emailHeadingColor %>" />
                                                     </svg>
                                                 </td>
                                             </tr>
                                         </table>
-                                    </td>
+                                    </td> -->
                                     <td valign="top"
                                         style="padding:16px 16px 16px 12px; font-family: Inter, Arial, sans-serif;">
                                         <div
-                                            style="font-size:16px; font-weight:550; line-height:1.4; color:#303030; margin-bottom:12px;">
+                                            style="font-size:16px; font-weight:550; line-height:1.4; color:<%= emailHeadingColor %>; margin-bottom:12px;">
                                             Your review</div>
                                         <div style="margin-bottom:8px;">
+                                            <% for (let i = 1; i <= rating; i++) { %>
                                             <svg style="margin-right:4px;" width="20" height="20" viewBox="0 0 17 16"
                                                 fill="none" xmlns="http://www.w3.org/2000/svg">
                                                 <path
                                                     d="M9.51964 0.855C8.97604 -0.285 7.35604 -0.285 6.81244 0.855L5.14444 4.3494L1.30564 4.8546C0.0552353 5.0202 -0.446365 6.561 0.469235 7.4298L3.27724 10.0962L2.57284 13.9026C2.34244 15.1434 3.65404 16.0962 4.76284 15.495L8.16604 13.647L11.5692 15.495C12.678 16.0962 13.9896 15.1434 13.7592 13.9026L13.0548 10.0962L15.8628 7.4298C16.7772 6.561 16.2768 5.0202 15.0264 4.8546L11.1864 4.3494L9.51964 0.855Z"
                                                     fill="#f5a623" />
                                             </svg>
-                                            <svg style="margin-right:4px;" width="20" height="20" viewBox="0 0 14 14"
+                                            <% } %>
+                                            <% for (let i = rating + 1; i <= 5; i++) { %>
+                                            <svg style="margin-right:4px;" width="20" height="20" viewBox="0 0 17 16"
                                                 fill="none" xmlns="http://www.w3.org/2000/svg">
                                                 <path
-                                                    d="M7.93303 0.7125C7.48003 -0.2375 6.13003 -0.2375 5.67703 0.7125L4.28703 3.6245L1.08803 4.0455C0.0460294 4.1835 -0.371971 5.4675 0.39103 6.1915L2.73103 8.4135L2.14403 11.5855C1.95203 12.6195 3.04503 13.4135 3.96903 12.9125L6.80503 11.3725L9.64103 12.9125C10.565 13.4135 11.658 12.6195 11.466 11.5855L10.879 8.4135L13.219 6.1915C13.981 5.4675 13.564 4.1835 12.522 4.0455L9.32203 3.6245L7.93303 0.7125Z"
+                                                    d="M9.51964 0.855C8.97604 -0.285 7.35604 -0.285 6.81244 0.855L5.14444 4.3494L1.30564 4.8546C0.0552353 5.0202 -0.446365 6.561 0.469235 7.4298L3.27724 10.0962L2.57284 13.9026C2.34244 15.1434 3.65404 16.0962 4.76284 15.495L8.16604 13.647L11.5692 15.495C12.678 16.0962 13.9896 15.1434 13.7592 13.9026L13.0548 10.0962L15.8628 7.4298C16.7772 6.561 16.2768 5.0202 15.0264 4.8546L11.1864 4.3494L9.51964 0.855Z"
                                                     fill="#B5B5B5" />
                                             </svg>
+                                            <% } %>
                                         </div>
-                                        <div style="font-size:16px; color:#303030; line-height:1.4; font-weight:400;">
-                                            Good results, noticed a difference after a week.
+                                        <div style="font-size:16px; color:<%= emailBodyTextColor %>; line-height:1.4; font-weight:400;">
+                                            <%= review %>
                                         </div>
                                     </td>
                                 </tr>
@@ -103,32 +113,12 @@
 
                             <!-- ===== Reply box ===== -->
                             <table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0"
-                                style="margin-top:16px; border:1px solid #ececec; border-radius:12px;">
+                                style="margin-top:16px; border:1px solid <%= emailAccentBorderColor %>; border-radius:12px;">
                                 <tr>
-                                    <td width="62" valign="middle" style="padding:12px 0 12px 12px;">
-                                        <table role="presentation" cellpadding="0" cellspacing="0" border="0" width="42"
-                                            height="42"
-                                            style="border-radius:50%; border:1px solid #4A4A4A; padding:8px 10px;">
-                                            <tr>
-                                                <td align="center" valign="middle" style="width:42px; height:42px;">
-                                                    <svg width="36" height="36" viewBox="0 0 36 36" fill="none"
-                                                        xmlns="http://www.w3.org/2000/svg">
-                                                        <path
-                                                            d="M31.4998 17.5156C31.0855 17.5156 30.7498 17.8514 30.7498 18.2657V28.5004C30.7498 29.741 29.7404 30.7504 28.4999 30.7504H23.2499V24.0004C23.2499 22.7598 22.2406 21.7505 20.9999 21.7505H14.9999C13.7593 21.7505 12.7499 22.7597 12.7499 24.0004V30.7504H7.49993C6.25926 30.7504 5.25005 29.741 5.25005 28.5004V18.2657C5.25005 17.8516 4.91431 17.5156 4.50002 17.5156C4.08574 17.5156 3.75 17.8514 3.75 18.2657V28.5004C3.75 30.5681 5.43218 32.2503 7.49991 32.2503H13.4999C13.9142 32.2503 14.2499 31.9145 14.2499 31.5002V24.0003C14.2499 23.5868 14.5863 23.2502 14.9999 23.2502H20.9999C21.4135 23.2502 21.7499 23.5866 21.7499 24.0003V31.5002C21.7499 31.9143 22.0856 32.2503 22.4999 32.2503H28.4999C30.5676 32.2503 32.25 30.5681 32.25 28.5004V18.2657C32.2498 17.8514 31.9139 17.5156 31.4998 17.5156Z"
-                                                            fill="#4A4A4A" />
-                                                        <path
-                                                            d="M33.7498 8.99612C33.7488 8.80551 33.6759 8.61507 33.5305 8.46961L29.0302 3.96951C28.8896 3.82889 28.6988 3.75 28.4999 3.75H7.50028C7.30137 3.75 7.11058 3.82905 6.96995 3.96951L2.46985 8.46961C2.3126 8.62702 2.24254 8.83639 2.25416 9.04229C2.25266 9.04213 2.25 11.25 2.25 11.25C2.25 13.7312 4.26875 15.7499 6.75009 15.7499C8.31388 15.7499 9.69337 14.9478 10.5 13.7338C11.3068 14.9478 12.6863 15.7499 14.2499 15.7499C15.8135 15.7499 17.193 14.9478 17.9998 13.7338C18.8066 14.9478 20.1861 15.7499 21.7497 15.7499C23.3134 15.7499 24.693 14.9478 25.4997 13.7338C26.3065 14.9478 27.6859 15.7499 29.2496 15.7499C31.7309 15.7499 33.7497 13.7313 33.7497 11.25C33.7502 11.2498 33.75 8.99729 33.7498 8.99612ZM7.81095 5.24989H28.1892L31.1895 8.24997H4.81089L7.81095 5.24989ZM6.75026 14.2499C5.09614 14.2499 3.75036 12.9041 3.75036 11.25V9.74999H9.75032V11.25C9.75033 12.904 8.40455 14.2499 6.75026 14.2499ZM14.2503 14.2499C12.5961 14.2499 11.2504 12.9041 11.2504 11.25V9.74999H17.2501V11.25C17.2502 12.904 15.9045 14.2499 14.2503 14.2499ZM21.7503 14.2499C20.0961 14.2499 18.7504 12.9041 18.7504 11.25V9.74999H24.7503V11.25C24.7502 12.904 23.4044 14.2499 21.7503 14.2499ZM32.2501 11.2498C32.2501 12.9039 30.9044 14.2497 29.2502 14.2497C27.5961 14.2497 26.2503 12.9039 26.2503 11.2498V9.7498H32.2503V11.2498H32.2501Z"
-                                                            fill="#4A4A4A" />
-                                                    </svg>
-                                                </td>
-                                            </tr>
-                                        </table>
-                                    </td>
                                     <td valign="top"
-                                        style="padding:16px 16px 16px 12px; font-size:16px; color:#303030; line-height:1.4; font-family: Inter, Arial, sans-serif;">
-                                        <div style="font-weight:550; margin-bottom:12px;">Reply from Glow Store</div>
-                                        <div style="font-weight:400;">"Good results, noticed a
-                                            difference after a week.🌱"</div>
+                                        style="padding:16px 16px 16px 12px; font-size:16px; color:<%= emailBodyTextColor %>; line-height:1.4; font-family: Inter, Arial, sans-serif;">
+                                        <div style="font-weight:550; color:<%= emailHeadingColor %>; margin-bottom:12px;">Reply from <%= replyFrom %></div>
+                                        <div style="font-weight:400; color:<%= emailBodyTextColor %>;">"<%= reply %>"</div>
                                     </td>
                                 </tr>
                             </table>
@@ -137,39 +127,35 @@
                             <table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0"
                                 style="margin-top:24px;">
                                 <tr>
-                                    <td align="center" bgcolor="#108848" style="border-radius:12px;">
-                                        <!--[if mso]>
-                    <v:roundrect xmlns:v="urn:schemas-microsoft-com:vml" href="#" style="height:44px;v-text-anchor:middle;width:452px;" arcsize="15%" strokecolor="#108848" fillcolor="#108848">
-                    <w:anchorlock/>
-                    <center style="color:#ffffff;font-family:Arial,sans-serif;font-size:18px;font-weight:500;">View your review &#8594;</center>
-                    </v:roundrect>
-                    <![endif]-->
-                                        <!--[if !mso]><!-->
-                                        <a href="#"
-                                            style="display:block; padding:12px; color:#ffffff; text-decoration:none; font-size:18px; line-height:20px; font-weight:500; font-family: Inter, Arial, sans-serif;">
-                                            View your review &rarr;
-                                        </a>
-                                        <!--<![endif]-->
+                                    <td align="center" bgcolor="<%= emailPrimaryButtonColor %>" style="border-radius:12px;">
+                                         <!--[if !mso]><!-->
+                                         <a href="#"
+                                             style="display:block; padding:12px; color:<%= emailButtonTextColor %>; text-decoration:none; font-size:18px; line-height:20px; font-weight:500; font-family: Inter, Arial, sans-serif;">
+                                             <%= replyEmailButton %> &rarr;
+                                         </a>
+                                         <!--<![endif]-->
                                     </td>
                                 </tr>
                             </table>
 
                             <!-- Footer -->
                             <table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0"
-                                style="border-top:1px solid #EBEBEB; margin-top:40px;">
+                                style="border-top:1px solid <%= emailAccentBorderColor %>; margin-top:40px;">
                                 <tr>
                                     <td align="center"
-                                        style="padding-top:16px; font-size:16px; font-weight:500; color:#616161; line-height:1.2; font-family: Inter, Arial, sans-serif;">
-                                        @2026 glow store &nbsp;&middot;&nbsp;
-                                        <a href="#" style="color:#616161; text-decoration:underline;">Unsubscribe</a>
+                                        style="padding-top:16px; font-size:16px; font-weight:500; color:<%= emailBodyTextColor %>; line-height:1.2; font-family: Inter, Arial, sans-serif;">
+                                        <%= storeFooterText %> &nbsp;&middot;&nbsp;
+                                        <a href="#" style="color:<%= emailBodyTextColor %>; text-decoration:underline;"><%= storeFooterLinkText %></a>
                                     </td>
                                 </tr>
+                                <% if (isShowFooterBadge) { %>
                                 <tr>
                                     <td align="center"
-                                        style="padding-top:16px; font-weight:500; font-size:16px; line-height:1.2; color:#303030; font-family: Inter, Arial, sans-serif;">
+                                        style="padding-top:16px; font-weight:500; font-size:16px; line-height:1.2; color:<%= emailHeadingColor %>; font-family: Inter, Arial, sans-serif;">
                                         Powered by <span style="color:#108848;">Qorix</span>
                                     </td>
                                 </tr>
+                                <% } %>
                             </table>
 
                         </td>

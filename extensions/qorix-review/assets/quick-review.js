@@ -135,7 +135,7 @@ function quickReviewWidget() {
         );
 
         const response = await fetch(
-          `/apps/api/review?productId=${encodeURIComponent(productId)}&sort=${encodeURIComponent(defaultSort)}&page=${this.currentPage}&limit=${this.limit}&isOpen=${openFromEmail}&orderId=${orderId}`,
+          `/apps/qorix-review/review?productId=${encodeURIComponent(productId)}&sort=${encodeURIComponent(defaultSort)}&page=${this.currentPage}&limit=${this.limit}&isOpen=${openFromEmail}&orderId=${orderId}`,
           {
             method: "GET",
           },
@@ -215,7 +215,7 @@ function quickReviewWidget() {
         console.log("Submitting...", formData);
 
         const response = await fetch(
-          `/apps/api/review?isOpen=${openFromEmail}&orderId=${orderId}`,
+          `/apps/qorix-review/review?isOpen=${openFromEmail}&orderId=${orderId}`,
           {
             method: "POST",
             body: formData,

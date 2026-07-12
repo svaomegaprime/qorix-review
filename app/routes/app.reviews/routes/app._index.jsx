@@ -12,7 +12,9 @@ import { getStoreData } from "../../../utils/getStoreData";
 import { adminErrorResponse } from "../../../utils/adminError.server";
 import { useAdminFetcherToast } from "../../../utils/useAdminFetcherToast";
 import { deleteFile } from "../../../lib/s3/deleteFile";
-
+import { sendEmail } from "../../../utils/sendEmail";
+import { getRelativeTime } from "../../../utils/getRelativeTime";
+import { formetEmailBody } from "../../../utils/formetEmailBody";
 const REVIEWS_PER_PAGE = 8;
 const EXPORT_PREVIEW_LIMIT = 5;
 
@@ -228,16 +230,93 @@ export async function action({ request }) {
         );
         return { reviews };
       }
+
+      // Reply review
       case "PUT": {
         const formData = await request.formData();
         const reviewId = formData.get("reviewId");
         const body = formData.get("body");
 
         if (reviewId && body) {
-          await prisma.review.update({
+          const updatedReview = await prisma.review.update({
             where: { id: reviewId },
             data: { reply: { create: { body } } },
+            include: {
+              reply: true,
+            },
           });
+          console.log(updatedReview);
+
+          const storeSettings = await prisma.storeSettings.findUnique({
+            where: { storeId: storeData.id },
+            include: {
+              emailSettings: true,
+              publishingModeration: true,
+              brandingSettings: true,
+            },
+          });
+
+          const replyEmailData = {
+            to: updatedReview.reviewerEmail,
+            from: storeSettings?.emailSettings?.smtpUser,
+            replyTo: storeSettings?.brandingSettings?.storeReplyToEmail,
+            templateName: "ReplyEmail",
+            subject: storeSettings?.emailSettings?.replyEmailSubjectLine,
+            smtpConfig: {
+              smtpHost: storeSettings?.emailSettings?.smtpHost,
+              smtpPort: storeSettings?.emailSettings?.smtpPort,
+              smtpUser: storeSettings?.emailSettings?.smtpUser,
+              smtpPassword: storeSettings?.emailSettings?.smtpPassword,
+            },
+            templateData: {
+              name: updatedReview.reviewerName,
+              storeTagline: storeSettings?.brandingSettings?.storeTagline,
+              timeAgo: getRelativeTime(updatedReview.createdAt),
+
+              products: updatedReview.products ?? [],
+
+              storeName: storeSettings?.brandingSettings?.storeDisplayName,
+
+              replyEmailBody: formetEmailBody(
+                storeSettings?.emailSettings?.replyEmailBody,
+                updatedReview.reviewerName,
+                storeSettings?.brandingSettings?.storeDisplayName,
+                updatedReview.products?.[0]?.title ?? "",
+              ),
+              replyEmailButton: storeSettings?.emailSettings?.replyEmailButton,
+
+              review: updatedReview.body,
+              rating: updatedReview.rating,
+
+              reply: updatedReview.reply?.body,
+              replyFrom: storeSettings?.brandingSettings?.storeDisplayName,
+
+              storeFooterText:
+                storeSettings?.brandingSettings?.emailFooterText ?? "",
+              storeFooterLinkText:
+                storeSettings?.brandingSettings?.emailFooterLinkText ?? "",
+              isShowFooterBadge:
+                storeSettings?.brandingSettings?.isShowFooterBadge,
+
+              storeLogo: storeSettings?.brandingSettings?.storeLogo,
+              storeLogoPosition:
+                storeSettings?.brandingSettings?.storeLogoPosition,
+              emailPrimaryButtonColor:
+                storeSettings?.brandingSettings?.emailPrimaryButtonColor,
+              emailButtonTextColor:
+                storeSettings?.brandingSettings?.emailButtonTextColor,
+              emailBackgroundColor:
+                storeSettings?.brandingSettings?.emailBackgroundColor,
+              emailHeadingColor:
+                storeSettings?.brandingSettings?.emailHeadingColor,
+              emailBodyTextColor:
+                storeSettings?.brandingSettings?.emailBodyTextColor,
+              emailAccentBorderColor:
+                storeSettings?.brandingSettings?.emailAccentBorderColor,
+            },
+          };
+
+          await sendEmail(replyEmailData);
         }
 
         const search = formData.get("search") || "";

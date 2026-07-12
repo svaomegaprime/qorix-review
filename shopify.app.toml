@@ -41,5 +41,5 @@ redirect_urls = [ "https://example.com/api/auth" ]
 
 [app_proxy]
 url = "/api"
-subpath = "api"
+subpath = "qorix-review"
 prefix = "apps"
