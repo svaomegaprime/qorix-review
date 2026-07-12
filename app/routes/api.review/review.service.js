@@ -199,6 +199,107 @@ async function postReview(request, session, admin) {
       });
     }
 
+    if (!isOpen) {
+      await prisma.$transaction(async (tx) => {
+        const order = await tx.order.findUnique({
+          where: {
+            storeId_orderId: {
+              storeId: id,
+              orderId,
+            },
+          },
+          include: {
+            lineItems: true,
+          },
+        });
+
+        if (order) {
+          const extractNumericId = (val) => {
+            if (!val) return "";
+            const str = String(val);
+            if (str.includes("/")) return str.split("/").pop();
+            return str;
+          };
+
+          const productIdToMatch = extractNumericId(reviewData.productId);
+
+          const lineItem = order.lineItems.find(
+            (item) => extractNumericId(item.productId) === productIdToMatch,
+          );
+
+          if (!lineItem) {
+            throw new Error("Product not found in order");
+          }
+
+          // Update the specific line item
+          await tx.orderLineItem.update({
+            where: {
+              id: lineItem.id,
+            },
+            data: {
+              isReviewed: true,
+            },
+          });
+
+          // Check if all line items in this order are now reviewed
+          const remainingUnreviewed = await tx.orderLineItem.count({
+            where: {
+              orderId: order.id,
+              isReviewed: false,
+              // Exclude the one we just updated
+              id: { not: lineItem.id },
+            },
+          });
+
+          const allReviewed = remainingUnreviewed === 0;
+
+          if (allReviewed) {
+            await tx.order.update({
+              where: {
+                id: order.id,
+              },
+              data: {
+                reviewCheckStatus: "REVIEWED",
+              },
+            });
+          }
+        } else {
+          // get all orderdata use
+          // Create a new order
+          // sync.orders // get order data
+          // then normalised data
+          // like
+          //         {
+          //   id: order.name,
+          //   orderId: order.name,
+          //   fullName,
+          //   email,
+          //   emailVerified: customer.verified_email || false,
+          //   avatar,
+          //   status: order.financial_status,
+          //   fulfillmentStatus: order.fulfillment_status,
+          //   createdAt: order.created_at,
+          //   timeAgo: getRelativeTime(order.created_at),
+          //   totalPrice: order.current_total_price,
+          //   currency: order.subtotal_price_set.shop_money.currency_code,
+          //   products: (order.line_items || []).map((item) => ({
+          //     title: item.title,
+          //     productId: item.product_id,
+          //     productHandle: item.handle ?? null,
+          //     quantity: item.quantity,
+          //     url: item.url ?? null,
+          //   })),
+          // }
+          // match which product ar match with my review email productId
+          // depends on this match
+          //get product data use getProduct util function
+          // then make a array of product data  like accept order.prisma look order.pr
+          // create order data
+          // with reviewed status i mean reviewCheckStatus : REVIEWED also the other info like order id and other things
+        }
+      });
+    }
+
     const sideEffectErrors = [];
 
     const storeName = brandingSettings.storeDisplayName ?? name ?? "";
