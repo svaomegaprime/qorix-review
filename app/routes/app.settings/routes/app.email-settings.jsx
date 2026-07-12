@@ -13,10 +13,12 @@ import {
 } from "../data/defaultData";
 import { useFetcher, useLoaderData } from "react-router";
 import { authenticate } from "../../../shopify.server";
-import { getStoreData } from "../../../utils/getStoreData";
 import prisma from "../../../db.server";
 import { adminErrorResponse } from "../../../utils/adminError.server";
 import { useAdminFetcherToast } from "../../../utils/useAdminFetcherToast";
+import SaveBar from "../../../components/essentials/SaveBar";
+import { useSaveBarForm } from "../../../hooks/useSaveBarForm.js";
+import { requireAdminContext } from "../../../services/adminContext.server.js";
 
 const EMAIL_SETTINGS_DEFAULTS = {
   ...DEFAULT_SMTP_SETUP,
@@ -41,8 +43,7 @@ function normalizeEmailSettings(emailSettings = {}, storeSettingsId) {
 
 export async function loader({ request }) {
   try {
-    const { admin } = await authenticate.admin(request);
-    const { id } = await getStoreData(admin);
+    const { storeId: id } = await requireAdminContext(request);
 
     const storeSettings = await prisma.storeSettings.findFirst({
       where: {
@@ -64,7 +65,11 @@ export async function action({ request }) {
     await authenticate.admin(request);
 
     const data = await request.json();
-    const { id, createdAt, updatedAt, ...emailSettingsData } = data;
+    const emailSettingsData = Object.fromEntries(
+      Object.entries(data).filter(
+        ([key]) => !["id", "createdAt", "updatedAt"].includes(key),
+      ),
+    );
 
     if (!emailSettingsData.storeSettingsId) {
       throw new Error("storeSettingsId is required to save email settings");
@@ -104,8 +109,6 @@ export default function EmailSettings() {
     postReviewEmail: false,
     SMTPSetup: true,
   });
-  const [savedEmailSettings, setSavedEmailSettings] =
-    useState(initialEmailSettings);
   const [emailSettings, setEmailSettings] = useState(initialEmailSettings);
 
   useEffect(() => {
@@ -114,38 +117,8 @@ export default function EmailSettings() {
       storeSettings?.id,
     );
 
-    setSavedEmailSettings(nextEmailSettings);
     setEmailSettings(nextEmailSettings);
   }, [storeSettings?.emailSettings, storeSettings?.id]);
-
-  useEffect(() => {
-    const hasChanged =
-      JSON.stringify(emailSettings) !== JSON.stringify(savedEmailSettings);
-
-    if (hasChanged) {
-      shopify.saveBar.show("leave-confirm-save-bar");
-    } else {
-      shopify.saveBar.hide("leave-confirm-save-bar");
-    }
-  }, [emailSettings, savedEmailSettings]);
-
-  useEffect(() => {
-    if (
-      fetcher.state === "idle" &&
-      fetcher.data?.ok &&
-      fetcher.data?.emailSettings
-    ) {
-      console.log("Response:", fetcher.data);
-      const nextSavedEmailSettings = normalizeEmailSettings(
-        fetcher.data.emailSettings,
-        storeSettings?.id,
-      );
-
-      setSavedEmailSettings(nextSavedEmailSettings);
-      setEmailSettings(nextSavedEmailSettings);
-      shopify.saveBar.hide("leave-confirm-save-bar");
-    }
-  }, [fetcher.state, fetcher.data, storeSettings?.id]);
 
   function handleEmailSettingsChange(field, value) {
     setEmailSettings((previousSettings) => ({
@@ -154,30 +127,27 @@ export default function EmailSettings() {
     }));
   }
 
-  function handleSave() {
-    fetcher.submit(emailSettings, {
-      method: "POST",
-      encType: "application/json",
-    });
-  }
-
-  console.log("loading:", fetcher.state);
-
-  function handleDiscard() {
-    setEmailSettings(savedEmailSettings);
-    shopify.saveBar.hide("leave-confirm-save-bar");
-  }
+  const { handleSave, handleDiscard } = useSaveBarForm({
+    value: emailSettings,
+    initialValue: initialEmailSettings,
+    fetcher,
+    onSave: (value) =>
+      fetcher.submit(value, { method: "POST", encType: "application/json" }),
+    onDiscard: setEmailSettings,
+    getSavedValue: (data, submittedValue) =>
+      data.emailSettings
+        ? normalizeEmailSettings(data.emailSettings, storeSettings?.id)
+        : submittedValue,
+    onSaved: setEmailSettings,
+  });
 
   return (
     <>
-      <ui-save-bar id="leave-confirm-save-bar">
-        <button onClick={handleSave} variant="primary" id="save-button">
-          Save
-        </button>
-        <button onClick={handleDiscard} id="discard-button">
-          Discard
-        </button>
-      </ui-save-bar>
+      <SaveBar
+        onSave={handleSave}
+        onDiscard={handleDiscard}
+        saving={fetcher.state !== "idle"}
+      />
 
       <s-stack
         paddingBlockEnd="base"

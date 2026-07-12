@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState } from "react";
 import CustomGridSection from "../../../components/essentials/CustomGridSection";
 import CustomSection from "../../../components/essentials/CustomSection";
 import Text from "../../../components/essentials/elements/Text";
@@ -10,14 +10,15 @@ import { useFetcher, useLoaderData } from "react-router";
 import { authenticate } from "../../../shopify.server";
 import prisma from "../../../db.server";
 
-import { getStoreData } from "../../../utils/getStoreData";
 import { adminErrorResponse } from "../../../utils/adminError.server";
 import { useAdminFetcherToast } from "../../../utils/useAdminFetcherToast";
+import SaveBar from "../../../components/essentials/SaveBar";
+import { useSaveBarForm } from "../../../hooks/useSaveBarForm.js";
+import { requireAdminContext } from "../../../services/adminContext.server.js";
 
 export async function loader({ request }) {
   try {
-    const { admin, session } = await authenticate.admin(request);
-    const { id } = await getStoreData(admin);
+    const { storeId: id } = await requireAdminContext(request);
 
     const storeSettings = await prisma.storeSettings.findFirst({
       where: {
@@ -36,12 +37,10 @@ export async function loader({ request }) {
 
 export async function action({ request }) {
   try {
-    const { admin, session } = await authenticate.admin(request);
+    await authenticate.admin(request);
 
     const data = await request.json();
-    // const { id } = await getStoreData(admin);
-
-    const widgetsSettingsData = await prisma.widgetsSettings.update({
+    await prisma.widgetsSettings.update({
       where: {
         id: data.id,
       },
@@ -68,55 +67,27 @@ export default function Widgets() {
     isCustomReviewPerPage: false,
   });
 
-  useEffect(() => {
-    const hasChanged =
-      JSON.stringify(widgetSettings) !==
-      JSON.stringify(storeSettings?.widgetsSettings);
-
-    if (hasChanged) {
-      shopify.saveBar.show("leave-confirm-save-bar");
-    } else {
-      shopify.saveBar.hide("leave-confirm-save-bar");
-    }
-  }, [widgetSettings]);
-
-  function handleSave() {
-    fetcher.submit(widgetSettings, {
-      method: "POST",
-      encType: "application/json",
-    });
-  }
-
-  useEffect(() => {
-    if (fetcher.state === "idle" && fetcher.data?.ok) {
-      // Save successful
-      shopify.saveBar.hide("leave-confirm-save-bar");
-    }
-  }, [fetcher.state, fetcher.data]);
-
   const [formResetKey, setFormResetKey] = useState(0);
-
-  function handleDiscard() {
-    setWidgetSettings(storeSettings.widgetsSettings ?? DEFAULT_WIDGET);
-    setCustomReviewPerPage({
-      isCustomReviewPerPage: false,
-    });
-    setFormResetKey((pre) => pre + 1);
-    shopify.saveBar.hide("leave-confirm-save-bar");
-  }
+  const { handleSave, handleDiscard } = useSaveBarForm({
+    value: widgetSettings,
+    initialValue: storeSettings.widgetsSettings ?? DEFAULT_WIDGET,
+    fetcher,
+    onSave: (value) =>
+      fetcher.submit(value, { method: "POST", encType: "application/json" }),
+    onDiscard: (savedValue) => {
+      setWidgetSettings(savedValue);
+      setCustomReviewPerPage({ isCustomReviewPerPage: false });
+      setFormResetKey((previous) => previous + 1);
+    },
+  });
 
   return (
     <>
-      <pre>{JSON.stringify(widgetSettings, null, 2)}</pre>
-
-      <ui-save-bar id="leave-confirm-save-bar">
-        <button onClick={handleSave} variant="primary" id="save-button">
-          Save
-        </button>
-        <button onClick={handleDiscard} id="discard-button">
-          Discard
-        </button>
-      </ui-save-bar>
+      <SaveBar
+        onSave={handleSave}
+        onDiscard={handleDiscard}
+        saving={fetcher.state !== "idle"}
+      />
       <s-stack
         paddingBlockEnd="base"
         direction="inline"

@@ -2,13 +2,15 @@ import { useFetcher, useLoaderData } from "react-router";
 import CustomGridSection from "../../../components/essentials/CustomGridSection";
 import CustomSection from "../../../components/essentials/CustomSection";
 import Text from "../../../components/essentials/elements/Text";
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import { DEFAULT_REQUEST_SCHEDULING } from "../data/defaultData";
-import { getStoreData } from "../../../utils/getStoreData";
 import { authenticate } from "../../../shopify.server";
 import prisma from "../../../db.server";
 import { adminErrorResponse } from "../../../utils/adminError.server";
 import { useAdminFetcherToast } from "../../../utils/useAdminFetcherToast";
+import SaveBar from "../../../components/essentials/SaveBar";
+import { useSaveBarForm } from "../../../hooks/useSaveBarForm.js";
+import { requireAdminContext } from "../../../services/adminContext.server.js";
 
 const DELIVERY_DAY_OPTIONS = [5, 7, 15];
 const REMINDER_DAY_OPTIONS = [5, 7, 10, 15];
@@ -32,8 +34,7 @@ function getCustomFieldState(scheduling) {
 
 export async function loader({ request }) {
   try {
-    const { admin, session } = await authenticate.admin(request);
-    const { id } = await getStoreData(admin);
+    const { storeId: id } = await requireAdminContext(request);
 
     const storeSettings = await prisma.storeSettings.findFirst({
       where: {
@@ -53,12 +54,10 @@ export async function loader({ request }) {
 
 export async function action({ request }) {
   try {
-    const { admin, session } = await authenticate.admin(request);
+    await authenticate.admin(request);
 
     const data = await request.json();
-    // const { id } = await getStoreData(admin);
-
-    const requestSchedulingData = await prisma.requestScheduling.update({
+    await prisma.requestScheduling.update({
       where: {
         id: data.id,
       },
@@ -85,52 +84,28 @@ export default function Settings() {
   const [showCustomFields, setShowCustomFields] = useState(() =>
     getCustomFieldState(storeSettings?.requestScheduling),
   );
-  useEffect(() => {
-    const hasChanged =
-      JSON.stringify(requestScheduling) !==
-      JSON.stringify(storeSettings?.requestScheduling);
-
-    if (hasChanged) {
-      shopify.saveBar.show("leave-confirm-save-bar");
-    } else {
-      shopify.saveBar.hide("leave-confirm-save-bar");
-    }
-  }, [requestScheduling]);
-
-  function handleSave() {
-    fetcher.submit(requestScheduling, {
-      method: "POST",
-      encType: "application/json",
-    });
-  }
-
-  useEffect(() => {
-    if (fetcher.state === "idle" && fetcher.data?.ok) {
-      // Save successful
-      shopify.saveBar.hide("leave-confirm-save-bar");
-    }
-  }, [fetcher.state, fetcher.data]);
   const [formResetKey, setFormResetKey] = useState(0);
-
-  function handleDiscard() {
-    const resetScheduling =
-      storeSettings?.requestScheduling ?? DEFAULT_REQUEST_SCHEDULING;
-    setRequestScheduling(resetScheduling);
-    setShowCustomFields(getCustomFieldState(resetScheduling));
-    setFormResetKey((pre) => pre + 1);
-    shopify.saveBar.hide("leave-confirm-save-bar");
-  }
+  const { handleSave, handleDiscard } = useSaveBarForm({
+    value: requestScheduling,
+    initialValue:
+      storeSettings?.requestScheduling ?? DEFAULT_REQUEST_SCHEDULING,
+    fetcher,
+    onSave: (value) =>
+      fetcher.submit(value, { method: "POST", encType: "application/json" }),
+    onDiscard: (savedValue) => {
+      setRequestScheduling(savedValue);
+      setShowCustomFields(getCustomFieldState(savedValue));
+      setFormResetKey((previous) => previous + 1);
+    },
+  });
 
   return (
     <>
-      <ui-save-bar id="leave-confirm-save-bar">
-        <button onClick={handleSave} variant="primary" id="save-button">
-          Save
-        </button>
-        <button onClick={handleDiscard} id="discard-button">
-          Discard
-        </button>
-      </ui-save-bar>
+      <SaveBar
+        onSave={handleSave}
+        onDiscard={handleDiscard}
+        saving={fetcher.state !== "idle"}
+      />
 
       <s-stack
         paddingBlockEnd="base"

@@ -1,18 +1,8 @@
-import { useOutlet } from "react-router";
 import Index from "./routes/app._index.jsx";
+import {
+  createWidgetRoute,
+  widgetRouteLoader,
+} from "../../utils/createWidgetRoute.jsx";
 
-export async function loader() {
-  console.log("Loader for review reel root route");
-  return null;
-}
-
-export default function IndexRoot() {
-  const outlet = useOutlet();
-  return (
-    <>
-      {
-        outlet ?? <Index />
-      }
-    </>
-  )
-}
+export { widgetRouteLoader as loader };
+export default createWidgetRoute(Index);

@@ -7,6 +7,7 @@ import { updateProductReviewDefineMetafields } from "../../utils/updateProductRe
 import { sendEmail } from "../../utils/sendEmail";
 import checkPublishRules from "./middleware/checkPublishRules";
 import { sendResponse } from "../../utils/sendResponse";
+import { buildSmtpConfig } from "../../services/emailPayload.server.js";
 
 function buildFromAddress(displayName, email) {
   const cleanEmail = String(email || "").trim();
@@ -131,7 +132,7 @@ async function postReview(request, session, admin) {
       },
     });
 
-    if (isOpen) {
+    if (isOpen && reviewData.reviewerEmail) {
       await prisma.$transaction(async (tx) => {
         const order = await tx.order.findUnique({
           where: {
@@ -139,11 +140,13 @@ async function postReview(request, session, admin) {
               storeId: id,
               orderId,
             },
+            userEmail: reviewData.reviewerEmail || undefined,
           },
           include: {
             lineItems: true,
           },
         });
+        console.log("order.review.service", order);
 
         if (order) {
           const extractNumericId = (val) => {
@@ -199,7 +202,7 @@ async function postReview(request, session, admin) {
       });
     }
 
-    if (!isOpen) {
+    if (!isOpen && reviewData.reviewerEmail) {
       await prisma.$transaction(async (tx) => {
         const order = await tx.order.findUnique({
           where: {
@@ -207,6 +210,7 @@ async function postReview(request, session, admin) {
               storeId: id,
               orderId,
             },
+            userEmail: reviewData.reviewerEmail,
           },
           include: {
             lineItems: true,
@@ -401,12 +405,7 @@ async function postReview(request, session, admin) {
             unsubscribeUrl,
             isShowFooterBadge: brandingSettings.isShowFooterBadge ?? false,
           },
-          smtpConfig: {
-            smtpUser: emailSettings.smtpUser,
-            smtpPassword: emailSettings.smtpPassword,
-            smtpPort: emailSettings.smtpPort,
-            smtpHost: emailSettings.smtpHost,
-          },
+          smtpConfig: buildSmtpConfig(emailSettings),
         });
       } catch (error) {
         console.error("[WARN::api.review.confirmationEmail]", error);
@@ -480,12 +479,7 @@ async function postReview(request, session, admin) {
             submittedDate: formattedDate,
             adminEmailBody,
           },
-          smtpConfig: {
-            smtpUser: emailSettings.smtpUser,
-            smtpPassword: emailSettings.smtpPassword,
-            smtpPort: emailSettings.smtpPort,
-            smtpHost: emailSettings.smtpHost,
-          },
+          smtpConfig: buildSmtpConfig(emailSettings),
         });
       } catch (error) {
         console.error("[WARN::api.review.adminEmail]", error);

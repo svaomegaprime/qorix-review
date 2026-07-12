@@ -9,14 +9,18 @@ import { useFetcher, useLoaderData, useNavigation } from "react-router";
 import { useRef, useState, Fragment } from "react";
 import { randomUUID } from "crypto";
 import getRequestsWithReviewStatus from "../utils/getRequestsWithReviewStatus";
-import { authenticate } from "../../../shopify.server";
-import { getStoreData } from "../../../utils/getStoreData";
+import { requireAdminContext } from "../../../services/adminContext.server.js";
 import { getFilteredRequests } from "../utils/getFilteredRequests";
-import { getProduct } from "../../../utils/getProduct";
 import prisma from "../../../db.server";
 import { addJobInQueue, reviewQueue } from "../../../lib/bullmq/bullmq.queue";
 import { adminErrorResponse } from "../../../utils/adminError.server";
 import { useAdminFetcherToast } from "../../../utils/useAdminFetcherToast";
+import { enrichOrderProducts } from "../../../services/productEnrichment.server.js";
+import { usePagination } from "../../../hooks/usePagination.js";
+import {
+  buildReminderEmailData,
+  buildRequestEmailData,
+} from "../../../services/emailPayload.server.js";
 const REQUESTS_PER_PAGE = 5;
 const MODAL_REQUESTS_PER_PAGE = 8;
 const MAX_VISIBLE_PAGE_BUTTONS = 4;
@@ -61,9 +65,8 @@ const TAB_CONFIG = [
 
 export async function loader({ request }) {
   try {
-    const { session, admin } = await authenticate.admin(request);
-    const { id } = await getStoreData(admin);
-    const requests = await getRequestsWithReviewStatus(session, id);
+    const { session, storeId } = await requireAdminContext(request);
+    const requests = await getRequestsWithReviewStatus(session, storeId);
 
     return {
       requests,
@@ -71,135 +74,6 @@ export async function loader({ request }) {
   } catch (error) {
     return adminErrorResponse(error);
   }
-}
-
-function formatEmailBody(message, storeSettings, formattedOrder) {
-  return String(message ?? "")
-    .replace(/{{first_name}}/g, formattedOrder?.fullName ?? "")
-    .replace(
-      /{{store_name}}/g,
-      storeSettings?.brandingSettings?.storeDisplayName ?? "",
-    )
-    .replace(/{{product_name}}/g, formattedOrder?.products?.[0]?.title ?? "");
-}
-
-function buildBaseEmailData(formattedOrder, storeSettings) {
-  return {
-    to: formattedOrder.email,
-    from: storeSettings?.emailSettings?.smtpUser,
-    replyTo: storeSettings?.brandingSettings?.storeReplyToEmail,
-    smtpConfig: {
-      smtpHost: storeSettings?.emailSettings?.smtpHost,
-      smtpPort: storeSettings?.emailSettings?.smtpPort,
-      smtpUser: storeSettings?.emailSettings?.smtpUser,
-      smtpPassword: storeSettings?.emailSettings?.smtpPassword,
-    },
-    templateData: {
-      name: formattedOrder?.fullName,
-      storeTagline: storeSettings?.brandingSettings?.storeTagline,
-      timeAgo: formattedOrder?.timeAgo,
-      products: formattedOrder?.products ?? [],
-      storeName: storeSettings?.brandingSettings?.storeDisplayName,
-      storeFooterText: storeSettings?.brandingSettings?.emailFooterText ?? "",
-      storeFooterLinkText:
-        storeSettings?.brandingSettings?.emailFooterLinkText ?? "",
-      isShowFooterBadge: storeSettings?.brandingSettings?.isShowFooterBadge,
-      storeLogo: storeSettings?.brandingSettings?.storeLogo,
-      storeLogoPosition: storeSettings?.brandingSettings?.storeLogoPosition,
-      emailPrimaryButtonColor:
-        storeSettings?.brandingSettings?.emailPrimaryButtonColor,
-      emailButtonTextColor:
-        storeSettings?.brandingSettings?.emailButtonTextColor,
-      emailBackgroundColor:
-        storeSettings?.brandingSettings?.emailBackgroundColor,
-      emailHeadingColor: storeSettings?.brandingSettings?.emailHeadingColor,
-      emailBodyTextColor: storeSettings?.brandingSettings?.emailBodyTextColor,
-      emailAccentBorderColor:
-        storeSettings?.brandingSettings?.emailAccentBorderColor,
-    },
-  };
-}
-
-function buildRequestEmailData(formattedOrder, storeSettings) {
-  const baseEmailData = buildBaseEmailData(formattedOrder, storeSettings);
-
-  return {
-    ...baseEmailData,
-    templateName: "RequestsEmail",
-    subject: storeSettings?.emailSettings?.requestEmailSubjectLine,
-    templateData: {
-      ...baseEmailData.templateData,
-      requestEmailBody: formatEmailBody(
-        storeSettings?.emailSettings?.requestEmailBody,
-        storeSettings,
-        formattedOrder,
-      ),
-      requestEmailButton: storeSettings?.emailSettings?.requestEmailButton,
-    },
-  };
-}
-
-function buildReminderEmailData(formattedOrder, storeSettings) {
-  const baseEmailData = buildBaseEmailData(formattedOrder, storeSettings);
-
-  return {
-    ...baseEmailData,
-    templateName: "ReminderEmail",
-    subject: storeSettings?.emailSettings?.reminderSubjectLine,
-    templateData: {
-      ...baseEmailData.templateData,
-      reminderEmailBody: formatEmailBody(
-        storeSettings?.emailSettings?.reminderEmailBody,
-        storeSettings,
-        formattedOrder,
-      ),
-      reminderEmailButton: storeSettings?.emailSettings?.reminderEmailButton,
-    },
-  };
-}
-
-async function enrichOrderProducts(formattedOrder, admin, shop) {
-  const enrichedProducts = await Promise.all(
-    (formattedOrder.products ?? [])?.map(async (item) => {
-      const gid = item.productId
-        ? String(item.productId).startsWith("gid://")
-          ? item.productId
-          : `gid://shopify/Product/${item.productId}`
-        : null;
-
-      if (!gid) return item;
-
-      try {
-        const product = await getProduct(admin, gid);
-        const productHandle =
-          product?.handle ?? item.productHandle ?? item.handle ?? null;
-        const productUrl =
-          product?.onlineStoreUrl ??
-          (productHandle
-            ? `https://${shop}/products/${productHandle}?isOpen=true&orderId=${formattedOrder?.orderId.split("#")[1]}`
-            : null);
-
-        return {
-          ...item,
-          productHandle,
-          handle: productHandle,
-          image: product?.featuredImage?.url ?? item.image ?? null,
-          url: productUrl ?? item.url ?? null,
-        };
-      } catch (error) {
-        console.error("Failed to enrich order product", {
-          productId: item.productId,
-          error,
-        });
-        return item;
-      }
-    }),
-  );
-
-  return {
-    ...formattedOrder,
-    products: enrichedProducts,
-  };
 }
 
 async function bulkUpsertOrders(orderRows) {
@@ -357,8 +231,8 @@ async function bulkUpsertOrders(orderRows) {
 
 export async function action({ request }) {
   try {
-    const { session, admin } = await authenticate.admin(request);
-    const { id } = await getStoreData(admin);
+    const { session, admin, storeId: id } =
+      await requireAdminContext(request);
     const method = request.method.toUpperCase();
 
     switch (method) {
@@ -407,44 +281,12 @@ export async function action({ request }) {
 
         for (const formattedOrder of selectedOrders) {
           // Start:: Enrich products with handle and url from Shopify
-          const enrichedProducts = await Promise.all(
-            (formattedOrder.products ?? [])?.map(async (item) => {
-              const gid = item.productId
-                ? String(item.productId).startsWith("gid://")
-                  ? item.productId
-                  : `gid://shopify/Product/${item.productId}`
-                : null;
-
-              if (!gid) return item;
-
-              try {
-                const product = await getProduct(admin, gid);
-                const productHandle =
-                  product?.handle ?? item.productHandle ?? item.handle ?? null;
-                const productUrl =
-                  product?.onlineStoreUrl ??
-                  (productHandle
-                    ? `https://${session.shop}/products/${productHandle}?isOpen=true&orderId=${formattedOrder?.orderId.split("#")[1]}`
-                    : null);
-
-                return {
-                  ...item,
-                  productHandle,
-                  handle: productHandle,
-                  image: product?.featuredImage?.url ?? item.image ?? null,
-                  url: productUrl ?? item.url ?? null,
-                };
-              } catch (error) {
-                console.error("Failed to enrich order product", {
-                  productId: item.productId,
-                  error,
-                });
-                return item;
-              }
-            }),
+          const enrichedOrder = await enrichOrderProducts(
+            formattedOrder,
+            admin,
+            session.shop,
           );
-
-          formattedOrder.products = enrichedProducts;
+          formattedOrder.products = enrichedOrder.products;
           // End:: Enrich products
 
           // Start:: Check existing reviews for this store + email
@@ -712,7 +554,6 @@ export default function Requests() {
   const [activeTab, setActiveTab] = useState("ALL");
   // End----State for active tab
   // Start----Requests pagination state
-  const [currentPage, setCurrentPage] = useState(1);
   // End----Requests pagination state
 
   // Start----useFetcher and filters state
@@ -813,31 +654,21 @@ export default function Requests() {
   };
   // End----Tab click handler
 
-  // Start----Pagination click handler
-  const handlePaginationClick = (page) => {
-    const totalPages = Math.max(
-      1,
-      Math.ceil(filteredRequests.length / REQUESTS_PER_PAGE),
-    );
-    const nextPage = Math.min(Math.max(page, 1), totalPages);
-    setCurrentPage(nextPage);
-  };
-  // End----Pagination click handler
-
   const handleModalPaginationClick = (page) => {
     const nextPage = Math.min(Math.max(page, 1), modalTotalPages);
     setModalCurrentPage(nextPage);
   };
 
-  const totalRequests = filteredRequests.length;
-  const totalPages = Math.max(1, Math.ceil(totalRequests / REQUESTS_PER_PAGE));
-  const safeCurrentPage = Math.min(currentPage, totalPages);
-  const pageStartIndex = (safeCurrentPage - 1) * REQUESTS_PER_PAGE;
-  const pageEndIndex = Math.min(
-    pageStartIndex + REQUESTS_PER_PAGE,
-    totalRequests,
-  );
-  const paginatedRequests = sortedRequests.slice(pageStartIndex, pageEndIndex);
+  const {
+    currentPage: safeCurrentPage,
+    items: paginatedRequests,
+    setCurrentPage,
+    setPage: handlePaginationClick,
+    startIndex: pageStartIndex,
+    endIndex: pageEndIndex,
+    totalItems: totalRequests,
+    totalPages,
+  } = usePagination(sortedRequests, REQUESTS_PER_PAGE);
   const visiblePageStart = Math.min(
     Math.max(safeCurrentPage - Math.floor(MAX_VISIBLE_PAGE_BUTTONS / 2), 1),
     Math.max(totalPages - MAX_VISIBLE_PAGE_BUTTONS + 1, 1),
