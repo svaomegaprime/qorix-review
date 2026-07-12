@@ -16,6 +16,10 @@ const COLOR_PICKERS_ELEMENTS = [
     key: "STAR_COLOR",
     label: "Star color",
   },
+    {
+    key: "BADGE_COLOR",
+    label: "Badge color",
+  },
 
   {
     key: "ACTIVE_DOT_COLOR",
@@ -30,6 +34,7 @@ const COLOR_PICKERS_ELEMENTS = [
 const DEFAULT_COLOR_VALUES = {
   STAR_COLOR: "#F59E0B",
   ACTIVE_DOT_COLOR: "#34C759",
+  BADGE_COLOR: "#34C759",
   OVERLAY_TINT_COLOR: "#1A1A1A",
 };
 
@@ -48,7 +53,7 @@ const DEFAULT_VALUES_VIDEO_STACK = {
   showReviewerName: true,
   showReviewTextBelow: true,
   showVerifiedBadge: true,
-  showMediaAsset: true,
+  showVideoDuration: true,
   showProductName: true,
 
   // Video behavior
@@ -57,12 +62,15 @@ const DEFAULT_VALUES_VIDEO_STACK = {
   autoplayOnHover: true,
 
   //-------Carousel behavior
-  thumbnailsShown: 3,
+  showNavigationDots: true,
+  showArrowControls: true,
+  thumbnailsShown: 5,
   fiteringMinStart: "3 star and above",
 
   // color piker
   startColor: DEFAULT_COLOR_VALUES.STAR_COLOR,
   activeDotColor: DEFAULT_COLOR_VALUES.ACTIVE_DOT_COLOR,
+  badgeColor: DEFAULT_COLOR_VALUES.BADGE_COLOR,
   overlayTintColor: DEFAULT_COLOR_VALUES.OVERLAY_TINT_COLOR,
 };
 export default function Index() {
@@ -78,12 +86,14 @@ export default function Index() {
     STAR_COLOR: settings.startColor,
     ACTIVE_DOT_COLOR: settings.activeDotColor,
     OVERLAY_TINT_COLOR: settings.overlayTintColor,
+    BADGE_COLOR: settings.badgeColor,
   };
 
   const COLOR_KEY_MAP = {
     STAR_COLOR: "startColor", // STAR_COLOR → startColor
     ACTIVE_DOT_COLOR: "activeDotColor", // ACTIVE_DOT_COLOR → activeDotColor
     OVERLAY_TINT_COLOR: "overlayTintColor", // OVERLAY_TINT_COLOR → overlayTintColor
+    BADGE_COLOR: "badgeColor", // BADGE_COLOR → badgeColor
   };
 
   const handleChangeColorPiker = (newColor) => {
@@ -100,6 +110,7 @@ export default function Index() {
       startColor: DEFAULT_COLOR_VALUES.STAR_COLOR,
       activeDotColor: DEFAULT_COLOR_VALUES.ACTIVE_DOT_COLOR,
       overlayTintColor: DEFAULT_COLOR_VALUES.OVERLAY_TINT_COLOR,
+      badgeColor: DEFAULT_COLOR_VALUES.BADGE_COLOR,
     }));
     setResetKey((prev) => prev + 1);
 
@@ -262,9 +273,9 @@ export default function Index() {
                   <s-switch
                     id="show-media-asset"
                     label="Show video duration"
-                    checked={settings.showMediaAsset}
+                    checked={settings.showVideoDuration}
                     onChange={(e) =>
-                      handleSettingChange("showMediaAsset", e.target.checked)
+                      handleSettingChange("showVideoDuration", e.target.checked)
                     }
                   ></s-switch>
                 </s-stack>
@@ -374,8 +385,8 @@ export default function Index() {
                     }
                   >
                     <s-option value="3">3</s-option>
-                    <s-option value="4">4</s-option>
                     <s-option value="5">5</s-option>
+              
                   </s-select>
                 </s-stack>
 
@@ -388,6 +399,7 @@ export default function Index() {
                   <s-select
                     label="Filter min stars"
                     value={settings.fiteringMinStart}
+                    details="This option isn't shown in the preview. It will take effect on your live review widget once customers submit reviews."
                     onChange={(e) =>
                       handleSettingChange("fiteringMinStart", e.target.value)
                     }
@@ -403,6 +415,8 @@ export default function Index() {
                     </s-option>
                     <s-option value="5 star only">5 star only</s-option>
                   </s-select>
+                  <br></br>
+                 
                 </s-stack>
               </s-stack>
             </div>
@@ -523,7 +537,7 @@ export default function Index() {
             </s-grid>
           </div>
           {/* End----Preview Header */}
-          <VideoStackWidget />
+          <VideoStackWidget settings={settings} activeDevice={activeDevice} />
           {/* Start----Preview Content */}
           {/* End----Preview Content */}
         </div>
