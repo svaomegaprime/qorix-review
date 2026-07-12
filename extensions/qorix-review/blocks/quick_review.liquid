@@ -263,7 +263,7 @@
     >
       <button class="modal-close" type="button" @click="closeModal()">&#x2715;</button>
       {% comment %} Start:: form  {% endcomment %}
-      <form id="form-view" @submit.prevent="(e)=>submitReview(e)" x-show="!submitSuccess">
+      <form id="form-view" @submit.prevent="(e)=>submitReview(e)" x-show="!submitSuccess && !isError">
         <div class="modal-header">
           <div class="modal-icon">
             <svg viewBox="0 0 24 24" fill="#fff">
@@ -428,6 +428,35 @@
         </div>
       </div>
       {% comment %} End:: success message  {% endcomment %}
+      {% comment %} Start:: Error message  {% endcomment %}
+
+      <div
+        id="error-view"
+        :style="
+          {
+            display: isError ? 'flex' : 'none',
+            flexDirection: 'column',
+            alignItems: 'center',
+            justifyContent: 'center',
+            minHeight: '320px'
+          }
+        "
+      >
+        <div class="success-box">
+          <div class="success-circle">
+            <svg viewBox="0 0 24 24">
+              <path d="M12 8v5" stroke="currentColor" stroke-width="2" stroke-linecap="round" />
+              <circle cx="12" cy="16.5" r="1" fill="currentColor" />
+            </svg>
+          </div>
+          <div class="success-title">Something went wrong</div>
+          <div class="success-sub" x-text="errorMessage || 'Please try again.'"></div>
+          <button class="continue-btn" type="button" @click="closeErrorModal()">
+            Try again
+          </button>
+        </div>
+      </div>
+      {% comment %} End:: Error message  {% endcomment %}
     </div>
   </div>
   {% comment %} End:: Review form and success {% endcomment %}

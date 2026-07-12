@@ -83,6 +83,7 @@ export async function getOrders(shop, token) {
     const avatar = `https://www.gravatar.com/avatar/${emailHash}?d=identicon`;
 
     return {
+      id: order.name,
       orderId: order.name,
       fullName,
       email,

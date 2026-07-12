@@ -21,20 +21,6 @@ export default function EmailConfirmation({ postRequestEmail, brandSettings }) {
         )}
 
         <div class="qr-product-card">
-          <div class="qr-product-avatar">
-            <svg
-              viewBox="0 0 24 24"
-              fill="none"
-              stroke="currentColor"
-              stroke-width="1.5"
-            >
-              <circle cx="12" cy="8" r="3.2"></circle>
-              <path
-                d="M5 19c0-3.5 3-6 7-6s7 2.5 7 6"
-                stroke-linecap="round"
-              ></path>
-            </svg>
-          </div>
           <div class="qr-product-info">
             <div class="qr-rating">&#9733;&#9733;&#9733;&#9733;&#9733;</div>
             <div class="qr-product-name">Hydrating eye cream</div>

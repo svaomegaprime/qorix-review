@@ -7,6 +7,8 @@ import { DEFAULT_REQUEST_SCHEDULING } from "../data/defaultData";
 import { getStoreData } from "../../../utils/getStoreData";
 import { authenticate } from "../../../shopify.server";
 import prisma from "../../../db.server";
+import { adminErrorResponse } from "../../../utils/adminError.server";
+import { useAdminFetcherToast } from "../../../utils/useAdminFetcherToast";
 
 const DELIVERY_DAY_OPTIONS = [5, 7, 15];
 const REMINDER_DAY_OPTIONS = [5, 7, 10, 15];
@@ -45,9 +47,7 @@ export async function loader({ request }) {
 
     return { storeSettings };
   } catch (error) {
-    console.log(error);
-
-    return {};
+    return adminErrorResponse(error);
   }
 }
 
@@ -65,25 +65,19 @@ export async function action({ request }) {
       data,
     });
 
-    console.log(
-      "[store settings]: requestSchedulingData data",
-      requestSchedulingData,
-    );
-
-    // console.log("[store settings:]requestScheduling", res);
-
     return {
       ok: true,
       message: "upserted RequestSchedulingData",
     };
   } catch (error) {
-    console.log(error);
+    return adminErrorResponse(error);
   }
 }
 
 export default function Settings() {
   const { storeSettings } = useLoaderData();
   const fetcher = useFetcher();
+  useAdminFetcherToast(fetcher);
 
   const [requestScheduling, setRequestScheduling] = useState(
     storeSettings?.requestScheduling ?? DEFAULT_REQUEST_SCHEDULING,
@@ -103,8 +97,6 @@ export default function Settings() {
     }
   }, [requestScheduling]);
 
-  console.log("DEFAULT_REQUEST_SCHEDULING:", requestScheduling);
-
   function handleSave() {
     fetcher.submit(requestScheduling, {
       method: "POST",
@@ -112,11 +104,8 @@ export default function Settings() {
     });
   }
 
-  console.log("loading:", fetcher.state);
   useEffect(() => {
-    if (fetcher.state === "idle" && fetcher.data) {
-      console.log("Response:", fetcher.data);
-
+    if (fetcher.state === "idle" && fetcher.data?.ok) {
       // Save successful
       shopify.saveBar.hide("leave-confirm-save-bar");
     }

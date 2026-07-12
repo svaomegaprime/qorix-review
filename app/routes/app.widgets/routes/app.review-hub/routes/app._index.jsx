@@ -74,7 +74,6 @@ const [settings, setSettings] = useState({
   layout: "3 column grid",
   filterSorting: "Filter & sorting both",
   reviewsPerPage: "9 reviews",
-  reviewStats: "Show review count & verified badge",
 
   // color piker
   colors: DEFAULT_COLOR_VALUES

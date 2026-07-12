@@ -1,9 +1,15 @@
 enum ReviewCheckStatus {
     SENT
     OPENED
-    PANDING
+    PENDING
     REVIEWED
     FAILED
+}
+
+enum RequestType {
+    AUTOMATIC
+    MANUAL
+    REMINDER
 }
 
 model Order {
@@ -15,15 +21,34 @@ model Order {
     fulfillmentStatus String
     paymentStatus     String
     userEmail         String?
-    projuctJson       Json?
-    reviewCheckStatus ReviewCheckStatus @default(PANDING)
+    reviewCheckStatus ReviewCheckStatus @default(PENDING)
+    requestType       RequestType       @default(AUTOMATIC)
     totalPrice        String?
     currency          String?
 
     redisBullmqJobId Json? //  {reviewRequestId: string, reminderJobId: string}
 
+    lineItems        OrderLineItem[]
+
     createdAt DateTime @default(now())
     updatedAt DateTime @updatedAt
 
     @@unique([storeId, orderId])
+}
+
+model OrderLineItem {
+    id         String   @id @default(uuid()) @db.Uuid()
+    orderId    String   @db.Uuid()
+    order      Order    @relation(fields: [orderId], references: [id], onDelete: Cascade)
+    productId  String
+    title      String
+    quantity   Int
+    handle     String?
+    url        String?
+    image      String?
+    isReviewed Boolean  @default(false)
+    createdAt  DateTime @default(now())
+    updatedAt  DateTime @updatedAt
+
+    @@unique([orderId, productId])
 }

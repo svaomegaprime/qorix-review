@@ -2,6 +2,7 @@ import crypto from "crypto";
 import { authenticate, unauthenticated } from "../shopify.server";
 import prisma from "../db.server";
 import { getStoreData } from "../utils/getStoreData";
+
 export const action = async ({ request }) => {
   const { topic, shop, payload } = await authenticate.webhook(request);
 
@@ -13,29 +14,111 @@ export const action = async ({ request }) => {
     const { admin } = await unauthenticated.admin(shop);
     const { id } = await getStoreData(admin);
 
+    const existReview = await prisma.review.findMany({
+      where: {
+        storeId: id,
+        productId: {
+          in: formattedOrder.products.map((item) => String(item.productId)),
+        },
+        reviewerEmail: formattedOrder.email,
+      },
+      select: { productId: true },
+    });
+
+    const reviewedProductIds = new Set(
+      existReview.map((r) => String(r.productId)),
+    );
+
+    formattedOrder.products = formattedOrder.products.map((item) => ({
+      ...item,
+      isReviewed: reviewedProductIds.has(String(item.productId)),
+    }));
+
     const orderFields = {
       orderId: formattedOrder.orderId,
       fulfillmentStatus: formattedOrder.fulfillmentStatus ?? "unfulfilled",
       paymentStatus: formattedOrder.status,
       userEmail: formattedOrder.email,
-      projuctJson: formattedOrder.products,
-      reviewCheckStatus: "PANDING",
+      reviewCheckStatus: "PENDING",
       totalPrice: formattedOrder.totalPrice,
       currency: formattedOrder.currency,
     };
-    const res = await prisma.order.upsert({
-      where: {
-        storeId_orderId: {
-          storeId: id,
-          orderId: formattedOrder.orderId,
-        },
-      },
-      update: orderFields,
-      create: {
-        ...orderFields,
-        store: { connect: { storeGID: id } },
-      },
-    });
+
+    const upsertLineItems = async (tx, orderDbId) => {
+      await tx.orderLineItem.deleteMany({
+        where: { orderId: orderDbId },
+      });
+
+      if (formattedOrder.products && formattedOrder.products.length > 0) {
+        await tx.orderLineItem.createMany({
+          data: formattedOrder.products.map((p) => ({
+            orderId: orderDbId,
+            productId: String(p.productId),
+            title: p.title,
+            quantity: p.quantity,
+            handle: p.productHandle ?? p.handle ?? null,
+            url: p.url ?? null,
+            image: p.image ?? null,
+            isReviewed: p.isReviewed ?? false,
+          })),
+        });
+      }
+    };
+
+    try {
+      await prisma.$transaction(async (tx) => {
+        // Upsert order header
+        const orderDb = await tx.order.upsert({
+          where: {
+            storeId_orderId: {
+              storeId: id,
+              orderId: formattedOrder.orderId,
+            },
+          },
+          update: orderFields,
+          create: {
+            ...orderFields,
+            store: { connect: { storeGID: id } },
+          },
+        });
+
+        await upsertLineItems(tx, orderDb.id);
+      });
+    } catch (error) {
+      // P2002: duplicate webhook — the order already exists; fall back to a plain update
+      if (error?.code === "P2002") {
+        console.warn(
+          "Duplicate order create webhook, updating existing order",
+          {
+            storeId: id,
+            orderId: formattedOrder.orderId,
+          },
+        );
+
+        await prisma.$transaction(async (tx) => {
+          const existingOrder = await tx.order.findUnique({
+            where: {
+              storeId_orderId: {
+                storeId: id,
+                orderId: formattedOrder.orderId,
+              },
+            },
+          });
+
+          if (existingOrder) {
+            await tx.order.update({
+              where: { id: existingOrder.id },
+              data: orderFields,
+            });
+
+            await upsertLineItems(tx, existingOrder.id);
+          }
+        });
+      } else {
+        console.error("Failed to upsert order and line items", error);
+        throw error;
+      }
+    }
 
     return new Response(JSON.stringify(formattedOrder), {
       status: 200,
@@ -62,6 +145,7 @@ function formatOrder(order) {
   const avatar = `https://www.gravatar.com/avatar/${emailHash}?d=identicon`;
 
   return {
+    id: order.name,
     orderId: order.name,
     fullName,
     email,
@@ -78,9 +162,9 @@ function formatOrder(order) {
     products: (order.line_items || []).map((item) => ({
       title: item.title,
       productId: item.product_id,
-      productHandle: item.handle,
+      productHandle: item.handle ?? null,
       quantity: item.quantity,
-      url: item.url,
+      url: item.url ?? null,
     })),
   };
 }

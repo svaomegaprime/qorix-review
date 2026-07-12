@@ -25,7 +25,7 @@ const COLOR_PICKERS_ELEMENTS = [
     key: "QUOTE_MARK_COLOR",
     label: "Quote mark and badge color",
   },
-  
+
   {
     key: "STAR_COLOR",
     label: "Star color",
@@ -64,24 +64,21 @@ export default function Index(VALUES = {}) {
     showVerifiedBadge: true,
     showMediaAsset: true,
     showArrowControls: true,
-    showProductName:true,
-    autoSlider:false,
+    showProductName: true,
+    autoSlider: false,
     showAppreciationOption: true,
-    speed:450,
+    speed: 450,
 
     filterSorting: "Filter & sorting both",
     fiteringMinStart: "3 star and above",
-    reviewStats: "Show review count & verified badge",
 
     // color piker
     colors: DEFAULT_COLOR_VALUES,
 
     // Typography
-    quoteFontSize:24,
-    textLength:160,
-        // autoplay on/off
-
-    
+    quoteFontSize: 24,
+    textLength: 160,
+    // autoplay on/off
   });
 
   const handleChangeColors = (e) => {
@@ -98,7 +95,6 @@ export default function Index(VALUES = {}) {
     setSettings((prev) => ({ ...prev, [key]: value }));
   };
   122;
-  console.log("settings", settings);
 
   // Start----Handlers for hide app window
   const handleHideAppWindow = () => {
@@ -181,7 +177,7 @@ export default function Index(VALUES = {}) {
             {/* Start----Sidebar content */}
 
             {/* ----------Display Elements start ------------ */}
-            <div style={{ padding: "1rem"}}>
+            <div style={{ padding: "1rem" }}>
               <Header
                 handleSettingChange={handleSettingChange}
                 settings={settings}
@@ -191,7 +187,6 @@ export default function Index(VALUES = {}) {
                 border="base"
                 borderRadius="base"
                 padding="large"
-                
                 gap="small"
               >
                 <s-heading level="1">Display elements</s-heading>
@@ -277,7 +272,7 @@ export default function Index(VALUES = {}) {
                 gap="small"
               >
                 <s-heading level="1">Loop behavior</s-heading>
-                    <s-stack>
+                <s-stack>
                   <s-switch
                     id="show-arrow-controls"
                     label="Show arrow controls"
@@ -288,7 +283,7 @@ export default function Index(VALUES = {}) {
                   ></s-switch>
                 </s-stack>
 
-                    <s-stack>
+                <s-stack>
                   <s-switch
                     id="auto-rotate"
                     label="Auto-rotate"
@@ -299,22 +294,23 @@ export default function Index(VALUES = {}) {
                   ></s-switch>
                 </s-stack>
 
-                   <s-stack padding="small" border="base" borderRadius="large" gap="small">
+                <s-stack
+                  padding="small"
+                  border="base"
+                  borderRadius="large"
+                  gap="small"
+                >
                   <s-heading level="3">Autoplay speed</s-heading>
-                    <Range
-                      onChange={(e) =>
-                        handleSettingChange("speed", Number(e.target.value))
-                      }
-                      unit="ms"
-                      defaultValue={settings?.speed}
-                      min={400}
-                      max={600}
-                    />
+                  <Range
+                    onChange={(e) =>
+                      handleSettingChange("speed", Number(e.target.value))
+                    }
+                    unit="ms"
+                    defaultValue={settings?.speed}
+                    min={400}
+                    max={600}
+                  />
                 </s-stack>
-
-               
-
-      
 
                 <s-stack
                   border="base"
@@ -329,9 +325,15 @@ export default function Index(VALUES = {}) {
                       handleSettingChange("fiteringMinStart", e.target.value)
                     }
                   >
-                    <s-option value="Show all ratings">Show all ratings</s-option>
-                    <s-option value="3 star and above">3 star and above</s-option>
-                    <s-option value="4 star and above">4 star and above</s-option>
+                    <s-option value="Show all ratings">
+                      Show all ratings
+                    </s-option>
+                    <s-option value="3 star and above">
+                      3 star and above
+                    </s-option>
+                    <s-option value="4 star and above">
+                      4 star and above
+                    </s-option>
                     <s-option value="5 star only">5 star only</s-option>
                   </s-select>
                 </s-stack>
@@ -374,32 +376,44 @@ export default function Index(VALUES = {}) {
                 gap="small"
               >
                 <s-heading level="1">Typography & layout</s-heading>
-           
 
-                   <s-stack padding="small" border="base" borderRadius="large" gap="small">
+                <s-stack
+                  padding="small"
+                  border="base"
+                  borderRadius="large"
+                  gap="small"
+                >
                   <s-heading level="3">Quote font size</s-heading>
-                    <Range
-                      onChange={(e) =>
-                        handleSettingChange("quoteFontSize", Number(e.target.value))
-                      }
-                      unit="px"
-                      defaultValue={settings?.quoteFontSize}
-                      min={20}                      max={40}
-                    />
+                  <Range
+                    onChange={(e) =>
+                      handleSettingChange(
+                        "quoteFontSize",
+                        Number(e.target.value),
+                      )
+                    }
+                    unit="px"
+                    defaultValue={settings?.quoteFontSize}
+                    min={20}
+                    max={40}
+                  />
                 </s-stack>
 
-                     <s-stack padding="small" border="base" borderRadius="large" gap="small">
+                <s-stack
+                  padding="small"
+                  border="base"
+                  borderRadius="large"
+                  gap="small"
+                >
                   <s-heading level="3">Max text length</s-heading>
-                    <Range
-                      onChange={(e) =>
-                        handleSettingChange("textLength", Number(e.target.value))
-                      }
-                      unit="ch"
-                      defaultValue={settings?.textLength}
-                      max={160}
-                    />
+                  <Range
+                    onChange={(e) =>
+                      handleSettingChange("textLength", Number(e.target.value))
+                    }
+                    unit="ch"
+                    defaultValue={settings?.textLength}
+                    max={160}
+                  />
                 </s-stack>
-              
               </s-stack>
             </div>
             {/* End----Sidebar content */}

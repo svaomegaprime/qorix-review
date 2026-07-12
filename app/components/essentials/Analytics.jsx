@@ -3,9 +3,19 @@ import starFilled from "../../assets/images/star-filled.svg"
 import starEmpty from "../../assets/images/star-empty.svg"
 import CustomText from "../essentials/elements/Text"
 
-export default function Analytics() {
+export default function Analytics({ reviews = [], pendingOrders }) {
     const arrowUp = '↑';
     const arrowDown = '↓';
+
+    const totalReviews = reviews.length;
+    const avgRating = totalReviews > 0
+        ? (reviews.reduce((sum, r) => sum + r.rating, 0) / totalReviews)
+        : 0;
+    const pendingReviews = reviews.filter(r => r.status === "PENDING").length;
+
+    const roundedRating = Math.round(avgRating);
+    const stars = Array.from({ length: 5 }, (_, i) => i < roundedRating);
+
     return (
         <s-stack paddingBlockEnd="base">
             <s-query-container>
@@ -18,11 +28,11 @@ export default function Analytics() {
                                 gap="small"
                                 alignItems="center"
                                 justifyContent="space-between"
-                                >
+                            >
                                 <s-heading>Total reviews</s-heading>
                                 <s-icon type="plan" />
                             </s-stack>
-                            <Text as="h2">14</Text>
+                            <Text as="h2">{totalReviews}</Text>
                             <CustomText as="p" color={"#00BF7A"}>
                                 {arrowUp} 5 this week
                             </CustomText>
@@ -37,17 +47,15 @@ export default function Analytics() {
                                 gap="small"
                                 alignItems="center"
                                 justifyContent="space-between"
-                                >
+                            >
                                 <s-heading>Avg. rating</s-heading>
                                 <s-icon type="star-list" />
                             </s-stack>
-                            <Text as="h2">4.3</Text>
+                            <Text as="h2">{avgRating.toFixed(1)}</Text>
                             <s-grid gridTemplateColumns="repeat(5, 20px)" alignItems="center">
-                                <s-image src={starFilled} inlineSize="fill" />
-                                <s-image src={starFilled} inlineSize="fill" />
-                                <s-image src={starFilled} inlineSize="fill" />
-                                <s-image src={starFilled} inlineSize="fill" />
-                                <s-image src={starEmpty} inlineSize="fill" />
+                                {stars.map((isFilled, idx) => (
+                                    <s-image key={idx} src={isFilled ? starFilled : starEmpty} inlineSize="fill" />
+                                ))}
                             </s-grid>
                         </s-section>
                     </s-box>
@@ -60,11 +68,11 @@ export default function Analytics() {
                                 gap="small"
                                 alignItems="center"
                                 justifyContent="space-between"
-                                >
+                            >
                                 <s-heading>Requests sent</s-heading>
                                 <s-icon type="send" />
                             </s-stack>
-                            <Text as="h2">22</Text>
+                            <Text as="h2">{pendingOrders?.length ?? 0}</Text>
                             <s-paragraph>
                                 Last 30 days
                             </s-paragraph>
@@ -79,11 +87,11 @@ export default function Analytics() {
                                 gap="small"
                                 alignItems="center"
                                 justifyContent="space-between"
-                                >
+                            >
                                 <s-heading>Pending</s-heading>
                                 <s-icon type="clock" />
                             </s-stack>
-                            <Text as="h2">2</Text>
+                            <Text as="h2">{pendingReviews}</Text>
                             <CustomText as="p" color={"#FF9500"}>
                                 Needs moderation
                             </CustomText>

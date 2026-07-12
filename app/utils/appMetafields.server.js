@@ -32,8 +32,6 @@ const METAFIELDS_SET_MUTATION = `#graphql
   }
 `;
 
-const DEBUG_PREFIX = "[qorix-review][app-metafields]";
-
 function safeParseJson(value) {
   if (typeof value !== "string") {
     return value ?? null;
@@ -59,8 +57,6 @@ export async function getAppInstallationMetafields(
 
   const json = await response.json();
   const currentAppInstallation = json?.data?.currentAppInstallation;
-
-  console.log(DEBUG_PREFIX, "query response", json);
 
   if (!currentAppInstallation?.id) {
     throw new Error("Unable to resolve current app installation id");
@@ -90,7 +86,7 @@ export async function setAppMetafield(
     namespace,
   );
 
-  console.log("currentAppInstallationId:::::::",currentAppInstallationId)
+  console.log("currentAppInstallationId:::::::", currentAppInstallationId)
 
   const metafieldsToSet = [
     {
@@ -102,8 +98,6 @@ export async function setAppMetafield(
     },
   ];
 
-  console.log(DEBUG_PREFIX, "metafieldsSet payload", metafieldsToSet);
-
   const response = await admin.graphql(METAFIELDS_SET_MUTATION, {
     variables: {
       metafields: metafieldsToSet,
@@ -113,10 +107,8 @@ export async function setAppMetafield(
   const json = await response.json();
   const userErrors = json?.data?.metafieldsSet?.userErrors ?? [];
 
-  console.log(DEBUG_PREFIX, "metafieldsSet response", json);
-
   if (userErrors.length > 0) {
-    console.error(DEBUG_PREFIX, "metafieldsSet userErrors", userErrors);
+    console.error("metafieldsSet userErrors", userErrors);
   }
 
   return json;

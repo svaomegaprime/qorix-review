@@ -11,6 +11,8 @@ import { authenticate } from "../../../shopify.server";
 import prisma from "../../../db.server";
 
 import { getStoreData } from "../../../utils/getStoreData";
+import { adminErrorResponse } from "../../../utils/adminError.server";
+import { useAdminFetcherToast } from "../../../utils/useAdminFetcherToast";
 
 export async function loader({ request }) {
   try {
@@ -25,13 +27,10 @@ export async function loader({ request }) {
         widgetsSettings: true,
       },
     });
-    console.log(storeSettings);
 
     return { storeSettings };
   } catch (error) {
-    console.log(error);
-
-    return null;
+    return adminErrorResponse(error);
   }
 }
 
@@ -49,25 +48,19 @@ export async function action({ request }) {
       data,
     });
 
-    console.log(
-      "[store settings]: requestSchedulingData data",
-      widgetsSettingsData,
-    );
-
-    // console.log("[store settings:]requestScheduling", res);
-
     return {
       ok: true,
       message: "upserted PublishingModerationData",
     };
   } catch (error) {
-    console.log(error);
+    return adminErrorResponse(error);
   }
 }
 
 export default function Widgets() {
   const { storeSettings } = useLoaderData();
   const fetcher = useFetcher();
+  useAdminFetcherToast(fetcher);
   const [widgetSettings, setWidgetSettings] = useState(
     storeSettings.widgetsSettings ?? DEFAULT_WIDGET,
   );
@@ -95,9 +88,7 @@ export default function Widgets() {
   }
 
   useEffect(() => {
-    if (fetcher.state === "idle" && fetcher.data) {
-      console.log("Response:", fetcher.data);
-
+    if (fetcher.state === "idle" && fetcher.data?.ok) {
       // Save successful
       shopify.saveBar.hide("leave-confirm-save-bar");
     }
