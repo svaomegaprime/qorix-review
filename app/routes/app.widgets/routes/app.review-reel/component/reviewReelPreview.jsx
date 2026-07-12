@@ -1,4 +1,822 @@
+import { useState, useEffect, useRef, useLayoutEffect, useMemo } from "react";
+import ReaviewHeader from "../../../components/elements/WidgetsHeader";
 
-export default function ReviewReelPreview() {
-    return <div>This is the review reel preview</div>;
+const GAP = 24;
+const TRANSITION = "transform 0.5s cubic-bezier(0.4, 0, 0.2, 1)";
+
+const CAROUSEL_CONFIG = {
+  showAutoPlay: true,
+  autoplaySpeed: 4000,
+  showDots: true,
+  showArrows: true,
+  cardsVisible: 3,
+  filterMinStars: 0,
+};
+
+const REVIEWS = [
+  {
+    id: 1,
+    mediaType: "image",
+    image: "https://images.unsplash.com/photo-1556228578-8c89e6adf883?w=600&q=80",
+    imageAlt: "Facial Serum Vitamin C product",
+    product: "Product: Facial Serum Vitamin C",
+    quote: "I'm grateful for their honesty and transparency throughout the process.",
+    name: "Saoirse Ronan",
+    avatar: "https://i.pravatar.cc/56?img=47",
+    date: "12th April, 2026",
+    stars: 5,
+  },
+  {
+    id: 2,
+    mediaType: "video",
+    videoSrc: "https://www.w3schools.com/html/mov_bbb.mp4",
+    image: "https://images.unsplash.com/photo-1608248543803-ba4f8c70ae0b?w=600&q=80",
+    imageAlt: "AHA Smoothing Cream product",
+    product: "Product: AHA Smoothing Cream",
+    quote: "I'm grateful for their honesty and transparency throughout the process.",
+    name: "Saoirse Ronan",
+    avatar: "https://i.pravatar.cc/56?img=47",
+    date: "12th April, 2026",
+    stars: 4,
+  },
+  {
+    id: 3,
+    mediaType: "video",
+    videoSrc: "https://www.w3schools.com/html/mov_bbb.mp4",
+    image: "https://images.unsplash.com/photo-1598440947619-2c35fc9aa908?w=600&q=80",
+    imageAlt: "Skincare product review",
+    product: "Product: Skincare Routine Set",
+    quote: "I'm grateful for their honesty and transparency throughout the process. Absolutely love this product and everything it does for my skin.",
+    name: "Saoirse Ronan",
+    avatar: "https://i.pravatar.cc/56?img=47",
+    date: "12th April, 2026",
+    stars: 5,
+  },
+  {
+    id: 4,
+    mediaType: "image",
+    image: "https://images.unsplash.com/photo-1571781926291-c477ebfd024b?w=600&q=80",
+    imageAlt: "Product review image",
+    product: "Product: Facial Serum Vitamin C",
+    quote: "Absolutely transformed my skincare routine in just two weeks.",
+    name: "Emma Stone",
+    avatar: "https://i.pravatar.cc/56?img=25",
+    date: "2nd June, 2026",
+    stars: 5,
+  },
+];
+
+const STYLES = `
+[data-section="qorix-review-reel-widget"] {
+  ---color-text-primary: #303030;
+  ---color-text-green: #008923;
+  ---color-text-secondary: #616161;
+  ---color-text-product-name: #0d2440;
+}
+
+section.qorix-review-reel-real-review-section {
+  margin-top: 70px;
+  padding:var(---stack-mobile_padding, 0px 40px);
+
+}
+
+
+  .qorix-review-reel-secound_container {
+    width: var(---preview_mobile_width, auto);
+    margin: 0 auto;
+   
+}
+
+.qorix-review-reel-header{
+
+padding-left:var(---preview_mobile_review_header, 70px);
+
+
+}
+
+.qorix-review-reel-main_container{
+  background-color: #ddd;
+  padding: 40px;
+  height : 700px;
+  overflow: scroll;
+  }
+
+[data-section="qorix-review-reel-widget"] .qorix-review-reel-real-review-section {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 50px;
+  padding: 80px 40px;
+  max-width: 1405px;
+  margin: 0 auto;
+  text-align: center;
+}
+
+[data-section="qorix-review-reel-widget"] .qorix-review-reel-swiper-wrapper {
+  width: 90%;
+  margin: 0 auto;
+  position: relative;
+  padding-bottom: 48px;
+}
+
+/* ── Track (replaces Swiper internals) ── */
+[data-section="qorix-review-reel-widget"] .qorix-review-reel-track-wrapper {
+  overflow: hidden;
+  padding-bottom: 48px;
+  user-select: none;
+  touch-action: pan-y;
+}
+
+[data-section="qorix-review-reel-widget"] .qorix-review-reel-track {
+  display: flex;
+  gap: 24px;
+  will-change: transform;
+  align-items: flex-start;
+}
+
+[data-section="qorix-review-reel-widget"] .qorix-review-reel-slide {
+  flex: 0 0 auto;
+  min-width: 0;
+}
+
+/* ── Nav arrows ── */
+[data-section="qorix-review-reel-widget"] .qorix-review-reel-swiper-button-next,
+[data-section="qorix-review-reel-widget"] .qorix-review-reel-swiper-button-prev {
+  position: absolute;
+  cursor: pointer;
+  z-index: 10;
+  width: 44px;
+  height: 44px;
+  background: #fff;
+  border: none;
+  border-radius: 99px;
+  box-shadow:
+    inset 0px -1px 0px #b5b5b5,
+    inset 0px 0px 0px 1px rgba(0,0,0,0.1),
+    inset 0px 0.5px 0px 1.5px #fff;
+  top: 38%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: box-shadow 0.15s, opacity 0.2s;
+}
+
+[data-section="qorix-review-reel-widget"] .qorix-review-reel-swiper-button-next:hover,
+[data-section="qorix-review-reel-widget"] .qorix-review-reel-swiper-button-prev:hover {
+  box-shadow:
+    inset 0px -1px 0px #999,
+    inset 0px 0px 0px 1px rgba(0,0,0,0.18),
+    inset 0px 0.5px 0px 1.5px #fff;
+}
+
+[data-section="qorix-review-reel-widget"] .qorix-review-reel-swiper-button-next { right: -28px; }
+[data-section="qorix-review-reel-widget"] .qorix-review-reel-swiper-button-prev { left: -28px; }
+
+/* ── Pagination dots ── */
+[data-section="qorix-review-reel-widget"] .qorix-review-reel-swiper-pagination {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 6px;
+  margin-top: 24px;
+}
+
+[data-section="qorix-review-reel-widget"] .qorix-review-reel-pagination-bullet {
+  width: 8px;
+  height: 8px;
+  border: none;
+  padding: 0;
+  cursor: pointer;
+  border-radius: 99px;
+  background: #d9d9d9;
+  transition: background 0.25s, width 0.25s;
+}
+
+[data-section="qorix-review-reel-widget"] .qorix-review-reel-pagination-bullet.active {
+  background:  var(--activedotted_color, #34c759);
+  width: 24px;
+}
+
+/* ── Review card ── */
+[data-section="qorix-review-reel-widget"] .qorix-review-reel-review-card {
+  display: flex;
+  flex-direction: column;
+  padding: 16px;
+  background: var(--card_background, #fff);
+  border: 1px solid #eff2f5;
+  border-radius: 16px;
+  gap: 20px;
+  height: auto !important;
+}
+
+[data-section="qorix-review-reel-widget"] .qorix-review-reel-review-card-image {
+  position: relative;
+  width: 100%;
+  height: 272px;
+  border-radius: 8px;
+  overflow: hidden;
+  flex-shrink: 0;
+  background: #f0f2f5;
+}
+
+[data-section="qorix-review-reel-widget"] .qorix-review-reel-review-card-image img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+}
+
+[data-section="qorix-review-reel-widget"] .qorix-review-reel-play-btn {
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  transform: translate(-50%, -50%);
+  width: 40px;
+  height: 40px;
+  border: none;
+  border-radius: 50%;
+  background: transparent;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0;
+  transition: transform 0.15s, background 0.15s;
+}
+
+[data-section="qorix-review-reel-widget"] .qorix-review-reel-play-btn:hover {
+  transform: translate(-50%, -50%) scale(1.08);
+}
+
+[data-section="qorix-review-reel-widget"] .qorix-review-reel-review-card-content {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  text-align: left;
+  gap: 40px;
+}
+
+[data-section="qorix-review-reel-widget"] .qorix-review-reel-review-text {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+[data-section="qorix-review-reel-widget"] .qorix-review-reel-product-title {
+  margin: 0;
+  font-weight: 500;
+  font-size: 1rem;
+  line-height: 1.7;
+  letter-spacing: -0.5px;
+  color: var(---color-text-product-name);
+}
+
+[data-section="qorix-review-reel-widget"] .qorix-review-reel-review-quote {
+  margin: 0;
+  font-weight: 400;
+  font-size: 24px;
+  line-height: 1.4;
+  letter-spacing: -1px;
+  color: var(---color-text-primary);
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+
+[data-section="qorix-review-reel-widget"] .qorix-review-reel-review-user {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+}
+
+[data-section="qorix-review-reel-widget"] .qorix-review-reel-user-avatar {
+  width: 56px;
+  height: 56px;
+  border-radius: 50%;
+  object-fit: cover;
+  flex-shrink: 0;
+  background: #eff2f5;
+}
+
+[data-section="qorix-review-reel-widget"] .qorix-review-reel-user-info {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+[data-section="qorix-review-reel-widget"] .qorix-review-reel-user-name {
+  margin: 0;
+  font-weight: 500;
+  font-size: 1rem;
+  line-height: 1.7;
+  letter-spacing: -0.5px;
+  color: var(---color-text-primary);
+}
+
+[data-section="qorix-review-reel-widget"] .qorix-review-reel-review-date {
+  margin: 0;
+  font-size: 14px;
+  line-height: 1.6;
+  color: var(---color-text-secondary);
+}
+
+/* ── Responsive ── */
+@media (max-width: 960px) {
+  [data-section="qorix-review-reel-widget"] .qorix-review-reel-real-review-section {
+    padding: 60px 24px;
+    gap: 40px;
+  }
+  [data-section="qorix-review-reel-widget"] .qorix-review-reel-swiper-button-next { right: -6px; }
+  [data-section="qorix-review-reel-widget"] .qorix-review-reel-swiper-button-prev { left:  -6px; }
+}
+
+@media (max-width: 600px) {
+  [data-section="qorix-review-reel-widget"] .qorix-review-reel-real-review-section {
+    padding: 48px 16px;
+    gap: 32px;
+  }
+  [data-section="qorix-review-reel-widget"] .qorix-review-reel-review-card-image { height: 220px; }
+  [data-section="qorix-review-reel-widget"] .qorix-review-reel-review-quote      { font-size: 20px; }
+  [data-section="qorix-review-reel-widget"] .qorix-review-reel-swiper-button-next,
+  [data-section="qorix-review-reel-widget"] .qorix-review-reel-swiper-button-prev { display: none; }
+}
+`;
+
+function useSlideCount(cardsVisible) {
+  const [count, setCount] = useState(() => {
+    if (typeof window === "undefined") return cardsVisible;
+    const w = window.innerWidth;
+    if (w < 601) return 1;
+    if (w < 961) return Math.min(2, cardsVisible);
+    return cardsVisible;
+  });
+
+  useEffect(() => {
+    function update() {
+      const w = window.innerWidth;
+      if (w < 601) setCount(1);
+      else if (w < 961) setCount(Math.min(2, cardsVisible));
+      else setCount(cardsVisible);
+    }
+    update();
+    window.addEventListener("resize", update);
+    return () => window.removeEventListener("resize", update);
+  }, [cardsVisible]);
+
+  return count;
+}
+
+// ─── SVG helpers ──────────────────────────────────────────────────────────────
+function PlayCircleSvg() {
+  return (
+    <svg width="40" height="40" viewBox="0 0 40 40" fill="none">
+      <g clipPath="url(#pc1)">
+        <path
+          d="M20 0C8.97167 0 0 8.97167 0 20C0 31.0283 8.97167 40 20 40C31.0283 40 40 31.0283 40 20C40 8.97167 31.0283 0 20 0ZM27.34 23.1217L18.6533 27.8783C18.1117 28.1833 17.515 28.335 16.9183 28.335C16.2967 28.335 15.6733 28.17 15.1067 27.84C13.995 27.19 13.3333 26.035 13.3333 24.7483V15.25C13.3333 13.9633 13.995 12.8083 15.1067 12.1583C16.215 11.51 17.5483 11.4983 18.67 12.13L27.3233 16.8683C28.4833 17.52 29.165 18.6867 29.165 19.9983C29.165 21.31 28.4833 22.4767 27.3383 23.12L27.34 23.1217Z"
+          fill="white"
+        />
+      </g>
+      <defs>
+        <clipPath id="pc1"><rect width="40" height="40" fill="white" /></clipPath>
+      </defs>
+    </svg>
+  );
+}
+
+function ChevronRightSvg() {
+  return (
+    <svg width="20" height="20" viewBox="0 0 20 20" fill="none">
+      <path fillRule="evenodd" clipRule="evenodd"
+        d="M7.71953 14.53C7.57908 14.3894 7.50019 14.1987 7.50019 14C7.50019 13.8012 7.57908 13.6106 7.71953 13.47L11.1895 10 7.71953 6.53C7.57908 6.3894 7.50019 6.1987 7.50019 6C7.50019 5.5858 7.83597 5.25 8.24953 5.25C8.44828 5.25 8.63891 5.3296 8.77953 5.47L12.7795 9.47C12.92 9.6106 12.9989 9.8012 12.9989 10C12.9989 10.1987 12.92 10.3894 12.7795 10.53L8.77953 14.53C8.63891 14.6704 8.44828 14.7493 8.24953 14.7493C8.05078 14.7493 7.86016 14.6704 7.71953 14.53Z"
+        fill="#4A4A4A" />
+    </svg>
+  );
+}
+
+function ChevronLeftSvg() {
+  return (
+    <svg width="20" height="20" viewBox="0 0 20 20" fill="none">
+      <path fillRule="evenodd" clipRule="evenodd"
+        d="M12.2805 14.53C12.4209 14.3894 12.4998 14.1987 12.4998 14C12.4998 13.8012 12.4209 13.6106 12.2805 13.47L8.81047 10 12.2805 6.53C12.4209 6.3894 12.4998 6.1987 12.4998 6C12.4998 5.5858 12.1637 5.25 11.7505 5.25C11.5517 5.25 11.3611 5.3296 11.2205 5.47L7.22047 9.47C7.08002 9.6106 7.00113 9.8012 7.00113 10C7.00113 10.1987 7.08002 10.3894 7.22047 10.53L11.2205 14.53C11.3611 14.6704 11.5517 14.7493 11.7505 14.7493C11.9492 14.7493 12.1398 14.6704 12.2805 14.53Z"
+        fill="#4A4A4A" />
+    </svg>
+  );
+}
+
+// ─── ReviewCard ───────────────────────────────────────────────────────────────
+function ReviewCard({ review, settings }) {
+  const [videoActive, setVideoActive] = useState(false);
+const { showReviewerName, showVerifiedBadge, showProductName, showReviewDate,showReviewImage,startColor } = settings || {};
+  function handlePlay(e) {
+    e.stopPropagation();
+    setVideoActive(true);
+  }
+
+  return (
+    <div className="qorix-review-reel-review-card">
+        
+      <div className="qorix-review-reel-review-card-image" data-media-type={review.mediaType}>
+        {videoActive ? (
+          <video
+            src={review.videoSrc}
+            controls
+            autoPlay
+            style={{
+              position: "absolute", inset: 0,
+              width: "100%", height: "100%",
+              objectFit: "cover", zIndex: 2, borderRadius: 8,
+            }}
+          />
+        ) : (
+          <>
+            <img src={review.image} alt={review.imageAlt} />
+            {review.mediaType === "video" && (
+              <button
+                className="qorix-review-reel-play-btn"
+                aria-label="Play video review"
+                onClick={handlePlay}
+              >
+                <PlayCircleSvg />
+              </button>
+            )}
+          </>
+        )}
+      </div>
+
+      <div className="qorix-review-reel-review-card-content">
+        <div className="qorix-review-reel-review-text">
+          {showProductName && <p className="qorix-review-reel-product-title">{review.product}</p>}
+          <h3 className="qorix-review-reel-review-quote">"{review.quote}"</h3>
+        </div>
+        <div className="qorix-review-reel-review-user">
+           {showReviewImage && <img className="qorix-review-reel-user-avatar" src={review.avatar} alt={review.name} />}
+          <div className="qorix-review-reel-user-info">
+            <p className="qorix-review-reel-user-name">
+                {showReviewerName && review.name}
+              {/* {review.name} */}
+
+             {showVerifiedBadge &&<svg width="16" height="16" viewBox="0 0 24 24" style={{marginLeft:6,verticalAlign:"middle",flexShrink:0}}>
+                <circle cx="12" cy="12" r="12" fill={startColor} />
+                <path d="M10 15.17l-3.59-3.59L5 13l5 5 9-9-1.41-1.42z" fill="#fff" />
+              </svg> } 
+              
+            </p>
+            {showReviewDate && <p className="qorix-review-reel-review-date">{review.date}</p>}  
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+}
+
+// ─── Main component ───────────────────────────────────────────────────────────
+export default function ReviewReelWidget({ settings,activeDevice }) {
+  const config = {
+    ...CAROUSEL_CONFIG,
+    ...settings,
+    autoplaySpeed: settings.autoplaySpeed != null
+      ? settings.autoplaySpeed * 1000
+      : CAROUSEL_CONFIG.autoplaySpeed,
+  };
+
+
+
+  const slidesPerView = useSlideCount(activeDevice === "mobile" ? 1 : config.cardsVisible);
+ const { showNavigationDots,showArrowControls } = settings || {};
+  const slides = useMemo(() => REVIEWS, []);
+
+  const extSlides = useMemo(() => {
+    if (slides.length === 0) return [];
+    const n = slidesPerView;
+    return [...slides.slice(-n), ...slides, ...slides.slice(0, n)];
+  }, [slides, slidesPerView]);
+
+  // Mutable refs — used inside setInterval / rAF callbacks so they're always current
+  const rawIndexRef = useRef(slidesPerView);
+  const slideWidthRef = useRef(0);
+  const trackRef = useRef(null);
+  const wrapperRef = useRef(null);
+  const isLoopJumping = useRef(false);
+  const autoplayRef = useRef(null);
+  const isAnimatingRef = useRef(false);
+  const isHoveringRef = useRef(false);
+  const dragRef = useRef({ startX: 0, active: false, hasDragged: false });
+
+  // React state — drives dot active state and re-renders
+  const [rawIndex, setRawIndex] = useState(slidesPerView);
+  const [slideWidth, setSlideWidth] = useState(0);
+
+  const [autoplayKey, setAutoplayKey] = useState(0);  // bump to restart the interval
+  const [imagesReady, setImagesReady] = useState(false);
+
+  // Which original slide is logically "active" (for dots)
+  const realIndex =
+    ((rawIndex - slidesPerView) % slides.length + slides.length) % slides.length;
+
+  // Keep refs in sync with state so interval callbacks read current values
+  rawIndexRef.current = rawIndex;
+  slideWidthRef.current = slideWidth;
+
+  // ── Track position (imperative — avoids React render on every tick) ────────
+  function applyOffset(idx, animate) {
+    if (!trackRef.current || !slideWidthRef.current) return;
+    trackRef.current.style.transition = animate ? TRANSITION : "none";
+    trackRef.current.style.transform =
+      `translateX(${-(idx * (slideWidthRef.current + GAP))}px)`;
+    if (animate) isAnimatingRef.current = true;
+  }
+
+  // ── Measure & position — shared logic ──────────────────────────────────────
+  function measureAndPosition() {
+    const el = wrapperRef.current;
+    const track = trackRef.current;
+    if (!el || !track) return;
+    const w = el.offsetWidth;
+    if (w <= 0) return;
+    const sw = (w - (slidesPerView - 1) * GAP) / slidesPerView;
+    if (sw <= 0) return;
+
+    slideWidthRef.current = sw;
+    rawIndexRef.current = slidesPerView;
+
+    setSlideWidth(sw);
+    setRawIndex(slidesPerView);
+
+    Array.from(track.children).forEach((child) => {
+      child.style.width = `${sw}px`;
+    });
+    track.style.transition = "none";
+    track.style.transform = `translateX(${-(slidesPerView * (sw + GAP))}px)`;
+  }
+
+  // ── On mount & slidesPerView change ───────────────────────────────────────
+  // useLayoutEffect runs before paint, so the track is correctly positioned
+  // before the user sees anything.
+  useLayoutEffect(measureAndPosition, [slidesPerView]);
+
+  // ── ResizeObserver — handles both window resize AND hidden→visible ────────
+  // Unlike a plain resize listener, ResizeObserver fires when a previously
+  // hidden container (display:none / conditional render) becomes visible and
+  // its size changes from 0 to something real.
+  useEffect(() => {
+    const el = wrapperRef.current;
+    if (!el) return;
+    const observer = new ResizeObserver(() => {
+      measureAndPosition();
+    });
+    observer.observe(el);
+    return () => observer.disconnect();
+  }, [slidesPerView]);
+
+
+  function handleTransitionEnd(e) {
+    if (e.target !== e.currentTarget) return;
+    isAnimatingRef.current = false;
+    if (isLoopJumping.current) return;
+    const n = slidesPerView;
+    const origLen = slides.length;
+    const cur = rawIndexRef.current;
+
+    if (cur >= n + origLen) {
+      isLoopJumping.current = true;
+      const jumpTo = n + (cur - (n + origLen));
+      rawIndexRef.current = jumpTo;
+      setRawIndex(jumpTo);
+      applyOffset(jumpTo, false);
+      requestAnimationFrame(() =>
+        requestAnimationFrame(() => { isLoopJumping.current = false; })
+      );
+    } else if (cur < n) {
+      isLoopJumping.current = true;
+      const jumpTo = n + origLen - (n - cur);
+      rawIndexRef.current = jumpTo;
+      setRawIndex(jumpTo);
+      applyOffset(jumpTo, false);
+      requestAnimationFrame(() =>
+        requestAnimationFrame(() => { isLoopJumping.current = false; })
+      );
+    }
+  }
+
+  // ── Navigation helpers ────────────────────────────────────────────────────
+  function goNext() {
+    if (isLoopJumping.current || isAnimatingRef.current) return;
+    const next = rawIndexRef.current + 1;
+    rawIndexRef.current = next;
+    setRawIndex(next);
+    applyOffset(next, true);
+  }
+
+  function goPrev() {
+    if (isLoopJumping.current || isAnimatingRef.current) return;
+    const prev = rawIndexRef.current - 1;
+    rawIndexRef.current = prev;
+    setRawIndex(prev);
+    applyOffset(prev, true);
+  }
+
+  function goToSlide(origIdx) {
+    if (isLoopJumping.current || isAnimatingRef.current) return;
+    const target = slidesPerView + origIdx;
+    rawIndexRef.current = target;
+    setRawIndex(target);
+    applyOffset(target, true);
+    setAutoplayKey((k) => k + 1); // restart autoplay timer
+  }
+
+  // User-triggered nav also resets autoplay
+  function handleUserNext() { goNext(); setAutoplayKey((k) => k + 1); }
+  function handleUserPrev() { goPrev(); setAutoplayKey((k) => k + 1); }
+
+  // ── Autoplay ─────────────────────────────────────────────────────────────
+  // Restarts whenever: slideWidth changes (layout), autoplayKey bumps (user nav),
+  // or config flags change.
+  useEffect(() => {
+    if (!config.showAutoPlay || !slideWidth || isHoveringRef.current) return;
+    autoplayRef.current = setInterval(() => {
+      if (!isLoopJumping.current && !isHoveringRef.current) goNext();
+    }, config.autoplaySpeed);
+    return () => clearInterval(autoplayRef.current);
+  }, [slideWidth, config.showAutoPlay, config.autoplaySpeed, autoplayKey]);
+
+  // ── Drag / swipe (mouse + touch) ──────────────────────────────────────────
+  function startDrag(clientX) {
+    dragRef.current = { startX: clientX, active: true, hasDragged: false };
+    isAnimatingRef.current = false;
+  }
+
+  function onDrag(clientX) {
+    if (!dragRef.current.active) return;
+    const delta = clientX - dragRef.current.startX;
+    if (Math.abs(delta) > 6) dragRef.current.hasDragged = true;
+    if (trackRef.current && slideWidthRef.current) {
+      const base = -(rawIndexRef.current * (slideWidthRef.current + GAP));
+      trackRef.current.style.transition = "none";
+      trackRef.current.style.transform = `translateX(${base + delta}px)`;
+    }
+  }
+
+  function endDrag(clientX) {
+    if (!dragRef.current.active) return;
+    dragRef.current.active = false;
+    // Snap back — no navigation via drag
+    if (trackRef.current && slideWidthRef.current) {
+      trackRef.current.style.transition = TRANSITION;
+      trackRef.current.style.transform = `translateX(${-(rawIndexRef.current * (slideWidthRef.current + GAP))}px)`;
+    }
+    setAutoplayKey((k) => k + 1);
+  }
+
+  // Touch only
+  function handleTouchStart(e) {
+    if (e.touches.length !== 1) return;
+    startDrag(e.touches[0].clientX);
+  }
+  function handleTouchMove(e) {
+    if (e.touches.length !== 1) return;
+    onDrag(e.touches[0].clientX);
+  }
+  function handleTouchEnd(e) {
+    endDrag(e.changedTouches[0].clientX);
+  }
+
+  // Prevent a click from firing immediately after a drag gesture
+  function handleClickGuard(e) {
+    if (dragRef.current.hasDragged) {
+      e.stopPropagation();
+      dragRef.current.hasDragged = false;
+    }
+  }
+
+  // ── Preload all images so everything appears together ──────────────────────
+  useEffect(() => {
+    const urls = REVIEWS.flatMap((r) => [r.image, r.avatar].filter(Boolean));
+    if (urls.length === 0) { setImagesReady(true); return; }
+
+    let loaded = 0;
+    let cancelled = false;
+
+    urls.forEach((src) => {
+      const img = new Image();
+      img.onload = img.onerror = () => {
+        if (cancelled) return;
+        loaded++;
+        if (loaded === urls.length) setImagesReady(true);
+      };
+      img.src = src;
+    });
+
+    return () => { cancelled = true; };
+  }, []);
+
+  console.log("activeDevice", activeDevice);
+  // ── Render ────────────────────────────────────────────────────────────────
+  return (
+    <>
+      <style>{STYLES}</style>
+      <div className="qorix-review-reel-main_container"   
+       style={{
+        position: "relative",
+          "--activedotted_color": settings?.activeDotColor || "#008923",
+          "--card_background": settings?.cardBackgorud || "#fff",
+     
+          "---preview_mobile_width": activeDevice === "mobile" ? "35%" : "auto",
+            "---preview_mobile_review_header": activeDevice === "mobile" ? "20px" : "70px",
+            "---stack-mobile_padding": activeDevice === "mobile" ? "0px 40px" : "0px",
+        }}
+      
+      
+      >
+        {!imagesReady && (
+          <div className="qr-review-reel-loader">
+            <div className="qr-review-reel-spinner" />
+          </div>
+        )}
+      <div className="qorix-review-reel-secound_container" style={{ opacity: imagesReady ? 1 : 0, transition: "opacity 0.4s ease", backgroundColor: "#fff" }}>
+
+
+       <br></br>
+       <br></br>
+          <br></br>
+      <div className="qorix-review-reel-header"><ReaviewHeader settings={settings} /> 
+ </div>
+
+   
+      <section
+        data-section="qorix-review-reel-widget"
+        className="qorix-review-reel-real-review-section"
+      >
+        <div className="qorix-review-reel-swiper-wrapper">
+          
+          {/* ── Slide track ── */}
+          <div
+            ref={wrapperRef}
+            className="qorix-review-reel-track-wrapper"
+            onTouchStart={handleTouchStart}
+            onTouchMove={handleTouchMove}
+            onTouchEnd={handleTouchEnd}
+            onClick={handleClickGuard}
+            onMouseEnter={() => { isHoveringRef.current = true; clearInterval(autoplayRef.current); }}
+            onMouseLeave={() => { isHoveringRef.current = false; setAutoplayKey((k) => k + 1); }}
+          >
+            <div
+              ref={trackRef}
+              className="qorix-review-reel-track"
+              onTransitionEnd={handleTransitionEnd}
+            >
+              {extSlides.map((review, i) => (
+                <div
+                  key={`${review.id}-${i}`}
+                  className="qorix-review-reel-slide"
+                  style={{ width: slideWidth || "auto" }}
+                >
+                  <ReviewCard review={review}  settings={settings}/>
+                </div>
+              ))}
+            </div>
+          </div>
+
+          {/* ── Pagination dots ── */}
+          {showNavigationDots && slides.length > 0 && (
+            <div className="qorix-review-reel-swiper-pagination">
+              {slides.map((_, i) => (
+                <button
+                  key={i}
+                  className={`qorix-review-reel-pagination-bullet${i === realIndex ? " active" : ""}`}
+                  aria-label={`Go to slide ${i + 1}`}
+                  onClick={() => goToSlide(i)}
+                />
+              ))}
+            </div>
+          )}
+
+          {/* ── Arrow buttons ── */}
+          {showArrowControls && (
+            <>
+              <button
+                className="qorix-review-reel-swiper-button-next"
+                aria-label="Next slide"
+                onClick={handleUserNext}
+              >
+                <ChevronRightSvg />
+              </button>
+              <button
+                className="qorix-review-reel-swiper-button-prev"
+                aria-label="Previous slide"
+                onClick={handleUserPrev}
+              >
+                <ChevronLeftSvg />
+              </button>
+            </>
+          )}
+
+        </div>
+      </section>
+
+      </div>
+      </div>
+    </>
+  );
 }
