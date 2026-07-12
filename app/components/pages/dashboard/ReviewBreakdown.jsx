@@ -9,7 +9,7 @@ const TEMP_REVIEW_DATA = [
     {
         id: 1,
         reviewerName: "Osman R.",
-        reviewerAvatar: "/reviewer-1.png",
+        reviewerAvatar: "/reviews/reviewer/reviewer-1.png",
         rating: 4,
         reviewDate: "2 days ago",
         reviewTitle: "Facial Serum Vitamin C",
@@ -19,7 +19,7 @@ const TEMP_REVIEW_DATA = [
     {
         id: 2,
         reviewerName: "Hasan AB",
-        reviewerAvatar: "/reviewer-2.png",
+        reviewerAvatar: "/reviews/reviewer/reviewer-2.png",
         rating: 5,
         reviewDate: "5 hours ago",
         reviewTitle: "Facial Serum Vitamin C",
@@ -29,7 +29,7 @@ const TEMP_REVIEW_DATA = [
     {
         id: 3,
         reviewerName: "Hasan AB",
-        reviewerAvatar: "/reviewer-1.png",
+        reviewerAvatar: "/reviews/reviewer/reviewer-1.png",
         rating: 5,
         reviewDate: "1 week ago",
         reviewTitle: "Facial Serum Vitamin C",
@@ -57,7 +57,7 @@ export default function ReviewBreakdown() {
                         </s-stack>
                         <s-grid gap="base" paddingBlockStart="base">
                             {TEMP_REVIEW_DATA.map((review) => (
-                                <CustomSection>
+                                <CustomSection key={review.id}>
                                     <ReviewItem data={review} />
                                 </CustomSection>
                             ))}

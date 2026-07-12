@@ -17,7 +17,7 @@ database.sqlite
 .env.*
 
 
-
+minio-local
 
 
 /extensions/*/dist

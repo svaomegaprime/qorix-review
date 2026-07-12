@@ -1,0 +1,145 @@
+model StoreSettings {
+  id String @id @default(uuid()) @db.Uuid()
+
+  storeId String @unique
+  store   Store  @relation(fields: [storeId], references: [storeGID], onDelete: Cascade)
+
+  requestScheduling    RequestScheduling?
+  emailSettings        EmailSettings?
+  publishingModeration PublishingModeration?
+  widgetsSettings      WidgetsSettings?
+  adminNotification    AdminNotification?
+  brandingSettings     BrandingSettings?
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+model RequestScheduling {
+  id String @id @default(uuid()) @db.Uuid()
+
+  storeSettingsId String        @unique @db.Uuid()
+  storeSettings   StoreSettings @relation(fields: [storeSettingsId], references: [id], onDelete: Cascade)
+
+  isAutomaticRequest       Boolean @default(true)
+  sendRequestAfterDelivery Int     @default(5)
+  isReminderRequest        Boolean @default(true)
+  reminderRequestDelay     Int     @default(5)
+  isSkipRefundedOrder      Boolean @default(true)
+  isSkipCancelledOrder     Boolean @default(true)
+  minimumOrderValue        Int     @default(100)
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+model EmailSettings {
+  id String @id @default(uuid()) @db.Uuid()
+
+  storeSettingsId String        @unique @db.Uuid()
+  storeSettings   StoreSettings @relation(fields: [storeSettingsId], references: [id], onDelete: Cascade)
+
+  smtpUser     String?
+  smtpPassword String?
+  smtpPort     Int?
+  smtpHost     String?
+
+  requestEmailSubjectLine String?
+  requestEmailBody        String?
+  requestEmailButton      String?
+  reminderSubjectLine     String?
+  reminderEmailBody       String?
+  reminderEmailButton     String?
+  replyEmailSubjectLine   String?
+  replyEmailBody          String?
+  replyEmailButton        String?
+
+  isConfirmationReviewEmail Boolean @default(true)
+  confirmationEmailSubject  String?
+  confirmationEmailBody     String?
+  isReplyReviewEmail        Boolean @default(false)
+  replyReviewEmailSubject   String?
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+model PublishingModeration {
+  id String @id @default(uuid()) @db.Uuid()
+
+  storeSettingsId String        @unique @db.Uuid()
+  storeSettings   StoreSettings @relation(fields: [storeSettingsId], references: [id], onDelete: Cascade)
+
+  autoPublishRules     AutoPublishRules @default(AUTO_PUBLISH)
+  isLowRatingHold      Boolean          @default(true)
+  isProfanityFilter    Boolean          @default(true)
+  isPersonalInfoFilter Boolean          @default(true)
+  isSpamFilter         Boolean          @default(true)
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+model WidgetsSettings {
+  id              String        @id @default(uuid()) @db.Uuid()
+  storeSettingsId String        @unique @db.Uuid()
+  storeSettings   StoreSettings @relation(fields: [storeSettingsId], references: [id], onDelete: Cascade)
+
+  defaultStarColor    String @default("#F59E0B")
+  defaultFontSize     String @default("14px")
+  defaultBorderRadius String @default("8px")
+
+  isShowVerifiedBadge        Boolean                    @default(true)
+  isShowReviewerName         Boolean                    @default(true)
+  isShowReviewerDate         Boolean                    @default(true)
+  reviewsPerPage             Int                        @default(10)
+  reviewSortOrder            ReviewSortOrder            @default(RECENT)
+  minimumStarRatingToDisplay MinimumStarRatingToDisplay @default(ALL_RATINGS)
+  isShowMediaFirst           Boolean                    @default(true)
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+model BrandingSettings {
+  id              String        @id @default(uuid()) @db.Uuid()
+  storeSettingsId String        @unique @db.Uuid()
+  storeSettings   StoreSettings @relation(fields: [storeSettingsId], references: [id], onDelete: Cascade)
+
+  storeDisplayName  String @default("Glow Store")
+  storeSenderName   String @default("Osman from Glow Store")
+  storeWebsiteURL   String @default("https://www.glowstore.com")
+  storeTagline      String @default("Skincare that makes you glow")
+  storeReplyToEmail String @default("hello@glowstore.com")
+  storeLogo         String @default("https://www.glowstore.com")
+  storeLogoPosition String @default("LEFT")
+
+  emailPrimaryButtonColor String  @default("#FE0606")
+  emailButtonTextColor    String  @default("#FFFFFF")
+  emailBackgroundColor    String  @default("#f9fafb")
+  emailHeadingColor       String  @default("#303030")
+  emailBodyTextColor      String  @default("#108848")
+  emailAccentBorderColor  String  @default("#f0f0f0")
+  emailFooterText         String  @default("@2026 glow store ·")
+  emailFooterLinkText     String  @default("Unsubscribe")
+  isShowFooterBadge       Boolean @default(true)
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+model AdminNotification {
+  id String @id @default(uuid()) @db.Uuid()
+
+  storeSettingsId String        @unique @db.Uuid()
+  storeSettings   StoreSettings @relation(fields: [storeSettingsId], references: [id], onDelete: Cascade)
+
+  isNewReviewNotify        Boolean @default(true)
+  isReviewApprovalNotify   Boolean @default(true)
+  isLowStarReviewNotify    Boolean @default(true)
+  isWeeklySummaryNotify    Boolean @default(true)
+  notificationEmailAddress Json
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}

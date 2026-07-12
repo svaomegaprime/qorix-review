@@ -1,0 +1,371 @@
+/* ─── Section wrapper ─────────────────────────────────────── */
+[data-section="qorix-review-reel-widget"] .qr-real-review-section {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 50px;
+  padding: 80px 40px;
+  max-width: 1405px;
+  margin: 0 auto;
+  text-align: center;
+}
+
+/* ─── Header block ────────────────────────────────────────── */
+[data-section="qorix-review-reel-widget"] .qr-section-header {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 24px;
+}
+
+[data-section="qorix-review-reel-widget"] .qr-title-group {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 16px;
+}
+
+[data-section="qorix-review-reel-widget"] .qr-subtitle {
+  margin: 0;
+
+  font-size: 1rem;
+  line-height: 19px;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  color: var(---color-secondary);
+}
+
+[data-section="qorix-review-reel-widget"] .qr-heading {
+  margin: 0;
+
+  font-weight: 600;
+  font-size: 32px;
+  line-height: 1.22;
+  color: var(---color-primary);
+}
+
+[data-section="qorix-review-reel-widget"] .qr-description {
+  margin: 0;
+  font-size: 1rem;
+  line-height: 19px;
+  color: var(---color-primary);
+}
+
+/* ─── Rating bar ──────────────────────────────────────────── */
+[data-section="qorix-review-reel-widget"] .qr-rating-bar {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 16px;
+}
+
+[data-section="qorix-review-reel-widget"] .qr-stars-group {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+[data-section="qorix-review-reel-widget"] .qr-reviews-stars {
+  display: inline-flex;
+  gap: 4px;
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+
+[data-section="qorix-review-reel-widget"] .qr-rating-score {
+  font-weight: 500;
+  font-size: 20px;
+  line-height: 1;
+  color: var(---color-primary);
+}
+
+[data-section="qorix-review-reel-widget"] .qr-review-count {
+  font-size: 1rem;
+  line-height: 1.25;
+  color: var(---color-gray);
+}
+
+[data-section="qorix-review-reel-widget"] .qr-divider {
+  width: 1px;
+  height: 20px;
+  border-left: 1.5px solid rgba(48, 48, 48, 0.3);
+}
+
+[data-section="qorix-review-reel-widget"] .qr-verified-group {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+[data-section="qorix-review-reel-widget"] .qr-verified-label {
+  font-size: 1rem;
+  line-height: 1.25;
+  color: var(---color-gray);
+}
+
+/* ─── Swiper container ────────────────────────────────────── */
+[data-section="qorix-review-reel-widget"] .qr-swiper-wrapper {
+  width: 90%;
+  margin: 50px auto;
+  position: relative;
+}
+
+[data-section="qorix-review-reel-widget"] .swiper {
+  width: 100%;
+  padding-bottom: 48px !important;
+  /* space for pagination */
+}
+
+/* nav arrows */
+[data-section="qorix-review-reel-widget"] .swiper-button-next,
+[data-section="qorix-review-reel-widget"] .swiper-button-prev {
+  width: 44px;
+  height: 44px;
+  background: #fff;
+  border-radius: 99px;
+  box-shadow:
+    inset 0px -1px 0px #b5b5b5,
+    inset 0px 0px 0px 1px rgba(0, 0, 0, 0.1),
+    inset 0px 0.5px 0px 1.5px #fff;
+  top: 38%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition:
+    box-shadow 0.15s,
+    opacity 0.2s;
+}
+
+/* hide Swiper's default ::after arrow text */
+[data-section="qorix-review-reel-widget"] .swiper-button-next::after,
+[data-section="qorix-review-reel-widget"] .swiper-button-prev::after {
+  display: none;
+}
+
+[data-section="qorix-review-reel-widget"] .swiper-button-next:hover,
+[data-section="qorix-review-reel-widget"] .swiper-button-prev:hover {
+  box-shadow:
+    inset 0px -1px 0px #999,
+    inset 0px 0px 0px 1px rgba(0, 0, 0, 0.18),
+    inset 0px 0.5px 0px 1.5px #fff;
+}
+
+[data-section="qorix-review-reel-widget"] .swiper-button-next {
+  right: 5px;
+}
+
+[data-section="qorix-review-reel-widget"] .swiper-button-prev {
+  left: 5px;
+}
+
+/* pagination dots */
+[data-section="qorix-review-reel-widget"] .swiper-pagination-bullet {
+  width: 12px;
+  height: 12px;
+  background: #34c759;
+  opacity: 0.2;
+  transition: opacity 0.2s;
+}
+
+[data-section="qorix-review-reel-widget"] .swiper-pagination-bullet-active {
+  opacity: 1;
+}
+
+/* ─── Card ────────────────────────────────────────────────── */
+[data-section="qorix-review-reel-widget"] .qr-review-card {
+  display: flex;
+  flex-direction: column;
+  padding: 16px;
+  background: #fff;
+  border: 1px solid #eff2f5;
+  border-radius: 16px;
+  gap: 20px;
+  height: auto !important;
+  /* override swiper equal-height */
+}
+
+/* image area */
+[data-section="qorix-review-reel-widget"] .qr-review-card-image {
+  position: relative;
+  width: 100%;
+  height: 272px;
+  border-radius: 8px;
+  overflow: hidden;
+  flex-shrink: 0;
+}
+
+[data-section="qorix-review-reel-widget"] .qr-review-card-image img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+}
+
+[data-section="qorix-review-reel-widget"] .play-btn {
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  transform: translate(-50%, -50%);
+  width: 40px;
+  height: 40px;
+  border: none;
+  border-radius: 50%;
+  background: rgba(255, 255, 255, 0.9);
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0;
+  transition:
+    transform 0.15s,
+    background 0.15s;
+}
+
+[data-section="qorix-review-reel-widget"] .play-btn:hover {
+  background: #fff;
+  transform: translate(-50%, -50%) scale(1.08);
+}
+
+/* card content */
+[data-section="qorix-review-reel-widget"] .qr-review-card-content {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  text-align: left;
+  gap: 40px;
+}
+
+[data-section="qorix-review-reel-widget"] .review-text {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+[data-section="qorix-review-reel-widget"] .product-title {
+  margin: 0;
+
+  font-weight: 500;
+  font-size: 1rem;
+  line-height: 170%;
+  letter-spacing: -0.5px;
+  color: #0d2440;
+}
+
+[data-section="qorix-review-reel-widget"] .review-quote {
+  margin: 0;
+  font-size: 24px;
+  line-height: 140%;
+  letter-spacing: -1px;
+  color: var(---color-primary);
+}
+
+/* reviewer */
+[data-section="qorix-review-reel-widget"] .review-user {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+}
+
+[data-section="qorix-review-reel-widget"] .user-avatar {
+  width: 56px;
+  height: 56px;
+  border-radius: 50%;
+  object-fit: cover;
+  flex-shrink: 0;
+  background: #eff2f5;
+  /* fallback colour while image loads */
+}
+
+[data-section="qorix-review-reel-widget"] .user-info {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+[data-section="qorix-review-reel-widget"] .user-name {
+  margin: 0;
+
+  font-weight: 500;
+  font-size: 1rem;
+  line-height: 170%;
+  letter-spacing: -0.5px;
+  color: var(---color-primary);
+}
+
+[data-section="qorix-review-reel-widget"] .review-date {
+  margin: 0;
+
+  font-size: 14px;
+  line-height: 160%;
+  color: var(---color-gray);
+}
+
+/* ─── Responsive breakpoints ──────────────────────────────── */
+
+/* Tablet: 2 slides */
+@media (max-width: 960px) {
+  [data-section="qorix-review-reel-widget"] .qr-real-review-section {
+    padding: 60px 24px;
+    gap: 40px;
+  }
+
+  [data-section="qorix-review-reel-widget"] .qr-heading {
+    font-size: 28px;
+  }
+
+  [data-section="qorix-review-reel-widget"] .swiper-button-next {
+    right: -6px;
+  }
+
+  [data-section="qorix-review-reel-widget"] .swiper-button-prev {
+    left: -6px;
+  }
+}
+
+/* Mobile: 1 slide */
+@media (max-width: 600px) {
+  [data-section="qorix-review-reel-widget"] .qr-real-review-section {
+    padding: 48px 16px;
+    gap: 32px;
+  }
+
+  [data-section="qorix-review-reel-widget"] .qr-heading {
+    font-size: 24px;
+  }
+
+  [data-section="qorix-review-reel-widget"] .qr-rating-bar {
+    gap: 10px;
+  }
+
+  [data-section="qorix-review-reel-widget"] .qr-divider {
+    display: none;
+  }
+
+  [data-section="qorix-review-reel-widget"] .qr-review-card-image {
+    height: 220px;
+  }
+
+  [data-section="qorix-review-reel-widget"] .review-quote {
+    font-size: 20px;
+  }
+
+  /* hide arrows on very small screens */
+  [data-section="qorix-review-reel-widget"] .swiper-button-next,
+  [data-section="qorix-review-reel-widget"] .swiper-button-prev {
+    display: none;
+  }
+}
+
+[data-section="qorix-review-reel-widget"] [data-swiper-controller] svg {
+  width: 20px;
+  height: 20px;
+}
+
+[data-section="qorix-review-reel-widget"] .line-clamp {
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}

@@ -8,12 +8,18 @@ import Analytics from '../components/essentials/Analytics';
 import FAQ from '../components/pages/dashboard/FAQ';
 import Help from '../components/pages/dashboard/Help';
 
+export async function loader() {
+  
+}
+
+
 export default function Index() {
   // Start----Default CSR loading state checking for navigation
   const navigation = useNavigation();
   if (navigation.state === 'loading') {
     return <Loader />;
   }
+ 
   // End----Default CSR loading state checking for navigation
   return (
     <s-page>

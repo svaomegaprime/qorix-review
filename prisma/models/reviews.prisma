@@ -1,0 +1,73 @@
+model Review {
+  id      String @id @default(uuid()) @db.Uuid()
+  storeId String
+  store   Store  @relation(fields: [storeId], references: [storeGID], onDelete: Cascade)
+
+  productId     String?
+  productHandle String?
+  productTitle  String?
+
+  reviewerName  String?
+  reviewerEmail String?
+  reviewerPhone String?
+  rating        Int     @default(0)
+
+  title String?
+  body  String?
+
+  status       ReviewStatus   @default(PENDING)
+  source       ReviewSource
+  isVerified   Boolean        @default(false)
+  attachments  Attachment[]
+  helpfulCount HelpfulCount[]
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  reply     Reply?
+
+  @@unique([storeId, productId, reviewerEmail])
+  @@index([storeId])
+  @@index([productId])
+  @@index([rating])
+  @@index([status])
+  @@index([reviewerEmail])
+  @@index([createdAt])
+}
+
+model HelpfulCount {
+  id       String @id @default(uuid()) @db.Uuid()
+  reviewId String @db.Uuid()
+  review   Review @relation(fields: [reviewId], references: [id], onDelete: Cascade)
+
+  count      Int
+  customerId String
+  email      String
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+model Attachment {
+  id String @id @default(uuid()) @db.Uuid()
+
+  type AttachmentType?
+  url  String?
+
+  reviewId String? @db.Uuid()
+  review   Review? @relation(fields: [reviewId], references: [id], onDelete: Cascade)
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+model Reply {
+  id String @id @default(uuid()) @db.Uuid()
+
+  body String?
+
+  reviewId String? @unique @db.Uuid()
+  review   Review? @relation(fields: [reviewId], references: [id], onDelete: Cascade)
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}

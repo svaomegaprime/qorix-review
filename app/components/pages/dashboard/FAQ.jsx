@@ -32,6 +32,7 @@ export default function FAQ() {
                         onToggle={() => setOpen(`item${index + 1}`)}
                         title={item.title}
                         bordered={index === FAQ_ITEMS.length - 1 ? false : true}
+                        key={index}
                     >
                         <s-paragraph 
                             dangerouslySetInnerHTML={{__html: item.desc}}
