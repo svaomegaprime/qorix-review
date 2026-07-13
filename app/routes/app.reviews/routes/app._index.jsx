@@ -1,4 +1,3 @@
-import TEMP_REVIEWS from "../data/reviews.json";
 import Loader from "../../../components/essentials/Loader";
 import TabButton from "../../../components/essentials/TabButton";
 import CustomSection from "../../../components/essentials/CustomSection";
@@ -6,15 +5,17 @@ import ReviewItem from "../../../components/essentials/ReviewItem";
 import Text from "../../../components/essentials/elements/Text";
 import { useLoaderData, useNavigation, useFetcher } from "react-router";
 import { useState, useRef } from "react";
-import { authenticate } from "../../../shopify.server";
 import prisma from "../../../db.server";
-import { getStoreData } from "../../../utils/getStoreData";
+import { requireAdminContext } from "../../../services/adminContext.server.js";
 import { adminErrorResponse } from "../../../utils/adminError.server";
 import { useAdminFetcherToast } from "../../../utils/useAdminFetcherToast";
-import { deleteFile } from "../../../lib/s3/deleteFile";
+import {
+  deleteReviewWithAttachments,
+  updateReviewStatus,
+} from "../../../services/reviews.server.js";
 import { sendEmail } from "../../../utils/sendEmail";
-import { getRelativeTime } from "../../../utils/getRelativeTime";
-import { formetEmailBody } from "../../../utils/formetEmailBody";
+import { buildReplyEmailData } from "../../../services/emailPayload.server.js";
+import { usePagination } from "../../../hooks/usePagination.js";
 const REVIEWS_PER_PAGE = 8;
 const EXPORT_PREVIEW_LIMIT = 5;
 
@@ -75,8 +76,7 @@ function buildExportRows(reviewList) {
 
 export async function loader({ request }) {
   try {
-    const { admin } = await authenticate.admin(request);
-    const storeData = await getStoreData(admin);
+    const { storeData } = await requireAdminContext(request);
     const reviews = await prisma.review.findMany({
       where: {
         storeId: storeData.id,
@@ -137,8 +137,7 @@ async function getFilteredReviews(storeId, search, rating, productId) {
 
 export async function action({ request }) {
   try {
-    const { admin } = await authenticate.admin(request);
-    const storeData = await getStoreData(admin);
+    const { storeData } = await requireAdminContext(request);
     const method = request.method.toUpperCase();
 
     switch (method) {
@@ -174,9 +173,10 @@ export async function action({ request }) {
         const status = formData.get("status");
 
         if (reviewId && status) {
-          await prisma.review.update({
-            where: { id: reviewId },
-            data: { status: status },
+          await updateReviewStatus({
+            reviewId: String(reviewId),
+            status: String(status),
+            storeId: storeData.id,
           });
         }
 
@@ -194,28 +194,10 @@ export async function action({ request }) {
       case "DELETE": {
         const formData = await request.formData();
         const reviewId = formData.get("reviewId");
-        const attachmentsRaw = formData.get("attachments");
-
-        if (attachmentsRaw) {
-          try {
-            const attachments = JSON.parse(attachmentsRaw);
-            console.log(attachments);
-
-            if (Array.isArray(attachments) && attachments.length > 0) {
-              for (const attachment of attachments) {
-                if (attachment?.url) {
-                  await deleteFile(attachment.url);
-                }
-              }
-            }
-          } catch (error) {
-            console.error("Failed to delete attachments:", error);
-          }
-        }
-
         if (reviewId) {
-          await prisma.review.delete({
-            where: { id: reviewId },
+          await deleteReviewWithAttachments({
+            reviewId: String(reviewId),
+            storeId: storeData.id,
           });
         }
 
@@ -256,65 +238,16 @@ export async function action({ request }) {
             },
           });
 
-          const replyEmailData = {
-            to: updatedReview.reviewerEmail,
-            from: storeSettings?.emailSettings?.smtpUser,
-            replyTo: storeSettings?.brandingSettings?.storeReplyToEmail,
-            templateName: "ReplyEmail",
-            subject: storeSettings?.emailSettings?.replyEmailSubjectLine,
-            smtpConfig: {
-              smtpHost: storeSettings?.emailSettings?.smtpHost,
-              smtpPort: storeSettings?.emailSettings?.smtpPort,
-              smtpUser: storeSettings?.emailSettings?.smtpUser,
-              smtpPassword: storeSettings?.emailSettings?.smtpPassword,
-            },
-            templateData: {
-              name: updatedReview.reviewerName,
-              storeTagline: storeSettings?.brandingSettings?.storeTagline,
-              timeAgo: getRelativeTime(updatedReview.createdAt),
-
-              products: updatedReview.products ?? [],
-
-              storeName: storeSettings?.brandingSettings?.storeDisplayName,
-
-              replyEmailBody: formetEmailBody(
-                storeSettings?.emailSettings?.replyEmailBody,
-                updatedReview.reviewerName,
-                storeSettings?.brandingSettings?.storeDisplayName,
-                updatedReview.products?.[0]?.title ?? "",
-              ),
-              replyEmailButton: storeSettings?.emailSettings?.replyEmailButton,
-
-              review: updatedReview.body,
-              rating: updatedReview.rating,
-
-              reply: updatedReview.reply?.body,
-              replyFrom: storeSettings?.brandingSettings?.storeDisplayName,
-
-              storeFooterText:
-                storeSettings?.brandingSettings?.emailFooterText ?? "",
-              storeFooterLinkText:
-                storeSettings?.brandingSettings?.emailFooterLinkText ?? "",
-              isShowFooterBadge:
-                storeSettings?.brandingSettings?.isShowFooterBadge,
-
-              storeLogo: storeSettings?.brandingSettings?.storeLogo,
-              storeLogoPosition:
-                storeSettings?.brandingSettings?.storeLogoPosition,
-              emailPrimaryButtonColor:
-                storeSettings?.brandingSettings?.emailPrimaryButtonColor,
-              emailButtonTextColor:
-                storeSettings?.brandingSettings?.emailButtonTextColor,
-              emailBackgroundColor:
-                storeSettings?.brandingSettings?.emailBackgroundColor,
-              emailHeadingColor:
-                storeSettings?.brandingSettings?.emailHeadingColor,
-              emailBodyTextColor:
-                storeSettings?.brandingSettings?.emailBodyTextColor,
-              emailAccentBorderColor:
-                storeSettings?.brandingSettings?.emailAccentBorderColor,
-            },
-          };
+          const buttonUrl =
+            updatedReview.productHandle && storeData?.storeURL
+              ? `https://${storeData.storeURL}/products/${updatedReview.productHandle}`
+              : "#";
+          const replyEmailData = buildReplyEmailData({
+            review: updatedReview,
+            storeSettings,
+            storeData,
+            buttonUrl,
+          });
 
           await sendEmail(replyEmailData);
         }
@@ -353,7 +286,6 @@ export default function Reviews() {
   const [activeTab, setActiveTab] = useState("all");
   // End----State for active tab
   // Start----Reviews pagination state
-  const [currentPage, setCurrentPage] = useState(1);
   // End----Reviews pagination state
 
   // Start----useFetcher and filters state
@@ -464,26 +396,16 @@ export default function Reviews() {
   };
   // End----Tab click handler
 
-  // Start----Pagination click handler
-  const handlePaginationClick = (page) => {
-    const totalPages = Math.max(
-      1,
-      Math.ceil(filteredReviews.length / REVIEWS_PER_PAGE),
-    );
-    const nextPage = Math.min(Math.max(page, 1), totalPages);
-    setCurrentPage(nextPage);
-  };
-  // End----Pagination click handler
-
-  const totalReviews = filteredReviews.length;
-  const totalPages = Math.max(1, Math.ceil(totalReviews / REVIEWS_PER_PAGE));
-  const safeCurrentPage = Math.min(currentPage, totalPages);
-  const pageStartIndex = (safeCurrentPage - 1) * REVIEWS_PER_PAGE;
-  const pageEndIndex = Math.min(
-    pageStartIndex + REVIEWS_PER_PAGE,
-    totalReviews,
-  );
-  const paginatedReviews = sortedReviews.slice(pageStartIndex, pageEndIndex);
+  const {
+    currentPage: safeCurrentPage,
+    items: paginatedReviews,
+    setCurrentPage,
+    setPage: handlePaginationClick,
+    startIndex: pageStartIndex,
+    endIndex: pageEndIndex,
+    totalItems: totalReviews,
+    totalPages,
+  } = usePagination(sortedReviews, REVIEWS_PER_PAGE);
   const visiblePages = [];
   if (safeCurrentPage - 1 >= 1) {
     visiblePages.push(safeCurrentPage - 1);

@@ -7,6 +7,11 @@ import { updateProductReviewDefineMetafields } from "../../utils/updateProductRe
 import { sendEmail } from "../../utils/sendEmail";
 import checkPublishRules from "./middleware/checkPublishRules";
 import { sendResponse } from "../../utils/sendResponse";
+import { buildSmtpConfig } from "../../services/emailPayload.server.js";
+import {
+  markOrderProductReviewed,
+  syncReviewedOrderFromShopify,
+} from "../../services/orders.server.js";
 
 function buildFromAddress(displayName, email) {
   const cleanEmail = String(email || "").trim();
@@ -57,8 +62,13 @@ async function postReview(request, session, admin) {
 
     const formData = await request.formData();
     const url = new URL(request.url);
-    const isOpen = Boolean(url.searchParams.get("isOpen")) || true;
-    const orderId = "#" + url.searchParams.get("orderId") || "";
+    const isOpen = url.searchParams.get("isOpen") === "true";
+    const orderNumber = url.searchParams.get("orderId");
+    const orderId = orderNumber
+      ? orderNumber.startsWith("#")
+        ? orderNumber
+        : `#${orderNumber}`
+      : null;
     // review.service.js
 
     const storeSettings = await prisma.storeSettings.findFirst({
@@ -131,173 +141,31 @@ async function postReview(request, session, admin) {
       },
     });
 
-    if (isOpen) {
-      await prisma.$transaction(async (tx) => {
-        const order = await tx.order.findUnique({
-          where: {
-            storeId_orderId: {
-              storeId: id,
-              orderId,
-            },
-          },
-          include: {
-            lineItems: true,
-          },
+    if (reviewData.reviewerEmail && reviewData.productId) {
+      const existingOrderUpdated = orderId
+        ? await markOrderProductReviewed({
+            storeId: id,
+            orderId,
+            reviewerEmail: String(reviewData.reviewerEmail),
+            productId: String(reviewData.productId),
+          })
+        : false;
+
+      if (!isOpen && !existingOrderUpdated) {
+        // Missing-order fallback plan:
+        // 1. Load normalized orders through sync.orders.
+        // 2. Match the newest order by reviewer email and normalized product ID.
+        // 3. Enrich its products through getProduct without duplicating GraphQL logic.
+        // 4. Mark only the matched line item as reviewed.
+        // 5. Persist the Order and OrderLineItem records atomically as MANUAL/REVIEWED.
+        await syncReviewedOrderFromShopify({
+          session,
+          admin,
+          storeId: id,
+          reviewerEmail: String(reviewData.reviewerEmail),
+          productId: String(reviewData.productId),
         });
-
-        if (order) {
-          const extractNumericId = (val) => {
-            if (!val) return "";
-            const str = String(val);
-            if (str.includes("/")) return str.split("/").pop();
-            return str;
-          };
-
-          const productIdToMatch = extractNumericId(reviewData.productId);
-
-          const lineItem = order.lineItems.find(
-            (item) => extractNumericId(item.productId) === productIdToMatch,
-          );
-
-          if (!lineItem) {
-            throw new Error("Product not found in order");
-          }
-
-          // Update the specific line item
-          await tx.orderLineItem.update({
-            where: {
-              id: lineItem.id,
-            },
-            data: {
-              isReviewed: true,
-            },
-          });
-
-          // Check if all line items in this order are now reviewed
-          const remainingUnreviewed = await tx.orderLineItem.count({
-            where: {
-              orderId: order.id,
-              isReviewed: false,
-              // Exclude the one we just updated
-              id: { not: lineItem.id },
-            },
-          });
-
-          const allReviewed = remainingUnreviewed === 0;
-
-          if (allReviewed) {
-            await tx.order.update({
-              where: {
-                id: order.id,
-              },
-              data: {
-                reviewCheckStatus: "REVIEWED",
-              },
-            });
-          }
-        }
-      });
-    }
-
-    if (!isOpen) {
-      await prisma.$transaction(async (tx) => {
-        const order = await tx.order.findUnique({
-          where: {
-            storeId_orderId: {
-              storeId: id,
-              orderId,
-            },
-          },
-          include: {
-            lineItems: true,
-          },
-        });
-
-        if (order) {
-          const extractNumericId = (val) => {
-            if (!val) return "";
-            const str = String(val);
-            if (str.includes("/")) return str.split("/").pop();
-            return str;
-          };
-
-          const productIdToMatch = extractNumericId(reviewData.productId);
-
-          const lineItem = order.lineItems.find(
-            (item) => extractNumericId(item.productId) === productIdToMatch,
-          );
-
-          if (!lineItem) {
-            throw new Error("Product not found in order");
-          }
-
-          // Update the specific line item
-          await tx.orderLineItem.update({
-            where: {
-              id: lineItem.id,
-            },
-            data: {
-              isReviewed: true,
-            },
-          });
-
-          // Check if all line items in this order are now reviewed
-          const remainingUnreviewed = await tx.orderLineItem.count({
-            where: {
-              orderId: order.id,
-              isReviewed: false,
-              // Exclude the one we just updated
-              id: { not: lineItem.id },
-            },
-          });
-
-          const allReviewed = remainingUnreviewed === 0;
-
-          if (allReviewed) {
-            await tx.order.update({
-              where: {
-                id: order.id,
-              },
-              data: {
-                reviewCheckStatus: "REVIEWED",
-              },
-            });
-          }
-        } else {
-          // get all orderdata use
-          // Create a new order
-          // sync.orders // get order data
-          // then normalised data
-          // like
-          //         {
-          //   id: order.name,
-          //   orderId: order.name,
-          //   fullName,
-          //   email,
-          //   emailVerified: customer.verified_email || false,
-          //   avatar,
-          //   status: order.financial_status,
-          //   fulfillmentStatus: order.fulfillment_status,
-          //   createdAt: order.created_at,
-          //   timeAgo: getRelativeTime(order.created_at),
-          //   totalPrice: order.current_total_price,
-          //   currency: order.subtotal_price_set.shop_money.currency_code,
-          //   products: (order.line_items || []).map((item) => ({
-          //     title: item.title,
-          //     productId: item.product_id,
-          //     productHandle: item.handle ?? null,
-          //     quantity: item.quantity,
-          //     url: item.url ?? null,
-          //   })),
-          // }
-          // match which product ar match with my review email productId
-          // depends on this match
-          //get product data use getProduct util function
-          // then make a array of product data  like accept order.prisma look order.pr
-          // create order data
-          // with reviewed status i mean reviewCheckStatus : REVIEWED also the other info like order id and other things
-        }
-      });
+      }
     }
 
     const sideEffectErrors = [];
@@ -401,12 +269,7 @@ async function postReview(request, session, admin) {
             unsubscribeUrl,
             isShowFooterBadge: brandingSettings.isShowFooterBadge ?? false,
           },
-          smtpConfig: {
-            smtpUser: emailSettings.smtpUser,
-            smtpPassword: emailSettings.smtpPassword,
-            smtpPort: emailSettings.smtpPort,
-            smtpHost: emailSettings.smtpHost,
-          },
+          smtpConfig: buildSmtpConfig(emailSettings),
         });
       } catch (error) {
         console.error("[WARN::api.review.confirmationEmail]", error);
@@ -480,12 +343,7 @@ async function postReview(request, session, admin) {
             submittedDate: formattedDate,
             adminEmailBody,
           },
-          smtpConfig: {
-            smtpUser: emailSettings.smtpUser,
-            smtpPassword: emailSettings.smtpPassword,
-            smtpPort: emailSettings.smtpPort,
-            smtpHost: emailSettings.smtpHost,
-          },
+          smtpConfig: buildSmtpConfig(emailSettings),
         });
       } catch (error) {
         console.error("[WARN::api.review.adminEmail]", error);
@@ -514,13 +372,17 @@ async function getReview(request, session, admin) {
     const sort = url.searchParams.get("sort") || "ALL";
     const page = Number(url.searchParams.get("page")) || 1;
     const limit = Number(url.searchParams.get("limit")) || 10;
-    const isOpen = Boolean(url.searchParams.get("isOpen")) || true;
-    const orderId = "#" + url.searchParams.get("orderId") || "";
+    const isOpen = url.searchParams.get("isOpen") === "true";
+    const orderNumber = url.searchParams.get("orderId");
+    const orderId = orderNumber
+      ? orderNumber.startsWith("#")
+        ? orderNumber
+        : `#${orderNumber}`
+      : null;
 
     const { id } = await getStoreContext(session, admin);
-    console.log("isOpen", isOpen, orderId);
 
-    if (isOpen) {
+    if (isOpen && orderId) {
       const extractNumericId = (val) => {
         if (!val) return "";
         const str = String(val);

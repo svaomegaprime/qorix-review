@@ -2,20 +2,21 @@ import Text from "../../../components/essentials/elements/Text";
 import CustomSection from "../../../components/essentials/CustomSection";
 import CustomGridSection from "../../../components/essentials/CustomGridSection";
 import { DEFAULT_PUBLISHING_MODERATION } from "../data/defaultData";
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import { handleStateUpdate } from "../utils/client/utils.client";
 import { useFetcher, useLoaderData } from "react-router";
 import { authenticate } from "../../../shopify.server";
 import prisma from "../../../db.server";
 
-import { getStoreData } from "../../../utils/getStoreData";
 import { adminErrorResponse } from "../../../utils/adminError.server";
 import { useAdminFetcherToast } from "../../../utils/useAdminFetcherToast";
+import SaveBar from "../../../components/essentials/SaveBar";
+import { useSaveBarForm } from "../../../hooks/useSaveBarForm.js";
+import { requireAdminContext } from "../../../services/adminContext.server.js";
 
 export async function loader({ request }) {
   try {
-    const { admin, session } = await authenticate.admin(request);
-    const { id } = await getStoreData(admin);
+    const { storeId: id } = await requireAdminContext(request);
 
     const storeSettings = await prisma.storeSettings.findFirst({
       where: {
@@ -35,12 +36,10 @@ export async function loader({ request }) {
 
 export async function action({ request }) {
   try {
-    const { admin, session } = await authenticate.admin(request);
+    await authenticate.admin(request);
 
     const data = await request.json();
-    // const { id } = await getStoreData(admin);
-
-    const publishingModerationData = await prisma.publishingModeration.update({
+    await prisma.publishingModeration.update({
       where: {
         id: data.id,
       },
@@ -64,52 +63,28 @@ export default function PublishingModeration() {
     storeSettings.publishingModeration ?? DEFAULT_PUBLISHING_MODERATION,
   );
 
-  useEffect(() => {
-    const hasChanged =
-      JSON.stringify(publishingModeration) !==
-      JSON.stringify(storeSettings?.publishingModeration);
-
-    if (hasChanged) {
-      shopify.saveBar.show("leave-confirm-save-bar");
-    } else {
-      shopify.saveBar.hide("leave-confirm-save-bar");
-    }
-  }, [publishingModeration]);
-
-  function handleSave() {
-    fetcher.submit(publishingModeration, {
-      method: "POST",
-      encType: "application/json",
-    });
-  }
-
-  console.log("loading:", fetcher.state);
-  useEffect(() => {
-    if (fetcher.state === "idle" && fetcher.data?.ok) {
-      // Save successful
-      shopify.saveBar.hide("leave-confirm-save-bar");
-    }
-  }, [fetcher.state, fetcher.data]);
   const [formResetKey, setFormResetKey] = useState(0);
 
-  function handleDiscard() {
-    setPublishingModeration(
+  const { handleSave, handleDiscard } = useSaveBarForm({
+    value: publishingModeration,
+    initialValue:
       storeSettings.publishingModeration ?? DEFAULT_PUBLISHING_MODERATION,
-    );
-    setFormResetKey((pre) => pre + 1); // ✅ এটা add করো
-    shopify.saveBar.hide("leave-confirm-save-bar");
-  }
+    fetcher,
+    onSave: (value) =>
+      fetcher.submit(value, { method: "POST", encType: "application/json" }),
+    onDiscard: (savedValue) => {
+      setPublishingModeration(savedValue);
+      setFormResetKey((previous) => previous + 1);
+    },
+  });
 
   return (
     <>
-      <ui-save-bar id="leave-confirm-save-bar">
-        <button onClick={handleSave} variant="primary" id="save-button">
-          Save
-        </button>
-        <button onClick={handleDiscard} id="discard-button">
-          Discard
-        </button>
-      </ui-save-bar>
+      <SaveBar
+        onSave={handleSave}
+        onDiscard={handleDiscard}
+        saving={fetcher.state !== "idle"}
+      />
       <s-stack
         paddingBlockEnd="base"
         direction="inline"

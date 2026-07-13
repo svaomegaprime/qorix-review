@@ -7,19 +7,19 @@ import AppEmbedStatus from "../components/essentials/AppEmbedStatus";
 import Analytics from "../components/essentials/Analytics";
 import FAQ from "../components/pages/dashboard/FAQ";
 import Help from "../components/pages/dashboard/Help";
-import { authenticate } from "../shopify.server";
 import prisma from "../db.server";
-import { getStoreData } from "../utils/getStoreData";
+import { requireAdminContext } from "../services/adminContext.server.js";
 import { adminErrorResponse } from "../utils/adminError.server";
-import { deleteFile } from "../lib/s3/deleteFile";
+import {
+  deleteReviewWithAttachments,
+  updateReviewStatus,
+} from "../services/reviews.server.js";
 import { sendEmail } from "../utils/sendEmail";
-import { getRelativeTime } from "../utils/getRelativeTime";
-import { formetEmailBody } from "../utils/formetEmailBody";
+import { buildReplyEmailData } from "../services/emailPayload.server.js";
 
 export async function loader({ request }) {
   try {
-    const { admin } = await authenticate.admin(request);
-    const storeData = await getStoreData(admin);
+    const { storeData } = await requireAdminContext(request);
     const reviews = await prisma.review.findMany({
       where: {
         storeId: storeData.id,
@@ -48,8 +48,7 @@ export async function loader({ request }) {
 
 export async function action({ request }) {
   try {
-    const { admin } = await authenticate.admin(request);
-    const storeData = await getStoreData(admin);
+    const { storeData } = await requireAdminContext(request);
     const method = request.method.toUpperCase();
 
     switch (method) {
@@ -59,9 +58,10 @@ export async function action({ request }) {
         const status = formData.get("status");
 
         if (reviewId && status) {
-          await prisma.review.update({
-            where: { id: reviewId },
-            data: { status: status },
+          await updateReviewStatus({
+            reviewId: String(reviewId),
+            status: String(status),
+            storeId: storeData.id,
           });
         }
         break;
@@ -69,28 +69,10 @@ export async function action({ request }) {
       case "DELETE": {
         const formData = await request.formData();
         const reviewId = formData.get("reviewId");
-        const attachmentsRaw = formData.get("attachments");
-
-        if (attachmentsRaw) {
-          try {
-            const attachments = JSON.parse(attachmentsRaw);
-            console.log(attachments);
-
-            if (Array.isArray(attachments) && attachments.length > 0) {
-              for (const attachment of attachments) {
-                if (attachment?.url) {
-                  await deleteFile(attachment.url);
-                }
-              }
-            }
-          } catch (error) {
-            console.error("Failed to delete attachments:", error);
-          }
-        }
-
         if (reviewId) {
-          await prisma.review.delete({
-            where: { id: reviewId },
+          await deleteReviewWithAttachments({
+            reviewId: String(reviewId),
+            storeId: storeData.id,
           });
         }
         break;
@@ -138,72 +120,17 @@ export async function action({ request }) {
           });
 
           if (updatedReview?.reviewerEmail) {
-            const productTitle = updatedReview.productTitle ?? "";
             const buttonUrl =
               updatedReview.productHandle && storeData?.storeURL
                 ? `https://${storeData.storeURL}/products/${updatedReview.productHandle}`
                 : "#";
 
-            const replyEmailData = {
-              to: updatedReview.reviewerEmail,
-              from: storeSettings?.emailSettings?.smtpUser,
-              replyTo: storeSettings?.brandingSettings?.storeReplyToEmail,
-              templateName: "ReplyEmail",
-              subject: storeSettings?.emailSettings?.replyEmailSubjectLine,
-              smtpConfig: {
-                smtpHost: storeSettings?.emailSettings?.smtpHost,
-                smtpPort: storeSettings?.emailSettings?.smtpPort,
-                smtpUser: storeSettings?.emailSettings?.smtpUser,
-                smtpPassword: storeSettings?.emailSettings?.smtpPassword,
-              },
-              templateData: {
-                name: updatedReview.reviewerName,
-                storeTagline: storeSettings?.brandingSettings?.storeTagline,
-                timeAgo: getRelativeTime(updatedReview.createdAt),
-                products: productTitle ? [{ title: productTitle }] : [],
-                storeName:
-                  storeSettings?.brandingSettings?.storeDisplayName ??
-                  storeData.name,
-                buttonUrl,
-                replyEmailBody: formetEmailBody(
-                  storeSettings?.emailSettings?.replyEmailBody ?? "",
-                  updatedReview.reviewerName ?? "",
-                  storeSettings?.brandingSettings?.storeDisplayName ??
-                    storeData.name ??
-                    "",
-                  productTitle,
-                ),
-                replyEmailButton:
-                  storeSettings?.emailSettings?.replyEmailButton,
-                review: updatedReview.body,
-                rating: updatedReview.rating,
-                reply: updatedReview.reply?.body,
-                replyFrom:
-                  storeSettings?.brandingSettings?.storeDisplayName ??
-                  storeData.name,
-                storeFooterText:
-                  storeSettings?.brandingSettings?.emailFooterText ?? "",
-                storeFooterLinkText:
-                  storeSettings?.brandingSettings?.emailFooterLinkText ?? "",
-                isShowFooterBadge:
-                  storeSettings?.brandingSettings?.isShowFooterBadge,
-                storeLogo: storeSettings?.brandingSettings?.storeLogo,
-                storeLogoPosition:
-                  storeSettings?.brandingSettings?.storeLogoPosition,
-                emailPrimaryButtonColor:
-                  storeSettings?.brandingSettings?.emailPrimaryButtonColor,
-                emailButtonTextColor:
-                  storeSettings?.brandingSettings?.emailButtonTextColor,
-                emailBackgroundColor:
-                  storeSettings?.brandingSettings?.emailBackgroundColor,
-                emailHeadingColor:
-                  storeSettings?.brandingSettings?.emailHeadingColor,
-                emailBodyTextColor:
-                  storeSettings?.brandingSettings?.emailBodyTextColor,
-                emailAccentBorderColor:
-                  storeSettings?.brandingSettings?.emailAccentBorderColor,
-              },
-            };
+            const replyEmailData = buildReplyEmailData({
+              review: updatedReview,
+              storeSettings,
+              storeData,
+              buttonUrl,
+            });
 
             await sendEmail(replyEmailData);
           }
@@ -222,13 +149,13 @@ export async function action({ request }) {
 
 export default function Index() {
   const fetcher = useFetcher();
+  const { reviews, pendingOrders } = useLoaderData();
   // Start----Default CSR loading state checking for navigation
   const navigation = useNavigation();
   if (navigation.state === "loading") {
     return <Loader />;
   }
 
-  const { reviews, pendingOrders } = useLoaderData();
   // Start----Handle status toggle
   const handleStatusUpdate = (reviewId, state) => {
     fetcher.submit(
