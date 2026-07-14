@@ -1,7 +1,37 @@
+{% assign quick_review_metafield = app.metafields.qorix_review.quick_review.value %}
+{% liquid
+  assign allow_photo = quick_review_metafield.isPhotoUpload
+  assign allow_video = quick_review_metafield.isVideoUpload
+  assign media_accept = ''
+  if allow_photo
+    assign media_accept = 'image/jpeg,image/png,image/webp'
+  endif
+  if allow_photo and allow_video
+    assign media_accept = media_accept | append: ','
+  endif
+  if allow_video
+    assign media_accept = media_accept | append: 'video/mp4,video/quicktime'
+  endif
+%}
+
 {{ 'review-hub.css' | asset_url | stylesheet_tag }}
 <script src="{{ 'review-hub.js' | asset_url }}" defer></script>
 
-<div class="qr-review-hub">
+<div
+  class="qr-review-hub"
+  {% comment %} xx="{{ product.metafields.reviews.rating }} - {{ product.metafields.reviews.rating_count.value }}" {% endcomment %}
+  id="quick-review"
+  {% comment %} x-data="quickReviewWidget()" {% endcomment %}
+  x-data="ReviewWidget()"
+  x-init="initUploadSettings($el); productInit($el.dataset.product,$el.dataset.sort,$el.dataset.limit)"
+  data-product="{{ product | json | escape }}"
+
+  data-photo-upload="{{ allow_photo | json }}"
+  data-video-upload="{{ allow_video | json }}"
+  data-sort="{{ quick_review_metafield.defaultSort }}"
+  data-limit="{{ quick_review_metafield.reviewPerPage }}"
+  data-page-type="{{ template.name }}"
+>
   {% render 'heading',
     label: block.settings.label,
     title: block.settings.title,
@@ -30,11 +60,19 @@
       {%- endfor -%}
     </div>
 
+    {% comment %} Start:: Review form and success {% endcomment %}
+    {% render 'form', quick_review_metafield: 10, allow_photo: true, allow_video: true, media_accept: true %}
+    {% comment %} End:: Review form and success {% endcomment %}
+
     <div class="qr-load-more-wrap">
       <button class="qr-load-more-btn" type="button">Load more reviews</button>
     </div>
   </div>
 </div>
+
+<script src="{{ 'review.js'| asset_url }}" defer></script>
+
+<script src="{{ 'alpine.js' | asset_url }}" defer></script>
 
 {% schema %}
 {

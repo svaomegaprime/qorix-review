@@ -1,16 +1,30 @@
 .shopify-app-block[data-block-handle="ReviewHub"] {
   display: block;
   width: 100%;
+
+}
+:root{
+    --qr-is-left: center;
 }
 
 .qr-review-hub {
   padding: 40px 20px;
 
 }
+
+.qr-heading{
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
 .qr-heading-wrapper {
   text-align: center;
-  max-width: 640px;
-  margin: 0 auto;
+  /* max-width: 640px; */
+  /* margin: 0 auto; */
+    display: flex;
+  align-items: var(--qr-is-left);
+  flex-direction: column;
 }
 .qr-heading-label {
   color: #34C759;
@@ -95,6 +109,12 @@
   font-size: 14px;
   cursor: pointer;
 }
+.qr-rating-wraper{
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
 .qr-rating-filter {
   display: flex;
   flex-direction: column;
@@ -102,6 +122,14 @@
   flex-wrap: wrap;
   padding-bottom: 30px;
 }
+
+.qr-review-button{
+  background: #1D9E75;
+  padding: 12px 18px;
+  border-radius: 8px;
+  color: white;
+}
+
 .qr-rating-label {
   font-size: 14px;
   color: #6B7280;
