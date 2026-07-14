@@ -1,0 +1,79 @@
+{{ 'review-hub.css' | asset_url | stylesheet_tag }}
+<script src="{{ 'review-hub.js' | asset_url }}" defer></script>
+
+<div class="qr-review-hub">
+  {% render 'heading',
+    label: block.settings.label,
+    title: block.settings.title,
+    subtitle: block.settings.subtitle,
+    rating: block.settings.rating,
+    review_count: block.settings.review_count
+  %}
+
+  <div class="qr-reviews-section">
+    {% render 'review-filters' %}
+
+    <div class="qr-review-grid">
+      {%- for i in (1..6) -%}
+        {%- assign img_count = 1 -%}
+        {%- if i == 2 -%}{%- assign img_count = 4 -%}{%- endif -%}
+        {%- if i == 5 -%}{%- assign img_count = 4 -%}{%- endif -%}
+        {% render 'review-card',
+          reviewer_name: 'Hasan R.',
+          review_date: '2 days ago',
+          rating: 5,
+          review_text: 'Absolutely love the serum! My skin feels so smooth and hydrated.',
+          product_tag: 'Hydrating serum',
+          helpful_count: 24,
+          image_count: img_count
+        %}
+      {%- endfor -%}
+    </div>
+
+    <div class="qr-load-more-wrap">
+      <button class="qr-load-more-btn" type="button">Load more reviews</button>
+    </div>
+  </div>
+</div>
+
+{% schema %}
+{
+  "name": "Review Hub",
+  "target": "section",
+  "settings": [
+    {
+      "type": "text",
+      "id": "label",
+      "label": "Small label text",
+      "default": "Customer Reviews"
+    },
+    {
+      "type": "text",
+      "id": "title",
+      "label": "Heading title",
+      "default": "What customers love about us"
+    },
+    {
+      "type": "text",
+      "id": "subtitle",
+      "label": "Subtitle",
+      "default": "Watch and hear what our customers have to say."
+    },
+    {
+      "type": "range",
+      "id": "rating",
+      "label": "Rating",
+      "min": 0,
+      "max": 5,
+      "step": 0.1,
+      "default": 4.9
+    },
+    {
+      "type": "number",
+      "id": "review_count",
+      "label": "Review count",
+      "default": 2451
+    }
+  ]
+}
+{% endschema %}
