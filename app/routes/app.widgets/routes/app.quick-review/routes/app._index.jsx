@@ -15,9 +15,11 @@ import { getStoreData } from "../../../../../utils/getStoreData";
 import { setAppMetafield } from "../../../../../utils/appMetafields.server";
 import { adminErrorResponse } from "../../../../../utils/adminError.server";
 import { useAdminFetcherToast } from "../../../../../utils/useAdminFetcherToast";
+import ActiveToggleHeader from "../../../../../routes/app.widgets/components/elements/ActiveToggleHeader";
 
 const DEFAULT_COLOR_VALUES = {
   STAR_COLOR: "#f59e0b",
+  BAR_FILE_COLOR:"#34C759",
   TEXT_COLOR: "#fff",
   VERIFIED_BADGE_COLOR: "#1D9E75",
   Submit_Button_Color: "#1D9E75",
@@ -45,6 +47,10 @@ const DEFAULT_QUICK_REVIEW_STATE = {
   showReviewDate: true,
   showRatingFilter: true,
   reviewPerPage: 10,
+  isShowStarDistribution:true,
+  isShowMediaStrip:true,
+  isShowReviewCount:true,
+  writeReviewButtonText:"Write a review",
   defaultSort: "MOST_RECENT",
 };
 
@@ -93,6 +99,8 @@ const buildQuickReviewState = (data) => {
       TEXT_COLOR: data.buttonTextColor ?? DEFAULT_COLOR_VALUES.TEXT_COLOR,
       VERIFIED_BADGE_COLOR:
         data.verifiedBadgeColor ?? DEFAULT_COLOR_VALUES.VERIFIED_BADGE_COLOR,
+      BAR_FILE_COLOR:
+        data.barFileColor ?? DEFAULT_COLOR_VALUES.BAR_FILE_COLOR
     },
     borderRadius: parseBorderRadius(data.borderRadius),
     showReviewerName:
@@ -112,6 +120,14 @@ const buildQuickReviewState = (data) => {
     reviewPerPage:
       data.reviewPerPage ?? DEFAULT_QUICK_REVIEW_STATE.reviewPerPage,
     defaultSort: data.defaultSort ?? DEFAULT_QUICK_REVIEW_STATE.defaultSort,
+    isShowStarDistribution:
+      data.isShowStarDistribution ?? DEFAULT_QUICK_REVIEW_STATE.isShowStarDistribution,
+    isShowMediaStrip:
+      data.isShowMediaStrip ?? DEFAULT_QUICK_REVIEW_STATE.isShowMediaStrip,
+    isShowReviewCount:
+      data.isShowReviewCount ?? DEFAULT_QUICK_REVIEW_STATE.isShowReviewCount,
+    writeReviewButtonText:
+      data.writeReviewButtonText ?? DEFAULT_QUICK_REVIEW_STATE.writeReviewButtonText
   };
 };
 
@@ -176,17 +192,22 @@ export default function Index(VALUES = {}) {
     {
       key: "STAR_COLOR",
       label: "Star color",
-      info: "Applies to: Widget, Form & Success Screen",
+      info: "",
+    },
+    {
+      key: "BAR_FILE_COLOR",
+      label: "Bar fill color",
+      info: "",
     },
     {
       key: "Submit_Button_Color",
       label: "Button background ",
-      info: "Applies to: Widget, Form & Success Screen",
+      info: "",
     },
     {
       key: "TEXT_COLOR",
       label: "Button text color",
-      info: "Applies to: Widget, Form & Success Screen",
+      info: "",
     },
 
     {
@@ -200,6 +221,7 @@ export default function Index(VALUES = {}) {
   const loading = navigation.state === "loading";
   // End----Default CSR loading state checking for navigation
   const [activeDevice, setActiveDevice] = useState("desktop");
+    const [activeToggleManu, setActiveToggleManu] = useState(false);
   const [quickReview, setQuickReview] = useState(() =>
     buildQuickReviewState(loaderData),
   );
@@ -214,6 +236,9 @@ export default function Index(VALUES = {}) {
     formTitle: quickReview.formTitle,
     formSubtitle: quickReview.formSubtitle,
     submitButtonText: quickReview.submitButtonText,
+    isShowStarDistribution: quickReview.isShowStarDistribution,
+    isShowMediaStrip: quickReview.isShowMediaStrip,
+    isShowReviewCount: quickReview.isShowReviewCount,
     // ---success-----
     successMessageTitle: quickReview.successMessageTitle,
     successButtonText: quickReview.successButtonText,
@@ -233,7 +258,7 @@ export default function Index(VALUES = {}) {
     isShowVerifiedBadge: quickReview.showVerifiedBadge,
     isShowReviewDate: quickReview.showReviewDate,
     isShowRatingFilter: quickReview.showRatingFilter,
-
+    writeReviewButtonText: quickReview.writeReviewButtonText,
     reviewPerPage: Number(quickReview.reviewPerPage),
     defaultSort: quickReview.defaultSort,
   };
@@ -246,6 +271,7 @@ export default function Index(VALUES = {}) {
     initQuickReviewRef.current = cloneQuickReviewState(quickReview);
   }
 
+  console.log("quickReview", quickReview);
   const handelSubmit = () => {
     savePendingRef.current = true;
     fetcher.submit(postData, {
@@ -346,13 +372,47 @@ export default function Index(VALUES = {}) {
 
   return (
     <>
+     <style>
+        {`
+          .review-item {
+  height: 76px;
+  display: grid;
+  align-items: center;
+  border-bottom: 1px solid #e4e4e4;
+}
+
+.sidebar-content {
+  height: calc(100vh - 77px);
+  overflow: hidden auto;
+  background: #fff;
+  padding: 1rem;
+}
+
+
+@media (max-width: 900px) {
+
+  .sidebar-content {
+    height: auto;
+    overflow: visible;
+    padding: 0.75rem;
+  }
+
+  .review-item {
+    height: 248px;
+   
+  }
+}
+        `}
+      </style>
+
       {/* <s-button onClick={saveBar.triggerChange}>Change one</s-button>
             <s-button onClick={saveBar.triggerChange}>Change two</s-button>
             <s-button onClick={saveBar.triggerSubmit}>Submit trigger</s-button>
             <s-button onClick={saveBar.triggerDiscard}>Discard trigger</s-button> */}
 
       <SaveBar saveBar={saveBar} />
-      <s-grid gridTemplateColumns="346px 1fr" alignItems="start">
+      <s-query-container>
+      <s-grid   gridTemplateColumns="@container (inline-size > 900px) 346px 1fr, 1fr" alignItems="start">
         {/* Start----Sidebar */}
         <CustomSection
           borderRadius="0"
@@ -638,14 +698,67 @@ export default function Index(VALUES = {}) {
               {/* ---------------Form text End-------------------- */}
               {/* -------------Review list display--------------- */}
               {quickReviewTab?.quickReview && (
+                <s-stack >
+
+                  {/* Summary header */}
+                 <s-stack
+                  border="base"
+                  borderRadius="base"
+                  padding="base"
+                  gap="small"
+                >
+                  <ActiveToggleHeader activeToggleManu={activeToggleManu} textHeader="Summary header"   activeToggleManuText={"Summary"} setActiveToggleManu={setActiveToggleManu} />
+                 
+                 
+
+                 {activeToggleManu=="Summary" && (
+                       <s-stack gap="small" paddingBlockStart="small">
+                  <s-switch
+                    label="Show star distribution bars"
+                    checked={quickReview.isShowStarDistribution || undefined}
+                    onchange={handleSwitch("isShowStarDistribution")}
+                  />
+                  <s-switch
+                    label="Show media strip"
+                    checked={quickReview.isShowMediaStrip || undefined}
+                    onchange={handleSwitch("isShowMediaStrip")}
+                  />
+                  <s-switch
+                    label="Show review count"
+                    checked={quickReview.isShowReviewCount || undefined}
+                    onchange={handleSwitch("isShowReviewCount")}
+                  />
+                  
+                  <s-stack border="base" borderRadius="base" padding="small">
+                    <s-text-field
+                      label="Button text"
+                      maxlength="25"
+                      defaultValue={quickReview?.writeReviewButtonText}
+                      value={quickReview?.writeReviewButtonText}
+                      onchange={handleText("writeReviewButtonText")}
+                    ></s-text-field>
+                  </s-stack>
+              
+                       </s-stack>
+            
+                 )}
+             
+
+              
+                </s-stack>
+
+              <br></br>
                 <s-stack
                   border="base"
                   borderRadius="base"
                   padding="base"
                   gap="small"
                 >
-                  <s-heading>Review list display</s-heading>
+                   <ActiveToggleHeader activeToggleManu={activeToggleManu} textHeader="Review list display"  activeToggleManuText={"Review_list"} setActiveToggleManu={setActiveToggleManu} />
+                
 
+                {activeToggleManu =="Review_list" && (
+                       <s-stack gap="small" paddingBlockStart="small" >
                   <s-switch
                     label="Show reviewer name"
                     checked={quickReview.showReviewerName || undefined}
@@ -722,6 +835,13 @@ export default function Index(VALUES = {}) {
                       <s-option value="MOST_HELPFUL">Most helpful</s-option>
                     </s-select>
                   </s-stack>
+
+                </s-stack> 
+ 
+                )}
+             
+
+                </s-stack>
                 </s-stack>
               )}
               {/* -------------color picker---------------- */}
@@ -757,22 +877,23 @@ export default function Index(VALUES = {}) {
         {/* Start----Content */}
         <div
           style={{
-            height: "100vh",
+            height: "auto",
             overflow: "hidden",
             background: "#fff",
           }}
         >
           {/* Start----Preview Header */}
-          <div
-            style={{
-              height: "76px",
-              display: "grid",
-              alignItems: "center",
-              borderBottom: "1px solid #e4e4e4ff",
-            }}
+          <div className="review-item"
+            // style={{
+            //   height: "76px",
+            //   display: "grid",
+            //   alignItems: "center",
+            //   borderBottom: "1px solid #e4e4e4ff",
+            // }}
           >
+            <s-query-container>
             <s-grid
-              gridTemplateColumns="1fr auto"
+             gridTemplateColumns="@container (inline-size > 900px) 1fr auto, 1fr"
               gap="small"
               justifyContent="space-between"
               paddingInline="base"
@@ -837,6 +958,7 @@ export default function Index(VALUES = {}) {
                 </s-button>
               </s-button-group>
             </s-grid>
+            </s-query-container>
           </div>
           {/* End----Preview Header */}
           <QuickReviewComponent
@@ -849,6 +971,8 @@ export default function Index(VALUES = {}) {
         </div>
         {/* End----Content */}
       </s-grid>
+
+      </s-query-container>
     </>
   );
 }

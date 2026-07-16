@@ -5,6 +5,8 @@ export default function ReviewHubWidget({ settings, activeDevice }) {
   // filterSorting: "Filter & sorting both",
   // reviewsPerPage: "9 reviews",
   // reviewStats: "Show review count & verified badge",
+
+   
   const {
     showStarDistribution,
     showReviewerName,
@@ -105,7 +107,7 @@ overflow: auto;
           display: flex;
           flex-direction: column;
           gap: 14px;
-          max-width: 440px; /* Optional standard limit */
+          // max-width: 440px; /* Optional standard limit */
         }
 
         .qr-reviewer-info {
@@ -399,7 +401,58 @@ overflow: auto;
           fill: #ffffff !important;
         }
 
+
+         @media (max-width: 1300px) {
+
+            .qr-reviews-grid {
+          display: grid;
+          padding: 40px 0;
+          grid-template-columns:  repeat(${activeDevice === "mobile" ? 1 : 2},  1fr);
+          gap: 24px;
+        }
+         .qr-reviews-section {
+   
+    padding: 28px;
+   
+}
+
+          .qr-review-card {
+            padding: 16px;
+          }
+          .qr-helpful-btn, .qr-share-btn {
+            padding: 7px 12px;
+            font-size: 12px;
+          }
+       
+             
+        }
+
         @media (max-width: 480px) {
+
+         .tb-top-row {
+          display: flex;
+          flex-direction: column;
+          gap: 12px;
+          align-items: center;
+          justify-content: space-between;
+         
+        }
+.tb-filter-main-btn , .tb-sort-trigger , .tb-sort-wrapper 
+{
+display: block;
+  width: 100%;
+}
+        .qr-reviews-container {
+
+    padding: 13px;
+   
+}
+            .qr-reviews-grid {
+          display: grid;
+          padding: 40px 0;
+          grid-template-columns:  repeat(${activeDevice === "mobile" ? 1 : 1},  1fr);
+          gap: 24px;
+        }
           .qr-review-card {
             padding: 16px;
           }
@@ -422,23 +475,45 @@ overflow: auto;
                 {/* FILTER */}
                 {(filterSorting === "Filter & sorting both" ||
                   filterSorting === "Filter only") && (
-                    <button
-                      onClick={() => setIsFilterign(!isFilterign)}
-                      className="tb-filter-main-btn"
+                  <button
+                    onClick={() => setIsFilterign(!isFilterign)}
+                    className="tb-filter-main-btn"
+                  >
+                    <svg
+                      width="15"
+                      height="15"
+                      viewBox="0 0 24 24"
+                      fill="none"
+                      stroke="currentColor"
+                      strokeWidth="2"
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
                     >
-                      <svg
-                        width="15"
-                        height="15"
-                        viewBox="0 0 24 24"
-                        fill="none"
-                        stroke="currentColor"
-                        strokeWidth="2"
-                        strokeLinecap="round"
-                        strokeLinejoin="round"
-                      >
-                        <polygon points="22 3 2 3 10 12.46 10 19 14 21 14 12.46 22 3" />
-                      </svg>
-                      Filter
+                      <polygon points="22 3 2 3 10 12.46 10 19 14 21 14 12.46 22 3" />
+                    </svg>
+                    Filter
+                    <svg
+                      width="12"
+                      height="12"
+                      viewBox="0 0 24 24"
+                      fill="none"
+                      stroke="currentColor"
+                      strokeWidth="2"
+                    >
+                      <polyline points="6 9 12 15 18 9" />
+                    </svg>
+                  </button>
+                )}
+
+                {/* SORTING */}
+                {(filterSorting === "Filter & sorting both" ||
+                  filterSorting === "Sorting only") && (
+                  <div className="tb-sort-wrapper">
+                    <button
+                      className="tb-sort-trigger"
+                      onClick={() => setIsSortOpen(!isSortOpen)}
+                    >
+                      Sort by: <span>{selectedSort}</span>
                       <svg
                         width="12"
                         height="12"
@@ -450,48 +525,27 @@ overflow: auto;
                         <polyline points="6 9 12 15 18 9" />
                       </svg>
                     </button>
-                  )}
 
-                {/* SORTING */}
-                {(filterSorting === "Filter & sorting both" ||
-                  filterSorting === "Sorting only") && (
-                    <div className="tb-sort-wrapper">
-                      <button
-                        className="tb-sort-trigger"
-                        onClick={() => setIsSortOpen(!isSortOpen)}
-                      >
-                        Sort by: <span>{selectedSort}</span>
-                        <svg
-                          width="12"
-                          height="12"
-                          viewBox="0 0 24 24"
-                          fill="none"
-                          stroke="currentColor"
-                          strokeWidth="2"
-                        >
-                          <polyline points="6 9 12 15 18 9" />
-                        </svg>
-                      </button>
-
-                      {isSortOpen && (
-                        <div className="tb-sort-dropdown">
-                          {sortOptions.map((option) => (
-                            <button
-                              key={option}
-                              className={`tb-sort-item ${selectedSort === option ? "active-sort" : ""
-                                }`}
-                              onClick={() => {
-                                setSelectedSort(option);
-                                setIsSortOpen(false);
-                              }}
-                            >
-                              {option}
-                            </button>
-                          ))}
-                        </div>
-                      )}
-                    </div>
-                  )}
+                    {isSortOpen && (
+                      <div className="tb-sort-dropdown">
+                        {sortOptions.map((option) => (
+                          <button
+                            key={option}
+                            className={`tb-sort-item ${
+                              selectedSort === option ? "active-sort" : ""
+                            }`}
+                            onClick={() => {
+                              setSelectedSort(option);
+                              setIsSortOpen(false);
+                            }}
+                          >
+                            {option}
+                          </button>
+                        ))}
+                      </div>
+                    )}
+                  </div>
+                )}
               </div>
             )}
 
