@@ -28,18 +28,15 @@
   </div>
 </div>
 
-<div class="qr-rating-wraper">
-  <div class="qr-rating-filter">
-    <span class="qr-rating-label">Rating</span>
-    <div class="qr-rating-pills">
-      <button class="qr-pill" type="button">All</button>
-      {%- for i in (1..5) -%}
-        <button class="qr-pill{% if i == 4 %} qr-pill-active{% endif %}" type="button">
-          {{ i }}
-          {% render 'icon', name: 'star', color: '#FF9500' %}
-        </button>
-      {%- endfor -%}
-    </div>
+<div class="qr-rating-filter">
+  <span class="qr-rating-label">Rating</span>
+  <div class="qr-rating-pills">
+    <button class="qr-pill" type="button">All</button>
+    {%- for i in (1..5) -%}
+      <button class="qr-pill{% if i == 4 %} qr-pill-active{% endif %}" type="button">
+        {{ i }}
+        {% render 'icon', name: 'star', color: '#FF9500' %}
+      </button>
+    {%- endfor -%}
   </div>
-  <button class="qr-review-button" @click="openModal()">Write a review</button>
 </div>

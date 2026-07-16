@@ -1,0 +1,67 @@
+<div class="qorix-review-video-stack-swiper-slide">
+  <div class="qorix-review-video-stack-card">
+    <video
+      class="qorix-review-video-stack-bg"
+      src="{{ video_src }}"
+      {% if loop_video %}
+        loop
+      {% endif %}
+      playsinline
+      muted
+    ></video>
+    <div class="qorix-review-video-stack-overlay"></div>
+    <div class="qorix-review-video-stack-topbar">
+      <div class="qorix-review-video-stack-pill">
+        <span>{{ duration | default: '0:00' }}</span>
+      </div>
+      <button class="qorix-review-video-stack-play" aria-label="Play video">
+        <svg width="10" height="12" viewBox="0 0 10 12" fill="none">
+          <path d="M1 1L9 6L1 11V1Z" fill="#303030" />
+        </svg>
+      </button>
+    </div>
+    <div class="qorix-review-video-stack-info">
+      <div class="qorix-review-video-stack-card-stars" aria-label="{{ rating | default: 5 }} stars">
+        {% assign star_count = rating | default: 5 %}
+        {% for i in (1..star_count) %}
+          <svg width="24" height="24" viewBox="0 0 17 16" fill="none">
+            <path
+              d="M9.51964 0.855C8.97604-.285 7.35604-.285 6.81244.855L5.14444 4.3494 1.30564 4.8546C.0552353 5.0202-.446365 6.561.469235 7.4298L3.27724 10.0962 2.57284 13.9026C2.34244 15.1434 3.65404 16.0962 4.76284 15.495L8.16604 13.647 11.5692 15.495C12.678 16.0962 13.9896 15.1434 13.7592 13.9026L13.0548 10.0962 15.8628 7.4298C16.7772 6.561 16.2768 5.0202 15.0264 4.8546L11.1864 4.3494Z"
+              fill="var(--star-color, #FF9500)" />
+          </svg>
+        {% endfor %}
+      </div>
+      <div class="qorix-review-video-stack-reviewer">
+        <span class="qorix-review-video-stack-name">{{ reviewer_name }}</span>
+        {% if verified %}
+          <svg width="18" height="18" viewBox="0 0 18 18" fill="none" aria-label="Verified">
+            <circle cx="9" cy="9" r="9" fill="#088728" />
+            <path d="M5 9L7.5 11.5L13 6" stroke="white" stroke-width="1.8" stroke-linecap="round"
+              stroke-linejoin="round" />
+          </svg>
+        {% endif %}
+      </div>
+      <p class="qorix-review-video-stack-quote">{{ review_quote }}</p>
+      {% if product_tag %}
+        <div class="qorix-review-video-stack-tag">
+          <svg
+            width="14"
+            height="14"
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke="#303030"
+            stroke-width="2"
+            stroke-linecap="round"
+            stroke-linejoin="round"
+            aria-hidden="true"
+          >
+            <path d="M9 3h6v4H9z" />
+            <path d="M6 7h12v14H6z" />
+            <path d="M12 11v4" />
+          </svg>
+          <span>{{ product_tag }}</span>
+        </div>
+      {% endif %}
+    </div>
+  </div>
+</div>

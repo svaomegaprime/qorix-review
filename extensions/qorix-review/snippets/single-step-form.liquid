@@ -1,5 +1,5 @@
 {% comment %} Start:: Review form and success {% endcomment %}
-{{ 'form.css' | asset_url | stylesheet_tag }}
+{{ 'single-step-form.css' | asset_url | stylesheet_tag }}
 <div
   class="modal-overlay"
   id="modal-overlay"
@@ -42,45 +42,70 @@
             @keydown.space.prevent="starSelected = star"
             :aria-label="'Rate ' + star + ' stars'"
           >
-            <svg width="32" height="32" viewBox="0 0 17 16" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <svg
+              :stroke="star <= (starHover || starSelected) ? '{{ quick_review_metafield.starColor }}' : '#606060' "
+              width="20"
+              height="20"
+              viewBox="0 0 17 16"
+              fill="none"
+              xmlns="http://www.w3.org/2000/svg"
+            >
               <path
-                :fill="star <= (starHover || starSelected) ? '{{ quick_review_metafield.starColor }}' : '#B5B5B5'"
+
+                :fill="star <= (starHover || starSelected) ? '{{ quick_review_metafield.starColor }}' : ''"
                 d="M9.51964 0.855C8.97604 -0.285 7.35604 -0.285 6.81244 0.855L5.14444 4.3494L1.30564 4.8546C0.0552353 5.0202 -0.446365 6.561 0.469235 7.4298L3.27724 10.0962L2.57284 13.9026C2.34244 15.1434 3.65404 16.0962 4.76284 15.495L8.16604 13.647L11.5692 15.495C12.678 16.0962 13.9896 15.1434 13.7592 13.9026L13.0548 10.0962L15.8628 7.4298C16.7772 6.561 16.2768 5.0202 15.0264 4.8546L11.1864 4.3494L9.51964 0.855Z"
               />
             </svg>
           </span>
         </template>
       </div>
-      {%- if quick_review_metafield.isShowNameField -%}
-        <label class="form-label">Your name <span class="req">*</span></label>
-        <input
-          class="form-input"
-          id="review-name"
-          type="text"
-          placeholder="Enter your name"
-          x-model="form.name"
-        >
-      {%- endif -%}
-
-      {%- if quick_review_metafield.isShowEmailField -%}
-        <label class="form-label">Email <span class="req">*</span></label>
-        <input
-          class="form-input"
-          id="review-email"
-          type="email"
-          required
-          placeholder="Enter your email"
-          x-model="form.email"
-        >
-      {%- endif -%}
-
       <label class="form-label">Your review <span class="req">*</span></label>
       <textarea
         class="form-textarea"
         id="review-text"
         placeholder="Tell us what you loved or didn't like..."
         x-model="form.review"
+        rows="5"
       ></textarea>
+      <div
+        style="
+          display: grid;
+          {% if quick_review_metafield.isShowNameField == false or quick_review_metafield.isShowEmailField == false %}
+            grid-template-columns: 1fr;
+          {% else %}
+            grid-template-columns: 1fr 1fr;
+          {% endif %}
+          gap: 16px;
+        "
+      >
+        {%- if quick_review_metafield.isShowNameField -%}
+          <span>
+            <label class="form-label">Your name <span class="req">*</span></label>
+            <input
+              class="form-input"
+              id="review-name"
+              type="text"
+              placeholder="Enter your name"
+              x-model="form.name"
+            >
+          </span>
+        {%- endif -%}
+
+        {%- if quick_review_metafield.isShowEmailField -%}
+          <span>
+            <label class="form-label">Email <span class="req">*</span></label>
+            <input
+              class="form-input"
+              id="review-email"
+              type="email"
+              required
+              placeholder="Enter your email"
+              x-model="form.email"
+            >
+          </span>
+        {%- endif -%}
+      </div>
+
       {% if allow_photo or allow_video %}
         <label class="form-label">Add media <span style="font-weight: 400; color: #888">(optional)</span></label>
         <input
@@ -92,6 +117,7 @@
           x-ref="mediaInput"
           @change="handleMediaUpload($event)"
         >
+
         <div
           class="upload-zone"
           id="upload-zone"
@@ -117,6 +143,7 @@
             {% endif %}
           </small>
         </div>
+
         <div
           id="media-preview"
           style="display: flex; gap: 8px; flex-wrap: wrap; margin-bottom: 14px"

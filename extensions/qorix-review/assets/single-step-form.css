@@ -84,7 +84,7 @@
 }
 .star-picker {
   display: flex;
-  gap: 4px;
+  gap: 8px;
   margin-bottom: 16px;
   cursor: pointer;
 }
@@ -233,7 +233,7 @@
 }
 .modal-footer-note {
   text-align: center;
-  font-size: 12px;
+  font-size: 13px;
   color: #888;
   display: flex;
   align-items: center;

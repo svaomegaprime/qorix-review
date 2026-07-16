@@ -24,7 +24,7 @@
   }
 </style>
 
-<link rel="stylesheet" href="{{ 'quick-review.css' | asset_url }}">
+<link rel="stylesheet" href="{{ 'quick-review_old.css' | asset_url }}">
 
 <div
   {% comment %} xx="{{ product.metafields.reviews.rating }} - {{ product.metafields.reviews.rating_count.value }}" {% endcomment %}
@@ -256,7 +256,7 @@
   {% comment %} Start:: Review form and success {% endcomment %}
   {% comment %}
   {% endcomment %}
-  {% render 'form',
+  {% render 'single-step-form',
     quick_review_metafield: quick_review_metafield,
     allow_photo: allow_photo,
     allow_video: allow_video,

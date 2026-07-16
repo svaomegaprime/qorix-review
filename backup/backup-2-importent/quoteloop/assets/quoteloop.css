@@ -1,0 +1,267 @@
+:root {
+  /* Colors */
+  --qr-color-border: #eaeaea;
+  --qr-color-text-dark: #1f2937;
+  --qr-color-text-gray: #6b7280;
+  --qr-color-pagination: #22c55e9b;
+  --qr-color-pagination-active: #22c55e;
+  --qr-color-star: #f59e0b;
+  --qr-color-white: #fff;
+  --qr-shadow-color: rgba(0, 0, 0, 0.08);
+
+  /* Spacing / layout */
+  --qr-radius: 12px;
+  --qr-card-padding: 24px;
+  --qr-desktop-max-width: 1600px;
+}
+
+/* ===================== Base (Mobile-first defaults) ===================== */
+
+.shopify-app-block[data-block-handle="quoteloop"] {
+  display: block;
+  width: 100%;
+}
+
+.qr-quoteloop {
+  padding: 12px 8px;
+}
+
+.qr-quote-swiper {
+  width: 100%;
+  overflow: hidden;
+  padding: 30px 0 70px 16px;
+  box-sizing: border-box;
+  position: relative;
+}
+
+.qr-quote-swiper .swiper-wrapper {
+  align-items: stretch;
+}
+
+.qr-quote-swiper .swiper-slide {
+  height: auto;
+  width: 84%;
+  display: flex;
+  justify-content: flex-start;
+  transition: transform 0.35s ease, opacity 0.35s ease;
+  opacity: 0.6;
+  transform: scale(0.94);
+}
+
+.qr-quote-swiper .swiper-slide-active {
+  opacity: 1;
+  transform: scale(1.02);
+  z-index: 2;
+}
+
+.qr-review-card {
+  border: 1px solid var(--qr-color-border);
+  border-radius: var(--qr-radius);
+  padding: var(--qr-card-padding);
+  height: auto;
+  width: 100%;
+  max-width: none;
+  box-sizing: border-box;
+  display: flex;
+  flex-direction: column;
+}
+
+.qr-card-content {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  margin-top: 20px;
+  margin-bottom: 50px;
+}
+
+.qr-quote-icon {
+  position: static;
+  display: flex;
+  justify-content: center;
+  margin-bottom: 50px;
+}
+
+.qr-review-text {
+  text-align: center;
+  font-size: 18px;
+  line-height: 1.5;
+  font-weight: 400;
+  color: var(--qr-color-text-dark);
+  margin: 0 0 20px;
+}
+
+.qr-review-stars {
+  display: flex;
+  gap: 5px;
+  color: var(--qr-color-star);
+  margin-bottom: 16px;
+}
+
+.qr-star--filled {
+  color: var(--qr-color-star);
+}
+
+.qr-review-footer {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  border-top: 1px solid #eee;
+  padding-top: 16px;
+  margin-top: auto;
+}
+
+.qr-reviewer-avatar {
+  border-radius: 50%;
+  object-fit: cover;
+  height: 56px;
+  width: 56px;
+}
+
+.qr-reviewer-info {
+  display: flex;
+  flex-direction: column;
+}
+
+.qr-reviewer-name {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 16px;
+  font-weight: 500;
+  margin-bottom: 8px;
+}
+
+.qr-reviewer-product {
+  font-size: 16px;
+  font-weight: 400;
+  color: var(--qr-color-text-gray);
+}
+
+/* Pagination */
+.qr-quote-swiper .swiper-pagination {
+  bottom: 20px;
+}
+
+.qr-quote-swiper .swiper-pagination-bullet {
+  width: 8px;
+  height: 8px;
+  background: var(--qr-color-pagination);
+  opacity: 1;
+}
+
+.qr-quote-swiper .swiper-pagination-bullet-active {
+  background: var(--qr-color-pagination-active);
+}
+
+/* Navigation arrows — MOBILE: bottom corners */
+.qr-quote-swiper .swiper-button-prev,
+.qr-quote-swiper .swiper-button-next {
+  top: auto;
+  bottom: 6px;
+  transform: none;
+  width: 36px;
+  height: 36px;
+  margin-top: 0;
+  background: var(--qr-color-white);
+  border: 1px solid var(--qr-color-border);
+  border-radius: 50%;
+  box-shadow: 0 2px 6px var(--qr-shadow-color);
+  color: var(--qr-color-text-dark);
+}
+
+.qr-quote-swiper .swiper-button-prev {
+  left: 16px;
+}
+
+.qr-quote-swiper .swiper-button-next {
+  right: 16px;
+}
+
+.swiper-button-prev svg,
+.swiper-button-next svg {
+  height: 9.5px;
+  width: 5.5px;
+}
+
+.qr-quote-swiper .swiper-button-prev::after,
+.qr-quote-swiper .swiper-button-next::after {
+  font-size: 12px;
+  font-weight: 700;
+}
+
+/* ===================== Tablet (768px – 1023px) → 2 cards ===================== */
+
+@media (min-width: 768px) {
+  .qr-quote-swiper {
+    padding: 40px 24px 50px;
+  }
+
+  .qr-quote-swiper .swiper-slide {
+    width: auto;
+    justify-content: center;
+    opacity: 0.55;
+    transform: scale(0.92);
+  }
+
+  .qr-quote-swiper .swiper-slide-active {
+    opacity: 1;
+    transform: scale(1.05);
+    z-index: 5;
+  }
+
+  .qr-review-text {
+    font-size: 22px;
+  }
+
+  .qr-quote-swiper .swiper-pagination {
+    bottom: 0;
+  }
+
+  /* Arrows: reset back to reference-style side positioning */
+  .qr-quote-swiper .swiper-button-prev,
+  .qr-quote-swiper .swiper-button-next {
+    position: absolute;
+    top: 50%;
+    bottom: auto;
+    transform: translateY(-50%);
+    width: 44px;
+    height: 44px;
+  }
+
+  .qr-quote-swiper .swiper-button-prev {
+    left: 10px;
+  }
+
+  .qr-quote-swiper .swiper-button-next {
+    right: 10px;
+  }
+
+  .swiper-button-prev svg,
+  .swiper-button-next svg {
+    height: 9.5px;
+    width: 5.5px;
+  }
+
+  .qr-quote-swiper .swiper-button-prev::after,
+  .qr-quote-swiper .swiper-button-next::after {
+    font-size: 14px;
+  }
+}
+
+/* ===================== Laptop (1024px – 1199px) → 3 cards ===================== */
+
+@media (min-width: 1024px) {
+  .qr-review-text {
+    font-size: 24px;
+  }
+}
+
+/* ===================== Desktop (1200px+) → ===================== */
+
+@media (min-width: 1200px) {
+  .qr-quote-swiper {
+    max-width: var(--qr-desktop-max-width);
+    margin: 0 auto;
+    padding: 40px 24px 50px;
+  }
+}

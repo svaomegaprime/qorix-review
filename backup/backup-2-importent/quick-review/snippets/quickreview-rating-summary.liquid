@@ -1,0 +1,34 @@
+{{ 'quickreview-rating-summary.css' | asset_url | stylesheet_tag }}
+<div class="quickreview-summary" data-quickreview-summary>
+  <div class="quickreview-summary__score" data-quickreview-average>
+    4.9 <span class="quickreview-summary__count" data-quickreview-count>(224 reviews)</span>
+  </div>
+
+  <div class="quickreview-summary__stars" data-quickreview-stars aria-label="Rating">
+    <span class="quickreview-star " data-star-index="1">
+      {%- render 'icon' name:"rating-star" -%}
+    </span>
+    <span class="quickreview-star " data-star-index="2">
+      {%- render 'icon' name:"rating-star" -%}
+    </span>
+    <span class="quickreview-star " data-star-index="3">
+      {%- render 'icon' name:"rating-star" -%}
+    </span>
+    <span class="quickreview-star " data-star-index="4">
+      {%- render 'icon' name:"rating-star" -%}
+    </span>
+    <span class="quickreview-star" data-star-index="5">
+      {%- render 'icon' name:"rating-star-withoutfield" -%}
+    </span>
+  </div>
+
+  {% comment %} <div >(224 reviews)</div> {% endcomment %}
+
+  <button
+    type="button"
+    class="quickreview-summary__write-btn"
+    data-quickreview-write-review
+  >
+    Write your review
+  </button>
+</div>
