@@ -232,8 +232,10 @@ export default function ReviewList({
     isShowMediaStrip,
     showRatingFilter,
     isShowStarDistribution,
+    showHelfullButton,
     isShowReviewCount,
     writeReviewButtonText,
+    showMediaImageAndVideo,
     reviewPerPage,
     defaultSort,
     colorValues,
@@ -558,9 +560,7 @@ border:none;
               <div>
                 <p className="rv-title">Product Reviews</p>
                 <p className="rv-title-sub_des">of Hydrating Eye Cream</p>
-                {showProductName && firstProductName && (
-                  <p className="rv-title-sub">of {firstProductName}</p>
-                )}
+               
               </div>
 
               <div className="rv-icon-group">
@@ -781,7 +781,7 @@ border:none;
                     <p className="rv-text">{review.review}</p>
 
                     {review.media.length > 0 &&
-                      (showReviewerImage || showReviewerVideo) && (
+                      (showMediaImageAndVideo) && (
                         <div className="rv-media-row">
                           {review.media.map((item, i) => (
                             <div
@@ -790,7 +790,7 @@ border:none;
                               onClick={() => setLightbox(item)}
                             >
                               {item.type === "image"
-                                ? showReviewerImage && (
+                                ? showMediaImageAndVideo && (
                                   <img src={item.url} alt={`media-${i}`} />
                                 )
                                 : showReviewerVideo && (
@@ -810,7 +810,8 @@ border:none;
                       )}
 
                     <div className="rv-card-footer">
-                      <button
+                      {showHelfullButton && (
+                            <button
                         className="qr-helpful-btn"
                         onClick={() => bumpHelpful(review.id)}
                       >
@@ -828,8 +829,8 @@ border:none;
                         </svg>
                         Helpful ({helpfulTotal})
                       </button>
-                      <span className="rv-report-divider" />
-                      <span className="rv-report-link">Report</span>
+                      )}
+                 
                     </div>
                   </div>
                 );

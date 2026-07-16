@@ -40,9 +40,9 @@ const DEFAULT_QUICK_REVIEW_STATE = {
   colorValues: DEFAULT_COLOR_VALUES,
   borderRadius: 15,
   showReviewerName: true,
-  showReviewerImage: true,
+  showMediaImageAndVideo: true,
   showReviewerVideo: true,
-  showProductName: false,
+  showProductName: true,
   showVerifiedBadge: true,
   showReviewDate: true,
   showRatingFilter: true,
@@ -51,6 +51,7 @@ const DEFAULT_QUICK_REVIEW_STATE = {
   isShowMediaStrip:true,
   isShowReviewCount:true,
   writeReviewButtonText:"Write a review",
+  showHelfullButton:true,
   defaultSort: "MOST_RECENT",
 };
 
@@ -105,8 +106,8 @@ const buildQuickReviewState = (data) => {
     borderRadius: parseBorderRadius(data.borderRadius),
     showReviewerName:
       data.isShowReviewerName ?? DEFAULT_QUICK_REVIEW_STATE.showReviewerName,
-    showReviewerImage:
-      data.isShowReviewerImage ?? DEFAULT_QUICK_REVIEW_STATE.showReviewerImage,
+    showMediaImageAndVideo:
+      data.isshowMediaImageAndVideo ?? DEFAULT_QUICK_REVIEW_STATE.showMediaImageAndVideo,
     showReviewerVideo:
       data.isShowReviewerVideo ?? DEFAULT_QUICK_REVIEW_STATE.showReviewerVideo,
     showProductName:
@@ -128,6 +129,9 @@ const buildQuickReviewState = (data) => {
       data.isShowReviewCount ?? DEFAULT_QUICK_REVIEW_STATE.isShowReviewCount,
     writeReviewButtonText:
       data.writeReviewButtonText ?? DEFAULT_QUICK_REVIEW_STATE.writeReviewButtonText
+    ,
+    showHelfullButton:
+      data.showHelfullButton ?? DEFAULT_QUICK_REVIEW_STATE.showHelfullButton
   };
 };
 
@@ -239,6 +243,7 @@ export default function Index(VALUES = {}) {
     isShowStarDistribution: quickReview.isShowStarDistribution,
     isShowMediaStrip: quickReview.isShowMediaStrip,
     isShowReviewCount: quickReview.isShowReviewCount,
+    showHelfullButton: quickReview.showHelfullButton,
     // ---success-----
     successMessageTitle: quickReview.successMessageTitle,
     successButtonText: quickReview.successButtonText,
@@ -252,7 +257,7 @@ export default function Index(VALUES = {}) {
     borderRadius: `${quickReview.borderRadius}px`,
 
     isShowReviewerName: quickReview.showReviewerName,
-    isShowReviewerImage: quickReview.showReviewerImage,
+    isshowMediaImageAndVideo: quickReview.showMediaImageAndVideo,
     isShowReviewerVideo: quickReview.showReviewerVideo,
     isShowProductName: quickReview.showProductName,
     isShowVerifiedBadge: quickReview.showVerifiedBadge,
@@ -481,8 +486,12 @@ export default function Index(VALUES = {}) {
               {quickReviewTab.reviewPopup && (
                 <>
                   <s-stack border="base" borderRadius="base" padding="base">
-                    <s-heading>Form Fields</s-heading>
-                    <br />
+                   
+                <ActiveToggleHeader activeToggleManu={activeToggleManu} textHeader="Form Fields"  activeToggleManuText={"Form_Fields"} setActiveToggleManu={setActiveToggleManu} />
+
+
+                    {activeToggleManu==="Form_Fields" && (
+                           <s-stack>
                     <s-switch
                       checked={quickReview.name || undefined}
                       label="Name field"
@@ -508,14 +517,22 @@ export default function Index(VALUES = {}) {
                       details="Let customers attach video"
                       onchange={handleSwitch("video")}
                     ></s-switch>
+
+                      </s-stack>
+                    )}
+
+               
                   </s-stack>
                   {/* ---------------Form fields End-------------------- */}
                   <br></br>
                   {/* ---------------Form text-------------------- */}
                   <s-stack border="base" borderRadius="base" padding="base">
-                    <s-heading>Form text</s-heading>
-
-                    <s-stack gap="small" paddingBlockStart="small"></s-stack>
+                  
+                      <ActiveToggleHeader activeToggleManu={activeToggleManu} textHeader="Form text"  activeToggleManuText={"Form"} setActiveToggleManu={setActiveToggleManu} />
+                    
+                    {activeToggleManu=="Form" && (
+                                  <s-stack  paddingBlockStart="small">
+                    
                     <s-stack
                       border="base"
                       paddingInlineStart="small"
@@ -559,6 +576,10 @@ export default function Index(VALUES = {}) {
                         onchange={handleText("submitButtonText")}
                       ></s-text-field>
                     </s-stack>
+                    </s-stack>
+
+                    )}
+          
                   </s-stack>
                   <br></br>
 
@@ -765,17 +786,13 @@ export default function Index(VALUES = {}) {
                     onchange={handleSwitch("showReviewerName")}
                   />
                   <s-switch
-                    label="Show reviewer image"
-                    checked={quickReview.showReviewerImage || undefined}
-                    onchange={handleSwitch("showReviewerImage")}
+                    label="Show media thumbnails"
+                    checked={quickReview.showMediaImageAndVideo || undefined}
+                    onchange={handleSwitch("showMediaImageAndVideo")}
                   />
+                  
                   <s-switch
-                    label="Show reviewer video"
-                    checked={quickReview.showReviewerVideo || undefined}
-                    onchange={handleSwitch("showReviewerVideo")}
-                  />
-                  <s-switch
-                    label="Show product name"
+                    label="Show product name on card"
                     checked={quickReview.showProductName || undefined}
                     onchange={handleSwitch("showProductName")}
                   />
@@ -790,10 +807,16 @@ export default function Index(VALUES = {}) {
                     onchange={handleSwitch("showReviewDate")}
                   />
                   <s-switch
-                    label="Show star rating"
+                    label="Show star rating on card"
                     checked={quickReview.showRatingFilter || undefined}
                     onchange={handleSwitch("showRatingFilter")}
                   />
+                     <s-switch
+                    label="Show Helpful button"
+                    checked={quickReview.showHelfullButton || undefined}
+                    onchange={handleSwitch("showHelfullButton")}
+                  />
+                      
 
                   <s-stack border="base" borderRadius="base" padding="small">
                     <s-select
