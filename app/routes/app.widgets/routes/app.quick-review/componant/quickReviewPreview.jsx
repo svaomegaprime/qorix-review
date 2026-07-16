@@ -236,12 +236,20 @@ export default function ReviewList({
     isShowReviewCount,
     writeReviewButtonText,
     showMediaImageAndVideo,
+    filterAndSorting,
+ 
     reviewPerPage,
     defaultSort,
     colorValues,
   } = quickReview;
 
-console.log("previewApp",quickReview)
+const showSorting =
+  filterAndSorting === "FILTER_AND_SORTING" ||
+  filterAndSorting === "SORTING_ONLY";
+
+const showFiltering =
+  filterAndSorting === "FILTER_AND_SORTING" ||
+  filterAndSorting === "FILTER_ONLY";
 
 
   const {
@@ -399,7 +407,21 @@ border:none;
     gap: 8px;
     padding-bottom: 25px;
 }
-        .rv-chip { display: inline-flex; align-items: center; gap: 7px; padding: 6px 12px; border: 1px solid ${Border_Color || "#e4e5e7"}; border-radius: 20px; font-size: 16px; cursor: pointer; background: #fff; color: #1a1a1a; transition: all 0.15s; }
+     .rv-chip {
+    display: inline-flex;
+    align-items: center;
+    gap: 2px;
+    padding: 0px 12px;
+    border: 1px solid #e4e5e7;
+    border-radius: 20px;
+    justify-content: center;
+    font-size: 16px;
+    cursor: pointer;
+    background: #fff;
+    color: #1a1a1a;
+    width: 61px;
+    transition: all 0.15s;
+}
         .rv-chip:hover { border-color: #b5b5b5; }
         .rv-chip.active { background: ${Submit_Button_Color}; border-color: ${Submit_Button_Color}; color: ${TEXT_COLOR}; font-weight: 500; }
         .rv-divider { border: none; border-top: 1px solid ${Border_Color || "#e4e5e7"}; margin: 0; }
@@ -563,111 +585,75 @@ border:none;
                
               </div>
 
-              <div className="rv-icon-group">
-                <button
-                  onClick={() => setShowManuFiltering(!showManuFiltering)}
-                  className="rv-icon-btn"
-                  title="Sort"
-                >
-                  <svg
-                    xmlns="http://www.w3.org/2000/svg"
-                    width="24"
-                    height="24"
-                    viewBox="0 0 24 24"
-                    fill="none"
-                  >
-                    <path
-                      d="M3.59961 7.2C3.59961 6.9613 3.69443 6.73239 3.86321 6.5636C4.032 6.39482 4.26091 6.3 4.49961 6.3H19.4996C19.7383 6.3 19.9672 6.39482 20.136 6.5636C20.3048 6.73239 20.3996 6.9613 20.3996 7.2C20.3996 7.43869 20.3048 7.66761 20.136 7.8364C19.9672 8.00518 19.7383 8.1 19.4996 8.1H4.49961C4.26091 8.1 4.032 8.00518 3.86321 7.8364C3.69443 7.66761 3.59961 7.43869 3.59961 7.2Z"
-                      fill="#303030"
-                    />
-                    <path
-                      d="M8.09961 16.8C8.09961 16.5613 8.19443 16.3324 8.36321 16.1636C8.532 15.9948 8.76091 15.9 8.99961 15.9H14.9996C15.2383 15.9 15.4672 15.9948 15.636 16.1636C15.8048 16.3324 15.8996 16.5613 15.8996 16.8C15.8996 17.0387 15.8048 17.2676 15.636 17.4364C15.4672 17.6052 15.2383 17.7 14.9996 17.7H8.99961C8.76091 17.7 8.532 17.6052 8.36321 17.4364C8.19443 17.2676 8.09961 17.0387 8.09961 16.8Z"
-                      fill="#4A4A4A"
-                    />
-                    <path
-                      d="M6.59922 11.1C6.36052 11.1 6.13161 11.1948 5.96282 11.3636C5.79404 11.5324 5.69922 11.7613 5.69922 12C5.69922 12.2387 5.79404 12.4676 5.96282 12.6364C6.13161 12.8052 6.36052 12.9 6.59922 12.9H17.3992C17.6379 12.9 17.8668 12.8052 18.0356 12.6364C18.2044 12.4676 18.2992 12.2387 18.2992 12C18.2992 11.7613 18.2044 11.5324 18.0356 11.3636C17.8668 11.1948 17.6379 11.1 17.3992 11.1H6.59922Z"
-                      fill="#4A4A4A"
-                    />
-                  </svg>
-                </button>
+             <div className="rv-icon-group">
+  {/* Sorting */}
+  {showSorting && (
+    <button
+      onClick={() => setShowManuFiltering(!showManuFiltering)}
+      className="rv-icon-btn"
+      title="Sort"
+    >
+     <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" > <path d="M3.59961 7.2C3.59961 6.9613 3.69443 6.73239 3.86321 6.5636C4.032 6.39482 4.26091 6.3 4.49961 6.3H19.4996C19.7383 6.3 19.9672 6.39482 20.136 6.5636C20.3048 6.73239 20.3996 6.9613 20.3996 7.2C20.3996 7.43869 20.3048 7.66761 20.136 7.8364C19.9672 8.00518 19.7383 8.1 19.4996 8.1H4.49961C4.26091 8.1 4.032 8.00518 3.86321 7.8364C3.69443 7.66761 3.59961 7.43869 3.59961 7.2Z" fill="#303030" /> <path d="M8.09961 16.8C8.09961 16.5613 8.19443 16.3324 8.36321 16.1636C8.532 15.9948 8.76091 15.9 8.99961 15.9H14.9996C15.2383 15.9 15.4672 15.9948 15.636 16.1636C15.8048 16.3324 15.8996 16.5613 15.8996 16.8C15.8996 17.0387 15.8048 17.2676 15.636 17.4364C15.4672 17.6052 15.2383 17.7 14.9996 17.7H8.99961C8.76091 17.7 8.532 17.6052 8.36321 17.4364C8.19443 17.2676 8.09961 17.0387 8.09961 16.8Z" fill="#4A4A4A" /> <path d="M6.59922 11.1C6.36052 11.1 6.13161 11.1948 5.96282 11.3636C5.79404 11.5324 5.69922 11.7613 5.69922 12C5.69922 12.2387 5.79404 12.4676 5.96282 12.6364C6.13161 12.8052 6.36052 12.9 6.59922 12.9H17.3992C17.6379 12.9 17.8668 12.8052 18.0356 12.6364C18.2044 12.4676 18.2992 12.2387 18.2992 12C18.2992 11.7613 18.2044 11.5324 18.0356 11.3636C17.8668 11.1948 17.6379 11.1 17.3992 11.1H6.59922Z" fill="#4A4A4A" /> </svg>
+    </button>
+  )}
 
-                <div style={{ position: "relative", display: "inline-block" }}>
-                  <button
-                    onClick={() =>
-                      setShowFilteringPopover(!showFilteringPopover)
-                    }
-                    className="rv-icon-btn"
-                    title="Filter"
-                  >
-                    <svg
-                      xmlns="http://www.w3.org/2000/svg"
-                      width="20"
-                      height="20"
-                      viewBox="0 0 20 20"
-                      fill="none"
-                    >
-                      <path
-                        d="M9.75 0.750003C12.505 0.750003 15.205 0.982003 17.833 1.428C18.366 1.518 18.75 1.984 18.75 2.524V3.568C18.75 3.86348 18.6918 4.15606 18.5787 4.42904C18.4657 4.70203 18.2999 4.95007 18.091 5.159L12.659 10.591C12.4501 10.7999 12.2843 11.048 12.1713 11.321C12.0582 11.5939 12 11.8865 12 12.182V15.109C12.0001 15.527 11.8837 15.9367 11.664 16.2923C11.4443 16.6478 11.1299 16.9351 10.756 17.122L7.5 18.75V12.182C7.5 11.8865 7.44181 11.5939 7.32874 11.321C7.21566 11.048 7.04993 10.7999 6.841 10.591L1.409 5.159C1.20007 4.95007 1.03434 4.70203 0.921265 4.42904C0.808193 4.15606 0.749997 3.86348 0.75 3.568V2.524C0.75 1.984 1.134 1.518 1.667 1.428C4.33757 0.975856 7.04143 0.749058 9.75 0.750003Z"
-                        stroke="#4A4A4A"
-                        strokeWidth="1.5"
-                        strokeLinecap="round"
-                        strokeLinejoin="round"
-                      />
-                    </svg>
-                  </button>
+  {/* Filtering */}
+  {showFiltering && (
+    <div style={{ position: "relative", display: "inline-block" }}>
+      <button
+        onClick={() => setShowFilteringPopover(!showFilteringPopover)}
+        className="rv-icon-btn"
+        title="Filter"
+      >
+        <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 20 20" fill="none" > <path d="M9.75 0.750003C12.505 0.750003 15.205 0.982003 17.833 1.428C18.366 1.518 18.75 1.984 18.75 2.524V3.568C18.75 3.86348 18.6918 4.15606 18.5787 4.42904C18.4657 4.70203 18.2999 4.95007 18.091 5.159L12.659 10.591C12.4501 10.7999 12.2843 11.048 12.1713 11.321C12.0582 11.5939 12 11.8865 12 12.182V15.109C12.0001 15.527 11.8837 15.9367 11.664 16.2923C11.4443 16.6478 11.1299 16.9351 10.756 17.122L7.5 18.75V12.182C7.5 11.8865 7.44181 11.5939 7.32874 11.321C7.21566 11.048 7.04993 10.7999 6.841 10.591L1.409 5.159C1.20007 4.95007 1.03434 4.70203 0.921265 4.42904C0.808193 4.15606 0.749997 3.86348 0.75 3.568V2.524C0.75 1.984 1.134 1.518 1.667 1.428C4.33757 0.975856 7.04143 0.749058 9.75 0.750003Z" stroke="#4A4A4A" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" /> </svg>
+      </button>
 
-                  {showFilteringPopover && (
-                    <div
-                      style={{
-                        position: "absolute",
-                        top: "110%",
-                        right: 0,
-                        background: "#fff",
-                        border: "1px solid #e0e0e0",
-                        borderRadius: "8px",
-                        boxShadow: "0 4px 16px rgba(0,0,0,0.10)",
-                        minWidth: "180px",
-                        zIndex: 100,
-                        overflow: "hidden",
-                      }}
-                    >
-                      {[
-                        "Most recent (default)",
-                        "Highest rating",
-                        "Lowest rating",
-                        "Only pictures",
-                        "Pictures first",
-                        "Videos first",
-                      ].map((option) => (
-                        <div
-                          key={option}
-                          onClick={() => {
-                            setSelectedFilter(option);
-                            setShowFilteringPopover(false);
-                          }}
-                          style={{
-                            padding: "10px 16px",
-                            fontSize: "14px",
-                            cursor: "pointer",
-                            color: "#222",
-                            background:
-                              selectedFilter === option ? "#f0f0f0" : "#fff",
-                          }}
-                          onMouseEnter={(e) =>
-                            (e.currentTarget.style.background = "#f5f5f5")
-                          }
-                          onMouseLeave={(e) =>
-                          (e.currentTarget.style.background =
-                            selectedFilter === option ? "#f0f0f0" : "#fff")
-                          }
-                        >
-                          {option}
-                        </div>
-                      ))}
-                    </div>
-                  )}
-                </div>
-              </div>
+      {showFilteringPopover && (
+        <div
+          style={{
+            position: "absolute",
+            top: "110%",
+            right: 0,
+            background: "#fff",
+            border: "1px solid #e0e0e0",
+            borderRadius: "8px",
+            boxShadow: "0 4px 16px rgba(0,0,0,0.10)",
+            minWidth: "180px",
+            zIndex: 100,
+            overflow: "hidden",
+          }}
+        >
+          {[
+            "Most recent (default)",
+            "Highest rating",
+            "Lowest rating",
+            "Only pictures",
+            "Only videos",
+            "Most helpful",
+          ].map((option) => (
+            <div
+              key={option}
+              onClick={() => {
+                setSelectedFilter(option);
+                setShowFilteringPopover(false);
+              }}
+              style={{
+                padding: "10px 16px",
+                fontSize: "14px",
+                cursor: "pointer",
+                color: "#222",
+                background:
+                  selectedFilter === option ? "#f0f0f0" : "#fff",
+              }}
+            >
+              {option}
+            </div>
+          ))}
+        </div>
+      )}
+    </div>
+  )}
+</div>
             </div>
             <hr class="rv-divider"></hr>
             {/* Filters */}
@@ -692,7 +678,7 @@ border:none;
                             STAR_COLOR={
                               activeFilter === f ? TEXT_COLOR : STAR_COLOR
                             }
-                            size={20}
+                            size={30}
                           />
                         </>
                       )}

@@ -1,6 +1,6 @@
 import { useRef, useState } from "react";
 
-export const StarSVG = ({ filled, STAR_COLOR, size = 32 }) => (
+export const StarSVG = ({ filled, STAR_COLOR,   }) => (
  <svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 32 32" fill="none">
 <path d="M17.8042 6.5968C17.0794 5.0768 14.9194 5.0768 14.1946 6.5968L11.9706 11.256L6.85218 11.9296C5.18498 12.1504 4.51618 14.2048 5.73698 15.3632L9.48098 18.9184L8.54178 23.9936C8.23458 25.648 9.98338 26.9184 11.4618 26.1168L15.9994 23.6528L20.537 26.1168C22.0154 26.9184 23.7642 25.648 23.457 23.9936L22.5178 18.9184L26.2618 15.3632C27.481 14.2048 26.8138 12.1504 25.1466 11.9296L20.0266 11.256L17.8042 6.5968Z" fill={STAR_COLOR}/>
 </svg>
@@ -53,21 +53,38 @@ export default function ReviewSummary({
   return (
     <>
       <style>{`
-        .rv-summary-card {
-          display: grid;
-          grid-template-columns: ${activeDevice === "mobile" ? "1fr" : "198px  350px 560px minmax(0, 1fr)"};
-          gap: ${activeDevice === "mobile" ? "20px" : "60px"};
-          align-items: start;
-          padding-bottom: 28px;
-          margin-bottom: 24px;
-          border: 1px solid ${Border_Color || "#e4e5e7"};
-          box-sizing: border-box;
-          width: 100%;
-          min-width: 0;
-          padding: 40px 30px;
-          border-radius: 12px;
-          box-shadow: 0px 2px 2px #ddd;
-        }
+.rv-summary-card {
+  display: grid;
+  grid-template-columns: ${
+    activeDevice === "mobile"
+      ? "1fr"
+      : isShowStarDistribution && isShowMediaStrip
+      ? "198px 350px 630px "    
+      : isShowStarDistribution && !isShowMediaStrip
+      ? "198px 350px "          
+      : !isShowStarDistribution && isShowMediaStrip
+      ? "198px 950px minmax(0, 1fr)"             // শুধু media আছে, star নাই -> 3 column
+      : "198px max-content"                       // দুটোই নাই -> 2 column, space-between
+  };
+  gap: ${
+    activeDevice === "mobile"
+      ? "20px"
+      : isShowStarDistribution || isShowMediaStrip
+      ? isShowStarDistribution ? "30px" : "100px"
+      : "0px"
+  };
+  align-items: start;
+  padding-bottom: 28px;
+  margin-bottom: 24px;
+  border: 1px solid ${Border_Color || "#e4e5e7"};
+  box-sizing: border-box;
+  justify-content:space-between;
+  width: 100%;
+  min-width: 0;
+  padding: 40px 30px;
+  border-radius: 12px;
+  box-shadow: 0px 2px 2px #ddd;
+}
 
         .rv-avg-num {
   display: flex;
@@ -95,14 +112,14 @@ export default function ReviewSummary({
         .rv-count { font-size: 13px; color: #6d7175; margin-bottom: 16px; }
         .rv-write-btn { background: ${Submit_Button_Color}; color: ${TEXT_COLOR}; border: none; border-radius: 6px; padding: 10px 18px; font-size: 14px; font-weight: 500; cursor: pointer; white-space: nowrap; width:100%}
 
-        .rv-summary-mid { min-width: 0; padding-right: 28px; border-right: 1px solid ${Border_Color || "#e4e5e7"}; }
+        .rv-summary-mid { min-width: 0; padding-right: 28px; }
         .rv-breakdown-row { display: flex; align-items: center; gap: 10px; margin-bottom: 10px; }
         .rv-breakdown-label { font-size: 13px; color: #444; flex: 0 0 42px; }
         .rv-breakdown-track { flex: 1 1 auto; min-width: 30px; height: 7px; border-radius: 4px; background: #e9e9e9; overflow: hidden; }
         .rv-breakdown-fill { display: block; height: 100%; background: yellow; border-radius: 4px; }
         .rv-breakdown-count { font-size: 13px; color: #6d7175; flex: 0 0 22px; text-align: right; }
 
-        .rv-summary-right { min-width: 0; overflow: hidden; padding-left: 4px; }
+        .rv-summary-right { min-width: 0; overflow: hidden; padding-left: 50px;  border-left: 1px solid ${Border_Color || "#e4e5e7"};}
         .rv-media-header { display: flex; align-items: baseline; justify-content: space-between; gap: 10px; margin-bottom: 16px; }
         .rv-media-title { font-size: 15px; font-weight: 700; margin: 0; white-space: nowrap; color: #1a1a1a; }
         .rv-media-see-all { font-size: 13px; color: ${Submit_Button_Color}; text-decoration: none; cursor: pointer; flex-shrink: 0; white-space: nowrap; }
@@ -134,7 +151,8 @@ export default function ReviewSummary({
     gap: 24px;
     padding: 28px 24px;
   }
-  .rv-summary-left { grid-column: 1; grid-row: 1; }
+    
+  .rv-summary-left { grid-column: 1; grid-row: 1; border-left:none;  }
   .rv-summary-mid {
     grid-column: 2;
     grid-row: 1;
@@ -143,12 +161,14 @@ export default function ReviewSummary({
     padding-right: 0;
     padding-left: 24px;
   }
+
   .rv-summary-right {
     grid-column: 1 / -1;
     grid-row: 2;
     padding-left: 0;
     padding-top: 20px;
     border-top: 1px solid ${Border_Color || "#e4e5e7"};
+    border-left: none;
   }
 }
 @media (max-width: 640px) {
@@ -170,6 +190,7 @@ export default function ReviewSummary({
   .rv-summary-right {
     grid-column: 1;
     grid-row: 3;
+    border-lereft: none;
   }
   .rv-media-track-item { width: 84px; height: 84px; }
 }
@@ -203,6 +224,7 @@ export default function ReviewSummary({
         </div>
         {isShowStarDistribution && (
           <div className="rv-summary-mid">
+
             {ratingBreakdown.map(({ star, count, pct }) => (
               <div className="rv-breakdown-row" key={star}>
                 <span className="rv-breakdown-label">{star} star</span>

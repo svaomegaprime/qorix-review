@@ -53,6 +53,7 @@ const DEFAULT_QUICK_REVIEW_STATE = {
   writeReviewButtonText:"Write a review",
   showHelfullButton:true,
   defaultSort: "MOST_RECENT",
+  filterAndSorting: "FILTER_AND_SORT",
 };
 
 const parseBorderRadius = (value) => {
@@ -131,7 +132,9 @@ const buildQuickReviewState = (data) => {
       data.writeReviewButtonText ?? DEFAULT_QUICK_REVIEW_STATE.writeReviewButtonText
     ,
     showHelfullButton:
-      data.showHelfullButton ?? DEFAULT_QUICK_REVIEW_STATE.showHelfullButton
+      data.showHelfullButton ?? DEFAULT_QUICK_REVIEW_STATE.showHelfullButton,
+      filterAndSorting:
+        data.filterAndSorting ?? DEFAULT_QUICK_REVIEW_STATE.filterAndSorting
   };
 };
 
@@ -266,6 +269,7 @@ export default function Index(VALUES = {}) {
     writeReviewButtonText: quickReview.writeReviewButtonText,
     reviewPerPage: Number(quickReview.reviewPerPage),
     defaultSort: quickReview.defaultSort,
+    filterAndSorting: quickReview.filterAndSorting,
   };
   const fetcher = useFetcher();
   useAdminFetcherToast(fetcher);
@@ -837,25 +841,67 @@ export default function Index(VALUES = {}) {
                     </s-select>
                   </s-stack>
 
-                  <s-stack border="base" borderRadius="base" padding="small">
+              <s-stack border="base" borderRadius="base" padding="small">
+  <s-select
+    label="Default sort"
+    value={quickReview.defaultSort}
+    onchange={(e) =>
+      setQuickReview((prev) => ({
+        ...prev,
+        defaultSort: e.target.value,
+      }))
+    }
+  >
+    <s-option value="MOST_RECENT">
+      Most recent (default)
+    </s-option>
+
+    <s-option value="HIGHEST_RATING">
+      Highest rating
+    </s-option>
+
+    <s-option value="LOWEST_RATING">
+      Lowest rating
+    </s-option>
+
+    <s-option value="ONLY_PICTURES">
+      Only pictures
+    </s-option>
+
+    <s-option value="ONLY_VIDEOS">
+      Only videos
+    </s-option>
+
+    <s-option value="VIDEOS_FIRST">
+      Videos first
+    </s-option>
+
+        <s-option value="MOST_HELPFUL">
+      Most helpful
+    </s-option>
+
+  </s-select>
+</s-stack>
+
+                    <s-stack border="base" borderRadius="base" padding="small">
                     <s-select
-                      label="Default sort"
-                      value={quickReview.defaultSort}
+                      label="Filter & sorting"
+                      value={quickReview.filterAndSorting}
                       onchange={(e) =>
                         setQuickReview((prev) => ({
                           ...prev,
-                          defaultSort: e.target.value,
+                          filterAndSorting: e.target.value,
                         }))
                       }
                     >
-                      <s-option value="ALL">All review</s-option>
-                      <s-option value="MOST_RECENT">
-                        Most recent (default)
+                 
+                      <s-option value="FILTER_AND_SORTING">
+                       Filter & sorting both
                       </s-option>
-                      <s-option value="HIGHEST_RATING">Highest rating</s-option>
-                      <s-option value="ONLY_PICTURES">Only pictures</s-option>
-                      <s-option value="ONLY_VIDEO">Only video</s-option>
-                      <s-option value="MOST_HELPFUL">Most helpful</s-option>
+                      <s-option value="FILTER_ONLY">Filter only</s-option>
+                      <s-option value="SORTING_ONLY">Sorting only</s-option>
+                      <s-option value="NONE">None</s-option>
+                     
                     </s-select>
                   </s-stack>
 
