@@ -30,6 +30,10 @@ const COLOR_PICKERS_ELEMENTS = [
     key: "Border_Color",
     label: "Border color",
   },
+  {
+    key: "FILTER_CHIP_COLOR",
+    label: "Filter chip (active)",
+  },
 ];
 
 const DEFAULT_COLOR_VALUES = {
@@ -54,7 +58,7 @@ export default function Index({ VALUES = {}, handleChange }) {
     showHeader: true,
     headerStyle: "center", // default active
     eyebrowLabel: "CUSTOMER REVIEWS",
-    heading: "Real reviews from real people",
+    heading: "Reviews from people",
     subheading: "Watch and hear what our customers have to say.",
     reviewStats: "Show review count & verified badge",
 

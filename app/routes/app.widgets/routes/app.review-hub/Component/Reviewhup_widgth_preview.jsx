@@ -1,6 +1,9 @@
 import React, { useState } from "react";
 import ReaviewHeader from "../../../components/elements/WidgetsHeader";
 import reviewHubReviews from "../data/reviewHubReviews.json";
+import ReviewSummary, {
+  StarSVG,
+} from "../../../components/elements/ReviewSummary";
 
 export default function ReviewHubWidget({ settings, activeDevice }) {
   // layout: "3 column grid",
@@ -42,8 +45,7 @@ export default function ReviewHubWidget({ settings, activeDevice }) {
     "Highest rating",
     "Lowest rating",
     "Only pictures",
-    "Pictures first",
-    "Videos first",
+    "Only Videos",
     "Most helpful",
   ];
   const visibleReviewCount =
@@ -144,7 +146,7 @@ overflow: auto;
         .qr-reviewer-name {
           font-size: 16px;
           font-weight: 600;
-          color: var(--qr-text-primary);
+          color: ${TEXT_COLOR};
           letter-spacing: -0.01em;
         }
 
@@ -156,7 +158,7 @@ overflow: auto;
 
         .qr-reviewer-time {
           font-size: 14px;
-          color: var(--qr-text-muted);
+          color: ${TEXT_COLOR};
         }
 
         .qr-card-stars {
@@ -167,7 +169,7 @@ overflow: auto;
 
         .qr-review-text {
           font-size: 15px;
-          color: var(--qr-text-secondary);
+          color:${TEXT_COLOR};
           line-height: 1.45;
           font-weight: 400;
         }
@@ -205,7 +207,7 @@ overflow: auto;
           right: 10px;
           bottom: 10px;
           width: 26px;
-          height: 26px;
+          height: 27px;
           border-radius: 50%;
           border: 1px solid rgba(0, 0, 0, 0.12);
           background: rgba(255, 255, 255, 0.92);
@@ -228,8 +230,8 @@ overflow: auto;
           display: flex;
           align-items: center;
           justify-content: center;
-          min-width: 34px;
-          height: 28px;
+          min-width: 18px;
+          height: 22px;
           padding: 0 8px;
           border-radius: 7px;
           font-size: 14px;
@@ -416,8 +418,8 @@ overflow: auto;
           background: #ffffff;
           border: 1px solid #e0e0e0;
           border-radius: 20px;
-          padding: 6px 14px;
-          font-size: 13.5px;
+     
+          font-size: 20px;
           color: #444444;
           cursor: pointer;
           font-weight: 400;
@@ -594,20 +596,20 @@ display: block;
                     return (
                       <button
                         key={rate}
+                         style={{
+      padding: rate === "All" ? "7px 25px" : "3px 14px",
+    }}
                         onClick={() => setActiveRating(rate)}
                         className={`tb-badge ${isActive ? "active-rating-green" : ""}`}
                       >
                         {rate}
                         {typeof rate === "number" && (
-                          <svg
-                            width="12"
-                            height="12"
-                            viewBox="0 0 24 24"
-                            fill={isActive ? "#ffffff" : "#ff9c00"}
-                            xmlns="http://www.w3.org/2000/svg"
-                          >
-                            <path d="M12 17.27L18.18 21l-1.64-7.03L22 9.24l-7.19-.61L12 2 9.19 8.63 2 9.24l5.46 4.73L5.82 21z" />
-                          </svg>
+
+                           <StarSVG
+                    STAR_COLOR={isActive ? "#ffffff" : "#ff9c00"}
+                    size={24}
+                  />
+                         
                         )}
                       </button>
                     );
@@ -696,7 +698,11 @@ display: block;
                           alt={media.alt}
                         />
                         {media.type === "video" && (
-                          <span className="qr-gallery-play">▶</span>
+                          <span className="qr-gallery-play">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="11" height="12" viewBox="0 0 11 12" fill="none">
+<path fill-rule="evenodd" clip-rule="evenodd" d="M9.65428 4.35495C10.767 4.99762 10.767 6.60332 9.65428 7.24504L2.50296 11.3737C1.39022 12.0164 0 11.2135 0 9.92916V1.67178C0 0.386447 1.39022 -0.416407 2.50296 0.226257L9.65428 4.35495ZM8.93915 6.00643C8.97538 5.9855 9.00547 5.95541 9.02639 5.91918C9.04731 5.88294 9.05832 5.84183 9.05832 5.79999C9.05832 5.75815 9.04731 5.71705 9.02639 5.68081C9.00547 5.64457 8.97538 5.61448 8.93915 5.59356L1.78783 1.46487C1.75156 1.44392 1.71041 1.43291 1.66852 1.43293C1.62664 1.43295 1.5855 1.44401 1.54925 1.46498C1.513 1.48596 1.48291 1.51612 1.46202 1.55242C1.44113 1.58873 1.43018 1.62989 1.43026 1.67178V9.92916C1.43035 9.97097 1.44142 10.012 1.46238 10.0482C1.48334 10.0844 1.51344 10.1144 1.54966 10.1352C1.58588 10.1561 1.62696 10.1671 1.66876 10.1671C1.71056 10.167 1.75163 10.156 1.78783 10.1351L8.93915 6.00643Z" fill="#303030"/>
+</svg>
+                          </span>
                         )}
                         {mediaIndex === 1 && extraMediaCount > 0 && (
                           <div className="qr-gallery-overlay">
