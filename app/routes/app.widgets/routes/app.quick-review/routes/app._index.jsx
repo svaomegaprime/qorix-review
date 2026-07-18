@@ -27,7 +27,7 @@ const DEFAULT_COLOR_VALUES = {
 
 const DEFAULT_QUICK_REVIEW_STATE = {
   name: true,
-  email: false,
+  email: true,
   photo: true,
   video: true,
   formTitle: "How was your experience?",
