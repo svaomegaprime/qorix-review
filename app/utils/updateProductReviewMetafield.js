@@ -1,13 +1,12 @@
 import prisma from "../db.server";
+import { toProductGid } from "./shopifyGid.js";
 export async function updateProductReviewMetafields(admin, productId, storeId) {
   if (!admin) throw new Error("admin is required");
   if (!productId) throw new Error("productId is required");
   if (!storeId) throw new Error("storeId is required");
 
   try {
-    const productGid = String(productId).startsWith("gid://shopify/Product/")
-      ? String(productId)
-      : `gid://shopify/Product/${productId}`;
+    const productGid = toProductGid(productId);
 
     const reviews = await prisma.review.findMany({
       where: {

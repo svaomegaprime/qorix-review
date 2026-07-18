@@ -2,18 +2,21 @@ import Text from "../../../components/essentials/elements/Text";
 import CustomSection from "../../../components/essentials/CustomSection";
 import CustomGridSection from "../../../components/essentials/CustomGridSection";
 import { DEFAULT_PUBLISHING_MODERATION } from "../data/defaultData";
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import { handleStateUpdate } from "../utils/client/utils.client";
 import { useFetcher, useLoaderData } from "react-router";
 import { authenticate } from "../../../shopify.server";
 import prisma from "../../../db.server";
 
-import { getStoreData } from "../../../utils/getStoreData";
+import { adminErrorResponse } from "../../../utils/adminError.server";
+import { useAdminFetcherToast } from "../../../utils/useAdminFetcherToast";
+import SaveBar from "../../../components/essentials/SaveBar";
+import { useSaveBarForm } from "../../../hooks/useSaveBarForm.js";
+import { requireAdminContext } from "../../../services/adminContext.server.js";
 
 export async function loader({ request }) {
   try {
-    const { admin, session } = await authenticate.admin(request);
-    const { id } = await getStoreData(admin);
+    const { storeId: id } = await requireAdminContext(request);
 
     const storeSettings = await prisma.storeSettings.findFirst({
       where: {
@@ -27,101 +30,61 @@ export async function loader({ request }) {
 
     return { storeSettings };
   } catch (error) {
-    console.log(error);
-
-    return null;
+    return adminErrorResponse(error);
   }
 }
 
 export async function action({ request }) {
   try {
-    const { admin, session } = await authenticate.admin(request);
+    await authenticate.admin(request);
 
     const data = await request.json();
-    // const { id } = await getStoreData(admin);
-
-    const publishingModerationData = await prisma.publishingModeration.update({
+    await prisma.publishingModeration.update({
       where: {
         id: data.id,
       },
       data,
     });
-
-    console.log(
-      "[store settings]: requestSchedulingData data",
-      publishingModerationData,
-    );
-
-    // console.log("[store settings:]requestScheduling", res);
-
     return {
       ok: true,
       message: "upserted PublishingModerationData",
     };
   } catch (error) {
-    console.log(error);
+    return adminErrorResponse(error);
   }
 }
 
 export default function PublishingModeration() {
   const { storeSettings } = useLoaderData();
   const fetcher = useFetcher();
+  useAdminFetcherToast(fetcher);
 
   const [publishingModeration, setPublishingModeration] = useState(
     storeSettings.publishingModeration ?? DEFAULT_PUBLISHING_MODERATION,
   );
 
-  useEffect(() => {
-    const hasChanged =
-      JSON.stringify(publishingModeration) !==
-      JSON.stringify(storeSettings?.publishingModeration);
-
-    if (hasChanged) {
-      shopify.saveBar.show("leave-confirm-save-bar");
-    } else {
-      shopify.saveBar.hide("leave-confirm-save-bar");
-    }
-  }, [publishingModeration]);
-
-  console.log("DEFAULT_REQUEST_SCHEDULING:", publishingModeration);
-
-  function handleSave() {
-    fetcher.submit(publishingModeration, {
-      method: "POST",
-      encType: "application/json",
-    });
-  }
-
-  console.log("loading:", fetcher.state);
-  useEffect(() => {
-    if (fetcher.state === "idle" && fetcher.data) {
-      console.log("Response:", fetcher.data);
-
-      // Save successful
-      shopify.saveBar.hide("leave-confirm-save-bar");
-    }
-  }, [fetcher.state, fetcher.data]);
   const [formResetKey, setFormResetKey] = useState(0);
 
-  function handleDiscard() {
-    setPublishingModeration(
+  const { handleSave, handleDiscard } = useSaveBarForm({
+    value: publishingModeration,
+    initialValue:
       storeSettings.publishingModeration ?? DEFAULT_PUBLISHING_MODERATION,
-    );
-    setFormResetKey((pre) => pre + 1); // ✅ এটা add করো
-    shopify.saveBar.hide("leave-confirm-save-bar");
-  }
+    fetcher,
+    onSave: (value) =>
+      fetcher.submit(value, { method: "POST", encType: "application/json" }),
+    onDiscard: (savedValue) => {
+      setPublishingModeration(savedValue);
+      setFormResetKey((previous) => previous + 1);
+    },
+  });
 
   return (
     <>
-      
-      <ui-save-bar id="leave-confirm-save-bar">
-        <button onClick={handleSave} variant="primary" id="save-button">
-          Save
-        </button>
-        <button onClick={handleDiscard} id="discard-button">
-          Discard
-        </button>
-      </ui-save-bar>
+      <SaveBar
+        onSave={handleSave}
+        onDiscard={handleDiscard}
+        saving={fetcher.state !== "idle"}
+      />
       <s-stack
         paddingBlockEnd="base"
         direction="inline"
@@ -152,7 +115,12 @@ export default function PublishingModeration() {
                   )
                 }
               >
-                <s-choice value="AUTO_PUBLISH" selected={publishingModeration.autoPublishRules == "AUTO_PUBLISH"}>
+                <s-choice
+                  value="AUTO_PUBLISH"
+                  selected={
+                    publishingModeration.autoPublishRules == "AUTO_PUBLISH"
+                  }
+                >
                   Auto-publish all reviews
                   <s-text slot="details">
                     Every submitted review goes live immediately — maximum
@@ -160,14 +128,24 @@ export default function PublishingModeration() {
                   </s-text>
                 </s-choice>
 
-                <s-choice value="VERIFIED_ONLY" selected={publishingModeration.autoPublishRules == "VERIFIED_ONLY"}>
+                <s-choice
+                  value="VERIFIED_ONLY"
+                  selected={
+                    publishingModeration.autoPublishRules == "VERIFIED_ONLY"
+                  }
+                >
                   Auto-publish verified purchases only
                   <s-text slot="details">
                     Only reviews from confirmed buyers go live. Unverified
                     reviews are held for manual approval.
                   </s-text>
                 </s-choice>
-                <s-choice value="MANUAL_PUBLISH" selected={publishingModeration.autoPublishRules == "MANUAL_PUBLISH"}>
+                <s-choice
+                  value="MANUAL_PUBLISH"
+                  selected={
+                    publishingModeration.autoPublishRules == "MANUAL_PUBLISH"
+                  }
+                >
                   Manual approval for all reviews
                   <s-text slot="details">
                     Every review requires your approval before it appears on

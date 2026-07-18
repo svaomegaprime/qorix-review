@@ -12,26 +12,27 @@ import ResetToDefaults from "../../../components/elements/ResetToDefaults";
 // import ReviewReelWidget from "../component/reviewReelPreview";
  import Range from "../../../components/elements/Range";
 import ReviewReelPreeview from "../component/reviewReelPreview";    
-const COLOR_PICKERS_ELEMENTS = [
+const COLOR_PICKERS_ELEMENTS = [  
   {
-    key: "STAR_COLOR",
-    label: "Star color",
+    key: "CARD_BACKGROUND",
+    label: "Card background",
+  },
+  {
+    key: "BADGE_COLOR",
+    label: "Badge color",
   },
 
   {
     key: "ACTIVE_DOT_COLOR",
     label: "Active dot",
   },
-  {
-    key: "OVERLAY_TINT_COLOR",
-    label: "Overlay tint",
-  },
+
 ];
 
 const DEFAULT_COLOR_VALUES = {
-  STAR_COLOR: "#F59E0B",
+  BADGE_COLOR: "#34C759",
   ACTIVE_DOT_COLOR: "#34C759",
-  OVERLAY_TINT_COLOR: "#1A1A1A",
+  CARD_BACKGROUND: "#FFF",
 };
 
 const DEFAULT_VALUES_VIDEO_STACK = {
@@ -55,15 +56,17 @@ const DEFAULT_VALUES_VIDEO_STACK = {
   showAutoPlay: true,
   showNavigationDots: true,
   showArrowControls: true,
-  autoplaySpeed:4,
+  autoplaySpeed: 4,
   cardsVisible: 3,
   fiteringMinStart: "3 star and above",
 
   // color piker
-  startColor: DEFAULT_COLOR_VALUES.STAR_COLOR,
+  startColor: DEFAULT_COLOR_VALUES.BADGE_COLOR,
   activeDotColor: DEFAULT_COLOR_VALUES.ACTIVE_DOT_COLOR,
-  overlayTintColor: DEFAULT_COLOR_VALUES.OVERLAY_TINT_COLOR,
+  cardBackgorud: DEFAULT_COLOR_VALUES.CARD_BACKGROUND,
 };
+
+console.log("DEFAULT_VALUES_VIDEO_STACK", DEFAULT_VALUES_VIDEO_STACK);
 export default function Index() {
   // Start----Default CSR loading state checking for navigation
   const navigation = useNavigation();
@@ -75,15 +78,15 @@ export default function Index() {
   const [settings, setSettings] = useState(DEFAULT_VALUES_VIDEO_STACK);
 
   const colorValues = {
-    STAR_COLOR: settings.startColor,
+    BADGE_COLOR: settings.startColor,
     ACTIVE_DOT_COLOR: settings.activeDotColor,
-    OVERLAY_TINT_COLOR: settings.overlayTintColor,
+    CARD_BACKGROUND: settings.cardBackgorud,
   };
 
   const COLOR_KEY_MAP = {
-    STAR_COLOR: "startColor", // STAR_COLOR → startColor
+    BADGE_COLOR: "startColor", // BADGE_COLOR → startColor
     ACTIVE_DOT_COLOR: "activeDotColor", // ACTIVE_DOT_COLOR → activeDotColor
-    OVERLAY_TINT_COLOR: "overlayTintColor", // OVERLAY_TINT_COLOR → overlayTintColor
+    CARD_BACKGROUND: "cardBackgorud", // CARD_BACKGROUND → ccardBackgorud
   };
 
   console.log("colorValues", colorValues);
@@ -98,9 +101,9 @@ export default function Index() {
   const handleResetToDefaults = () => {
     setSettings((prev) => ({
       ...prev,
-      startColor: DEFAULT_COLOR_VALUES.STAR_COLOR,
+      startColor: DEFAULT_COLOR_VALUES.BADGE_COLOR,
       activeDotColor: DEFAULT_COLOR_VALUES.ACTIVE_DOT_COLOR,
-      overlayTintColor: DEFAULT_COLOR_VALUES.OVERLAY_TINT_COLOR,
+      cardBackgorud: DEFAULT_COLOR_VALUES.CARD_BACKGROUND,
     }));
     setResetKey((prev) => prev + 1);
 
@@ -339,7 +342,7 @@ export default function Index() {
                     label="Cards visible"
                     value={settings.cardsVisible}
                     onChange={(e) =>
-                      handleSettingChange("cardsVisible", e.target.value)
+                      handleSettingChange("cardsVisible", Number(e.target.value))
                     }
                   >
                     <s-option value="3">3</s-option>
@@ -356,6 +359,7 @@ export default function Index() {
                 >
                   <s-select
                     label="Filter min stars"
+                    details="This option isn't shown in the preview. It will take effect on your live review widget once customers submit reviews."
                     value={settings.fiteringMinStart}
                     onChange={(e) =>
                       handleSettingChange("fiteringMinStart", e.target.value)
@@ -491,7 +495,7 @@ export default function Index() {
             </s-grid>
           </div>
           {/* End----Preview Header */}
-        <ReviewReelPreeview/>
+        <ReviewReelPreeview settings={settings} activeDevice={activeDevice} />
           {/* Start----Preview Content */}
           {/* End----Preview Content */}
         </div>

@@ -13,6 +13,8 @@ import { authenticate } from "../../../../../shopify.server";
 import prisma from "../../../../../db.server";
 import { getStoreData } from "../../../../../utils/getStoreData";
 import { setAppMetafield } from "../../../../../utils/appMetafields.server";
+import { adminErrorResponse } from "../../../../../utils/adminError.server";
+import { useAdminFetcherToast } from "../../../../../utils/useAdminFetcherToast";
 
 const DEFAULT_COLOR_VALUES = {
   STAR_COLOR: "#f59e0b",
@@ -116,65 +118,60 @@ const buildQuickReviewState = (data) => {
 const cloneQuickReviewState = (state) => JSON.parse(JSON.stringify(state));
 
 export async function loader({ request }) {
-  const { admin, session } = await authenticate.admin(request);
-  const { id } = await getStoreData(admin);
+  try {
+    const { admin, session } = await authenticate.admin(request);
+    const { id } = await getStoreData(admin);
 
-  const res = await prisma.quickReviewWidget.findUnique({
-    where: {
-      storeId: id,
-    },
-  });
+    const res = await prisma.quickReviewWidget.findUnique({
+      where: {
+        storeId: id,
+      },
+    });
 
-  console.log("[quick-review][loader] storeId", id, "widget", res);
-
-  return res;
+    return res;
+  } catch (error) {
+    return adminErrorResponse(error);
+  }
 }
 export async function action({ request }) {
-  const { admin, session } = await authenticate.admin(request);
+  try {
+    const { admin, session } = await authenticate.admin(request);
 
-  const data = await request.json();
-  const { id } = await getStoreData(admin);
+    const data = await request.json();
+    const { id } = await getStoreData(admin);
 
-  console.log("[quick-review][action] incoming payload", data);
-
-  const res = await prisma.quickReviewWidget.upsert({
-    where: {
-      storeId: id,
-    },
-    update: {
-      ...data,
-    },
-    create: {
-      ...data,
-      store: {
-        connect: {
-          storeGID: id,
+    const res = await prisma.quickReviewWidget.upsert({
+      where: {
+        storeId: id,
+      },
+      update: {
+        ...data,
+      },
+      create: {
+        ...data,
+        store: {
+          connect: {
+            storeGID: id,
+          },
         },
       },
-    },
-  });
+    });
 
-  console.log("[quick-review][action] prisma upsert result", res);
+    const metafieldResult = await setAppMetafield(admin, "quick_review", res);
 
-  const metafieldResult = await setAppMetafield(
-    admin,
-    "quick_review",
-    res,
-  );
-
-  console.log("[quick-review][action] metafield save result", metafieldResult);
-
-
-  return {
-    ok: true,
-    widget: res,
-    metafieldResult,
-  };
+    return {
+      ok: true,
+      widget: res,
+      metafieldResult,
+    };
+  } catch (error) {
+    return adminErrorResponse(error);
+  }
 }
 
 export default function Index(VALUES = {}) {
   const loaderData = useLoaderData();
-  console.log("data get value", loaderData);
+
   const COLOR_PICKERS_ELEMENTS = [
     {
       key: "STAR_COLOR",
@@ -241,6 +238,7 @@ export default function Index(VALUES = {}) {
     defaultSort: quickReview.defaultSort,
   };
   const fetcher = useFetcher();
+  useAdminFetcherToast(fetcher);
   const initQuickReviewRef = useRef(null);
   const savePendingRef = useRef(false);
 
@@ -272,7 +270,6 @@ export default function Index(VALUES = {}) {
     });
   };
 
-  console.log("quickReview", quickReview);
   // Start----Handlers for hide app window
   const handleHideAppWindow = () => {
     requestAppWindowClose("quick_review");
@@ -294,7 +291,8 @@ export default function Index(VALUES = {}) {
     if (
       !savePendingRef.current ||
       fetcher.state !== "idle" ||
-      fetcher.data === undefined
+      fetcher.data === undefined ||
+      fetcher.data?.ok === false
     ) {
       return;
     }
@@ -713,11 +711,8 @@ export default function Index(VALUES = {}) {
                           defaultSort: e.target.value,
                         }))
                       }
-
                     >
-                      <s-option value="ALL">
-                        All review
-                      </s-option>
+                      <s-option value="ALL">All review</s-option>
                       <s-option value="MOST_RECENT">
                         Most recent (default)
                       </s-option>

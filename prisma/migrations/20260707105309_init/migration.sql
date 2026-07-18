@@ -1,4 +1,10 @@
 -- CreateEnum
+CREATE TYPE "ReviewCheckStatus" AS ENUM ('SENT', 'OPENED', 'PENDING', 'REVIEWED', 'FAILED');
+
+-- CreateEnum
+CREATE TYPE "RequestType" AS ENUM ('AUTOMATIC', 'MANUAL', 'REMINDER');
+
+-- CreateEnum
 CREATE TYPE "PlanType" AS ENUM ('FREE', 'BASIC', 'PRO');
 
 -- CreateEnum
@@ -20,18 +26,39 @@ CREATE TYPE "AttachmentType" AS ENUM ('VIDEO', 'IMAGE');
 CREATE TYPE "AutoPublishRules" AS ENUM ('AUTO_PUBLISH', 'VERIFIED_ONLY', 'MANUAL_PUBLISH');
 
 -- CreateTable
+CREATE TABLE "Order" (
+    "id" UUID NOT NULL,
+    "storeId" TEXT NOT NULL,
+    "orderId" TEXT NOT NULL,
+    "fulfillmentStatus" TEXT NOT NULL,
+    "paymentStatus" TEXT NOT NULL,
+    "userEmail" TEXT,
+    "projuctJson" JSONB,
+    "reviewCheckStatus" "ReviewCheckStatus" NOT NULL DEFAULT 'PENDING',
+    "requestType" "RequestType" NOT NULL DEFAULT 'AUTOMATIC',
+    "totalPrice" TEXT,
+    "currency" TEXT,
+    "redisBullmqJobId" JSONB,
+    "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    "updatedAt" TIMESTAMP(3) NOT NULL,
+
+    CONSTRAINT "Order_pkey" PRIMARY KEY ("id")
+);
+
+-- CreateTable
 CREATE TABLE "Review" (
     "id" UUID NOT NULL,
     "storeId" TEXT NOT NULL,
     "productId" TEXT,
     "productHandle" TEXT,
+    "productTitle" TEXT,
     "reviewerName" TEXT,
     "reviewerEmail" TEXT,
     "reviewerPhone" TEXT,
-    "rating" INTEGER NOT NULL,
+    "rating" INTEGER NOT NULL DEFAULT 0,
     "title" TEXT,
     "body" TEXT,
-    "status" "ReviewStatus" NOT NULL,
+    "status" "ReviewStatus" NOT NULL DEFAULT 'PENDING',
     "source" "ReviewSource" NOT NULL,
     "isVerified" BOOLEAN NOT NULL DEFAULT false,
     "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
@@ -63,6 +90,17 @@ CREATE TABLE "Attachment" (
     "updatedAt" TIMESTAMP(3) NOT NULL,
 
     CONSTRAINT "Attachment_pkey" PRIMARY KEY ("id")
+);
+
+-- CreateTable
+CREATE TABLE "Reply" (
+    "id" UUID NOT NULL,
+    "body" TEXT,
+    "reviewId" UUID,
+    "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    "updatedAt" TIMESTAMP(3) NOT NULL,
+
+    CONSTRAINT "Reply_pkey" PRIMARY KEY ("id")
 );
 
 -- CreateTable
@@ -106,6 +144,9 @@ CREATE TABLE "EmailSettings" (
     "reminderSubjectLine" TEXT,
     "reminderEmailBody" TEXT,
     "reminderEmailButton" TEXT,
+    "replyEmailSubjectLine" TEXT,
+    "replyEmailBody" TEXT,
+    "replyEmailButton" TEXT,
     "isConfirmationReviewEmail" BOOLEAN NOT NULL DEFAULT true,
     "confirmationEmailSubject" TEXT,
     "confirmationEmailBody" TEXT,
@@ -161,7 +202,7 @@ CREATE TABLE "BrandingSettings" (
     "storeWebsiteURL" TEXT NOT NULL DEFAULT 'https://www.glowstore.com',
     "storeTagline" TEXT NOT NULL DEFAULT 'Skincare that makes you glow',
     "storeReplyToEmail" TEXT NOT NULL DEFAULT 'hello@glowstore.com',
-    "storeLogo" TEXT NOT NULL DEFAULT '',
+    "storeLogo" TEXT NOT NULL DEFAULT 'https://www.glowstore.com',
     "storeLogoPosition" TEXT NOT NULL DEFAULT 'LEFT',
     "emailPrimaryButtonColor" TEXT NOT NULL DEFAULT '#FE0606',
     "emailButtonTextColor" TEXT NOT NULL DEFAULT '#FFFFFF',
@@ -186,21 +227,11 @@ CREATE TABLE "AdminNotification" (
     "isReviewApprovalNotify" BOOLEAN NOT NULL DEFAULT true,
     "isLowStarReviewNotify" BOOLEAN NOT NULL DEFAULT true,
     "isWeeklySummaryNotify" BOOLEAN NOT NULL DEFAULT true,
+    "notificationEmailAddress" JSONB NOT NULL,
     "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
     "updatedAt" TIMESTAMP(3) NOT NULL,
 
     CONSTRAINT "AdminNotification_pkey" PRIMARY KEY ("id")
-);
-
--- CreateTable
-CREATE TABLE "AdminNotificationEmail" (
-    "id" UUID NOT NULL,
-    "adminNotificationId" UUID NOT NULL,
-    "email" TEXT NOT NULL,
-    "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
-    "updatedAt" TIMESTAMP(3) NOT NULL,
-
-    CONSTRAINT "AdminNotificationEmail_pkey" PRIMARY KEY ("id")
 );
 
 -- CreateTable
@@ -217,29 +248,30 @@ CREATE TABLE "TrustBarWidget" (
 CREATE TABLE "QuickReviewWidget" (
     "id" UUID NOT NULL,
     "storeId" TEXT NOT NULL,
-    "name" BOOLEAN NOT NULL DEFAULT true,
-    "email" BOOLEAN NOT NULL DEFAULT false,
-    "photo" BOOLEAN NOT NULL DEFAULT true,
-    "video" BOOLEAN NOT NULL DEFAULT true,
+    "isShowNameField" BOOLEAN NOT NULL DEFAULT true,
+    "isShowEmailField" BOOLEAN NOT NULL DEFAULT false,
+    "isPhotoUpload" BOOLEAN NOT NULL DEFAULT true,
+    "isVideoUpload" BOOLEAN NOT NULL DEFAULT true,
     "formTitle" TEXT NOT NULL DEFAULT 'How was your experience?',
     "formSubtitle" TEXT NOT NULL DEFAULT 'Your feedback helps others',
     "submitButtonText" TEXT NOT NULL DEFAULT 'Submit review',
     "successMessageTitle" TEXT NOT NULL DEFAULT 'Review submitted!',
     "successButtonText" TEXT NOT NULL DEFAULT 'Continue Shopping',
     "successMessage" TEXT NOT NULL DEFAULT 'Thank you for your review. It has been submitted successfully.',
-    "primaryColor" TEXT NOT NULL DEFAULT '#000000',
-    "secondaryColor" TEXT NOT NULL DEFAULT '#ffffff',
-    "backgroundColor" TEXT NOT NULL DEFAULT '#f5f5f5',
+    "starColor" TEXT,
+    "buttonBackgroundColor" TEXT,
+    "buttonTextColor" TEXT,
+    "verifiedBadgeColor" TEXT,
     "borderRadius" TEXT NOT NULL DEFAULT '8px',
-    "showReviewerName" BOOLEAN NOT NULL DEFAULT true,
-    "showReviewerImage" BOOLEAN NOT NULL DEFAULT true,
-    "showReviewerVideo" BOOLEAN NOT NULL DEFAULT true,
-    "showProductName" BOOLEAN NOT NULL DEFAULT false,
-    "showVerifiedBadge" BOOLEAN NOT NULL DEFAULT true,
-    "showReviewDate" BOOLEAN NOT NULL DEFAULT true,
-    "showRatingFilter" BOOLEAN NOT NULL DEFAULT true,
+    "isShowReviewerName" BOOLEAN NOT NULL DEFAULT true,
+    "isShowReviewerImage" BOOLEAN NOT NULL DEFAULT true,
+    "isShowReviewerVideo" BOOLEAN NOT NULL DEFAULT true,
+    "isShowProductName" BOOLEAN NOT NULL DEFAULT false,
+    "isShowVerifiedBadge" BOOLEAN NOT NULL DEFAULT true,
+    "isShowReviewDate" BOOLEAN NOT NULL DEFAULT true,
+    "isShowRatingFilter" BOOLEAN NOT NULL DEFAULT true,
     "reviewPerPage" INTEGER NOT NULL DEFAULT 10,
-    "defaultSort" TEXT NOT NULL DEFAULT 'Most recent',
+    "defaultSort" TEXT NOT NULL DEFAULT 'MOST_RECENT',
     "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
     "updatedAt" TIMESTAMP(3) NOT NULL,
 
@@ -299,10 +331,7 @@ CREATE TABLE "Subscription" (
 );
 
 -- CreateIndex
-CREATE UNIQUE INDEX "Review_reviewerEmail_key" ON "Review"("reviewerEmail");
-
--- CreateIndex
-CREATE UNIQUE INDEX "Review_reviewerPhone_key" ON "Review"("reviewerPhone");
+CREATE UNIQUE INDEX "Order_storeId_orderId_key" ON "Order"("storeId", "orderId");
 
 -- CreateIndex
 CREATE INDEX "Review_storeId_idx" ON "Review"("storeId");
@@ -323,13 +352,31 @@ CREATE INDEX "Review_reviewerEmail_idx" ON "Review"("reviewerEmail");
 CREATE INDEX "Review_createdAt_idx" ON "Review"("createdAt");
 
 -- CreateIndex
+CREATE UNIQUE INDEX "Review_storeId_productId_reviewerEmail_key" ON "Review"("storeId", "productId", "reviewerEmail");
+
+-- CreateIndex
+CREATE UNIQUE INDEX "Reply_reviewId_key" ON "Reply"("reviewId");
+
+-- CreateIndex
 CREATE UNIQUE INDEX "StoreSettings_storeId_key" ON "StoreSettings"("storeId");
 
 -- CreateIndex
 CREATE UNIQUE INDEX "RequestScheduling_storeSettingsId_key" ON "RequestScheduling"("storeSettingsId");
 
 -- CreateIndex
-CREATE UNIQUE INDEX "AdminNotificationEmail_email_key" ON "AdminNotificationEmail"("email");
+CREATE UNIQUE INDEX "EmailSettings_storeSettingsId_key" ON "EmailSettings"("storeSettingsId");
+
+-- CreateIndex
+CREATE UNIQUE INDEX "PublishingModeration_storeSettingsId_key" ON "PublishingModeration"("storeSettingsId");
+
+-- CreateIndex
+CREATE UNIQUE INDEX "WidgetsSettings_storeSettingsId_key" ON "WidgetsSettings"("storeSettingsId");
+
+-- CreateIndex
+CREATE UNIQUE INDEX "BrandingSettings_storeSettingsId_key" ON "BrandingSettings"("storeSettingsId");
+
+-- CreateIndex
+CREATE UNIQUE INDEX "AdminNotification_storeSettingsId_key" ON "AdminNotification"("storeSettingsId");
 
 -- CreateIndex
 CREATE UNIQUE INDEX "TrustBarWidget_storeId_key" ON "TrustBarWidget"("storeId");
@@ -347,13 +394,19 @@ CREATE UNIQUE INDEX "Subscription_storeId_key" ON "Subscription"("storeId");
 CREATE INDEX "Subscription_plan_idx" ON "Subscription"("plan");
 
 -- AddForeignKey
+ALTER TABLE "Order" ADD CONSTRAINT "Order_storeId_fkey" FOREIGN KEY ("storeId") REFERENCES "Store"("storeGID") ON DELETE CASCADE ON UPDATE CASCADE;
+
+-- AddForeignKey
 ALTER TABLE "Review" ADD CONSTRAINT "Review_storeId_fkey" FOREIGN KEY ("storeId") REFERENCES "Store"("storeGID") ON DELETE CASCADE ON UPDATE CASCADE;
 
 -- AddForeignKey
 ALTER TABLE "HelpfulCount" ADD CONSTRAINT "HelpfulCount_reviewId_fkey" FOREIGN KEY ("reviewId") REFERENCES "Review"("id") ON DELETE CASCADE ON UPDATE CASCADE;
 
 -- AddForeignKey
-ALTER TABLE "Attachment" ADD CONSTRAINT "Attachment_reviewId_fkey" FOREIGN KEY ("reviewId") REFERENCES "Review"("id") ON DELETE SET NULL ON UPDATE CASCADE;
+ALTER TABLE "Attachment" ADD CONSTRAINT "Attachment_reviewId_fkey" FOREIGN KEY ("reviewId") REFERENCES "Review"("id") ON DELETE CASCADE ON UPDATE CASCADE;
+
+-- AddForeignKey
+ALTER TABLE "Reply" ADD CONSTRAINT "Reply_reviewId_fkey" FOREIGN KEY ("reviewId") REFERENCES "Review"("id") ON DELETE CASCADE ON UPDATE CASCADE;
 
 -- AddForeignKey
 ALTER TABLE "StoreSettings" ADD CONSTRAINT "StoreSettings_storeId_fkey" FOREIGN KEY ("storeId") REFERENCES "Store"("storeGID") ON DELETE CASCADE ON UPDATE CASCADE;
@@ -375,9 +428,6 @@ ALTER TABLE "BrandingSettings" ADD CONSTRAINT "BrandingSettings_storeSettingsId_
 
 -- AddForeignKey
 ALTER TABLE "AdminNotification" ADD CONSTRAINT "AdminNotification_storeSettingsId_fkey" FOREIGN KEY ("storeSettingsId") REFERENCES "StoreSettings"("id") ON DELETE CASCADE ON UPDATE CASCADE;
-
--- AddForeignKey
-ALTER TABLE "AdminNotificationEmail" ADD CONSTRAINT "AdminNotificationEmail_adminNotificationId_fkey" FOREIGN KEY ("adminNotificationId") REFERENCES "AdminNotification"("id") ON DELETE CASCADE ON UPDATE CASCADE;
 
 -- AddForeignKey
 ALTER TABLE "TrustBarWidget" ADD CONSTRAINT "TrustBarWidget_storeId_fkey" FOREIGN KEY ("storeId") REFERENCES "Store"("storeGID") ON DELETE CASCADE ON UPDATE CASCADE;

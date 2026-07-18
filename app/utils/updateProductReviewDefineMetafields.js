@@ -1,4 +1,5 @@
 import prisma from "../db.server";
+import { toProductGid } from "./shopifyGid.js";
 
 export async function updateProductReviewDefineMetafields(
   admin,
@@ -10,11 +11,7 @@ export async function updateProductReviewDefineMetafields(
   if (!storeId) throw new Error("storeId is required");
 
   try {
-    const productGid = String(productId).startsWith(
-      "gid://shopify/Product/"
-    )
-      ? String(productId)
-      : `gid://shopify/Product/${productId}`;
+    const productGid = toProductGid(productId);
 
     const reviews = await prisma.review.findMany({
       where: {
@@ -36,6 +33,76 @@ export async function updateProductReviewDefineMetafields(
 
     const averageRating =
       reviewCount > 0 ? totalRating / reviewCount : 0;
+
+    if (reviewCount === 0) {
+      const response = await admin.graphql(
+        `
+        mutation ResetMetafields($deleteInput: [MetafieldIdentifierInput!]!, $setInput: [MetafieldsSetInput!]!) {
+          metafieldsDelete(metafields: $deleteInput) {
+            userErrors {
+              field
+              message
+            }
+          }
+          metafieldsSet(metafields: $setInput) {
+            metafields {
+              id
+              namespace
+              key
+              value
+            }
+            userErrors {
+              field
+              message
+            }
+          }
+        }
+        `,
+        {
+          variables: {
+            deleteInput: [
+              {
+                ownerId: productGid,
+                namespace: "reviews",
+                key: "rating",
+              },
+            ],
+            setInput: [
+              {
+                ownerId: productGid,
+                namespace: "reviews",
+                key: "rating_count",
+                type: "number_integer",
+                value: "0",
+              },
+            ],
+          },
+        }
+      );
+
+      const json = await response.json();
+      const deleteErrors = json?.data?.metafieldsDelete?.userErrors || [];
+      const setErrors = json?.data?.metafieldsSet?.userErrors || [];
+      const userErrors = [...deleteErrors, ...setErrors];
+
+      if (userErrors.length > 0) {
+        console.error(
+          "[updateProductReviewMetafields] userErrors:",
+          userErrors
+        );
+        throw new Error(
+          userErrors.map((e) => e.message).join(", ")
+        );
+      }
+
+      return {
+        ok: true,
+        productId: productGid,
+        reviewCount: 0,
+        averageRating: "0.0",
+        metafields: json?.data?.metafieldsSet?.metafields || [],
+      };
+    }
 
     const mutation = `
       mutation MetafieldsSet($metafields: [MetafieldsSetInput!]!) {

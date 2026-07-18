@@ -8,7 +8,7 @@ import {
 import { PrismaSessionStorage } from "@shopify/shopify-app-session-storage-prisma";
 import prisma from "./db.server";
 import { DEFAULT_ADMIN_NOTIFICATION, DEFAULT_BRANDING, DEFAULT_OUTGOING_REQUEST_EMAIL, DEFAULT_POST_REQUEST_EMAIL, DEFAULT_PUBLISHING_MODERATION, DEFAULT_REQUEST_SCHEDULING, DEFAULT_SMTP_SETUP, DEFAULT_WIDGET } from "./routes/app.settings/data/defaultData";
-import DEFAULT_DB_FORMATED_DATA from "./routes/app.widgets/routes/app.quick-review/data/defaultData"
+import { DEFAULT_DB_FORMATED_DATA } from "./routes/app.widgets/routes/app.quick-review/data/defaultData";
 import { setAppMetafield } from "./utils/appMetafields.server";
 const GET_SHOP_BASIC_INFO = `#graphql
   query GetShopBasicInfo {

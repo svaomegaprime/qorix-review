@@ -1,4 +1,3 @@
-import TEMP_REVIEWS from "../data/reviews.json";
 import Loader from "../../../components/essentials/Loader";
 import TabButton from "../../../components/essentials/TabButton";
 import CustomSection from "../../../components/essentials/CustomSection";
@@ -6,38 +5,103 @@ import ReviewItem from "../../../components/essentials/ReviewItem";
 import Text from "../../../components/essentials/elements/Text";
 import { useLoaderData, useNavigation, useFetcher } from "react-router";
 import { useState, useRef } from "react";
-import { authenticate } from "../../../shopify.server";
 import prisma from "../../../db.server";
-import { getStoreData } from "../../../utils/getStoreData";
-
+import { requireAdminContext } from "../../../services/adminContext.server.js";
+import { adminErrorResponse } from "../../../utils/adminError.server";
+import { useAdminFetcherToast } from "../../../utils/useAdminFetcherToast";
+import {
+  deleteReviewWithAttachments,
+  updateReviewStatus,
+} from "../../../services/reviews.server.js";
+import { sendEmail } from "../../../utils/sendEmail";
+import { buildReplyEmailData } from "../../../services/emailPayload.server.js";
+import { usePagination } from "../../../hooks/usePagination.js";
 const REVIEWS_PER_PAGE = 8;
-const MAX_VISIBLE_PAGE_BUTTONS = 4;
+const EXPORT_PREVIEW_LIMIT = 5;
+
+function formatExportValue(value) {
+  if (value === null || value === undefined) {
+    return "";
+  }
+
+  if (Array.isArray(value)) {
+    return value.join(" | ");
+  }
+
+  return String(value);
+}
+
+function escapeCsvValue(value) {
+  const normalizedValue = formatExportValue(value).replace(/\r?\n|\r/g, " ");
+  return `"${normalizedValue.replace(/"/g, '""')}"`;
+}
+
+function formatExportDate(dateValue) {
+  if (!dateValue) {
+    return "";
+  }
+
+  const date = new Date(dateValue);
+  if (Number.isNaN(date.getTime())) {
+    return "";
+  }
+
+  return date.toISOString();
+}
+
+function buildExportRows(reviewList) {
+  return reviewList.map((review) => ({
+    id: review.id,
+    productTitle: review.productTitle || "",
+    productHandle: review.productHandle || "",
+    productId: review.productId || "",
+    reviewerName: review.reviewerName || "",
+    reviewerEmail: review.reviewerEmail || "",
+    reviewerPhone: review.reviewerPhone || "",
+    rating: review.rating ?? "",
+    title: review.title || "",
+    body: review.body || "",
+    status: review.status || "",
+    source: review.source || "",
+    isVerified: review.isVerified ? "Yes" : "No",
+    attachmentCount: review.attachments?.length ?? 0,
+    attachmentUrls:
+      review.attachments?.map((attachment) => attachment.url).filter(Boolean) ??
+      [],
+    reply: review.reply?.body || "",
+    createdAt: formatExportDate(review.createdAt),
+    updatedAt: formatExportDate(review.updatedAt),
+  }));
+}
 
 export async function loader({ request }) {
-  const { admin } = await authenticate.admin(request);
-  const storeData = await getStoreData(admin);
-  const reviews = await prisma.review.findMany({
-    where: {
-      storeId: storeData.id,
-    },
-    include: {
-      attachments: true,
-      reply: true,
-    },
-  });
-  const storeSettings = await prisma.storeSettings.findUnique({
-    where: {
-      storeId: storeData.id,
-    },
-    include: {
-      publishingModeration: true,
-    },
-  });
-  console.log("Reviews fetched from database:", storeSettings);
-  return {
-    reviews: reviews,
-    storeSettings: storeSettings,
-  };
+  try {
+    const { storeData } = await requireAdminContext(request);
+    const reviews = await prisma.review.findMany({
+      where: {
+        storeId: storeData.id,
+      },
+      include: {
+        attachments: true,
+        reply: true,
+      },
+    });
+    const storeSettings = await prisma.storeSettings.findUnique({
+      where: {
+        storeId: storeData.id,
+      },
+      include: {
+        publishingModeration: true,
+      },
+    });
+
+    return {
+      reviews: reviews,
+      storeSettings: storeSettings,
+    };
+  } catch (error) {
+    return adminErrorResponse(error);
+  }
 }
 
 async function getFilteredReviews(storeId, search, rating, productId) {
@@ -72,64 +136,139 @@ async function getFilteredReviews(storeId, search, rating, productId) {
 }
 
 export async function action({ request }) {
-  const { admin } = await authenticate.admin(request);
-  const storeData = await getStoreData(admin);
-  const method = request.method.toUpperCase();
+  try {
+    const { storeData } = await requireAdminContext(request);
+    const method = request.method.toUpperCase();
 
-  switch (method) {
-    case "GET": {
-      const url = new URL(request.url);
-      const search = url.searchParams.get("search") || "";
-      const rating = url.searchParams.get("rating") || "all";
-      const productId = url.searchParams.get("productId") || "all";
-      const reviews = await getFilteredReviews(storeData.id, search, rating, productId);
-      return { reviews };
-    }
-    case "POST": {
-      const formData = await request.formData();
-      const search = formData.get("search") || "";
-      const rating = formData.get("rating") || "all";
-      const productId = formData.get("productId") || "all";
-      const reviews = await getFilteredReviews(storeData.id, search, rating, productId);
-      return { reviews };
-    }
-    case "PATCH": {
-      const formData = await request.formData();
-      const reviewId = formData.get("reviewId");
-      const status = formData.get("status");
+    switch (method) {
+      case "GET": {
+        const url = new URL(request.url);
+        const search = url.searchParams.get("search") || "";
+        const rating = url.searchParams.get("rating") || "all";
+        const productId = url.searchParams.get("productId") || "all";
+        const reviews = await getFilteredReviews(
+          storeData.id,
+          search,
+          rating,
+          productId,
+        );
+        return { reviews };
+      }
+      case "POST": {
+        const formData = await request.formData();
+        const search = formData.get("search") || "";
+        const rating = formData.get("rating") || "all";
+        const productId = formData.get("productId") || "all";
+        const reviews = await getFilteredReviews(
+          storeData.id,
+          search,
+          rating,
+          productId,
+        );
+        return { reviews };
+      }
+      case "PATCH": {
+        const formData = await request.formData();
+        const reviewId = formData.get("reviewId");
+        const status = formData.get("status");
 
-      if (reviewId && status) {
-        await prisma.review.update({
-          where: { id: reviewId },
-          data: { status: status },
-        });
+        if (reviewId && status) {
+          await updateReviewStatus({
+            reviewId: String(reviewId),
+            status: String(status),
+            storeId: storeData.id,
+          });
+        }
+
+        const search = formData.get("search") || "";
+        const rating = formData.get("rating") || "all";
+        const productId = formData.get("productId") || "all";
+        const reviews = await getFilteredReviews(
+          storeData.id,
+          search,
+          rating,
+          productId,
+        );
+        return { reviews };
+      }
+      case "DELETE": {
+        const formData = await request.formData();
+        const reviewId = formData.get("reviewId");
+        if (reviewId) {
+          await deleteReviewWithAttachments({
+            reviewId: String(reviewId),
+            storeId: storeData.id,
+          });
+        }
+
+        const search = formData.get("search") || "";
+        const rating = formData.get("rating") || "all";
+        const productId = formData.get("productId") || "all";
+        const reviews = await getFilteredReviews(
+          storeData.id,
+          search,
+          rating,
+          productId,
+        );
+        return { reviews };
       }
 
-      const search = formData.get("search") || "";
-      const rating = formData.get("rating") || "all";
-      const productId = formData.get("productId") || "all";
-      const reviews = await getFilteredReviews(storeData.id, search, rating, productId);
-      return { reviews };
-    }
-    case "DELETE": {
-      const formData = await request.formData();
-      const reviewId = formData.get("reviewId");
+      // Reply review
+      case "PUT": {
+        const formData = await request.formData();
+        const reviewId = formData.get("reviewId");
+        const body = formData.get("body");
 
-      if (reviewId) {
-        await prisma.review.delete({
-          where: { id: reviewId },
-        });
+        if (reviewId && body) {
+          const updatedReview = await prisma.review.update({
+            where: { id: reviewId },
+            data: { reply: { create: { body } } },
+            include: {
+              reply: true,
+            },
+          });
+          console.log(updatedReview);
+
+          const storeSettings = await prisma.storeSettings.findUnique({
+            where: { storeId: storeData.id },
+            include: {
+              emailSettings: true,
+              publishingModeration: true,
+              brandingSettings: true,
+            },
+          });
+
+          const buttonUrl =
+            updatedReview.productHandle && storeData?.storeURL
+              ? `https://${storeData.storeURL}/products/${updatedReview.productHandle}`
+              : "#";
+          const replyEmailData = buildReplyEmailData({
+            review: updatedReview,
+            storeSettings,
+            storeData,
+            buttonUrl,
+          });
+
+          await sendEmail(replyEmailData);
+        }
+
+        const search = formData.get("search") || "";
+        const rating = formData.get("rating") || "all";
+        const productId = formData.get("productId") || "all";
+        const reviews = await getFilteredReviews(
+          storeData.id,
+          search,
+          rating,
+          productId,
+        );
+        return { reviews };
       }
-
-      const search = formData.get("search") || "";
-      const rating = formData.get("rating") || "all";
-      const productId = formData.get("productId") || "all";
-      const reviews = await getFilteredReviews(storeData.id, search, rating, productId);
-      return { reviews };
+      default: {
+        return new Response("Method Not Allowed", { status: 405 });
+      }
     }
-    default: {
-      return new Response("Method Not Allowed", { status: 405 });
-    }
+  } catch (error) {
+    return adminErrorResponse(error);
   }
 }
 
@@ -147,11 +286,11 @@ export default function Reviews() {
   const [activeTab, setActiveTab] = useState("all");
   // End----State for active tab
   // Start----Reviews pagination state
-  const [currentPage, setCurrentPage] = useState(1);
   // End----Reviews pagination state
 
   // Start----useFetcher and filters state
   const fetcher = useFetcher();
+  useAdminFetcherToast(fetcher);
   const [searchQuery, setSearchQuery] = useState("");
   const [selectedRating, setSelectedRating] = useState("all");
   const [selectedProduct, setSelectedProduct] = useState("all");
@@ -159,6 +298,33 @@ export default function Reviews() {
   const searchTimeoutRef = useRef(null);
 
   const baseReviews = fetcher.data?.reviews ?? reviews;
+  const exportRows = buildExportRows(
+    [...reviews].sort(
+      (a, b) =>
+        new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime(),
+    ),
+  );
+  const exportPreviewRows = exportRows.slice(0, EXPORT_PREVIEW_LIMIT);
+  const exportColumns = [
+    "id",
+    "productTitle",
+    "productHandle",
+    "productId",
+    "reviewerName",
+    "reviewerEmail",
+    "reviewerPhone",
+    "rating",
+    "title",
+    "body",
+    "status",
+    "source",
+    "isVerified",
+    "attachmentCount",
+    "attachmentUrls",
+    "reply",
+    "createdAt",
+    "updatedAt",
+  ];
 
   // Extract unique products from all loaded reviews
   const uniqueProducts = [];
@@ -175,10 +341,7 @@ export default function Reviews() {
 
   const triggerFilter = (search, rating, product) => {
     setCurrentPage(1);
-    fetcher.submit(
-      { search, rating, productId: product },
-      { method: "POST" }
-    );
+    fetcher.submit({ search, rating, productId: product }, { method: "POST" });
   };
 
   const handleSearchChange = (val) => {
@@ -214,9 +377,10 @@ export default function Reviews() {
     archive: "ARCHIVE",
   };
 
-  const filteredReviews = activeTab === "all"
-    ? baseReviews
-    : baseReviews.filter((review) => review.status === statusMap[activeTab]);
+  const filteredReviews =
+    activeTab === "all"
+      ? baseReviews
+      : baseReviews.filter((review) => review.status === statusMap[activeTab]);
 
   // Sort reviews based on sortOrder
   const sortedReviews = [...filteredReviews].sort((a, b) => {
@@ -232,26 +396,16 @@ export default function Reviews() {
   };
   // End----Tab click handler
 
-  // Start----Pagination click handler
-  const handlePaginationClick = (page) => {
-    const totalPages = Math.max(
-      1,
-      Math.ceil(filteredReviews.length / REVIEWS_PER_PAGE),
-    );
-    const nextPage = Math.min(Math.max(page, 1), totalPages);
-    setCurrentPage(nextPage);
-  };
-  // End----Pagination click handler
-
-  const totalReviews = filteredReviews.length;
-  const totalPages = Math.max(1, Math.ceil(totalReviews / REVIEWS_PER_PAGE));
-  const safeCurrentPage = Math.min(currentPage, totalPages);
-  const pageStartIndex = (safeCurrentPage - 1) * REVIEWS_PER_PAGE;
-  const pageEndIndex = Math.min(
-    pageStartIndex + REVIEWS_PER_PAGE,
-    totalReviews,
-  );
-  const paginatedReviews = sortedReviews.slice(pageStartIndex, pageEndIndex);
+  const {
+    currentPage: safeCurrentPage,
+    items: paginatedReviews,
+    setCurrentPage,
+    setPage: handlePaginationClick,
+    startIndex: pageStartIndex,
+    endIndex: pageEndIndex,
+    totalItems: totalReviews,
+    totalPages,
+  } = usePagination(sortedReviews, REVIEWS_PER_PAGE);
   const visiblePages = [];
   if (safeCurrentPage - 1 >= 1) {
     visiblePages.push(safeCurrentPage - 1);
@@ -261,14 +415,28 @@ export default function Reviews() {
     visiblePages.push(safeCurrentPage + 1);
   }
 
-  // Start----Debugging loaded data
-  console.clear();
-  console.log("Reviews data loaded:", reviews);
-  // End----Debugging loaded data
-
   // Start----Handle import
-  function handleImport() {
+  function handleExportReview() {
+    const csvLines = [
+      exportColumns.join(","),
+      ...exportRows.map((row) =>
+        exportColumns.map((column) => escapeCsvValue(row[column])).join(","),
+      ),
+    ];
+    const csvContent = csvLines.join("\n");
+    const blob = new Blob([csvContent], {
+      type: "text/csv;charset=utf-8;",
+    });
+    const downloadUrl = URL.createObjectURL(blob);
+    const link = document.createElement("a");
+    const dateSuffix = new Date().toISOString().slice(0, 10);
 
+    link.href = downloadUrl;
+    link.download = `reviews-export-${dateSuffix}.csv`;
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+    URL.revokeObjectURL(downloadUrl);
   }
   // End----Handle import
 
@@ -282,28 +450,36 @@ export default function Reviews() {
         rating: selectedRating,
         productId: selectedProduct,
       },
-      { method: "PATCH" }
+      { method: "PATCH" },
     );
   };
   // End----Handle status toggle
 
   // Start----Handle review delete
-  const handleReviewDelete = (reviewId) => {
+  const handleReviewDelete = (reviewId, attachments) => {
     fetcher.submit(
       {
         reviewId,
         search: searchQuery,
         rating: selectedRating,
         productId: selectedProduct,
+        attachments: attachments ? JSON.stringify(attachments) : "[]",
       },
-      { method: "DELETE" }
+      { method: "DELETE" },
     );
   };
   // End----Handle review delete
-
-
-
-
+  // Start----Handle review reply
+  const handleReviewReply = (reviewId, body) => {
+    fetcher.submit(
+      {
+        reviewId,
+        body,
+      },
+      { method: "PUT" },
+    );
+  };
+  // End----Handle review delete
 
   if (loading) {
     return <Loader />; // Show loader while navigating to this page or when loader is fetching data
@@ -311,7 +487,7 @@ export default function Reviews() {
 
   return (
     <>
-      <s-modal id="import-reviews-modal" heading="Import Reviews" open>
+      {/* <s-modal id="import-reviews-modal" heading="Import Reviews" open>
         <s-stack>
           <s-drop-zone
             label="Upload reviews CSV file"
@@ -322,7 +498,6 @@ export default function Reviews() {
             onDropRejected="console.log('onDropRejected', event.currentTarget?.value)"
           ></s-drop-zone>
         </s-stack>
-
 
         <s-button slot="secondary-actions" commandFor="modal" command="--hide">
           Close
@@ -335,9 +510,98 @@ export default function Reviews() {
         >
           Save
         </s-button>
-      </s-modal>
-      <s-modal id="export-reviews-modal">
-        <s-text>Hello, Export Reviews!</s-text>
+      </s-modal> */}
+      <s-modal id="export-reviews-modal" heading="Export Reviews">
+        <s-stack gap="base">
+          <s-text>
+            Download all reviews as a CSV file. Previewing the first{" "}
+            {Math.min(exportPreviewRows.length, EXPORT_PREVIEW_LIMIT)} of{" "}
+            {exportRows.length} reviews.
+          </s-text>
+          <div
+            style={{
+              overflowX: "auto",
+              border: "1px solid #d9d9d9",
+              borderRadius: "12px",
+              maxHeight: "320px",
+            }}
+          >
+            <table
+              style={{
+                width: "100%",
+                borderCollapse: "collapse",
+                fontSize: "14px",
+                minWidth: "1100px",
+              }}
+            >
+              <thead>
+                <tr style={{ backgroundColor: "#f6f6f7" }}>
+                  {exportColumns.map((column) => (
+                    <th
+                      key={column}
+                      style={{
+                        textAlign: "left",
+                        padding: "10px 12px",
+                        borderBottom: "1px solid #e3e3e3",
+                        whiteSpace: "nowrap",
+                      }}
+                    >
+                      {column}
+                    </th>
+                  ))}
+                </tr>
+              </thead>
+              <tbody>
+                {exportPreviewRows.length > 0 ? (
+                  exportPreviewRows.map((row) => (
+                    <tr key={row.id}>
+                      {exportColumns.map((column) => (
+                        <td
+                          key={`${row.id}-${column}`}
+                          style={{
+                            padding: "10px 12px",
+                            borderBottom: "1px solid #f1f1f1",
+                            verticalAlign: "top",
+                          }}
+                        >
+                          {formatExportValue(row[column]) || "-"}
+                        </td>
+                      ))}
+                    </tr>
+                  ))
+                ) : (
+                  <tr>
+                    <td
+                      colSpan={exportColumns.length}
+                      style={{ padding: "16px 12px", textAlign: "center" }}
+                    >
+                      No reviews available for export.
+                    </td>
+                  </tr>
+                )}
+              </tbody>
+            </table>
+          </div>
+        </s-stack>
+
+        <s-button
+          class="close-btn"
+          slot="secondary-actions"
+          commandFor="export-reviews-modal"
+          command="--hide"
+        >
+          Close
+        </s-button>
+        <s-button
+          slot="primary-action"
+          variant="primary"
+          commandFor="export-reviews-modal"
+          command="--hide"
+          onClick={() => handleExportReview()}
+          disabled={!exportRows.length}
+        >
+          Download
+        </s-button>
       </s-modal>
       <s-page>
         {/* Start----Page Header */}
@@ -349,17 +613,35 @@ export default function Reviews() {
         >
           <s-stack direction="inline" alignItems="center" gap="small">
             <Text as="h2">Reviews</Text>
-            <s-badge tone={storeSettings?.publishingModeration.autoPublishRules === "AUTO_PUBLISH" ? "success" : "default"} color="strong">
-              Auto-Publish: {storeSettings?.publishingModeration.autoPublishRules === "AUTO_PUBLISH" ? "On" : "Off"}
+            <s-badge
+              tone={
+                storeSettings?.publishingModeration.autoPublishRules ===
+                "AUTO_PUBLISH"
+                  ? "success"
+                  : "default"
+              }
+              color="strong"
+            >
+              Auto-Publish:{" "}
+              {storeSettings?.publishingModeration.autoPublishRules ===
+              "AUTO_PUBLISH"
+                ? "On"
+                : "Off"}
             </s-badge>
           </s-stack>
-          <s-grid
-            gridTemplateColumns="auto auto auto"
-            gap="small"
-            justifyContent="end"
-          >
-            <s-button icon="download" onClick={() => shopify.modal.show('import-reviews-modal')}>Import</s-button>
-            <s-button icon="upload" onClick={() => shopify.modal.show('export-reviews-modal')}>Export</s-button>
+          <s-grid gridTemplateColumns="auto auto auto" justifyContent="end">
+            {/* <s-button
+              icon="download"
+              onClick={() => shopify.modal.show("import-reviews-modal")}
+            >
+              Import
+            </s-button> */}
+            <s-button
+              icon="upload"
+              onClick={() => shopify.modal.show("export-reviews-modal")}
+            >
+              Export
+            </s-button>
           </s-grid>
         </s-grid>
         {/* End----Page Header */}
@@ -389,7 +671,10 @@ export default function Reviews() {
               >
                 Pending{" "}
                 <s-badge tone="warning" color="strong">
-                  {baseReviews.filter((review) => review.status === "PENDING").length}
+                  {
+                    baseReviews.filter((review) => review.status === "PENDING")
+                      .length
+                  }
                 </s-badge>
               </TabButton>
               {/* End----Pending reviews button */}
@@ -401,8 +686,9 @@ export default function Reviews() {
                 Published{" "}
                 <s-badge tone="success" color="strong">
                   {
-                    baseReviews.filter((review) => review.status === "PUBLISHED")
-                      .length
+                    baseReviews.filter(
+                      (review) => review.status === "PUBLISHED",
+                    ).length
                   }
                 </s-badge>
               </TabButton>
@@ -425,7 +711,10 @@ export default function Reviews() {
               >
                 Archive{" "}
                 <s-badge tone="neutral" color="strong">
-                  {baseReviews.filter((review) => review.status === "ARCHIVE").length}
+                  {
+                    baseReviews.filter((review) => review.status === "ARCHIVE")
+                      .length
+                  }
                 </s-badge>
               </TabButton>
               {/* End----Archive reviews button */}
@@ -444,14 +733,14 @@ export default function Reviews() {
                 placeholder="Search reviews,"
                 value={searchQuery}
                 onInput={(e) => handleSearchChange(e.currentTarget.value)}
-
               />
               {/* End----Search field */}
               {/* Start----Filter options by rating */}
-              <s-select value={selectedRating} onChange={(e) => handleRatingChange(e.currentTarget.value)}>
-                <s-option value="all">
-                  All ratings
-                </s-option>
+              <s-select
+                value={selectedRating}
+                onChange={(e) => handleRatingChange(e.currentTarget.value)}
+              >
+                <s-option value="all">All ratings</s-option>
                 <s-option value="5">5 stars</s-option>
                 <s-option value="4">4 stars</s-option>
                 <s-option value="3">3 stars</s-option>
@@ -460,7 +749,10 @@ export default function Reviews() {
               </s-select>
               {/* End----Filter options by rating */}
               {/* Start----Filter options by product */}
-              <s-select value={selectedProduct} onChange={(e) => handleProductChange(e.currentTarget.value)}>
+              <s-select
+                value={selectedProduct}
+                onChange={(e) => handleProductChange(e.currentTarget.value)}
+              >
                 <s-option value="all">All products</s-option>
                 {uniqueProducts.map((prod) => (
                   <s-option key={prod.id} value={prod.id}>
@@ -494,7 +786,12 @@ export default function Reviews() {
                   <div key={review.id}>
                     <s-grid gridTemplateColumns="auto 1fr" gap="base">
                       <s-checkbox /> {/* Checkbox for selection of reviews */}
-                      <ReviewItem data={review} handleStatusUpdate={handleStatusUpdate} handleReviewDelete={handleReviewDelete} />
+                      <ReviewItem
+                        data={review}
+                        handleStatusUpdate={handleStatusUpdate}
+                        handleReviewDelete={handleReviewDelete}
+                        handleReviewReply={handleReviewReply}
+                      />
                     </s-grid>
                     {index !== paginatedReviews.length - 1 && (
                       <s-stack paddingBlock="base">
@@ -542,8 +839,7 @@ export default function Reviews() {
               {visiblePages
                 .filter(
                   (page) =>
-                    page >= safeCurrentPage - 1 &&
-                    page <= safeCurrentPage + 1
+                    page >= safeCurrentPage - 1 && page <= safeCurrentPage + 1,
                 )
                 .map((page) => (
                   <s-press-button
@@ -579,6 +875,5 @@ export default function Reviews() {
         {/* End----Page main content */}
       </s-page>
     </>
-
   );
 }

@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import CustomGridSection from "../../../components/essentials/CustomGridSection";
 import CustomSection from "../../../components/essentials/CustomSection";
 import Text from "../../../components/essentials/elements/Text";
@@ -12,12 +12,16 @@ import { useFetcher, useLoaderData } from "react-router";
 import { authenticate } from "../../../shopify.server";
 import prisma from "../../../db.server";
 
-import { getStoreData } from "../../../utils/getStoreData";
+import { uploadFile } from "../../../lib/s3/uploadFile";
+import { adminErrorResponse } from "../../../utils/adminError.server";
+import { useAdminFetcherToast } from "../../../utils/useAdminFetcherToast";
+import SaveBar from "../../../components/essentials/SaveBar";
+import { useSaveBarForm } from "../../../hooks/useSaveBarForm.js";
+import { requireAdminContext } from "../../../services/adminContext.server.js";
 
 export async function loader({ request }) {
   try {
-    const { admin, session } = await authenticate.admin(request);
-    const { id } = await getStoreData(admin);
+    const { storeId: id } = await requireAdminContext(request);
 
     const storeSettings = await prisma.storeSettings.findFirst({
       where: {
@@ -27,19 +31,16 @@ export async function loader({ request }) {
         brandingSettings: true,
       },
     });
-    console.log(storeSettings);
 
     return { storeSettings };
   } catch (error) {
-    console.log(error);
-
-    return null;
+    return adminErrorResponse(error);
   }
 }
 
 export async function action({ request }) {
   try {
-    const { admin, session } = await authenticate.admin(request);
+    await authenticate.admin(request);
 
     const contentType = request.headers.get("content-type");
     if (contentType && contentType.includes("multipart/form-data")) {
@@ -48,7 +49,10 @@ export async function action({ request }) {
 
       if (!file || !(file instanceof File)) {
         return Response.json(
-          { ok: false, error: "No file uploaded or invalid file format" },
+          {
+            ok: false,
+            message: "No file uploaded or invalid file format",
+          },
           { status: 400 },
         );
       }
@@ -56,7 +60,10 @@ export async function action({ request }) {
       // 2MB server-side limit check
       if (file.size > 2 * 1024 * 1024) {
         return Response.json(
-          { ok: false, error: "File size exceeds the 2MB maximum limit" },
+          {
+            ok: false,
+            message: "File size exceeds the 2MB maximum limit",
+          },
           { status: 400 },
         );
       }
@@ -70,29 +77,19 @@ export async function action({ request }) {
     }
 
     const data = await request.json();
-    // const { id } = await getStoreData(admin);
-
-    const brandingSettingsData = await prisma.brandingSettings.update({
+    await prisma.brandingSettings.update({
       where: {
         id: data.id,
       },
       data,
     });
 
-    console.log(
-      "[store settings]: requestSchedulingData data",
-      brandingSettingsData,
-    );
-
-    // console.log("[store settings:]requestScheduling", res);
-
     return {
       ok: true,
       message: "upserted BrandingSettingsData",
     };
   } catch (error) {
-    console.log(error);
-    return Response.json({ ok: false, error: error.message }, { status: 500 });
+    return adminErrorResponse(error);
   }
 }
 
@@ -100,6 +97,7 @@ export default function Branding() {
   const data = useRouteLoaderData("routes/app.settings");
   const { storeSettings } = useLoaderData();
   const fetcher = useFetcher();
+  useAdminFetcherToast(fetcher);
 
   const [brandSettings, setBrandSettings] = useState(
     storeSettings.brandingSettings ?? DEFAULT_BRANDING,
@@ -209,50 +207,25 @@ export default function Branding() {
     },
   ];
 
-  useEffect(() => {
-    const hasChanged =
-      JSON.stringify(brandSettings) !==
-      JSON.stringify(storeSettings?.brandingSettings);
-
-    if (hasChanged) {
-      shopify.saveBar.show("leave-confirm-save-bar");
-    } else {
-      shopify.saveBar.hide("leave-confirm-save-bar");
-    }
-  }, [brandSettings]);
-
-  console.log("DEFAULT_REQUEST_SCHEDULING:", brandSettings);
-
-  function handleSave() {
-    fetcher.submit(brandSettings, {
-      method: "POST",
-      encType: "application/json",
-    });
-  }
-
- 
-  useEffect(() => {
-    if (fetcher.state === "idle" && fetcher.data) {
-      shopify.saveBar.hide("leave-confirm-save-bar");
-    }
-  }, [fetcher.state, fetcher.data]);
   const [formResetKey, setFormResetKey] = useState(0);
-
-  function handleDiscard() {
-    setBrandSettings(storeSettings.brandingSettings ?? DEFAULT_BRANDING);
-    setFormResetKey((pre) => pre + 1);
-    shopify.saveBar.hide("leave-confirm-save-bar");
-  }
+  const { handleSave, handleDiscard } = useSaveBarForm({
+    value: brandSettings,
+    initialValue: storeSettings.brandingSettings ?? DEFAULT_BRANDING,
+    fetcher,
+    onSave: (value) =>
+      fetcher.submit(value, { method: "POST", encType: "application/json" }),
+    onDiscard: (savedValue) => {
+      setBrandSettings(savedValue);
+      setFormResetKey((previous) => previous + 1);
+    },
+  });
   return (
     <>
-      <ui-save-bar id="leave-confirm-save-bar">
-        <button onClick={handleSave} variant="primary" id="save-button">
-          Save
-        </button>
-        <button onClick={handleDiscard} id="discard-button">
-          Discard
-        </button>
-      </ui-save-bar>
+      <SaveBar
+        onSave={handleSave}
+        onDiscard={handleDiscard}
+        saving={fetcher.state !== "idle"}
+      />
       <s-box>
         <Text>Branding</Text>
         <s-text>
@@ -469,6 +442,7 @@ export default function Branding() {
                     {brandingColorSettings.map((picker) => {
                       return (
                         <ColorPicker
+                          key={picker.key}
                           defaultColor={brandSettings[picker.key]}
                           onChange={(value) => {
                             handleStateUpdate(

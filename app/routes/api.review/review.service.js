@@ -6,6 +6,12 @@ import { AppError } from "../../utils/appError.server";
 import { updateProductReviewDefineMetafields } from "../../utils/updateProductReviewDefineMetafields";
 import { sendEmail } from "../../utils/sendEmail";
 import checkPublishRules from "./middleware/checkPublishRules";
+import { sendResponse } from "../../utils/sendResponse";
+import { buildSmtpConfig } from "../../services/emailPayload.server.js";
+import {
+  markOrderProductReviewed,
+  syncReviewedOrderFromShopify,
+} from "../../services/orders.server.js";
 
 function buildFromAddress(displayName, email) {
   const cleanEmail = String(email || "").trim();
@@ -55,6 +61,14 @@ async function postReview(request, session, admin) {
     const { id, name, storeURL, email } = await getStoreContext(session, admin);
 
     const formData = await request.formData();
+    const url = new URL(request.url);
+    const isOpen = url.searchParams.get("isOpen") === "true";
+    const orderNumber = url.searchParams.get("orderId");
+    const orderId = orderNumber
+      ? orderNumber.startsWith("#")
+        ? orderNumber
+        : `#${orderNumber}`
+      : null;
     // review.service.js
 
     const storeSettings = await prisma.storeSettings.findFirst({
@@ -80,7 +94,6 @@ async function postReview(request, session, admin) {
       reviewerEmail: formData.get("reviewerEmail") || null,
       body: formData.get("body") || null,
       rating: Number(formData.get("rating") || 0),
-      status: "PUBLISHED",
       source: formData.get("source") || "PRODUCT_PAGE",
       productId: formData.get("productId") || null,
       productHandle: formData.get("productHandle") || null,
@@ -92,8 +105,6 @@ async function postReview(request, session, admin) {
       reviewData,
     );
     const submittedAt = formData.get("submittedAt") || null;
-
-    console.log(publishRules);
 
     const files = [
       ...formData.getAll("media"),
@@ -119,6 +130,7 @@ async function postReview(request, session, admin) {
     const res = await prisma.review.create({
       data: {
         ...reviewData,
+        status: publishRules.status,
         ...publishRules,
         attachments: {
           create: attachments,
@@ -129,13 +141,36 @@ async function postReview(request, session, admin) {
       },
     });
 
-    await updateProductReviewDefineMetafields(
-      admin,
-      reviewData.productId,
-      reviewData.storeId,
-    );
+    if (reviewData.reviewerEmail && reviewData.productId) {
+      const existingOrderUpdated = orderId
+        ? await markOrderProductReviewed({
+            storeId: id,
+            orderId,
+            reviewerEmail: String(reviewData.reviewerEmail),
+            productId: String(reviewData.productId),
+          })
+        : false;
 
-    const storeName = brandingSettings.storeDisplayName ?? name;
+      if (!isOpen && !existingOrderUpdated) {
+        // Missing-order fallback plan:
+        // 1. Load normalized orders through sync.orders.
+        // 2. Match the newest order by reviewer email and normalized product ID.
+        // 3. Enrich its products through getProduct without duplicating GraphQL logic.
+        // 4. Mark only the matched line item as reviewed.
+        // 5. Persist the Order and OrderLineItem records atomically as MANUAL/REVIEWED.
+        await syncReviewedOrderFromShopify({
+          session,
+          admin,
+          storeId: id,
+          reviewerEmail: String(reviewData.reviewerEmail),
+          productId: String(reviewData.productId),
+        });
+      }
+    }
+
+    const sideEffectErrors = [];
+
+    const storeName = brandingSettings.storeDisplayName ?? name ?? "";
 
     const emailBody = (
       emailSettings.confirmationEmailBody ??
@@ -155,8 +190,6 @@ async function postReview(request, session, admin) {
     const formattedDate = `Submitted ${formatter.format(
       submittedAt ? new Date(submittedAt) : new Date(),
     )}`;
-
-    console.log(formattedDate);
 
     const senderEmail =
       emailSettings.smtpUser ||
@@ -180,42 +213,68 @@ async function postReview(request, session, admin) {
       : "";
     // client mail
 
+    try {
+      await updateProductReviewDefineMetafields(
+        admin,
+        reviewData.productId,
+        reviewData.storeId,
+      );
+    } catch (error) {
+      console.error("[WARN::api.review.metafields]", error);
+      sideEffectErrors.push("metafields");
+    }
+
     if (reviewData.reviewerEmail) {
-      await sendEmail({
-        to: reviewData.reviewerEmail,
-        from: buildFromAddress(storeName, senderEmail),
-        replyTo: replyToEmail,
-        templateName: "ConfirmEmail",
-        subject:
-          emailSettings.confirmationEmailSubject ?? "Thank you for your review",
-        templateData: {
+      try {
+        await sendEmail({
+          to: reviewData.reviewerEmail,
+          from: buildFromAddress(storeName, senderEmail),
+          replyTo: replyToEmail,
+          templateName: "ConfirmEmail",
           subject:
-            emailSettings.confirmatisonEmailSubject ??
+            emailSettings.confirmationEmailSubject ??
             "Thank you for your review",
-          logo: brandingSettings.storeLogo ?? "",
-          tagline: brandingSettings.storeTagline ?? "",
-          customerName: reviewData.reviewerName ?? "",
-          emailBody,
-          buttonUrl: productUrl,
-          buttonText: "View your review",
-          product: {
-            title: reviewData.productTitle ?? "",
+          templateData: {
+            subject:
+              emailSettings.confirmatisonEmailSubject ??
+              "Thank you for your review",
+            storeName,
+            logo: brandingSettings.storeLogo ?? "",
+            tagline: brandingSettings.storeTagline ?? "",
+            customerName: reviewData.reviewerName ?? "",
+            emailBody,
+            buttonUrl: productUrl,
+            buttonText: "View your review",
+
+            emailPrimaryButtonColor:
+              brandingSettings.emailPrimaryButtonColor ?? "#269e1bff",
+            emailButtonTextColor:
+              brandingSettings.emailButtonTextColor ?? "#FFFFFF",
+            emailBackgroundColor:
+              brandingSettings.emailBackgroundColor ?? "#eef0ee",
+            emailHeadingColor: brandingSettings.emailHeadingColor ?? "#303030",
+            emailBodyTextColor:
+              brandingSettings.emailBodyTextColor ?? "#108848",
+            emailAccentBorderColor:
+              brandingSettings.emailAccentBorderColor ?? "#f0f0f0",
+
+            product: {
+              title: reviewData.productTitle ?? "",
+            },
+            review: {
+              rating: reviewData.rating ?? 0,
+              date: formattedDate,
+            },
+            emailFooterText: brandingSettings.emailFooterText ?? "",
+            unsubscribeUrl,
+            isShowFooterBadge: brandingSettings.isShowFooterBadge ?? false,
           },
-          review: {
-            rating: reviewData.rating ?? 0,
-            date: formattedDate,
-          },
-          emailFooterText: brandingSettings.emailFooterText ?? "",
-          unsubscribeUrl,
-          isShowFooterBadge: brandingSettings.isShowFooterBadge ?? false,
-        },
-        smtpConfig: {
-          smtpUser: emailSettings.smtpUser,
-          smtpPassword: emailSettings.smtpPassword,
-          smtpPort: emailSettings.smtpPort,
-          smtpHost: emailSettings.smtpHost,
-        },
-      });
+          smtpConfig: buildSmtpConfig(emailSettings),
+        });
+      } catch (error) {
+        console.error("[WARN::api.review.confirmationEmail]", error);
+        sideEffectErrors.push("confirmation_email");
+      }
     }
 
     // admin mail
@@ -260,67 +319,50 @@ async function postReview(request, session, admin) {
     }
 
     if (adminEmails.length && shouldSendAdminEmail) {
-      await sendEmail({
-        to: adminEmails[0],
-        bcc: adminEmails.slice(1),
-        from: buildFromAddress(storeName, senderEmail),
-        replyTo: replyToEmail,
-        templateName: "AdminNotify",
-        subject: adminSubject,
-        templateData: {
+      try {
+        await sendEmail({
+          to: adminEmails[0],
+          bcc: adminEmails.slice(1),
+          from: buildFromAddress(storeName, senderEmail),
+          replyTo: replyToEmail,
+          templateName: "AdminNotify",
           subject: adminSubject,
-          storeName,
-          logo: brandingSettings.storeLogo ?? "",
-          tagline: brandingSettings.storeTagline ?? "",
-          reviewerName: reviewData.reviewerName ?? "Anonymous",
-          reviewerEmail: reviewData.reviewerEmail ?? "",
-          rating: reviewData.rating ?? 0,
-          reviewBody: res.body ?? "",
-          status: res.status ?? "PENDING",
-          productTitle: reviewData.productTitle ?? "",
-          productUrl,
-          manageUrl: `https://${storeURL}/admin/apps/qorix-review/app/reviews`,
-          submittedDate: formattedDate,
-          adminEmailBody,
-        },
-        smtpConfig: {
-          smtpUser: emailSettings.smtpUser,
-          smtpPassword: emailSettings.smtpPassword,
-          smtpPort: emailSettings.smtpPort,
-          smtpHost: emailSettings.smtpHost,
-        },
-      });
+          templateData: {
+            subject: adminSubject,
+            storeName,
+            logo: brandingSettings.storeLogo ?? "",
+            tagline: brandingSettings.storeTagline ?? "",
+            reviewerName: reviewData.reviewerName ?? "Anonymous",
+            reviewerEmail: reviewData.reviewerEmail ?? "",
+            rating: reviewData.rating ?? 0,
+            reviewBody: res.body ?? "",
+            status: res.status ?? "PENDING",
+            productTitle: reviewData.productTitle ?? "",
+            productUrl,
+            manageUrl: `https://${storeURL}/admin/apps/qorix-review/app/reviews`,
+            submittedDate: formattedDate,
+            adminEmailBody,
+          },
+          smtpConfig: buildSmtpConfig(emailSettings),
+        });
+      } catch (error) {
+        console.error("[WARN::api.review.adminEmail]", error);
+        sideEffectErrors.push("admin_email");
+      }
     }
 
-    // bull mq
-
-
-    async function scheduleReviewEmail(order) {
-      const DELAY_MS = 10000;
-
-      await reviewQueue.add(
-        REVIEW_TEST_JOB,
-        {
-          reviewId: order.reviewId,
-          customerEmail: order.customerEmail,
-          customerName: order.customerName,
-        },
-        {
-          delay: DELAY_MS,
-          attempts: 3,
-          removeOnComplete: true,
-          removeOnFail: false,
-        }
-      );
-    }
-
-    return {
+    return sendResponse(null, {
       ok: true,
+      status: 201,
+      message:
+        sideEffectErrors.length > 0
+          ? "Review submitted successfully"
+          : "Review submitted successfully",
       data: res,
-    };
+    });
   } catch (error) {
     console.error("[ERROR::api.review]", error);
-    return AppError.handle(error);
+    return sendResponse(null, AppError.handle(error));
   }
 }
 async function getReview(request, session, admin) {
@@ -330,9 +372,53 @@ async function getReview(request, session, admin) {
     const sort = url.searchParams.get("sort") || "ALL";
     const page = Number(url.searchParams.get("page")) || 1;
     const limit = Number(url.searchParams.get("limit")) || 10;
+    const isOpen = url.searchParams.get("isOpen") === "true";
+    const orderNumber = url.searchParams.get("orderId");
+    const orderId = orderNumber
+      ? orderNumber.startsWith("#")
+        ? orderNumber
+        : `#${orderNumber}`
+      : null;
 
     const { id } = await getStoreContext(session, admin);
 
+    if (isOpen && orderId) {
+      const extractNumericId = (val) => {
+        if (!val) return "";
+        const str = String(val);
+        if (str.includes("/")) return str.split("/").pop();
+        return str;
+      };
+
+      const numericProductId = extractNumericId(productId);
+
+      // Find if there's an order with this orderId and a matching lineItem
+      const orderToUpdate = await prisma.order.findFirst({
+        where: {
+          storeId: id,
+          orderId: orderId,
+          lineItems: {
+            some: {
+              productId: {
+                endsWith: numericProductId,
+              },
+            },
+          },
+        },
+        select: { id: true },
+      });
+
+      if (orderToUpdate) {
+        await prisma.order.update({
+          where: {
+            id: orderToUpdate.id,
+          },
+          data: {
+            reviewCheckStatus: "OPENED",
+          },
+        });
+      }
+    }
     // Base query
     const query = {
       where: {
@@ -413,20 +499,21 @@ async function getReview(request, session, admin) {
       }),
     ]);
 
-    return {
+    return sendResponse(null, {
       ok: true,
-      data: res,
-
-      totalReviews: info._count._all,
-
-      totalPages: Math.ceil(info._count._all / limit),
-      currentPage: page,
-
-      averageRating: Number((info._avg.rating || 0).toFixed(1)),
-    };
+      status: 200,
+      message: "Reviews fetched successfully",
+      data: {
+        reviews: res,
+        totalReviews: info._count._all,
+        totalPages: Math.ceil(info._count._all / limit),
+        currentPage: page,
+        averageRating: Number((info._avg.rating || 0).toFixed(1)),
+      },
+    });
   } catch (error) {
     console.error("[ERROR::api.review.getReview]", error);
-    return AppError.handle(error);
+    return sendResponse(null, AppError.handle(error));
   }
 }
 
