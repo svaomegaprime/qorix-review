@@ -1,5 +1,7 @@
 import React, { useState } from "react";
 import ReaviewHeader from "../../../components/elements/WidgetsHeader";
+import reviewHubReviews from "../data/reviewHubReviews.json";
+
 export default function ReviewHubWidget({ settings, activeDevice }) {
   // layout: "3 column grid",
   // filterSorting: "Filter & sorting both",
@@ -44,6 +46,9 @@ export default function ReviewHubWidget({ settings, activeDevice }) {
     "Videos first",
     "Most helpful",
   ];
+  const visibleReviewCount =
+    Number.parseInt(String(reviewsPerPage || ""), 10) || reviewHubReviews.length;
+  const visibleReviews = reviewHubReviews.slice(0, visibleReviewCount);
 
   return (
     <>
@@ -73,7 +78,7 @@ export default function ReviewHubWidget({ settings, activeDevice }) {
           background:#B5B5B5 ;
         padding:70px;
        overflow: auto;
-       height: 100vh;
+       height: 760px;
 
         }
 
@@ -173,13 +178,19 @@ overflow: auto;
           grid-template-columns: 1fr 1fr;
           gap: 10px;
           margin-top: 2px;
+          min-height: 156px;
+        }
+
+        .qr-review-gallery.single-media {
+          grid-template-columns: 1fr;
         }
 
         .qr-gallery-item {
           position: relative;
-          aspect-ratio: 1 / 1;
+          height: 156px;
           border-radius: var(--qr-img-radius);
           overflow: hidden;
+          background: #f4f4f4;
         }
 
         .qr-gallery-img {
@@ -189,15 +200,39 @@ overflow: auto;
           display: block;
         }
 
+        .qr-gallery-play {
+          position: absolute;
+          right: 10px;
+          bottom: 10px;
+          width: 26px;
+          height: 26px;
+          border-radius: 50%;
+          border: 1px solid rgba(0, 0, 0, 0.12);
+          background: rgba(255, 255, 255, 0.92);
+          color: #333333;
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          font-size: 11px;
+          line-height: 1;
+          padding-left: 2px;
+          box-shadow: 0 2px 8px rgba(0, 0, 0, 0.14);
+        }
+
         .qr-gallery-overlay {
           position: absolute;
-          inset: 0;
+          right: 8px;
+          bottom: 8px;
           background: rgba(0, 0, 0, 0.55);
           color: var(--qr-white);
           display: flex;
           align-items: center;
           justify-content: center;
-          font-size: 16px;
+          min-width: 34px;
+          height: 28px;
+          padding: 0 8px;
+          border-radius: 7px;
+          font-size: 14px;
           font-weight: 600;
           letter-spacing: 0.5px;
         }
@@ -586,19 +621,23 @@ display: block;
           <div className="qr-reviews-grid">
             {/* Card exactly matched with image_57bf9f.png */}
 
-            {[...Array(6)].map((_, i) => (
-              <div className="qr-review-card">
+            {visibleReviews.map((review) => {
+              const visibleMedia = review.media.slice(0, 2);
+              const extraMediaCount = Math.max(review.media.length - 2, 0);
+
+              return (
+              <div className="qr-review-card" key={review.id}>
                 {/* Top Row: User Avatar & Meta */}
                 <div className="qr-reviewer-info">
                   <img
                     className="qr-reviewer-avatar"
-                    src="https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&q=80&w=200"
-                    alt="Hasan R."
+                    src={review.avatar}
+                    alt={review.name}
                   />
                   <div className="qr-reviewer-meta">
                     <div className="qr-reviewer-name-row">
                       {showReviewerName && (
-                        <span className="qr-reviewer-name">Hasan R.</span>
+                        <span className="qr-reviewer-name">{review.name}</span>
                       )}
                       {showVerifiedBadge && (
                         <span className="qr-verified-check">
@@ -614,7 +653,7 @@ display: block;
                       )}
                     </div>
                     {showReviewTimer && (
-                      <span className="qr-reviewer-time">2 days ago</span>
+                      <span className="qr-reviewer-time">{review.time}</span>
                     )}
                   </div>
                 </div>
@@ -628,7 +667,7 @@ display: block;
                         width="16"
                         height="15"
                         viewBox="0 0 17 16"
-                        fill={`${STAR_COLOR}`}
+                        fill={i < review.rating ? `${STAR_COLOR}` : "#d6d6d6"}
                       >
                         <path d="M9.51964 0.855C8.97604 -0.285 7.35604 -0.285 6.81244 0.855L5.14444 4.3494L1.30564 4.8546C0.0552353 5.0202 -0.446365 6.561 0.469235 7.4298L3.27724 10.0962L2.57284 13.9026C2.34244 15.1434 3.65404 16.0962 4.76284 15.495L8.16604 13.647L11.5692 15.495C12.678 16.0962 13.9896 15.1434 13.7592 13.9026L13.0548 10.0962L15.8628 7.4298C16.7772 6.561 16.2768 5.0202 15.0264 4.8546L11.1864 4.3494L9.51964 0.855Z" />
                       </svg>
@@ -637,36 +676,42 @@ display: block;
                 )}
 
                 {/* Review Content Text */}
-                <p className="qr-review-text">
-                  Absolutely love the serum! My skin feels so smooth and
-                  hydrated.
-                </p>
+                <p className="qr-review-text">{review.review}</p>
 
                 {/* Image Gallery Row */}
-                {showMediaAsset && (
-                  <div className="qr-review-gallery">
-                    <div className="qr-gallery-item">
-                      <img
-                        className="qr-gallery-img"
-                        src="https://images.unsplash.com/photo-1620916566398-39f1143ab7be?auto=format&fit=crop&q=80&w=300"
-                        alt="Product view 1"
-                      />
-                    </div>
-                    <div className="qr-gallery-item">
-                      <img
-                        className="qr-gallery-img"
-                        src="https://images.unsplash.com/photo-1608248597481-496100c80836?auto=format&fit=crop&q=80&w=300"
-                        alt="Product view 2"
-                      />
-                      <div className="qr-gallery-overlay">+2</div>
-                    </div>
+                {showMediaAsset && visibleMedia.length > 0 && (
+                  <div
+                    className={`qr-review-gallery ${
+                      visibleMedia.length === 1 ? "single-media" : ""
+                    }`}
+                  >
+                    {visibleMedia.map((media, mediaIndex) => (
+                      <div
+                        className="qr-gallery-item"
+                        key={`${review.id}-${mediaIndex}`}
+                      >
+                        <img
+                          className="qr-gallery-img"
+                          src={media.type === "video" ? media.thumb : media.url}
+                          alt={media.alt}
+                        />
+                        {media.type === "video" && (
+                          <span className="qr-gallery-play">▶</span>
+                        )}
+                        {mediaIndex === 1 && extraMediaCount > 0 && (
+                          <div className="qr-gallery-overlay">
+                            +{extraMediaCount}
+                          </div>
+                        )}
+                      </div>
+                    ))}
                   </div>
                 )}
 
                 {/* Product Tag Badge */}
                 <div className="qr-product-tag">
                   <span className="qr-product-icon">🧴</span>
-                  <span className="qr-product-name">Hydrating serum</span>
+                  <span className="qr-product-name">{review.productName}</span>
                 </div>
 
                 {/* Bottom Footer Actions */}
@@ -685,7 +730,7 @@ display: block;
                       >
                         <path d="M14 9V5a3 3 0 0 0-3-3l-4 9v11h11.28a2 2 0 0 0 2-1.7l1.38-9a2 2 0 0 0-2-2.3zM7 22H4a2 2 0 0 1-2-2v-7a2 2 0 0 1 2-2h3" />
                       </svg>
-                      Helpful (24)
+                      Helpful ({review.helpfulCount})
                     </button>
                   )}
 
@@ -712,7 +757,8 @@ display: block;
                   )}
                 </div>
               </div>
-            ))}
+            );
+          })}
           </div>
         </section>
       </div>

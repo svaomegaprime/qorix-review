@@ -1,0 +1,137 @@
+[
+  {
+    "id": 1,
+    "name": "Md Abdur Razzak",
+    "time": "2 days ago",
+    "rating": 5,
+    "avatar": "https://images.unsplash.com/photo-1500648767791-00dcc994a43e?auto=format&fit=crop&q=80&w=200",
+    "review": "Absolutely love the serum! My skin feels so smooth and hydrated.",
+    "productName": "Hydrating serum",
+    "helpfulCount": 24,
+    "media": [
+      {
+        "type": "video",
+        "url": "https://interactive-examples.mdn.mozilla.net/media/cc0-videos/flower.mp4",
+        "thumb": "https://images.unsplash.com/photo-1571781926291-c477ebfd024b?auto=format&fit=crop&q=80&w=700",
+        "alt": "Serum bottle video preview"
+      }
+    ]
+  },
+  {
+    "id": 2,
+    "name": "Eftakhar",
+    "time": "2 days ago",
+    "rating": 5,
+    "avatar": "https://images.unsplash.com/photo-1500648767791-00dcc994a43e?auto=format&fit=crop&q=80&w=200",
+    "review": "Absolutely love the serum! My skin feels so smooth and hydrated.",
+    "productName": "Hydrating serum",
+    "helpfulCount": 24,
+    "media": [
+      {
+        "type": "image",
+        "url": "https://images.unsplash.com/photo-1620916566398-39f1143ab7be?auto=format&fit=crop&q=80&w=700",
+        "alt": "Serum bottle on white surface"
+      },
+      {
+        "type": "image",
+        "url": "https://images.unsplash.com/photo-1596462502278-27bfdc403348?auto=format&fit=crop&q=80&w=700",
+        "alt": "Skincare bottles with product box"
+      },
+      {
+        "type": "image",
+        "url": "https://images.unsplash.com/photo-1596755389378-c31d21fd1273?auto=format&fit=crop&q=80&w=700",
+        "alt": "Skincare jar and cream"
+      },
+      {
+        "type": "video",
+        "url": "https://interactive-examples.mdn.mozilla.net/media/cc0-videos/flower.mp4",
+        "thumb": "https://images.unsplash.com/photo-1556228720-195a672e8a03?auto=format&fit=crop&q=80&w=700",
+        "alt": "Skincare routine video preview"
+      }
+    ]
+  },
+  {
+    "id": 3,
+    "name": "Hasan R.",
+    "time": "2 days ago",
+    "rating": 5,
+    "avatar": "https://images.unsplash.com/photo-1500648767791-00dcc994a43e?auto=format&fit=crop&q=80&w=200",
+    "review": "Absolutely love the serum! My skin feels so smooth and hydrated.",
+    "productName": "Hydrating serum",
+    "helpfulCount": 24,
+    "media": [
+      {
+        "type": "image",
+        "url": "https://images.unsplash.com/photo-1617897903246-719242758050?auto=format&fit=crop&q=80&w=700",
+        "alt": "Serum bottles on neutral background"
+      }
+    ]
+  },
+  {
+    "id": 4,
+    "name": "Nadia S.",
+    "time": "1 week ago",
+    "rating": 4,
+    "avatar": "https://images.unsplash.com/photo-1494790108377-be9c29b29330?auto=format&fit=crop&q=80&w=200",
+    "review": "The texture is lightweight and absorbs fast. It sits nicely under makeup.",
+    "productName": "Daily glow cream",
+    "helpfulCount": 18,
+    "media": [
+      {
+        "type": "image",
+        "url": "https://images.unsplash.com/photo-1596462502278-27bfdc403348?auto=format&fit=crop&q=80&w=700",
+        "alt": "Beauty products flatlay"
+      },
+      {
+        "type": "video",
+        "url": "https://interactive-examples.mdn.mozilla.net/media/cc0-videos/flower.mp4",
+        "thumb": "https://images.unsplash.com/photo-1522335789203-aabd1fc54bc9?auto=format&fit=crop&q=80&w=700",
+        "alt": "Cream texture video preview"
+      }
+    ]
+  },
+  {
+    "id": 5,
+    "name": "Farhan M.",
+    "time": "3 weeks ago",
+    "rating": 5,
+    "avatar": "https://images.unsplash.com/photo-1506794778202-cad84cf45f1d?auto=format&fit=crop&q=80&w=200",
+    "review": "Packaging looked premium and the product felt gentle on sensitive skin.",
+    "productName": "Repair serum",
+    "helpfulCount": 31,
+    "media": [
+      {
+        "type": "image",
+        "url": "https://images.unsplash.com/photo-1556228578-8c89e6adf883?auto=format&fit=crop&q=80&w=700",
+        "alt": "Skincare bottles grouped together"
+      },
+      {
+        "type": "image",
+        "url": "https://images.unsplash.com/photo-1598440947619-2c35fc9aa908?auto=format&fit=crop&q=80&w=700",
+        "alt": "Cosmetic product texture"
+      },
+      {
+        "type": "image",
+        "url": "https://images.unsplash.com/photo-1608571423902-eed4a5ad8108?auto=format&fit=crop&q=80&w=700",
+        "alt": "Serum bottle on bathroom counter"
+      }
+    ]
+  },
+  {
+    "id": 6,
+    "name": "Ayesha T.",
+    "time": "1 month ago",
+    "rating": 5,
+    "avatar": "https://images.unsplash.com/photo-1531123897727-8f129e1688ce?auto=format&fit=crop&q=80&w=200",
+    "review": "Nice finish, no sticky feeling, and the scent is very mild.",
+    "productName": "Hydrating serum",
+    "helpfulCount": 12,
+    "media": [
+       {
+        "type": "image",
+        "url": "https://images.unsplash.com/photo-1598440947619-2c35fc9aa908?auto=format&fit=crop&q=80&w=700",
+        "alt": "Cosmetic product texture"
+      }
+    ]
+  }
+]
