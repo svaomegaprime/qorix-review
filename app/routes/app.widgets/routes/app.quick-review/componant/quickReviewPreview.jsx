@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import reviewsData from "./review.json";
 import ReviewSummary, {
   StarSVG,
@@ -89,7 +89,7 @@ function WriteReviewModal({ onClose, quickReview, quickReviewTab }) {
                   />
                 </svg>
               </div>
-              <div>
+              <div className="rv-modal-copy">
                 <h3 className="rv-modal-title">{formTitle}</h3>
                 <p className="rv-modal-sub">{formSubtitle}</p>
               </div>
@@ -215,6 +215,7 @@ export default function ReviewList({
   const [selectedFilter, setSelectedFilter] = useState("Highest rating");
   const [lightbox, setLightbox] = useState(null);
   const [showModal, setShowModal] = useState(false);
+  const [isPreviewModalDismissed, setIsPreviewModalDismissed] = useState(false);
 
   // ---- new, purely local/UI state for the redesign (additive only) ----
   const [helpfulCounts, setHelpfulCounts] = useState({});
@@ -237,7 +238,7 @@ export default function ReviewList({
     writeReviewButtonText,
     showMediaImageAndVideo,
     filterAndSorting,
- 
+  
     reviewPerPage,
     defaultSort,
     colorValues,
@@ -295,6 +296,23 @@ const showFiltering =
   const firstProductName = reviewsData[0]?.product;
 
   const { success, reviewPopup } = quickReviewTab;
+  const shouldShowPreviewModal =
+    showModal || ((reviewPopup || success) && !isPreviewModalDismissed);
+
+  useEffect(() => {
+    setIsPreviewModalDismissed(false);
+  }, [reviewPopup, success]);
+
+  const openReviewModal = () => {
+    setIsPreviewModalDismissed(false);
+    setShowModal(true);
+  };
+
+  const closeReviewModal = () => {
+    setShowModal(false);
+    setIsPreviewModalDismissed(true);
+  };
+
   return (
     <>
       <style>{`
@@ -303,7 +321,7 @@ const showFiltering =
           background: rgba(0,0,0,0.45);
           align-items: center;
           justify-content: center;
-          max-width: ${activeDevice === "mobile" ? "25%" : "1400px"};
+          max-width: ${activeDevice === "mobile" ? "30%" : "1400px"};
           margin: 0 auto;
           padding: ${activeDevice === "mobile" ? "20px" : "40px"};
           color: #1a1a1a;
@@ -450,10 +468,10 @@ border:none;
         .rv-report-link { font-size: 12px; color: #6d7175; cursor: pointer; text-decoration: none; }
         .rv-report-link:hover { color: #1a1a1a; text-decoration: underline; }
 
-        .rv-lightbox { position: fixed; inset: 0; z-index: 9999; background: rgba(0,0,0,0.82); display: flex; align-items: center; justify-content: center; }
-        .rv-lightbox-inner { position: relative; max-width: 90vw; max-height: 90vh; }
-        .rv-lightbox-inner img { max-width: 90vw; max-height: 85vh; border-radius: 8px; display: block; }
-        .rv-lightbox-inner video { max-width: 90vw; max-height: 85vh; border-radius: 8px; display: block; outline: none; }
+        .rv-lightbox { position: absolute; inset: 0; z-index: 9999; background: rgba(0,0,0,0.82); display: flex; align-items: center; justify-content: center; padding: 24px; box-sizing: border-box; }
+        .rv-lightbox-inner { position: relative; max-width: 100%; max-height: 100%; }
+        .rv-lightbox-inner img { max-width: 100%; max-height: calc(100vh - 180px); border-radius: 8px; display: block; }
+        .rv-lightbox-inner video { max-width: 100%; max-height: calc(100vh - 180px); border-radius: 8px; display: block; outline: none; }
       .rv-lb-close {
     position: absolute;
     top: 3px;
@@ -480,12 +498,14 @@ border:none;
           background: rgba(0,0,0,0.45);
           display: flex;
           justify-content: center;
+          align-items: flex-start;
         }
-        .rv-modal { height:${success ? (activeDevice === "mobile" ? "45%" : "45%") : activeDevice === "mobile" ? "73%" : "73%"}; margin-top: 40px; background: #fff; border-radius:${borderRadius}px; padding: 24px; width: 400px; max-width: 50vw; position: relative; overflow: auto; }
-        .rv-modal-header { display: flex; align-items: center; gap: 10px; margin-bottom: 16px; }
+        .rv-modal { margin-top: 40px; background: #fff; border-radius:${borderRadius}px; padding: 24px; width: 400px; max-width: 50vw; height: auto; position: relative; overflow: visible; }
+        .rv-modal-header { display: flex; align-items: center; gap: 10px; margin-bottom: 16px; padding-right: 38px; }
         .rv-modal-icon { width: 36px; height: 36px; border-radius: 50%; background: ${Submit_Button_Color}; display: flex; align-items: center; justify-content: center; flex-shrink: 0; }
-        .rv-modal-title { font-size: 16px; font-weight: 600; margin: 0 0 2px; }
-        .rv-modal-sub { font-size: 13px; color: #6d7175; margin: 0; }
+        .rv-modal-copy { min-width: 0; flex: 1; }
+        .rv-modal-title { font-size: 16px; font-weight: 600; margin: 0 0 2px; word-break: break-word; }
+        .rv-modal-sub { font-size: 13px; color: #6d7175; margin: 0; word-break: break-word; }
         .rv-modal-label { font-size: 13px; font-weight: 500; display: block; margin-bottom: 6px; color: #1a1a1a; width: 100%; }
         .rv-req { color: #c00; margin-left: 2px; }
         .rv-modal-stars { display: flex; gap: 6px; margin-bottom: 16px; }
@@ -553,7 +573,7 @@ border:none;
         <div className="rv-wrap">
           {/* ---------- Summary / heading ---------- */}
           <ReviewSummary
-            reviewModelALlData = {{isShowStarDistribution,isShowMediaStrip,isShowReviewCount,writeReviewButtonText,BAR_FILE_COLOR}}
+            reviewModelALlData = {{isShowStarDistribution,isShowMediaStrip,isShowReviewCount,writeReviewButtonText,BAR_FILE_COLOR,activeDevice}}
             avgRating={avgRating}
             reviewCount={reviewsData.length}
             ratingBreakdown={ratingBreakdown}
@@ -565,14 +585,14 @@ border:none;
               Submit_Button_Color,
               Border_Color,
             }}
-            onWriteReview={() => setShowModal(true)}
+            onWriteReview={openReviewModal}
             onMediaClick={(item) => setLightbox(item)}
           />
-          {(reviewPopup || quickReviewTab?.success || showModal) && (
+          {shouldShowPreviewModal && (
             <WriteReviewModal
               quickReviewTab={quickReviewTab}
               quickReview={quickReview}
-              onClose={() => setShowModal(false)}
+              onClose={closeReviewModal}
             />
           )}
 
@@ -827,7 +847,6 @@ border:none;
             <button>Load more reviews</button>
           </div>
         </div>
-      </div>
 
       {/* Lightbox */}
       {lightbox && (
@@ -847,6 +866,7 @@ border:none;
           </div>
         </div>
       )}
+      </div>
     </>
   );
 }
