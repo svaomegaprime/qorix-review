@@ -1,0 +1,65 @@
+{{ 'swiper-bundle.min.css' | asset_url | stylesheet_tag }}
+{{ 'quickreview.css' | asset_url | stylesheet_tag }}
+
+{% assign show_bar = block.settings.show_rating_bar %}
+{% assign show_media = block.settings.show_media_slider %}
+
+{% if show_bar and show_media %}
+  {% assign card_modifier = 'quickreview-card--full' %}
+  {% assign slides_count = 4 %}
+{% elsif show_bar and show_media == false %}
+  {% assign card_modifier = 'quickreview-card--no-media' %}
+  {% assign slides_count = 4 %}
+{% elsif show_bar == false and show_media %}
+  {% assign card_modifier = 'quickreview-card--no-bar' %}
+  {% assign slides_count = 6 %}
+{% else %}
+  {% assign card_modifier = 'quickreview-card--summary-only' %}
+  {% assign slides_count = 4 %}
+{% endif %}
+
+<div
+  class="quickreview-card {{ card_modifier }}"
+  data-product-id="{{ product.id }}"
+  data-slides="{{ slides_count }}"
+  id="quickreview-{{ block.id }}"
+  {{ block.shopify_attributes }}
+>
+  {% render 'quickreview-rating-summary', product: product, block: block %}
+
+  {% if show_bar %}
+    {% render 'quickreview-rating-bar', product: product, block: block %}
+  {% endif %}
+
+  {% if show_media %}
+    {% render 'quickreview-media-slider', product: product, block: block %}
+  {% endif %}
+</div>
+
+{% render 'quickreview-reviews', product: product, block: block %}
+
+<script src="{{ 'swiper-bundle.min.js' | asset_url }}" defer></script>
+
+{% schema %}
+{
+  "name": "Quick Review",
+  "target": "section",
+  "settings": [
+    {
+      "type": "checkbox",
+      "id": "show_rating_bar",
+      "label": "Show rating breakdown bar",
+      "default": true
+    },
+    {
+      "type": "checkbox",
+      "id": "show_media_slider",
+      "label": "Show reviews with media",
+      "default": true
+    }
+  ],
+  "enabled_on": {
+    "templates": ["product"]
+  }
+}
+{% endschema %}
