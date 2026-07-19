@@ -180,6 +180,8 @@ export async function action({ request }) {
       },
     });
 
+    console.log("[Quick Review::]: ",res)
+
     const metafieldResult = await setAppMetafield(admin, "quick_review", res);
 
     return {
