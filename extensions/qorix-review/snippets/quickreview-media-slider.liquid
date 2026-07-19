@@ -15,86 +15,76 @@
 
     <div class="quickreview-media__slider swiper" data-quickreview-swiper>
       <div class="swiper-wrapper" data-quickreview-swiper-wrapper>
-        <div class="swiper-slide quickreview-media__slide">
-          <img
-            class="quickreview-media__img"
-            src="{{ 'quick_r_1.png' | asset_url }}"
-            alt="Review media"
-            loading="lazy"
-            height=""
-            width=""
-          >
-        </div>
-        <div class="swiper-slide quickreview-media__slide">
-          <img
-            class="quickreview-media__img"
-            src="{{ 'quick_r_2.png' | asset_url }}"
-            alt="Review media"
-            loading="lazy"
-            height=""
-            width=""
-          >
-        </div>
-        <div class="swiper-slide quickreview-media__slide">
-          <img
-            class="quickreview-media__img"
-            src="{{ 'quick_r_3.png' | asset_url }}"
-            alt="Review media"
-            loading="lazy"
-            height=""
-            width=""
-          >
-        </div>
-        <div class="swiper-slide quickreview-media__slide">
-          <img
-            class="quickreview-media__img"
-            src="{{ 'quick_r_4.png' | asset_url }}"
-            alt="Review media"
-            loading="lazy"
-            height=""
-            width=""
-          >
-        </div>
-        <div class="swiper-slide quickreview-media__slide">
-          <img
-            class="quickreview-media__img"
-            src="{{ 'quick_r_1.png' | asset_url }}"
-            alt="Review media"
-            loading="lazy"
-            height=""
-            width=""
-          >
-        </div>
-        <div class="swiper-slide quickreview-media__slide">
-          <img
-            class="quickreview-media__img"
-            src="{{ 'quick_r_2.png' | asset_url }}"
-            alt="Review media"
-            loading="lazy"
-            height=""
-            width=""
-          >
-        </div>
-        <div class="swiper-slide quickreview-media__slide">
-          <img
-            class="quickreview-media__img"
-            src="{{ 'quick_r_3.png' | asset_url }}"
-            alt="Review media"
-            loading="lazy"
-            height=""
-            width=""
-          >
-        </div>
-        <div class="swiper-slide quickreview-media__slide">
-          <img
-            class="quickreview-media__img"
-            src="{{ 'quick_r_4.png' | asset_url }}"
-            alt="Review media"
-            loading="lazy"
-            height=""
-            width=""
-          >
-        </div>
+        {% comment %}
+          <div class="swiper-slide quickreview-media__slide">
+            <img
+              class="quickreview-media__img"
+              src="{{ 'quick_r_1.png' | asset_url }}"
+              alt="Review media"
+              loading="lazy"
+              height=""
+              width=""
+            >
+          </div>
+        {% endcomment %}
+        {% comment %}
+          <template x-for="review in reviews" :key="review.id">
+            <template x-if="review.attachments && review.attachments.length > 0">
+              <template x-for="attachment in review.attachments" :key="attachment.id">
+                <template x-if="attachment.type == 'IMAGE'">
+                  <div class="swiper-slide quickreview-media__slide">
+                    <img
+                      class="quickreview-media__img"
+                      :src="attachment.url"
+                      alt="Review media"
+                      loading="lazy"
+                      width=""
+                      height=""
+                    >
+                  </div>
+                </template>
+                <template x-if="attachment.type == 'VIDEO'">
+                  <div class="swiper-slide quickreview-media__slide">
+                    <video
+                      class="quickreview-media__img"
+                      :src="attachment.url"
+                      alt="Review media"
+                      loading="lazy"
+                      width=""
+                      height=""
+                    />
+                  </div>
+                </template>
+              </template>
+            </template>
+          </template>
+        {% endcomment %}
+        <template x-for="review in reviews" :key="review.id">
+          <template x-if="review.attachments?.length">
+            <template x-for="attachment in review.attachments" :key="attachment.id">
+              <div class="swiper-slide quickreview-media__slide" @click="openLightbox(attachment)">
+                <template x-if="attachment.type === 'IMAGE'">
+                  <img
+                    class="quickreview-media__img"
+                    :src="attachment.url"
+                    alt="Review media"
+                    loading="lazy"
+                    width=""
+                    height=""
+                  >
+                </template>
+
+                <template x-if="attachment.type === 'VIDEO'">
+                  <video
+                    class="quickreview-media__img"
+                    :src="attachment.url"
+                    preload="metadata"
+                  ></video>
+                </template>
+              </div>
+            </template>
+          </template>
+        </template>
       </div>
     </div>
 

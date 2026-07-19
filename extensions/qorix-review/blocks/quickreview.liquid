@@ -66,11 +66,6 @@
 {% endif %}
 
 <div
-  class="quickreview-card {{ card_modifier }}"
-  data-product-id="{{ product.id }}"
-  data-slides="{{ slides_count }}"
-  id="quickreview-{{ block.id }}"
-  {{ block.shopify_attributes }}
   {% comment %} xx="{{ product.metafields.reviews.rating }} - {{ product.metafields.reviews.rating_count.value }}" {% endcomment %}
   id="quick-review"
   {% comment %} x-data="quickReviewWidget()" {% endcomment %}
@@ -83,26 +78,34 @@
   data-limit="{{ quick_review_metafield.reviewPerPage }}"
   data-page-type="{{ template.name }}"
 >
-  {% render 'quickreview-rating-summary', product: product, block: block %}
+  <div
+    class="quickreview-card {{ card_modifier }}"
+    data-product-id="{{ product.id }}"
+    data-slides="{{ slides_count }}"
+    id="quickreview-{{ block.id }}"
+    {{ block.shopify_attributes }}
+  >
+    {% render 'quickreview-rating-summary', product: product, block: block %}
 
-  {% if show_bar %}
-    {% render 'quickreview-rating-bar', product: product, block: block %}
-  {% endif %}
+    {% if show_bar %}
+      {% render 'quickreview-rating-bar', product: product, block: block %}
+    {% endif %}
 
-  {% if show_media %}
-    {% render 'quickreview-media-slider', product: product, block: block %}
-  {% endif %}
+    {% if show_media %}
+      {% render 'quickreview-media-slider', product: product, block: block %}
+    {% endif %}
 
-  {% render 'single-step-form',
-    quick_review_metafield: quick_review_metafield,
-    allow_photo: allow_photo,
-    allow_video: allow_video,
-    media_accept: media_accept
-  %}
+    {% render 'single-step-form',
+      quick_review_metafield: quick_review_metafield,
+      allow_photo: allow_photo,
+      allow_video: allow_video,
+      media_accept: media_accept
+    %}
+  </div>
+  {% render 'lightbox' %}
+
+  {% render 'quickreview-reviews' %}
 </div>
-
-{% render 'quickreview-reviews' %}
-
 <script src="{{ 'swiper-bundle.min.js' | asset_url }}" defer></script>
 <script src="{{ 'quickreview.js' | asset_url }}" defer></script>
 <script src="{{ 'review.js' | asset_url }}" defer></script>

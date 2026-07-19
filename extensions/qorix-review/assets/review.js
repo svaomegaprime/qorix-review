@@ -427,6 +427,7 @@ class QuickReviewWidget {
   }
 
   openLightbox(media) {
+    console.log(media);
     this.lightboxMedia = media;
     this.lightboxOpen = true;
     document.body.style.overflow = "hidden";
