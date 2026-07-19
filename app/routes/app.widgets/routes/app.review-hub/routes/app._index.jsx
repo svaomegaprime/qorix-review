@@ -9,6 +9,9 @@ import { useNavigation } from "react-router";
 import Header from "../../../components/Header";
 import ColorPicker from "../../../components/elements/ColorPicker";
 import ReviewHumComponent from "../Component/Reviewhup_widgth_preview";
+import ResetToDefaults from "../../../components/elements/ResetToDefaults";
+import AdvanceCSS from "../../../components/elements/AdvanceCSS";
+
 const COLOR_PICKERS_ELEMENTS = [
   {
     key: "STAR_COLOR",
@@ -34,6 +37,10 @@ const COLOR_PICKERS_ELEMENTS = [
     key: "FILTER_CHIP_COLOR",
     label: "Filter chip (active)",
   },
+    {
+    key: "FILTER_CHIP_COLOR_STAR_COLOR",
+    label: "Filter chip star color (active)",
+  },
 ];
 
 const DEFAULT_COLOR_VALUES = {
@@ -42,7 +49,35 @@ const DEFAULT_COLOR_VALUES = {
   VERIFIED_BADGE_COLOR: "#1D9E75",
   Card_Background_Color: "#FFFFFF",
   Border_Color: "#F0F0F0",
+  FILTER_CHIP_COLOR: "#108848",
+  FILTER_CHIP_COLOR_STAR_COLOR: "#fff",
 };
+
+const createDefaultSettings = () => ({
+  // Header option
+  showHeader: true,
+  headerStyle: "center",
+  eyebrowLabel: "CUSTOMER REVIEWS",
+  heading: "Reviews from people",
+  subheading: "Watch and hear what our customers have to say.",
+  reviewStats: "Show review count & verified badge",
+// Display elements
+  showStarDistribution: true,
+  showReviewerName: true,
+  showReviewTimer: true,
+  showVerifiedBadge: true,
+  showMediaAsset: true,
+  showShareOption: true,
+  showAppreciationOption: true,
+// -------Carousel behavior
+  layout: "3 column grid",
+  filterSorting: "Filter & sorting both",
+  reviewsPerPage: "9 reviews",
+// color piker
+  colors: { ...DEFAULT_COLOR_VALUES },
+  // advance css
+  advanceCss: "",
+});
 
 export default function Index({ VALUES = {}, handleChange }) {
   // Start----Default CSR loading state checking for navigation
@@ -52,33 +87,8 @@ export default function Index({ VALUES = {}, handleChange }) {
 
   const [activeDevice, setActiveDevice] = useState("desktop");
 
-  const [settings, setSettings] = useState({
-    // Header option
-
-    showHeader: true,
-    headerStyle: "center", // default active
-    eyebrowLabel: "CUSTOMER REVIEWS",
-    heading: "Reviews from people",
-    subheading: "Watch and hear what our customers have to say.",
-    reviewStats: "Show review count & verified badge",
-
-    // Display elements
-    showStarDistribution: true,
-    showReviewerName: true,
-    showReviewTimer: true,
-    showVerifiedBadge: true,
-    showMediaAsset: true,
-    showShareOption: true,
-    showAppreciationOption: true,
-
-    // Layout options
-    layout: "3 column grid",
-    filterSorting: "Filter & sorting both",
-    reviewsPerPage: "9 reviews",
-
-    // color piker
-    colors: DEFAULT_COLOR_VALUES,
-  });
+  const [settings, setSettings] = useState(() => createDefaultSettings());
+  const [coustomCss, setCss] = useState(() => createDefaultSettings().advanceCss || "");
 
   const handleSettingChange = (key, value) => {
     if (typeof key !== "string") {
@@ -89,6 +99,17 @@ export default function Index({ VALUES = {}, handleChange }) {
   };
 
   console.log("Settings:", settings);
+
+  const handleResetToDefaults = () => {
+    const defaults = createDefaultSettings();
+    setSettings(defaults);
+    setCss(defaults.advanceCss || "");
+  };
+
+  const handleCssChange = (value) => {
+    setCss(value);
+    handleSettingChange("advanceCss", value);
+  };
 
   // Start----Handlers for hide app window
   const handleHideAppWindow = () => {
@@ -121,7 +142,7 @@ export default function Index({ VALUES = {}, handleChange }) {
 
   const handleChangeColors = (e) => {
     handleSettingChange("colors", {
-      ...settings.colors,
+      ...(settings?.colors || DEFAULT_COLOR_VALUES),
       ...e,
     });
 
@@ -418,6 +439,13 @@ export default function Index({ VALUES = {}, handleChange }) {
                 </s-stack>
               </div>
 
+               <s-stack>
+                  <AdvanceCSS setCss={handleCssChange} css={coustomCss} />
+               </s-stack>
+                
+                <s-stack gap="large" paddingBlockEnd="large">
+                   <ResetToDefaults handleResetToDefaults={handleResetToDefaults}/>
+                </s-stack>
               {/* End----Sidebar content */}
             </div>
           </CustomSection>
