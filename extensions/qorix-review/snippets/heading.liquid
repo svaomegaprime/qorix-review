@@ -1,0 +1,21 @@
+{{ 'heading.css' | asset_url | stylesheet_tag }}
+{%- assign display_rating = rating | default: 4.9 -%}
+
+<div class="qr-heading-wrapper">
+  <p class="qr-heading-label">{{ label | default: 'Customer Reviews' }}</p>
+  <h2 class="qr-heading-title">{{ title | default: 'What customers love about us' }}</h2>
+  <p class="qr-heading-subtitle">{{ subtitle | default: 'Watch and hear what our customers have to say.' }}</p>
+
+  <div class="qr-rating-summary">
+    <div class="qr-rating-stars">
+      {% render 'stars', rating: display_rating %}
+    </div>
+    <span class="qr-rating-score">{{ display_rating }}</span>
+    <span class="qr-rating-count">({{ review_count | default: 2451 }} reviews)</span>
+    <span class="qr-rating-divider">|</span>
+    <span class="qr-verified-badge">
+      {% render 'icon', name: 'verified' %}
+      Verified reviews
+    </span>
+  </div>
+</div>
