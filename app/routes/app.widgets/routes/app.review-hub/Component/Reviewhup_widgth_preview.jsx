@@ -1,10 +1,17 @@
 import React, { useState } from "react";
 import ReaviewHeader from "../../../components/elements/WidgetsHeader";
+import reviewHubReviews from "../data/reviewHubReviews.json";
+import ReviewSummary, {
+  StarSVG,
+} from "../../../components/elements/ReviewSummary";
+
 export default function ReviewHubWidget({ settings, activeDevice }) {
   // layout: "3 column grid",
   // filterSorting: "Filter & sorting both",
   // reviewsPerPage: "9 reviews",
   // reviewStats: "Show review count & verified badge",
+
+   
   const {
     showStarDistribution,
     showReviewerName,
@@ -38,10 +45,12 @@ export default function ReviewHubWidget({ settings, activeDevice }) {
     "Highest rating",
     "Lowest rating",
     "Only pictures",
-    "Pictures first",
-    "Videos first",
+    "Only Videos",
     "Most helpful",
   ];
+  const visibleReviewCount =
+    Number.parseInt(String(reviewsPerPage || ""), 10) || reviewHubReviews.length;
+  const visibleReviews = reviewHubReviews.slice(0, visibleReviewCount);
 
   return (
     <>
@@ -71,7 +80,7 @@ export default function ReviewHubWidget({ settings, activeDevice }) {
           background:#B5B5B5 ;
         padding:70px;
        overflow: auto;
-       height: 100vh;
+       height: 760px;
 
         }
 
@@ -105,7 +114,7 @@ overflow: auto;
           display: flex;
           flex-direction: column;
           gap: 14px;
-          max-width: 440px; /* Optional standard limit */
+          // max-width: 440px; /* Optional standard limit */
         }
 
         .qr-reviewer-info {
@@ -137,7 +146,7 @@ overflow: auto;
         .qr-reviewer-name {
           font-size: 16px;
           font-weight: 600;
-          color: var(--qr-text-primary);
+          color: ${TEXT_COLOR};
           letter-spacing: -0.01em;
         }
 
@@ -149,7 +158,7 @@ overflow: auto;
 
         .qr-reviewer-time {
           font-size: 14px;
-          color: var(--qr-text-muted);
+          color: ${TEXT_COLOR};
         }
 
         .qr-card-stars {
@@ -160,7 +169,7 @@ overflow: auto;
 
         .qr-review-text {
           font-size: 15px;
-          color: var(--qr-text-secondary);
+          color:${TEXT_COLOR};
           line-height: 1.45;
           font-weight: 400;
         }
@@ -171,13 +180,19 @@ overflow: auto;
           grid-template-columns: 1fr 1fr;
           gap: 10px;
           margin-top: 2px;
+          min-height: 156px;
+        }
+
+        .qr-review-gallery.single-media {
+          grid-template-columns: 1fr;
         }
 
         .qr-gallery-item {
           position: relative;
-          aspect-ratio: 1 / 1;
+          height: 156px;
           border-radius: var(--qr-img-radius);
           overflow: hidden;
+          background: #f4f4f4;
         }
 
         .qr-gallery-img {
@@ -187,15 +202,39 @@ overflow: auto;
           display: block;
         }
 
+        .qr-gallery-play {
+          position: absolute;
+          right: 10px;
+          bottom: 10px;
+          width: 26px;
+          height: 27px;
+          border-radius: 50%;
+          border: 1px solid rgba(0, 0, 0, 0.12);
+          background: rgba(255, 255, 255, 0.92);
+          color: #333333;
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          font-size: 11px;
+          line-height: 1;
+          padding-left: 2px;
+          box-shadow: 0 2px 8px rgba(0, 0, 0, 0.14);
+        }
+
         .qr-gallery-overlay {
           position: absolute;
-          inset: 0;
+          right: 8px;
+          bottom: 8px;
           background: rgba(0, 0, 0, 0.55);
           color: var(--qr-white);
           display: flex;
           align-items: center;
           justify-content: center;
-          font-size: 16px;
+          min-width: 18px;
+          height: 22px;
+          padding: 0 8px;
+          border-radius: 7px;
+          font-size: 14px;
           font-weight: 600;
           letter-spacing: 0.5px;
         }
@@ -379,8 +418,8 @@ overflow: auto;
           background: #ffffff;
           border: 1px solid #e0e0e0;
           border-radius: 20px;
-          padding: 6px 14px;
-          font-size: 13.5px;
+     
+          font-size: 20px;
           color: #444444;
           cursor: pointer;
           font-weight: 400;
@@ -399,7 +438,58 @@ overflow: auto;
           fill: #ffffff !important;
         }
 
+
+         @media (max-width: 1300px) {
+
+            .qr-reviews-grid {
+          display: grid;
+          padding: 40px 0;
+          grid-template-columns:  repeat(${activeDevice === "mobile" ? 1 : 2},  1fr);
+          gap: 24px;
+        }
+         .qr-reviews-section {
+   
+    padding: 28px;
+   
+}
+
+          .qr-review-card {
+            padding: 16px;
+          }
+          .qr-helpful-btn, .qr-share-btn {
+            padding: 7px 12px;
+            font-size: 12px;
+          }
+       
+             
+        }
+
         @media (max-width: 480px) {
+
+         .tb-top-row {
+          display: flex;
+          flex-direction: column;
+          gap: 12px;
+          align-items: center;
+          justify-content: space-between;
+         
+        }
+.tb-filter-main-btn , .tb-sort-trigger , .tb-sort-wrapper 
+{
+display: block;
+  width: 100%;
+}
+        .qr-reviews-container {
+
+    padding: 13px;
+   
+}
+            .qr-reviews-grid {
+          display: grid;
+          padding: 40px 0;
+          grid-template-columns:  repeat(${activeDevice === "mobile" ? 1 : 1},  1fr);
+          gap: 24px;
+        }
           .qr-review-card {
             padding: 16px;
           }
@@ -422,23 +512,45 @@ overflow: auto;
                 {/* FILTER */}
                 {(filterSorting === "Filter & sorting both" ||
                   filterSorting === "Filter only") && (
-                    <button
-                      onClick={() => setIsFilterign(!isFilterign)}
-                      className="tb-filter-main-btn"
+                  <button
+                    onClick={() => setIsFilterign(!isFilterign)}
+                    className="tb-filter-main-btn"
+                  >
+                    <svg
+                      width="15"
+                      height="15"
+                      viewBox="0 0 24 24"
+                      fill="none"
+                      stroke="currentColor"
+                      strokeWidth="2"
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
                     >
-                      <svg
-                        width="15"
-                        height="15"
-                        viewBox="0 0 24 24"
-                        fill="none"
-                        stroke="currentColor"
-                        strokeWidth="2"
-                        strokeLinecap="round"
-                        strokeLinejoin="round"
-                      >
-                        <polygon points="22 3 2 3 10 12.46 10 19 14 21 14 12.46 22 3" />
-                      </svg>
-                      Filter
+                      <polygon points="22 3 2 3 10 12.46 10 19 14 21 14 12.46 22 3" />
+                    </svg>
+                    Filter
+                    <svg
+                      width="12"
+                      height="12"
+                      viewBox="0 0 24 24"
+                      fill="none"
+                      stroke="currentColor"
+                      strokeWidth="2"
+                    >
+                      <polyline points="6 9 12 15 18 9" />
+                    </svg>
+                  </button>
+                )}
+
+                {/* SORTING */}
+                {(filterSorting === "Filter & sorting both" ||
+                  filterSorting === "Sorting only") && (
+                  <div className="tb-sort-wrapper">
+                    <button
+                      className="tb-sort-trigger"
+                      onClick={() => setIsSortOpen(!isSortOpen)}
+                    >
+                      Sort by: <span>{selectedSort}</span>
                       <svg
                         width="12"
                         height="12"
@@ -450,48 +562,27 @@ overflow: auto;
                         <polyline points="6 9 12 15 18 9" />
                       </svg>
                     </button>
-                  )}
 
-                {/* SORTING */}
-                {(filterSorting === "Filter & sorting both" ||
-                  filterSorting === "Sorting only") && (
-                    <div className="tb-sort-wrapper">
-                      <button
-                        className="tb-sort-trigger"
-                        onClick={() => setIsSortOpen(!isSortOpen)}
-                      >
-                        Sort by: <span>{selectedSort}</span>
-                        <svg
-                          width="12"
-                          height="12"
-                          viewBox="0 0 24 24"
-                          fill="none"
-                          stroke="currentColor"
-                          strokeWidth="2"
-                        >
-                          <polyline points="6 9 12 15 18 9" />
-                        </svg>
-                      </button>
-
-                      {isSortOpen && (
-                        <div className="tb-sort-dropdown">
-                          {sortOptions.map((option) => (
-                            <button
-                              key={option}
-                              className={`tb-sort-item ${selectedSort === option ? "active-sort" : ""
-                                }`}
-                              onClick={() => {
-                                setSelectedSort(option);
-                                setIsSortOpen(false);
-                              }}
-                            >
-                              {option}
-                            </button>
-                          ))}
-                        </div>
-                      )}
-                    </div>
-                  )}
+                    {isSortOpen && (
+                      <div className="tb-sort-dropdown">
+                        {sortOptions.map((option) => (
+                          <button
+                            key={option}
+                            className={`tb-sort-item ${
+                              selectedSort === option ? "active-sort" : ""
+                            }`}
+                            onClick={() => {
+                              setSelectedSort(option);
+                              setIsSortOpen(false);
+                            }}
+                          >
+                            {option}
+                          </button>
+                        ))}
+                      </div>
+                    )}
+                  </div>
+                )}
               </div>
             )}
 
@@ -505,20 +596,20 @@ overflow: auto;
                     return (
                       <button
                         key={rate}
+                         style={{
+      padding: rate === "All" ? "7px 25px" : "3px 14px",
+    }}
                         onClick={() => setActiveRating(rate)}
                         className={`tb-badge ${isActive ? "active-rating-green" : ""}`}
                       >
                         {rate}
                         {typeof rate === "number" && (
-                          <svg
-                            width="12"
-                            height="12"
-                            viewBox="0 0 24 24"
-                            fill={isActive ? "#ffffff" : "#ff9c00"}
-                            xmlns="http://www.w3.org/2000/svg"
-                          >
-                            <path d="M12 17.27L18.18 21l-1.64-7.03L22 9.24l-7.19-.61L12 2 9.19 8.63 2 9.24l5.46 4.73L5.82 21z" />
-                          </svg>
+
+                           <StarSVG
+                    STAR_COLOR={isActive ? "#ffffff" : "#ff9c00"}
+                    size={24}
+                  />
+                         
                         )}
                       </button>
                     );
@@ -532,19 +623,23 @@ overflow: auto;
           <div className="qr-reviews-grid">
             {/* Card exactly matched with image_57bf9f.png */}
 
-            {[...Array(6)].map((_, i) => (
-              <div className="qr-review-card">
+            {visibleReviews.map((review) => {
+              const visibleMedia = review.media.slice(0, 2);
+              const extraMediaCount = Math.max(review.media.length - 2, 0);
+
+              return (
+              <div className="qr-review-card" key={review.id}>
                 {/* Top Row: User Avatar & Meta */}
                 <div className="qr-reviewer-info">
                   <img
                     className="qr-reviewer-avatar"
-                    src="https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&q=80&w=200"
-                    alt="Hasan R."
+                    src={review.avatar}
+                    alt={review.name}
                   />
                   <div className="qr-reviewer-meta">
                     <div className="qr-reviewer-name-row">
                       {showReviewerName && (
-                        <span className="qr-reviewer-name">Hasan R.</span>
+                        <span className="qr-reviewer-name">{review.name}</span>
                       )}
                       {showVerifiedBadge && (
                         <span className="qr-verified-check">
@@ -560,7 +655,7 @@ overflow: auto;
                       )}
                     </div>
                     {showReviewTimer && (
-                      <span className="qr-reviewer-time">2 days ago</span>
+                      <span className="qr-reviewer-time">{review.time}</span>
                     )}
                   </div>
                 </div>
@@ -574,7 +669,7 @@ overflow: auto;
                         width="16"
                         height="15"
                         viewBox="0 0 17 16"
-                        fill={`${STAR_COLOR}`}
+                        fill={i < review.rating ? `${STAR_COLOR}` : "#d6d6d6"}
                       >
                         <path d="M9.51964 0.855C8.97604 -0.285 7.35604 -0.285 6.81244 0.855L5.14444 4.3494L1.30564 4.8546C0.0552353 5.0202 -0.446365 6.561 0.469235 7.4298L3.27724 10.0962L2.57284 13.9026C2.34244 15.1434 3.65404 16.0962 4.76284 15.495L8.16604 13.647L11.5692 15.495C12.678 16.0962 13.9896 15.1434 13.7592 13.9026L13.0548 10.0962L15.8628 7.4298C16.7772 6.561 16.2768 5.0202 15.0264 4.8546L11.1864 4.3494L9.51964 0.855Z" />
                       </svg>
@@ -583,36 +678,46 @@ overflow: auto;
                 )}
 
                 {/* Review Content Text */}
-                <p className="qr-review-text">
-                  Absolutely love the serum! My skin feels so smooth and
-                  hydrated.
-                </p>
+                <p className="qr-review-text">{review.review}</p>
 
                 {/* Image Gallery Row */}
-                {showMediaAsset && (
-                  <div className="qr-review-gallery">
-                    <div className="qr-gallery-item">
-                      <img
-                        className="qr-gallery-img"
-                        src="https://images.unsplash.com/photo-1620916566398-39f1143ab7be?auto=format&fit=crop&q=80&w=300"
-                        alt="Product view 1"
-                      />
-                    </div>
-                    <div className="qr-gallery-item">
-                      <img
-                        className="qr-gallery-img"
-                        src="https://images.unsplash.com/photo-1608248597481-496100c80836?auto=format&fit=crop&q=80&w=300"
-                        alt="Product view 2"
-                      />
-                      <div className="qr-gallery-overlay">+2</div>
-                    </div>
+                {showMediaAsset && visibleMedia.length > 0 && (
+                  <div
+                    className={`qr-review-gallery ${
+                      visibleMedia.length === 1 ? "single-media" : ""
+                    }`}
+                  >
+                    {visibleMedia.map((media, mediaIndex) => (
+                      <div
+                        className="qr-gallery-item"
+                        key={`${review.id}-${mediaIndex}`}
+                      >
+                        <img
+                          className="qr-gallery-img"
+                          src={media.type === "video" ? media.thumb : media.url}
+                          alt={media.alt}
+                        />
+                        {media.type === "video" && (
+                          <span className="qr-gallery-play">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="11" height="12" viewBox="0 0 11 12" fill="none">
+<path fill-rule="evenodd" clip-rule="evenodd" d="M9.65428 4.35495C10.767 4.99762 10.767 6.60332 9.65428 7.24504L2.50296 11.3737C1.39022 12.0164 0 11.2135 0 9.92916V1.67178C0 0.386447 1.39022 -0.416407 2.50296 0.226257L9.65428 4.35495ZM8.93915 6.00643C8.97538 5.9855 9.00547 5.95541 9.02639 5.91918C9.04731 5.88294 9.05832 5.84183 9.05832 5.79999C9.05832 5.75815 9.04731 5.71705 9.02639 5.68081C9.00547 5.64457 8.97538 5.61448 8.93915 5.59356L1.78783 1.46487C1.75156 1.44392 1.71041 1.43291 1.66852 1.43293C1.62664 1.43295 1.5855 1.44401 1.54925 1.46498C1.513 1.48596 1.48291 1.51612 1.46202 1.55242C1.44113 1.58873 1.43018 1.62989 1.43026 1.67178V9.92916C1.43035 9.97097 1.44142 10.012 1.46238 10.0482C1.48334 10.0844 1.51344 10.1144 1.54966 10.1352C1.58588 10.1561 1.62696 10.1671 1.66876 10.1671C1.71056 10.167 1.75163 10.156 1.78783 10.1351L8.93915 6.00643Z" fill="#303030"/>
+</svg>
+                          </span>
+                        )}
+                        {mediaIndex === 1 && extraMediaCount > 0 && (
+                          <div className="qr-gallery-overlay">
+                            +{extraMediaCount}
+                          </div>
+                        )}
+                      </div>
+                    ))}
                   </div>
                 )}
 
                 {/* Product Tag Badge */}
                 <div className="qr-product-tag">
                   <span className="qr-product-icon">🧴</span>
-                  <span className="qr-product-name">Hydrating serum</span>
+                  <span className="qr-product-name">{review.productName}</span>
                 </div>
 
                 {/* Bottom Footer Actions */}
@@ -631,7 +736,7 @@ overflow: auto;
                       >
                         <path d="M14 9V5a3 3 0 0 0-3-3l-4 9v11h11.28a2 2 0 0 0 2-1.7l1.38-9a2 2 0 0 0-2-2.3zM7 22H4a2 2 0 0 1-2-2v-7a2 2 0 0 1 2-2h3" />
                       </svg>
-                      Helpful (24)
+                      Helpful ({review.helpfulCount})
                     </button>
                   )}
 
@@ -658,7 +763,8 @@ overflow: auto;
                   )}
                 </div>
               </div>
-            ))}
+            );
+          })}
           </div>
         </section>
       </div>
