@@ -1,44 +1,85 @@
 {{ 'quickreview-rating-bar.css' | asset_url | stylesheet_tag }}
 <div class="quickreview-bar" data-quickreview-bar>
+  <template x-for="star in [5, 4, 3, 2, 1]" :key="star">
+    <div class="quickreview-bar__row" :data-star-level="star">
+      <span class="quickreview-bar__label" x-text="`${star} star`"></span>
 
-  <div class="quickreview-bar__row" data-star-level="5">
-    <span class="quickreview-bar__label">5 star</span>
-    <div class="quickreview-bar__track">
-      <div class="quickreview-bar__fill" data-quickreview-bar-fill="5" style="width: 85%;"></div>
+      <div class="quickreview-bar__track">
+        <div
+          class="quickreview-bar__fill"
+          :data-quickreview-bar-fill="star"
+          :style="`width: ${totalReviews ? ((starCount[star] / totalReviews) * 100).toFixed(1) : 0 }%`"
+        ></div>
+      </div>
+
+      <span
+        class="quickreview-bar__count"
+        :data-quickreview-bar-count="star"
+        x-text="starCount[star] ?? 0"
+      ></span>
     </div>
-    <span class="quickreview-bar__count" data-quickreview-bar-count="5">116</span>
-  </div>
-
-  <div class="quickreview-bar__row" data-star-level="4">
-    <span class="quickreview-bar__label">4 star</span>
-    <div class="quickreview-bar__track">
-      <div class="quickreview-bar__fill" data-quickreview-bar-fill="4" style="width: 67%;"></div>
-    </div>
-    <span class="quickreview-bar__count" data-quickreview-bar-count="4">92</span>
-  </div>
-
-  <div class="quickreview-bar__row" data-star-level="3">
-    <span class="quickreview-bar__label">3 star</span>
-    <div class="quickreview-bar__track">
-      <div class="quickreview-bar__fill" data-quickreview-bar-fill="3" style="width: 49%;"></div>
-    </div>
-    <span class="quickreview-bar__count" data-quickreview-bar-count="3">67</span>
-  </div>
-
-  <div class="quickreview-bar__row" data-star-level="2">
-    <span class="quickreview-bar__label">2 star</span>
-    <div class="quickreview-bar__track">
-      <div class="quickreview-bar__fill" data-quickreview-bar-fill="2" style="width: 32%;"></div>
-    </div>
-    <span class="quickreview-bar__count" data-quickreview-bar-count="2">44</span>
-  </div>
-
-  <div class="quickreview-bar__row" data-star-level="1">
-    <span class="quickreview-bar__label">1 star</span>
-    <div class="quickreview-bar__track">
-      <div class="quickreview-bar__fill" data-quickreview-bar-fill="1" style="width: 17%;"></div>
-    </div>
-    <span class="quickreview-bar__count" data-quickreview-bar-count="1">23</span>
-  </div>
-
+  </template>
 </div>
+{% comment %}
+  <div class="quickreview-bar" data-quickreview-bar>
+    <div class="quickreview-bar__row" data-star-level="5">
+      <span class="quickreview-bar__label">5 star</span>
+      <div class="quickreview-bar__track">
+        <div
+          class="quickreview-bar__fill"
+          data-quickreview-bar-fill="5"
+          :style="`width: ${((starCount[5] / totalReviews) * 100).toFixed(1)}%`"
+        ></div>
+      </div>
+      <span class="quickreview-bar__count" data-quickreview-bar-count="5" x-text="starCount[5]">0</span>
+    </div>
+
+    <div class="quickreview-bar__row" data-star-level="4">
+      <span class="quickreview-bar__label">4 star</span>
+      <div class="quickreview-bar__track">
+        <div
+          class="quickreview-bar__fill"
+          data-quickreview-bar-fill="4"
+          :style="`width: ${((starCount[4] / totalReviews) * 100).toFixed(1)}%`"
+        ></div>
+      </div>
+      <span class="quickreview-bar__count" data-quickreview-bar-count="4" x-text="starCount[4]">0</span>
+    </div>
+
+    <div class="quickreview-bar__row" data-star-level="3">
+      <span class="quickreview-bar__label">3 star</span>
+      <div class="quickreview-bar__track">
+        <div
+          class="quickreview-bar__fill"
+          data-quickreview-bar-fill="3"
+          :style="`width: ${((starCount[3] / totalReviews) * 100).toFixed(1)}%`"
+        ></div>
+      </div>
+      <span class="quickreview-bar__count" data-quickreview-bar-count="3" x-text="starCount[3]">0</span>
+    </div>
+
+    <div class="quickreview-bar__row" data-star-level="2">
+      <span class="quickreview-bar__label">2 star</span>
+      <div class="quickreview-bar__track">
+        <div
+          class="quickreview-bar__fill"
+          data-quickreview-bar-fill="2"
+          :style="`width: ${((starCount[2] / totalReviews) * 100).toFixed(1)}%`"
+        ></div>
+      </div>
+      <span class="quickreview-bar__count" data-quickreview-bar-count="2" x-text="starCount[2]">0</span>
+    </div>
+
+    <div class="quickreview-bar__row" data-star-level="1">
+      <span class="quickreview-bar__label">1 star</span>
+      <div class="quickreview-bar__track">
+        <div
+          class="quickreview-bar__fill"
+          data-quickreview-bar-fill="1"
+          :style="`width: ${((starCount[1] / totalReviews) * 100).toFixed(1)}%`"
+        ></div>
+      </div>
+      <span class="quickreview-bar__count" data-quickreview-bar-count="1" x-text="starCount[1]">0</span>
+    </div>
+  </div>
+{% endcomment %}

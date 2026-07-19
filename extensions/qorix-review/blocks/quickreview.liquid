@@ -1,3 +1,50 @@
+{% assign quick_review_metafield = app.metafields.qorix_review.quick_review.value %}
+{% liquid
+  assign allow_photo = quick_review_metafield.isPhotoUpload
+  assign allow_video = quick_review_metafield.isVideoUpload
+  assign media_accept = ''
+  if allow_photo
+    assign media_accept = 'image/jpeg,image/png,image/webp'
+  endif
+  if allow_photo and allow_video
+    assign media_accept = media_accept | append: ','
+  endif
+  if allow_video
+    assign media_accept = media_accept | append: 'video/mp4,video/quicktime'
+  endif
+%}
+
+<style>
+  :root{
+    --star-color: {{ quick_review_metafield.starColor }};
+    --button-background-color: {{ quick_review_metafield.buttonBackgroundColor }};
+    --button-text-color : {{ quick_review_metafield.buttonTextColor }};
+    --verified-badge-color : {{ quick_review_metafield.verifiedBadgeColor }};
+    --bar-file-color : {{ quick_review_metafield.barFileColor }}
+    {% comment %} quickreview-rating-summary {% endcomment %}
+    --qr-color-border: #CFCFCF;
+    --qr-color-text-dark: #303030;
+    --qr-color-text-secondary: #616161;
+    --qr-color-primary: #108848;
+    --qr-color-primary-hover: #17703c;
+    --qr-color-white: #FFFFFF;
+    --qr-color-track-bg: #e6e6e6;
+    --qr-color-bar-fill: #34C759;
+    --qr-color-star-filled: #f5a623;
+    --qr-color-star-empty: #e0e0e0;
+    --qr-color-avatar-bg: #f0f0f0;
+    --qr-color-avatar-icon: #9a9a9a;
+    --qr-color-hover-bg: #f5f5f5;
+    --qr-color-menu-text: #4a4a4a;
+    --qr-color-link: #008060;
+    --qr-color-load-more-bg: #F2F2F2;
+    --qr-shadow-nav: 0 1px 6px rgba(0, 0, 0, 0.18);
+    --qr-shadow-menu: 0 4px 20px rgba(0, 0, 0, 0.12);
+    {% comment %}  {% endcomment %}
+
+  }
+</style>
+
 {{ 'swiper-bundle.min.css' | asset_url | stylesheet_tag }}
 {{ 'quickreview.css' | asset_url | stylesheet_tag }}
 
@@ -24,6 +71,17 @@
   data-slides="{{ slides_count }}"
   id="quickreview-{{ block.id }}"
   {{ block.shopify_attributes }}
+  {% comment %} xx="{{ product.metafields.reviews.rating }} - {{ product.metafields.reviews.rating_count.value }}" {% endcomment %}
+  id="quick-review"
+  {% comment %} x-data="quickReviewWidget()" {% endcomment %}
+  x-data="ReviewWidget()"
+  x-init="initUploadSettings($el); productInit($el.dataset.product,$el.dataset.sort,$el.dataset.limit)"
+  data-product="{{ product | json | escape }}"
+  data-photo-upload="{{ allow_photo | json }}"
+  data-video-upload="{{ allow_video | json }}"
+  data-sort="{{ quick_review_metafield.defaultSort }}"
+  data-limit="{{ quick_review_metafield.reviewPerPage }}"
+  data-page-type="{{ template.name }}"
 >
   {% render 'quickreview-rating-summary', product: product, block: block %}
 
@@ -34,11 +92,21 @@
   {% if show_media %}
     {% render 'quickreview-media-slider', product: product, block: block %}
   {% endif %}
+
+  {% render 'single-step-form',
+    quick_review_metafield: quick_review_metafield,
+    allow_photo: allow_photo,
+    allow_video: allow_video,
+    media_accept: media_accept
+  %}
 </div>
 
-{% render 'quickreview-reviews', product: product, block: block %}
+{% render 'quickreview-reviews' %}
 
 <script src="{{ 'swiper-bundle.min.js' | asset_url }}" defer></script>
+<script src="{{ 'quickreview.js' | asset_url }}" defer></script>
+<script src="{{ 'review.js' | asset_url }}" defer></script>
+<script src="{{ 'alpine.js' | asset_url }}" defer></script>
 
 {% schema %}
 {
