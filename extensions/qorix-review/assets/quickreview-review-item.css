@@ -108,6 +108,7 @@
   overflow: hidden;
   background: var(--qr-color-avatar-bg);
   flex-shrink: 0;
+  cursor: pointer;
 }
 
 .quickreview-review__media-img {

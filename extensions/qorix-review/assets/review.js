@@ -156,6 +156,14 @@ class QuickReviewWidget {
     }
   }
 
+  async helpfulToggle(reviewId, customerId, customerEmail) {
+    try {
+      fetch("/apps/qorix-review/helpful", {
+        method: "POST",
+      });
+    } catch (error) {}
+  }
+
   getRatingCounts() {
     const counts = { 5: 0, 4: 0, 3: 0, 2: 0, 1: 0 };
 
@@ -447,13 +455,13 @@ class QuickReviewWidget {
     document.body.style.overflow = "";
   }
 
-  init() {
-    document.addEventListener("keydown", (event) => {
-      if (event.key === "Escape") {
-        this.closeLightbox();
-      }
-    });
-  }
+  // init() {
+  //   document.addEventListener("keydown", (event) => {
+  //     if (event.key === "Escape") {
+  //       this.closeLightbox();
+  //     }
+  //   });
+  // }
 }
 
 // Alpine.js usage: x-data="new QuickReviewWidget()"

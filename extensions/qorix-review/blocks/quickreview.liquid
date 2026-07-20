@@ -66,6 +66,8 @@
 {% endif %}
 
 <div
+  customerId="{{ customer.id }}"
+  customerEmail="{{ customer.email }}"
   {% comment %} xx="{{ product.metafields.reviews.rating }} - {{ product.metafields.reviews.rating_count.value }}" {% endcomment %}
   id="quick-review"
   {% comment %} x-data="quickReviewWidget()" {% endcomment %}

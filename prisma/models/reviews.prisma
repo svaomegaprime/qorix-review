@@ -39,9 +39,9 @@ model HelpfulCount {
   reviewId String @db.Uuid()
   review   Review @relation(fields: [reviewId], references: [id], onDelete: Cascade)
 
-  count      Int
-  customerId String
-  email      String
+  count         Int
+  customerId    String
+  customerEmail String
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt

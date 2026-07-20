@@ -60,28 +60,26 @@
       <div class="quickreview-reviews__pills" data-quickreview-rating-pills>
         <button type="button" class="quickreview-pill " data-rating="all">All</button>
         <button type="button" class="quickreview-pill" data-rating="1">
-          1 <span class="quickreview-pill__star">{%- render 'icon' name:'rating-star' -%}</span>
+          1 <span class="quickreview-pill__star">{%- render 'icon', name: 'rating-star' -%}</span>
         </button>
         <button type="button" class="quickreview-pill" data-rating="2">
-          2 <span class="quickreview-pill__star">{%- render 'icon' name:'rating-star' -%}</span>
+          2 <span class="quickreview-pill__star">{%- render 'icon', name: 'rating-star' -%}</span>
         </button>
         <button type="button" class="quickreview-pill" data-rating="3">
-          3 <span class="quickreview-pill__star">{%- render 'icon' name:'rating-star' -%}</span>
+          3 <span class="quickreview-pill__star">{%- render 'icon', name: 'rating-star' -%}</span>
         </button>
         <button type="button" class="quickreview-pill is-active" data-rating="4">
-          4 <span class="quickreview-pill__star">{%- render 'icon' name:'rating-star' -%}</span>
+          4 <span class="quickreview-pill__star">{%- render 'icon', name: 'rating-star' -%}</span>
         </button>
         <button type="button" class="quickreview-pill" data-rating="5">
-          5 <span class="quickreview-pill__star">{%- render 'icon' name:'rating-star' -%}</span>
+          5 <span class="quickreview-pill__star">{%- render 'icon', name: 'rating-star' -%}</span>
         </button>
       </div>
     </div>
   </div>
 
   <div class="quickreview-reviews__list" data-quickreview-reviews-list>
-    {% for i in (1..3) %}
-      {% render 'quickreview-review-item' %}
-    {% endfor %}
+    {% render 'quickreview-review-item' %}
   </div>
 </div>
 
