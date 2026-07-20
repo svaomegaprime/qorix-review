@@ -35,6 +35,8 @@ class QuickReviewWidget {
     this.lightboxOpen = false;
     this.lightboxMedia = null;
     this.product = {};
+    this.customerId = "";
+    this.customerEmail = "";
     this.loading = false;
     this.dataPostLoading = false;
 
@@ -83,6 +85,10 @@ class QuickReviewWidget {
     console.log("EFT", el);
     this.allowPhotoUpload = el.dataset.photoUpload === "true";
     this.allowVideoUpload = el.dataset.videoUpload === "true";
+    this.customerId =
+      el.dataset.customerId || el.getAttribute("customerId") || "";
+    this.customerEmail =
+      el.dataset.customerEmail || el.getAttribute("customerEmail") || "";
   }
 
   isAllowedMediaFile(file) {
@@ -128,9 +134,10 @@ class QuickReviewWidget {
       const orderId = new URLSearchParams(window.location.search).get(
         "orderId",
       );
+      const customerEmail = this.customerEmail || "";
 
       const response = await fetch(
-        `/apps/qorix-review/review?productId=${encodeURIComponent(productId)}&sort=${encodeURIComponent(defaultSort)}&page=${this.currentPage}&limit=${this.limit}&isOpen=${openFromEmail}&orderId=${orderId}`,
+        `/apps/qorix-review/review?productId=${encodeURIComponent(productId)}&sort=${encodeURIComponent(defaultSort)}&page=${this.currentPage}&limit=${this.limit}&isOpen=${openFromEmail}&orderId=${orderId}&customerEmail=${encodeURIComponent(customerEmail)}`,
         {
           method: "GET",
         },
@@ -142,7 +149,9 @@ class QuickReviewWidget {
         throw new Error(result.message || "Failed to fetch reviews");
       }
 
-      this.reviews = result.data?.reviews || [];
+      this.reviews = (result.data?.reviews || []).map((review) =>
+        this.withHelpfulState(review, customerEmail),
+      );
       this.currentPage = result.data?.currentPage ?? 1;
       this.totalPages = result.data?.totalPages ?? 1;
       this.totalReviews = result.data?.totalReviews ?? 0;
@@ -156,14 +165,85 @@ class QuickReviewWidget {
     }
   }
 
-  async helpfulToggle(reviewId, customerId, customerEmail) {
-    try {
-      fetch("/apps/qorix-review/helpful", {
-        method: "POST",
-      });
-    } catch (error) {}
+  withHelpfulState(review, customerEmail = this.customerEmail) {
+    const helpfulCount = Array.isArray(review.helpfulCount)
+      ? review.helpfulCount
+      : [];
+    const normalizedCustomerEmail = String(customerEmail || "").toLowerCase();
+    const helpfulTotal = helpfulCount.reduce((total, item) => {
+      return item?.isHelpful === true ? total + 1 : total;
+    }, 0);
+    const isHelpful = Boolean(
+      normalizedCustomerEmail &&
+      helpfulCount.some((item) => {
+        return (
+          item?.isHelpful === true &&
+          String(item.customerEmail || "").toLowerCase() ===
+            normalizedCustomerEmail
+        );
+      }),
+    );
+
+    return {
+      ...review,
+      helpfulTotal,
+      isHelpful,
+    };
   }
 
+  async helpfulToggle(
+    review,
+    customerId = this.customerId,
+    customerEmail = this.customerEmail,
+  ) {
+    const reviewId = typeof review === "object" ? review.id : review;
+    const currentReview =
+      typeof review === "object"
+        ? review
+        : this.reviews.find((item) => item.id === reviewId);
+    const isHelpful = !currentReview?.isHelpful;
+
+    console.log({ reviewId, customerId, customerEmail, isHelpful });
+
+    if (!reviewId || !customerId || !customerEmail) return;
+
+    try {
+      const response = await fetch("/apps/qorix-review/helpful", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          reviewId,
+          customerId,
+          customerEmail,
+          isHelpful,
+        }),
+      });
+
+      const data = await response.json();
+      if (!response.ok || data.ok === false) {
+        throw new Error(data.message || "Failed to update helpful");
+      }
+
+      if (currentReview) {
+        const wasHelpful = Boolean(currentReview.isHelpful);
+        currentReview.isHelpful = data.data?.isHelpful ?? isHelpful;
+
+        if (currentReview.isHelpful !== wasHelpful) {
+          currentReview.helpfulTotal = Math.max(
+            0,
+            (currentReview.helpfulTotal || 0) +
+              (currentReview.isHelpful ? 1 : -1),
+          );
+        }
+      }
+
+      console.log(data);
+    } catch (error) {
+      console.error(error);
+    }
+  }
   getRatingCounts() {
     const counts = { 5: 0, 4: 0, 3: 0, 2: 0, 1: 0 };
 
@@ -177,7 +257,7 @@ class QuickReviewWidget {
     return counts;
   }
 
-  async submitReview(event) {
+  async submitReview() {
     if (!this.product) return;
     const product = this.product || {};
     console.log("999090088888888", product);
@@ -250,7 +330,7 @@ class QuickReviewWidget {
       this.isError = false;
       this.errorMessage = "";
 
-      this.reviews = [result.data, ...this.reviews];
+      this.reviews = [this.withHelpfulState(result.data), ...this.reviews];
       this.totalReviews++;
       const newRating =
         (this.averageRating * (this.totalReviews - 1) + this.starSelected) /
@@ -467,6 +547,6 @@ class QuickReviewWidget {
 // Alpine.js usage: x-data="new QuickReviewWidget()"
 // Plain JS usage:  const widget = new QuickReviewWidget(); widget.init();
 
-const ReviewWidget = () => new QuickReviewWidget();
+window.ReviewWidget = () => new QuickReviewWidget();
 
 // export default QuickReviewWidget;

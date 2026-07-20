@@ -372,6 +372,9 @@ async function getReview(request, session, admin) {
     const sort = url.searchParams.get("sort") || "ALL";
     const page = Number(url.searchParams.get("page")) || 1;
     const limit = Number(url.searchParams.get("limit")) || 10;
+    const customerEmail = String(
+      url.searchParams.get("customerEmail") || "",
+    ).trim();
     const isOpen = url.searchParams.get("isOpen") === "true";
     const orderNumber = url.searchParams.get("orderId");
     const orderId = orderNumber
@@ -427,7 +430,19 @@ async function getReview(request, session, admin) {
       },
       include: {
         attachments: true,
-        helpfulCount: true,
+        helpfulCount: {
+          where: customerEmail
+            ? {
+                OR: [{ isHelpful: true }, { customerEmail }],
+              }
+            : {
+                isHelpful: true,
+              },
+          select: {
+            isHelpful: true,
+            customerEmail: true,
+          },
+        },
       },
       orderBy: {
         createdAt: "desc",

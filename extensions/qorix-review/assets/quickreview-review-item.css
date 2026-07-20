@@ -142,6 +142,11 @@
   color: var(--qr-color-text-dark);
 }
 
+.quickreview-review__helpful.is-helpful {
+  color: #000;
+  border-color: #000;
+}
+
 .quickreview-review__report {
   background: none;
   border: none;

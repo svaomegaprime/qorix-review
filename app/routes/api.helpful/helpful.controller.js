@@ -2,7 +2,7 @@ import { helpfulService } from "./helpful.service";
 async function controller(request, admin) {
   switch (request.method) {
     case "POST":
-      return await helpfulService.createHelpful(request, admin);
+      return await helpfulService.toggleHelpful(request, admin);
 
     case "GET":
       return;
@@ -12,6 +12,6 @@ async function controller(request, admin) {
   }
 }
 
-export const reviewController = {
+export const helpfulController = {
   controller,
 };

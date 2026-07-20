@@ -73,6 +73,8 @@
   {% comment %} x-data="quickReviewWidget()" {% endcomment %}
   x-data="ReviewWidget()"
   x-init="initUploadSettings($el); productInit($el.dataset.product,$el.dataset.sort,$el.dataset.limit)"
+  data-customer-id="{{ customer.id }}"
+  data-customer-email="{{ customer.email }}"
   data-product="{{ product | json | escape }}"
   data-photo-upload="{{ allow_photo | json }}"
   data-video-upload="{{ allow_video | json }}"
