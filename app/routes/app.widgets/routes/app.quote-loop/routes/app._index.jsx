@@ -151,6 +151,41 @@ export default function Index(VALUES = {}) {
             <s-button onClick={saveBar.triggerSubmit}>Submit trigger</s-button>
             <s-button onClick={saveBar.triggerDiscard}>Discard trigger</s-button> */}
 
+     <style>
+        {`
+          .review-item {
+  height: 76px;
+  display: grid;
+  align-items: center;
+  border-bottom: 1px solid #e4e4e4;
+}
+
+.sidebar-content {
+  height: calc(100vh - 77px);
+  overflow: hidden auto;
+  background: #fff;
+  padding: 1rem;
+}
+
+
+@media (max-width: 900px) {
+
+  .sidebar-content {
+    height: auto;
+    overflow: visible;
+    padding: 0.75rem;
+  }
+
+  .review-item {
+    height: 248px;
+   
+  }
+}
+        `}
+      </style>
+
+
+
       <SaveBar saveBar={saveBar} />
       <s-query-container>
       <s-grid gridTemplateColumns="@container (inline-size > 900px) 346px 1fr, 1fr" alignItems="start">
@@ -193,7 +228,7 @@ export default function Index(VALUES = {}) {
             {/* Start----Sidebar content */}
 
             {/* ----------Display Elements start ------------ */}
-            <div style={{ padding: "1rem" }}>
+            <div style={{ padding: "1rem" }} className="sidebar-content">
               <Header
                 handleSettingChange={handleSettingChange}
                 settings={settings}
@@ -454,22 +489,17 @@ export default function Index(VALUES = {}) {
           }}
         >
           {/* Start----Preview Header */}
-          <div
-            style={{
-              height: "76px",
-              display: "grid",
-              alignItems: "center",
-              borderBottom: "1px solid #e4e4e4ff",
-            }}
+          <div className="review-item"
+           
           >
             <s-query-container>
             <s-grid
-             gridTemplateColumns="@container (inline-size > 900px) 1fr auto, 1fr"
+           gridTemplateColumns="@container (inline-size > 600px)  1fr auto, 1fr "
               gap="small"
               justifyContent="space-between"
               paddingInline="base"
             >
-              <s-stack alignItems="center">
+              <s-stack alignItems="center" justifyContent="center" gap="small">
                 <s-button-group gap="none">
                   <s-button
                     slot="secondary-actions"
