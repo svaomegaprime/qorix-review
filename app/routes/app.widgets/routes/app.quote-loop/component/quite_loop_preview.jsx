@@ -1,25 +1,11 @@
 import { useState, useEffect, useRef, useCallback } from "react";
 import ReaviewHeader from "../../../components/elements/WidgetsHeader";
 
-// ── Inject pop-zoom keyframe once ─────────────────────────────────────────────
-if (typeof document !== "undefined" && !document.getElementById("__rc_kf")) {
-  const st = document.createElement("style");
-  st.id = "__rc_kf";
-  st.textContent = `
-    @keyframes rcPopIn {
-      0%   { transform: scale(0.82); }
-      55%  { transform: scale(1.08); }
-      100% { transform: scale(1);    }
-    }
-  `;
-  document.head.appendChild(st);
-}
-
 // ── SVG helpers ───────────────────────────────────────────────────────────────
 
 const StarOrange = ({ startColor }) => (
-  <svg width="20" height="20" viewBox="0 0 24 24" fill={startColor} xmlns="http://www.w3.org/2000/svg">
-    <path d="M12 2L15.09 8.26L22 9.27L17 14.14L18.18 21.02L12 17.77L5.82 21.02L7 14.14L2 9.27L8.91 8.26L12 2Z" />
+  <svg xmlns="http://www.w3.org/2000/svg" width="17" height="16" viewBox="0 0 17 16" fill={startColor}>
+    <path d="M9.51964 0.855C8.97604 -0.285 7.35604 -0.285 6.81244 0.855L5.14444 4.3494L1.30564 4.8546C0.0552353 5.0202 -0.446365 6.561 0.469235 7.4298L3.27724 10.0962L2.57284 13.9026C2.34244 15.1434 3.65404 16.0962 4.76284 15.495L8.16604 13.647L11.5692 15.495C12.678 16.0962 13.9896 15.1434 13.7592 13.9026L13.0548 10.0962L15.8628 7.4298C16.7772 6.561 16.2768 5.0202 15.0264 4.8546L11.1864 4.3494L9.51964 0.855Z" fill="#FF9500"/>
   </svg>
 );
 
@@ -63,86 +49,293 @@ const REVIEWS = [
   { id: 5, quote: "High quality and amazing results. Would definitely recommend to anyone!",                             name: "James K.",   product: "Vitamin C Serum", avatar: "https://i.pravatar.cc/56?img=60" },
 ];
 
-// ── Default settings ──────────────────────────────────────────────────────────
-
-
-// ── Card sizes ────────────────────────────────────────────────────────────────
+// ── Card sizes / layout math ─────────────────────────────────────────────────
+// (unchanged logic — ReviewCard always renders at ACTIVE size, side look is
+// produced purely by a transform: scale() on the wrapper slot, and every
+// card is keyed by review.id so it animates continuously, never "swaps".)
 
 const ACTIVE_W = 450;
 const SIDE_W   = 360;
 const ACTIVE_H = 573;
-const SIDE_H   = 500;
 const CARD_GAP = 24;
-const STEP     = SIDE_W + CARD_GAP; // px per slide
+
+const SIDE_SCALE = SIDE_W / ACTIVE_W; // ≈ 0.8
+
+const ACTIVE_HALF = ACTIVE_W / 2;
+const SIDE_HALF   = SIDE_W / 2;
+
+const STEP_CENTER_TO_SIDE = ACTIVE_HALF + SIDE_HALF + CARD_GAP; // center ↔ ±1
+const STEP_SIDE_TO_SIDE   = SIDE_HALF + SIDE_HALF + CARD_GAP;   // ±1 ↔ ±2
+
+function offsetForPos(pos) {
+  const n = Math.abs(pos);
+  if (n === 0) return 0;
+  let dist = STEP_CENTER_TO_SIDE;
+  if (n > 1) dist += (n - 1) * STEP_SIDE_TO_SIDE;
+  return Math.sign(pos) * dist;
+}
+
+function relativePosition(index, activeIndex, total) {
+  let diff = (index - activeIndex) % total;
+  if (diff > total / 2) diff -= total;
+  if (diff < -total / 2) diff += total;
+  return diff;
+}
+
+// ── Stylesheet ────────────────────────────────────────────────────────────────
+// Everything STATIC (doesn't depend on per-render/per-index values) lives
+// here as real CSS classes. Only truly dynamic values — colors coming from
+// `settings`, and each card's own slide/zoom transform (which depends on
+// its live position) — are passed in via inline style / CSS custom
+// properties, since a static stylesheet can't express "whichever card is
+// currently active."
+
+const CAROUSEL_CSS = `
+.qrx-wrapper {
+  background: #ddd;
+  padding: 60px 0;
+  overflow: scroll;
+  height: 650px;
+}
+
+.qrx-section {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 40px;
+  padding: 60px 40px 50px;
+  width: 100%;
+  margin: 0 auto;
+  text-align: center;
+  background: #fff;
+  max-width: 1300px;
+}
+
+.qrx-section--mobile {
+  max-width: 500px;
+}
+
+.qrx-track-container {
+  width: 100%;
+  max-width: 1240px;
+  margin: 0 auto;
+  position: relative;
+}
+
+.qrx-viewport {
+  overflow: hidden;
+  position: relative;
+  height: ${ACTIVE_H + 20}px;
+}
+
+.qrx-card-slot {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transition: transform var(--qrx-speed, 450ms) cubic-bezier(0.22, 1, 0.36, 1),
+              opacity var(--qrx-speed, 450ms) ease;
+  will-change: transform, opacity;
+}
+
+.qrx-card {
+  display: flex;
+  flex-direction: column;
+  padding: 50px 20px 24px;
+  width: ${ACTIVE_W}px;
+  height: ${ACTIVE_H}px;
+  box-sizing: border-box;
+  flex-shrink: 0;
+  border-radius: 16px;
+  border: 1px solid #EBEBEB;
+  background: var(--qrx-card-bg, #ffffff);
+  transition: box-shadow 0.45s;
+  box-shadow: none;
+}
+
+.qrx-card--active {
+  box-shadow: 0px 1px 2px rgba(199,199,199,0.3), 0px 2px 6px 2px rgba(199,199,199,0.15);
+}
+
+.qrx-card-quote-icon-row {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.qrx-card-body {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  margin-top: 50px;
+}
+
+.qrx-card-top {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 20px;
+}
+
+.qrx-card-stars {
+  display: inline-flex;
+  list-style: none;
+  padding: 0;
+  margin: 0;
+  gap: 8px;
+}
+
+.qrx-card-quote {
+  font-size: var(--qrx-quote-font-size, 20px);
+  color: var(--qrx-text-color, #1A1A1A);
+  text-align: center;
+  margin: 0;
+  font-weight: 400;
+  line-height: 29px;
+}
+
+.qrx-card-divider {
+  width: 100%;
+  height: 1px;
+  background: #F0F0F0;
+  margin-top: auto;
+  margin-bottom: 40px;
+  flex-shrink: 0;
+}
+
+.qrx-card-footer {
+  display: flex;
+  align-items: center;
+  justify-content: flex-start;
+  gap: 16px;
+}
+
+.qrx-card-avatar {
+  width: 56px;
+  height: 56px;
+  border-radius: 50%;
+  object-fit: cover;
+  flex-shrink: 0;
+  background: #eff2f5;
+}
+
+.qrx-card-meta {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.qrx-card-name {
+  margin: 0;
+  font-weight: 500;
+  font-size: 16px;
+  line-height: 20px;
+  color: var(--qrx-text-color, #1A1A1A);
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.qrx-card-product {
+  margin: 0;
+  font-size: 16px;
+  line-height: 20px;
+  color: var(--qrx-text-color, #1A1A1A);
+}
+
+.qrx-nav-btn {
+  position: absolute;
+  top: 50%;
+  transform: translateY(-50%);
+  width: 44px;
+  height: 44px;
+  background: #fff;
+  border-radius: 99px;
+  border: none;
+  box-shadow: inset 0px -1px 0px #b5b5b5, inset 0px 0px 0px 1px rgba(0,0,0,0.1), inset 0px 0.5px 0px 1.5px #fff;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  z-index: 10;
+}
+
+.qrx-nav-btn--prev { left: -22px; }
+.qrx-nav-btn--next { right: -22px; }
+
+.qrx-dots {
+  display: flex;
+  justify-content: center;
+  gap: 6px;
+  margin-top: 8px;
+}
+
+.qrx-dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 99px;
+  background: #C8C8C8;
+  transition: width 0.25s ease, background 0.25s ease;
+}
+
+.qrx-dot--active {
+  width: 24px;
+  background: #34C759;
+}
+`;
 
 // ── ReviewCard ────────────────────────────────────────────────────────────────
 
 const ReviewCard = ({ review, isActive, settings }) => {
-  const s  = settings ;
+  const s  = settings;
   const qc = s?.colors?.QUOTE_MARK_COLOR      || "#34C759";
   const sc = s?.colors?.STAR_COLOR            || "#FF9500";
   const tc = s?.colors?.TEXT_COLOR            || "#1A1A1A";
   const bg = s?.colors?.Card_Background_Color || "#ffffff";
 
   return (
-    <div style={{
-      display: "flex", flexDirection: "column",
-      padding: "50px 20px 24px",
-      background: bg, border: "1px solid #EBEBEB", borderRadius: "16px",
-      width: isActive ? `${ACTIVE_W}px` : `${SIDE_W}px`,
-      height: isActive ? `${ACTIVE_H}px` : `${SIDE_H}px`,
-      boxSizing: "border-box", flexShrink: 0,
-      transition: "width 0.45s cubic-bezier(0.4,0,0.2,1), height 0.45s cubic-bezier(0.4,0,0.2,1), box-shadow 0.45s",
-      boxShadow: isActive
-        ? "0px 1px 2px rgba(199,199,199,0.3), 0px 2px 6px 2px rgba(199,199,199,0.15)"
-        : "none",
-    }}>
+    <div
+      className={`qrx-card${isActive ? " qrx-card--active" : ""}`}
+      style={{
+        "--qrx-card-bg": bg,
+        "--qrx-text-color": tc,
+        "--qrx-quote-font-size": `${s?.quoteFontSize}px`,
+      }}
+    >
       {s?.showQuoteMarkIcon && (
-        <div style={{ display: "flex", justifyContent: "center", alignItems: "center" }}>
+        <div className="qrx-card-quote-icon-row">
           <QuoteIcon quicteIcon={qc} />
         </div>
       )}
 
-      <div style={{ flex: 1, display: "flex", flexDirection: "column", marginTop: "50px" }}>
-        <div style={{ display: "flex", flexDirection: "column", alignItems: "center", gap: "20px" }}>
+      <div className="qrx-card-body">
+        <div className="qrx-card-top">
           {s?.showStarDistribution && (
-            <ul style={{ display: "inline-flex", listStyle: "none", padding: 0, margin: 0, gap: "2px" }}>
+            <ul className="qrx-card-stars">
               {[...Array(5)].map((_, i) => <li key={i}><StarOrange startColor={sc} /></li>)}
             </ul>
           )}
-          <h3
-  style={{
-    fontSize: `${s?.quoteFontSize}px`,
-    color: tc,
-    textAlign: "center",
-    margin: 0,
-    fontWeight: 400,
-    lineHeight: "29px",
-  }}
->
-  {review.quote?.length > s?.textLength
-    ? review.quote.slice(0, s?.textLength) + "..."
-    : review.quote}
-</h3>
+          <h3 className="qrx-card-quote">
+            {review.quote?.length > s?.textLength
+              ? review.quote.slice(0, s?.textLength) + "..."
+              : review.quote}
+          </h3>
         </div>
 
-        <div style={{ width: "100%", height: "1px", background: "#F0F0F0", marginTop: "auto", marginBottom: "40px", flexShrink: 0 }} />
+        <div className="qrx-card-divider" />
 
-        <div style={{ display: "flex", alignItems: "center", justifyContent: "flex-start", gap: "16px" }}>
+        <div className="qrx-card-footer">
           {s?.showMediaAsset && (
-            <img src={review.avatar} alt={review.name}
-              style={{ width: "56px", height: "56px", borderRadius: "50%", objectFit: "cover", flexShrink: 0, background: "#eff2f5" }}
-            />
+            <img className="qrx-card-avatar" src={review.avatar} alt={review.name} />
           )}
-          <div style={{ display: "flex", flexDirection: "column", gap: "4px" }}>
+          <div className="qrx-card-meta">
             {s?.showReviewerName && (
-              <p style={{ margin: 0, fontWeight: 500, fontSize: "16px", lineHeight: "20px", color: tc, display: "flex", alignItems: "center", gap: "8px" }}>
+              <p className="qrx-card-name">
                 {review.name}
                 {s?.showVerifiedBadge && <CheckBadge badgeColor={qc} />}
               </p>
             )}
             {s?.showProductName && (
-              <p style={{ margin: 0, fontSize: "16px", lineHeight: "20px", color: tc }}>{review.product}</p>
+              <p className="qrx-card-product">{review.product}</p>
             )}
           </div>
         </div>
@@ -154,16 +347,10 @@ const ReviewCard = ({ review, isActive, settings }) => {
 // ── NavButton ─────────────────────────────────────────────────────────────────
 
 const NavButton = ({ onClick, direction }) => (
-  <button onClick={onClick} aria-label={direction === "prev" ? "Previous" : "Next"}
-    style={{
-      position: "absolute", top: "50%", transform: "translateY(-50%)",
-      [direction === "prev" ? "left" : "right"]: "-22px",
-      width: "44px", height: "44px", background: "#fff",
-      borderRadius: "99px", border: "none",
-      boxShadow: "inset 0px -1px 0px #b5b5b5, inset 0px 0px 0px 1px rgba(0,0,0,0.1), inset 0px 0.5px 0px 1.5px #fff",
-      display: "flex", alignItems: "center", justifyContent: "center",
-      cursor: "pointer", zIndex: 10,
-    }}
+  <button
+    onClick={onClick}
+    aria-label={direction === "prev" ? "Previous" : "Next"}
+    className={`qrx-nav-btn ${direction === "prev" ? "qrx-nav-btn--prev" : "qrx-nav-btn--next"}`}
   >
     {direction === "prev" ? <ChevronLeft /> : <ChevronRight />}
   </button>
@@ -171,65 +358,39 @@ const NavButton = ({ onClick, direction }) => (
 
 // ── Dots ──────────────────────────────────────────────────────────────────────
 
-const Dots = ({ total, active, accentColor }) => (
-  <div style={{ display: "flex", justifyContent: "center", gap: "6px", marginTop: "8px" }}>
+const Dots = ({ total, active }) => (
+  <div className="qrx-dots">
     {[...Array(total)].map((_, i) => (
-      <div key={i} style={{
-        width: i === active ? "24px" : "8px", height: "8px",
-        borderRadius: "99px",
-        background: i === active ? (accentColor || "#34C759") : "#C8C8C8",
-        transition: "width 0.25s ease, background 0.25s ease",
-      }} />
+      <div key={i} className={`qrx-dot${i === active ? " qrx-dot--active" : ""}`} />
     ))}
   </div>
 );
 
 // ── Main Component ────────────────────────────────────────────────────────────
 
-export default function ReviewCarousel({ reviews = REVIEWS, settings ,activeDevice}) {
+export default function ReviewCarousel({ reviews = REVIEWS, settings, activeDevice }) {
   const s             = settings;
   const total         = reviews.length;
   const showArrows    = s?.showArrowControls !== false;
   const autoplayDelay = s?.autoSlider ? 3000 : 0;
-  const speed         = s?.speed;
-  console.log("autoplayDelay", autoplayDelay);
-  const accentColor   = s?.colors?.QUOTE_MARK_COLOR || "#34C759";
+  const speed         = s?.speed || 450; // shared duration for every card's transform
 
   const [activeIndex, setActiveIndex] = useState(0);
-  const [translateX,  setTranslateX]  = useState(0);
-  const [sliding,     setSliding]     = useState(false);
-  const [popKey,      setPopKey]      = useState(0); // increments → remounts center card → replays animation
+  const lockRef = useRef(false); // simple click-lock while an animation is running
 
-  const slidingRef = useRef(false);
-  const dirRef     = useRef(0); // 1 = next, -1 = prev
-
-  // Next: track moves LEFT
   const goNext = useCallback(() => {
-    if (slidingRef.current) return;
-    slidingRef.current = true;
-    dirRef.current = 1;
-    setSliding(true);
-    setTranslateX(-STEP);
-  }, []);
+    if (lockRef.current) return;
+    lockRef.current = true;
+    setActiveIndex(prev => (prev + 1) % total);
+    setTimeout(() => { lockRef.current = false; }, speed);
+  }, [total, speed]);
 
-  // Prev: track moves RIGHT
   const goPrev = useCallback(() => {
-    if (slidingRef.current) return;
-    slidingRef.current = true;
-    dirRef.current = -1;
-    setSliding(true);
-    setTranslateX(STEP);
-  }, []);
-
-  // After CSS slide transition: update index, reset position, trigger pop-zoom
-  const handleTransitionEnd = useCallback((e) => {
-    if (e.propertyName !== "transform") return;
-    setActiveIndex(prev => (prev + dirRef.current + total) % total);
-    setTranslateX(0);
-    setSliding(false);
-    slidingRef.current = false;
-    setPopKey(k => k + 1); // → center card remounts → @keyframes rcPopIn replays
-  }, [total]);
+    if (lockRef.current) return;
+    lockRef.current = true;
+    setActiveIndex(prev => (prev - 1 + total) % total);
+    setTimeout(() => { lockRef.current = false; }, speed);
+  }, [total, speed]);
 
   // Autoplay
   useEffect(() => {
@@ -238,74 +399,54 @@ export default function ReviewCarousel({ reviews = REVIEWS, settings ,activeDevi
     return () => clearInterval(id);
   }, [autoplayDelay, goNext]);
 
-  // 5 card slots (offset -2…+2); only ±1 and incoming ±2 are visible
-  const cards = [];
-  for (let offset = -2; offset <= 2; offset++) {
-    const idx = (activeIndex + offset + total) % total;
-    const isIncoming =
-      (sliding && dirRef.current ===  1 && offset ===  2) ||
-      (sliding && dirRef.current === -1 && offset === -2);
-    const opacity = Math.abs(offset) <= 1 || isIncoming ? 1 : 0;
-    cards.push({ review: reviews[idx], isActive: offset === 0, offset, opacity });
-  }
-
   return (
-    <div style={{ background: "#ddd", padding: "40px 0",overflow: "scroll",height: "80vh" }}>
-      <section data-section="qorix-review-quoteloop-widget" style={{
-        display: "flex", flexDirection: "column", alignItems: "center",
-        gap: "40px", padding: "60px 40px 50px",
-        maxWidth: `${activeDevice === "mobile" ? "500px" : "1300px"}`, margin: "0 auto",
-        textAlign: "center", background: "#fff",
-        
-      }}>
+    <>
+      <style>{CAROUSEL_CSS}</style>
+      <div className="qrx-wrapper">
+        <section
+          data-section="qorix-review-quoteloop-widget"
+          className={`qrx-section${activeDevice === "mobile" ? " qrx-section--mobile" : ""}`}
+        >
+          <ReaviewHeader settings={settings} />
 
-       <ReaviewHeader settings={settings} /> 
-      
-        <div style={{ width: "100%", maxWidth: "1240px", position: "relative", margin: "0 auto" }}>
+          <div className="qrx-track-container">
+            {/* card viewport hides outgoing slides */}
+            <div className="qrx-viewport">
+              {reviews.map((review, index) => {
+                const pos      = relativePosition(index, activeIndex, total); // -2..2, continuous per card
+                const isActive = pos === 0;
+                const visible  = Math.abs(pos) <= 1; // only center + immediate neighbors shown
 
-          {/* overflowX:clip clips side cards horizontally; overflowY:visible keeps full card height */}
-          <div style={{ overflowX: "clip" , overflowY: "visible" }}>
-            <div
-              onTransitionEnd={handleTransitionEnd}
-              style={{
-                display: "flex", alignItems: "center", justifyContent: "center",
-                gap: `${CARD_GAP}px`, padding: "20px 0 10px",
-                transform: `translateX(${translateX}px)`,
-                transition: sliding ? `transform ${speed}ms cubic-bezier(0.4,0,0.2,1)` : "none",
-              }}
-            >
-              {cards.map(({ review, isActive, offset, opacity }) => (
-                <div
-                  // popKey in key → React remounts center div on each slide → animation restarts
-                  key={offset === 0 ? `center-${popKey}` : `side-${offset}`}
-                  style={{
-                    flexShrink: 0,
-                    opacity,
-                    transform: isActive ? "scale(1)" : "scale(0.90)",
-                    animation: isActive
-                      ? "rcPopIn 0.55s cubic-bezier(0.34,1.56,0.64,1) forwards"
-                      : "none",
-                    transition: isActive ? "none" : "transform 0.45s ease, opacity 0.2s ease",
-                    pointerEvents: Math.abs(offset) > 1 ? "none" : "auto",
-                  }}
-                >
-                  <ReviewCard review={review} isActive={isActive} settings={s} />
-                </div>
-              ))}
+                return (
+                  <div
+                    key={review.id}
+                    className="qrx-card-slot"
+                    style={{
+                      "--qrx-speed": `${speed}ms`,
+                      opacity: visible ? 1 : 0,
+                      transform: `translate(calc(-50% + ${offsetForPos(pos)}px), -50%) scale(${isActive ? 1 : SIDE_SCALE})`,
+                      pointerEvents: visible ? "auto" : "none",
+                      zIndex: total - Math.abs(pos), // active card stacks above its neighbors
+                    }}
+                  >
+                    <ReviewCard review={review} isActive={isActive} settings={s} />
+                  </div>
+                );
+              })}
             </div>
+
+            {showArrows && (
+              <>
+                <NavButton onClick={goPrev} direction="prev" />
+                <NavButton onClick={goNext} direction="next" />
+              </>
+            )}
+
+            <Dots total={total} active={activeIndex} />
           </div>
-
-          <Dots total={total} active={activeIndex} accentColor={accentColor} />
-
-          {showArrows && (
-            <>
-              <NavButton onClick={goPrev} direction="prev" />
-              <NavButton onClick={goNext} direction="next" />
-            </>
-          )}
-        </div>
-      </section>
-    </div>
+        </section>
+      </div>
+    </>
   );
 }
 

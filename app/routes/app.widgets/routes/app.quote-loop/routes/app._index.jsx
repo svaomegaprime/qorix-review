@@ -10,6 +10,8 @@ import Header from "../../../components/Header";
 import ColorPicker from "../../../components/elements/ColorPicker";
 import QuoteLoopWidget from "../component/quite_loop_preview";
 import Range from "../../../components/elements/Range";
+import ResetToDefaults from "../../../components/elements/ResetToDefaults";
+import AdvanceCSS from "../../../components/elements/AdvanceCSS";
 
 const COLOR_PICKERS_ELEMENTS = [
   {
@@ -39,6 +41,39 @@ const DEFAULT_COLOR_VALUES = {
   Card_Background_Color: "#FFFFFF",
 };
 
+const createDefaultSettings = () => ({
+  // Header option
+  showHeader: true,
+  headerStyle: "center",
+  eyebrowLabel: "CUSTOMER REVIEWS",
+  heading: "Reviews from people",
+  subheading: "Watch and hear what our customers have to say.",
+  reviewStats: "Show review count & verified badge",
+
+  // Display elements and loop beahavior
+  showStarDistribution: true,
+  showReviewerName: true,
+  showQuoteMarkIcon: true,
+  showVerifiedBadge: true,
+  showMediaAsset: true,
+  showArrowControls: true,
+  showProductName: true,
+  autoSlider: false,
+  showAppreciationOption: true,
+  speed: 450,
+
+  filterSorting: "Filter & sorting both",
+  fiteringMinStart: "3 star and above",
+
+  // color piker
+  colors: { ...DEFAULT_COLOR_VALUES },
+
+  // Typography
+  quoteFontSize: 24,
+  textLength: 160,
+  advanceCss: "",
+});
+
 export default function Index(VALUES = {}) {
   // Start----Default CSR loading state checking for navigation
   const navigation = useNavigation();
@@ -47,46 +82,9 @@ export default function Index(VALUES = {}) {
 
   const [activeDevice, setActiveDevice] = useState("desktop");
 
-  const [settings, setSettings] = useState({
-    // Header option
+  const [settings, setSettings] = useState(() => createDefaultSettings());
+  const [customCss, setCss] = useState(() => createDefaultSettings().advanceCss || "");
 
-    showHeader: true,
-    headerStyle: "center", // default active
-    eyebrowLabel: "CUSTOMER REVIEWS",
-    heading: "Real reviews from real people",
-    subheading: "Watch and hear what our customers have to say.",
-    reviewStats: "Show review count & verified badge",
-
-    // Display elements and loop beahavior
-    showStarDistribution: true,
-    showReviewerName: true,
-    showQuoteMarkIcon: true,
-    showVerifiedBadge: true,
-    showMediaAsset: true,
-    showArrowControls: true,
-    showProductName: true,
-    autoSlider: false,
-    showAppreciationOption: true,
-    speed: 450,
-
-    filterSorting: "Filter & sorting both",
-    fiteringMinStart: "3 star and above",
-
-    // color piker
-    colors: DEFAULT_COLOR_VALUES,
-
-    // Typography
-    quoteFontSize: 24,
-    textLength: 160,
-    // autoplay on/off
-  });
-
-  const handleChangeColors = (e) => {
-    handleSettingChange("colors", {
-      ...settings.colors,
-      ...e,
-    });
-  };
   const handleSettingChange = (key, value) => {
     if (typeof key !== "string") {
       console.warn("Invalid settings key:", key);
@@ -94,7 +92,24 @@ export default function Index(VALUES = {}) {
     }
     setSettings((prev) => ({ ...prev, [key]: value }));
   };
-  122;
+
+  const handleChangeColors = (e) => {
+    handleSettingChange("colors", {
+      ...(settings?.colors || DEFAULT_COLOR_VALUES),
+      ...e,
+    });
+  };
+
+  const handleResetToDefaults = () => {
+    const defaults = createDefaultSettings();
+    setSettings(defaults);
+    setCss(defaults.advanceCss || "");
+  };
+
+  const handleCssChange = (value) => {
+    setCss(value);
+    handleSettingChange("advanceCss", value);
+  };
 
   // Start----Handlers for hide app window
   const handleHideAppWindow = () => {
@@ -137,7 +152,8 @@ export default function Index(VALUES = {}) {
             <s-button onClick={saveBar.triggerDiscard}>Discard trigger</s-button> */}
 
       <SaveBar saveBar={saveBar} />
-      <s-grid gridTemplateColumns="346px 1fr" alignItems="start">
+      <s-query-container>
+      <s-grid gridTemplateColumns="@container (inline-size > 900px) 346px 1fr, 1fr" alignItems="start">
         {/* Start----Sidebar */}
         <CustomSection
           borderRadius="0"
@@ -415,6 +431,14 @@ export default function Index(VALUES = {}) {
                   />
                 </s-stack>
               </s-stack>
+
+              <s-stack>
+                <AdvanceCSS css={customCss} setCss={handleCssChange} />
+              </s-stack>
+
+              <s-stack>
+                <ResetToDefaults handleResetToDefaults={handleResetToDefaults} />
+              </s-stack>
             </div>
             {/* End----Sidebar content */}
           </div>
@@ -438,8 +462,9 @@ export default function Index(VALUES = {}) {
               borderBottom: "1px solid #e4e4e4ff",
             }}
           >
+            <s-query-container>
             <s-grid
-              gridTemplateColumns="1fr auto"
+             gridTemplateColumns="@container (inline-size > 900px) 1fr auto, 1fr"
               gap="small"
               justifyContent="space-between"
               paddingInline="base"
@@ -504,6 +529,7 @@ export default function Index(VALUES = {}) {
                 </s-button>
               </s-button-group>
             </s-grid>
+            </s-query-container>
           </div>
           {/* End----Preview Header */}
           <QuoteLoopWidget settings={settings} activeDevice={activeDevice} />
@@ -512,6 +538,7 @@ export default function Index(VALUES = {}) {
         </div>
         {/* End----Content */}
       </s-grid>
+      </s-query-container>
     </>
   );
 }
