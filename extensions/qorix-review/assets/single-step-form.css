@@ -296,3 +296,26 @@
 .continue-btn:hover {
   background: var(--button-background-color);
 }
+
+/* Loader */
+.submit-btn .qr-loader {
+  display: inline-block;
+  width: 22px;
+  height: 22px;
+  border: 2px solid rgba(255, 255, 255, 0.35);
+  border-top-color: currentColor;
+  border-radius: 50%;
+  animation: qr-spin 0.8s linear infinite;
+  flex-shrink: 0;
+}
+
+
+@keyframes qr-spin {
+  from {
+    transform: rotate(0deg);
+  }
+
+  to {
+    transform: rotate(360deg);
+  }
+}
