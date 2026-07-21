@@ -11,6 +11,9 @@ import Range from "../../../components/elements/Range";
 import Header from "../../../components/Header";
 import ResetToDefaults from "../../../components/elements/ResetToDefaults";
 import VideoStackWidget from "../component/videoStackPreview";
+import AdvanceCSS from "../../../components/elements/AdvanceCSS";
+
+
 const COLOR_PICKERS_ELEMENTS = [
   {
     key: "STAR_COLOR",
@@ -44,7 +47,7 @@ const DEFAULT_VALUES_VIDEO_STACK = {
   showHeader: true,
   headerStyle: "center",
   eyebrowLabel: "CUSTOMER REVIEWS",
-  heading: "Real reviews from real people",
+  heading: "Reviews from people",
   subheading: "Watch and hear what our customers have to say.",
   reviewStats: "Show review count & verified badge",
 
@@ -72,6 +75,7 @@ const DEFAULT_VALUES_VIDEO_STACK = {
   activeDotColor: DEFAULT_COLOR_VALUES.ACTIVE_DOT_COLOR,
   badgeColor: DEFAULT_COLOR_VALUES.BADGE_COLOR,
   overlayTintColor: DEFAULT_COLOR_VALUES.OVERLAY_TINT_COLOR,
+  advanceCss: "",
 };
 export default function Index() {
   // Start----Default CSR loading state checking for navigation
@@ -81,6 +85,9 @@ export default function Index() {
   const [resetKey, setResetKey] = useState(0);
   const [activeDevice, setActiveDevice] = useState("desktop");
   const [settings, setSettings] = useState(DEFAULT_VALUES_VIDEO_STACK);
+  const [customCss, setCss] = useState(DEFAULT_VALUES_VIDEO_STACK.advanceCss || "");
+
+
 
   const colorValues = {
     STAR_COLOR: settings.startColor,
@@ -105,16 +112,10 @@ export default function Index() {
   };
 
   const handleResetToDefaults = () => {
-    setSettings((prev) => ({
-      ...prev,
-      startColor: DEFAULT_COLOR_VALUES.STAR_COLOR,
-      activeDotColor: DEFAULT_COLOR_VALUES.ACTIVE_DOT_COLOR,
-      overlayTintColor: DEFAULT_COLOR_VALUES.OVERLAY_TINT_COLOR,
-      badgeColor: DEFAULT_COLOR_VALUES.BADGE_COLOR,
-    }));
+    const defaults = DEFAULT_VALUES_VIDEO_STACK;
+    setSettings(defaults);
+    setCss(defaults.advanceCss || "");
     setResetKey((prev) => prev + 1);
-
-    setSettings(DEFAULT_VALUES_VIDEO_STACK);
   };
 
   const handleSettingChange = (key, value) => {
@@ -124,6 +125,13 @@ export default function Index() {
     }
     setSettings((prev) => ({ ...prev, [key]: value }));
   };
+
+  const handleCssChange = (value) => {
+    setCss(value);
+    handleSettingChange("advanceCss", value);
+  };
+
+
 
   // Start----Handlers for hide app window
   const handleHideAppWindow = () => {
@@ -159,13 +167,44 @@ export default function Index() {
 
   return (
     <>
-      {/* <s-button onClick={saveBar.triggerChange}>Change one</s-button>
-            <s-button onClick={saveBar.triggerChange}>Change two</s-button>
-            <s-button onClick={saveBar.triggerSubmit}>Submit trigger</s-button>
-            <s-button onClick={saveBar.triggerDiscard}>Discard trigger</s-button> */}
+        <style>
+        {`
+          .review-item {
+  height: 76px;
+  display: grid;
+  align-items: center;
+  border-bottom: 1px solid #e4e4e4;
+          margin: 0 auto;
+}
+
+.sidebar-content {
+  height: calc(100vh - 77px);
+  overflow: hidden auto;
+  background: #fff;
+  padding: 1rem;
+}
+
+
+@media (max-width: 900px) {
+
+  .sidebar-content {
+    height: auto;
+    overflow: visible;
+    padding: 0.75rem;
+  }
+
+  .review-item {
+    height: 200px;
+   width: 70%;
+  }
+}
+        `}
+      </style>
 
       <SaveBar saveBar={saveBar} />
-      <s-grid gridTemplateColumns="346px 1fr" alignItems="start">
+
+      <s-query-container>
+      <s-grid   gridTemplateColumns="@container (inline-size > 900px) 346px 1fr, 1fr"  alignItems="start">
         {/* Start----Sidebar */}
         <CustomSection
           borderRadius="0"
@@ -445,6 +484,12 @@ export default function Index() {
               </s-stack>
             </div>
 
+            
+                          <div style={{ padding: "0rem 1rem 1rem 1rem" }}>
+                            <AdvanceCSS css={customCss} setCss={handleCssChange} />
+                          </div>
+            
+
             <ResetToDefaults handleResetToDefaults={handleResetToDefaults} />
 
             {/* End----Sidebar content */}
@@ -462,15 +507,12 @@ export default function Index() {
         >
           {/* Start----Preview Header */}
           <div
-            style={{
-              height: "76px",
-              display: "grid",
-              alignItems: "center",
-              borderBottom: "1px solid #e4e4e4ff",
-            }}
+             className="review-item"
           >
+
+            <s-query-container>
             <s-grid
-              gridTemplateColumns="1fr auto"
+                gridTemplateColumns="@container (inline-size > 600px) 1fr auto, 1fr"
               gap="small"
               justifyContent="space-between"
               paddingInline="base"
@@ -521,6 +563,7 @@ export default function Index() {
                   </s-button>
                 </s-button-group>
               </s-stack>
+
               <s-button-group gap="base">
                 <s-button slot="secondary-actions">Need help?</s-button>
                 <s-button variant="primary" slot="primary-action">
@@ -535,6 +578,8 @@ export default function Index() {
                 </s-button>
               </s-button-group>
             </s-grid>
+            </s-query-container>
+          
           </div>
           {/* End----Preview Header */}
           <VideoStackWidget settings={settings} activeDevice={activeDevice} />
@@ -543,6 +588,7 @@ export default function Index() {
         </div>
         {/* End----Content */}
       </s-grid>
+      </s-query-container>
     </>
   );
 }
