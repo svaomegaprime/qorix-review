@@ -16,7 +16,6 @@
       <button
         type="button"
         class="quickreview-reviews__icon-btn"
-        data-quickreview-filters-toggle
         aria-label="Toggle filters"
         aria-expanded="false"
         @click="filtersOpen = !filtersOpen"
@@ -28,25 +27,37 @@
         </svg>
       </button>
 
-      <div class="quickreview-reviews__sort" data-quickreview-sort>
+      <div class="quickreview-reviews__sort">
         <button
           type="button"
           class="quickreview-reviews__icon-btn"
-          data-quickreview-sort-toggle
           aria-label="Sort reviews"
           aria-expanded="false"
+          @click="sortOpen = !sortOpen"
         >
           <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
             <path d="M12 3C14.755 3 17.455 3.232 20.083 3.678C20.616 3.768 21 4.234 21 4.774V5.818C21 6.11348 20.9418 6.40606 20.8287 6.67904C20.7157 6.95203 20.5499 7.20007 20.341 7.409L14.909 12.841C14.7001 13.0499 14.5343 13.298 14.4213 13.571C14.3082 13.8439 14.25 14.1365 14.25 14.432V17.359C14.2501 17.777 14.1337 18.1867 13.914 18.5423C13.6943 18.8978 13.3799 19.1851 13.006 19.372L9.75 21V14.432C9.75 14.1365 9.69181 13.8439 9.57874 13.571C9.46566 13.298 9.29993 13.0499 9.091 12.841L3.659 7.409C3.45007 7.20007 3.28434 6.95203 3.17126 6.67904C3.05819 6.40606 3 6.11348 3 5.818V4.774C3 4.234 3.384 3.768 3.917 3.678C6.58757 3.22586 9.29143 2.99906 12 3Z" stroke="#4A4A4A" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
           </svg>
         </button>
 
-        <ul class="quickreview-reviews__sort-menu" data-quickreview-sort-menu hidden>
-          <li data-sort-value="recent" class="is-active">Most recent (default)</li>
-          <li data-sort-value="highest">Highest rating</li>
-          <li data-sort-value="pictures">Only pictures</li>
-          <li data-sort-value="pictures-first">Pictures first</li>
-          <li data-sort-value="videos-first">Videos first</li>
+        <ul class="quickreview-reviews__sort-menu" x-show="sortOpen">
+          <template x-for="option in sortOptions" :key="option.value">
+            <li
+              value="ALL"
+              class=""
+              @click="setSort(option.value)"
+              :class="{ 'is-active': '{{quick_review_metafield.defaultSort}}' === option.value || option.value === activeSort }"
+              x-text="option.label"
+            ></li>
+          </template>
+          {% comment %}
+            <li value="MOST_RECENT" class="is-active">Most recent</li>
+            <li value="HIGHEST_RATING">Highest rating</li>
+            <li value="LOWEST_RATING">Lowest rating</li>
+            <li value="ONLY_PICTURES">Only pictures</li>
+            <li value="ONLY_VIDEO">Only Videos</li>
+            <li value="MOST_HELPFUL">Most Helpful</li>
+          {% endcomment %}
         </ul>
       </div>
     </div>
@@ -58,23 +69,28 @@
     <div class="quickreview-reviews__rating-filter">
       <span class="quickreview-reviews__rating-label">Rating</span>
 
-      <div class="quickreview-reviews__pills" data-quickreview-rating-pills>
-        <button type="button" class="quickreview-pill " data-rating="all">All</button>
-        <button type="button" class="quickreview-pill" data-rating="1">
-          1 <span class="quickreview-pill__star">{%- render 'icon', name: 'rating-star' -%}</span>
+      <div class="quickreview-reviews__pills">
+        <button
+          type="button"
+          class="quickreview-pill"
+          :class="{ 'is-active': activeFilter == 'ALL' }"
+          @click="setRatingFilter('ALL')"
+        >
+          All
         </button>
-        <button type="button" class="quickreview-pill" data-rating="2">
-          2 <span class="quickreview-pill__star">{%- render 'icon', name: 'rating-star' -%}</span>
-        </button>
-        <button type="button" class="quickreview-pill" data-rating="3">
-          3 <span class="quickreview-pill__star">{%- render 'icon', name: 'rating-star' -%}</span>
-        </button>
-        <button type="button" class="quickreview-pill is-active" data-rating="4">
-          4 <span class="quickreview-pill__star">{%- render 'icon', name: 'rating-star' -%}</span>
-        </button>
-        <button type="button" class="quickreview-pill" data-rating="5">
-          5 <span class="quickreview-pill__star">{%- render 'icon', name: 'rating-star' -%}</span>
-        </button>
+        <template x-for="rating in ratings" :key="rating">
+          <button
+            type="button"
+            class="quickreview-pill"
+            :class="{ 'is-active': Number(activeFilter) === rating }"
+            @click="setRatingFilter(rating)"
+          >
+            <span x-text="rating"></span>
+            <span class="quickreview-pill__star">
+              {%- render 'icon', name: 'rating-star' -%}
+            </span>
+          </button>
+        </template>
       </div>
     </div>
   </div>

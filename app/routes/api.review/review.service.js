@@ -465,6 +465,11 @@ async function getReview(request, session, admin) {
           rating: "desc",
         };
         break;
+      case "LOWEST_RATING":
+        query.orderBy = {
+          rating: "asc",
+        };
+        break;
 
       case "ONLY_PICTURES":
         query.where.attachments = {

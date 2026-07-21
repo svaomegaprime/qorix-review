@@ -1,6 +1,8 @@
 {{ 'quickreview-review-item.css' | asset_url | stylesheet_tag }}
-<template x-for="review in reviews" :key="review.id">
-  <div class="quickreview-review">
+
+{% render 'skeleton' %}
+<template x-for="review in filteredReviews()" :key="review.id">
+  <div class="quickreview-review" x-show="!loading">
     <div class="quickreview-review__head">
       <div class="quickreview-review__avatar">
         <img
@@ -86,3 +88,9 @@
     </div>
   </div>
 </template>
+<p
+  x-show="filteredReviews().length === 0"
+  style="color: #888; font-size: 14px; padding: 20px 0"
+>
+  No reviews found.
+</p>

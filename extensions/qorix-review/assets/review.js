@@ -6,6 +6,7 @@ class QuickReviewWidget {
       { label: "All Review", value: "ALL" },
       { label: "Most recent", value: "MOST_RECENT" },
       { label: "Highest rating", value: "HIGHEST_RATING" },
+      { label: "Lowest rating", value: "LOWEST_RATING" },
       { label: "Only pictures", value: "ONLY_PICTURES" },
       { label: "Only video", value: "ONLY_VIDEO" },
       { label: "Most helpful", value: "MOST_HELPFUL" },
@@ -13,7 +14,7 @@ class QuickReviewWidget {
 
     this.activeFilter = "ALL";
     this.activeSort = "MOST_RECENT";
-    this.filtersOpen = false;
+    this.filtersOpen = true;
     this.sortOpen = false;
     this.modalOpen = false;
     this.submitSuccess = false;
@@ -435,11 +436,11 @@ class QuickReviewWidget {
     this.activeFilter = rating;
   }
 
-  setSort(option) {
+  async setSort(option) {
     this.activeSort = option;
     this.sortOpen = false;
     this.sort = option;
-    this.getReview(option);
+    await this.getReview(option);
   }
 
   openModal() {
