@@ -297,6 +297,10 @@
   background: var(--button-background-color);
 }
 
+#media-preview {
+  display: flex;
+}
+
 /* Loader */
 .submit-btn .qr-loader {
   display: inline-block;

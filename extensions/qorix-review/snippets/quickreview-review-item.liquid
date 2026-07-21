@@ -38,7 +38,7 @@
 
     <p class="quickreview-review__body" x-text="review.body"></p>
 
-    <div class="quickreview-review__media">
+    <div class="quickreview-review__media" x-show="review.attachments.length > 0">
       <template x-for="attachment in review.attachments" :key="attachment.id">
         <div class="quickreview-review__media-item" @click="openLightbox(attachment)">
           <template x-if="attachment.type === 'IMAGE'">
