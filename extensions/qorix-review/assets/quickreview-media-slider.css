@@ -47,6 +47,7 @@
   text-decoration: none;
   font-weight: 500;
   line-height: 1.01;
+  cursor: pointer;
 }
 
 .quickreview-media__slider-wrap {

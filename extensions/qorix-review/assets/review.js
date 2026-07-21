@@ -13,7 +13,7 @@ class QuickReviewWidget {
 
     this.activeFilter = "ALL";
     this.activeSort = "MOST_RECENT";
-    this.filtersOpen = true;
+    this.filtersOpen = false;
     this.sortOpen = false;
     this.modalOpen = false;
     this.submitSuccess = false;
@@ -25,6 +25,7 @@ class QuickReviewWidget {
     this.allowPhotoUpload = true;
     this.allowVideoUpload = true;
     this.uploadedFiles = [];
+    this.showAllMedia = false;
 
     this.form = {
       name: "",
@@ -205,7 +206,10 @@ class QuickReviewWidget {
 
     console.log({ reviewId, customerId, customerEmail, isHelpful });
 
-    if (!reviewId || !customerId || !customerEmail) return;
+    if (!reviewId || !customerId || !customerEmail) {
+      window.location.href = "/account";
+      return;
+    }
 
     try {
       const response = await fetch("/apps/qorix-review/helpful", {

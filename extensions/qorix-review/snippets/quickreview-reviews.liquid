@@ -9,7 +9,7 @@
   <div class="quickreview-reviews__header">
     <div class="quickreview-reviews__titles">
       <h2 class="quickreview-reviews__title">Product Reviews</h2>
-      <p class="quickreview-reviews__subtitle">of Hydrating Eye Cream</p>
+      <p class="quickreview-reviews__subtitle">of {{ product.title }}</p>
     </div>
 
     <div class="quickreview-reviews__actions">
@@ -19,6 +19,7 @@
         data-quickreview-filters-toggle
         aria-label="Toggle filters"
         aria-expanded="false"
+        @click="filtersOpen = !filtersOpen"
       >
         <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
           <path d="M3.59961 7.19999C3.59961 6.96129 3.69443 6.73237 3.86321 6.56359C4.032 6.39481 4.26091 6.29999 4.49961 6.29999H19.4996C19.7383 6.29999 19.9672 6.39481 20.136 6.56359C20.3048 6.73237 20.3996 6.96129 20.3996 7.19999C20.3996 7.43868 20.3048 7.6676 20.136 7.83638C19.9672 8.00517 19.7383 8.09999 19.4996 8.09999H4.49961C4.26091 8.09999 4.032 8.00517 3.86321 7.83638C3.69443 7.6676 3.59961 7.43868 3.59961 7.19999Z" fill="#303030"/>
@@ -51,7 +52,7 @@
     </div>
   </div>
 
-  <div class="quickreview-reviews__filters" data-quickreview-filters>
+  <div x-show="filtersOpen" class="quickreview-reviews__filters" data-quickreview-filters>
     <span class="quickreview-reviews__filters-label">Filters</span>
 
     <div class="quickreview-reviews__rating-filter">

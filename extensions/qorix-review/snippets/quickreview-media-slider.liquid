@@ -3,7 +3,7 @@
 <div class="quickreview-media">
   <div class="quickreview-media__header">
     <span class="quickreview-media__title">Reviews with media</span>
-    <a href="#" class="quickreview-media__see-all"> See all media </a>
+    <p class="quickreview-media__see-all" @click="showAllMedia = true">See all media</p>
   </div>
 
   <div class="quickreview-media__slider-wrap">
@@ -51,3 +51,4 @@
     </div>
   </div>
 </div>
+{% render 'quickreview-media-modal' %}
