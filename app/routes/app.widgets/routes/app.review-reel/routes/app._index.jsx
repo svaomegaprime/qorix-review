@@ -12,11 +12,17 @@ import ResetToDefaults from "../../../components/elements/ResetToDefaults";
 // import ReviewReelWidget from "../component/reviewReelPreview";
  import Range from "../../../components/elements/Range";
 import ReviewReelPreeview from "../component/reviewReelPreview";    
+import AdvancedCSS from "../../../components/elements/AdvanceCSS";
 const COLOR_PICKERS_ELEMENTS = [  
   {
     key: "CARD_BACKGROUND",
     label: "Card background",
   },
+    {
+    key: "CARD_TEXT_COLOR",
+    label: "Card text color",
+  },
+
   {
     key: "BADGE_COLOR",
     label: "Badge color",
@@ -33,6 +39,7 @@ const DEFAULT_COLOR_VALUES = {
   BADGE_COLOR: "#34C759",
   ACTIVE_DOT_COLOR: "#34C759",
   CARD_BACKGROUND: "#FFF",
+  CARD_TEXT_COLOR: "#000",
 };
 
 const DEFAULT_VALUES_VIDEO_STACK = {
@@ -64,6 +71,8 @@ const DEFAULT_VALUES_VIDEO_STACK = {
   startColor: DEFAULT_COLOR_VALUES.BADGE_COLOR,
   activeDotColor: DEFAULT_COLOR_VALUES.ACTIVE_DOT_COLOR,
   cardBackgorud: DEFAULT_COLOR_VALUES.CARD_BACKGROUND,
+  cardTextColor: DEFAULT_COLOR_VALUES.CARD_TEXT_COLOR,
+  advanceCss: "",
 };
 
 console.log("DEFAULT_VALUES_VIDEO_STACK", DEFAULT_VALUES_VIDEO_STACK);
@@ -76,17 +85,20 @@ export default function Index() {
 
   const [activeDevice, setActiveDevice] = useState("desktop");
   const [settings, setSettings] = useState(DEFAULT_VALUES_VIDEO_STACK);
+  const [customCss, setCss] = useState(DEFAULT_VALUES_VIDEO_STACK.advanceCss || "");
 
   const colorValues = {
     BADGE_COLOR: settings.startColor,
     ACTIVE_DOT_COLOR: settings.activeDotColor,
     CARD_BACKGROUND: settings.cardBackgorud,
+    CARD_TEXT_COLOR: settings.cardTextColor,
   };
 
   const COLOR_KEY_MAP = {
     BADGE_COLOR: "startColor", // BADGE_COLOR → startColor
     ACTIVE_DOT_COLOR: "activeDotColor", // ACTIVE_DOT_COLOR → activeDotColor
     CARD_BACKGROUND: "cardBackgorud", // CARD_BACKGROUND → ccardBackgorud
+    CARD_TEXT_COLOR: "cardTextColor", // CARD_TEXT_COLOR → cardTextColor
   };
 
   console.log("colorValues", colorValues);
@@ -99,17 +111,17 @@ export default function Index() {
   };
 
   const handleResetToDefaults = () => {
-    setSettings((prev) => ({
-      ...prev,
-      startColor: DEFAULT_COLOR_VALUES.BADGE_COLOR,
-      activeDotColor: DEFAULT_COLOR_VALUES.ACTIVE_DOT_COLOR,
-      cardBackgorud: DEFAULT_COLOR_VALUES.CARD_BACKGROUND,
-    }));
-    setResetKey((prev) => prev + 1);
-
     setSettings(DEFAULT_VALUES_VIDEO_STACK);
+    setCss(DEFAULT_VALUES_VIDEO_STACK.advanceCss || "");
+    setResetKey((prev) => prev + 1);
   };
   console.log("settings", settings);
+
+  const handleCssChange = (value) => {
+    setCss(value);
+    handleSettingChange("advanceCss", value);
+  };
+
   const handleSettingChange = (key, value) => {
     if (typeof key !== "string") {
       console.warn("Invalid settings key:", key);
@@ -153,13 +165,45 @@ export default function Index() {
 
   return (
     <>
-      {/* <s-button onClick={saveBar.triggerChange}>Change one</s-button>
-            <s-button onClick={saveBar.triggerChange}>Change two</s-button>
-            <s-button onClick={saveBar.triggerSubmit}>Submit trigger</s-button>
-            <s-button onClick={saveBar.triggerDiscard}>Discard trigger</s-button> */}
+          
+        <style>
+        {`
+          .review-item {
+  height: 76px;
+  display: grid;
+  align-items: center;
+  border-bottom: 1px solid #e4e4e4;
+          margin: 0 auto;
+}
+
+.sidebar-content {
+  height: calc(100vh - 77px);
+  overflow: hidden auto;
+  background: #fff;
+  padding: 1rem;
+}
+
+
+@media (max-width: 900px) {
+
+  .sidebar-content {
+    height: auto;
+    overflow: visible;
+    padding: 0.75rem;
+  }
+
+  .review-item {
+    height: 200px;
+   width: 70%;
+  }
+}
+        `}
+      </style>
 
       <SaveBar saveBar={saveBar} />
-      <s-grid gridTemplateColumns="346px 1fr" alignItems="start">
+      <s-query-container>
+
+       <s-grid  gridTemplateColumns="@container (inline-size > 900px) 346px 1fr, 1fr"  alignItems="start">
         {/* Start----Sidebar */}
         <CustomSection
           borderRadius="0"
@@ -404,6 +448,10 @@ export default function Index() {
               </s-stack>
             </div>
 
+               <div style={{ padding: "0rem 1rem 1rem 1rem" }}>
+               <AdvancedCSS css={customCss} setCss={handleCssChange} />
+                </div>
+
             <ResetToDefaults handleResetToDefaults={handleResetToDefaults} />
             {/* End----Sidebar content */}
           </div>
@@ -420,15 +468,12 @@ export default function Index() {
         >
           {/* Start----Preview Header */}
           <div
-            style={{
-              height: "76px",
-              display: "grid",
-              alignItems: "center",
-              borderBottom: "1px solid #e4e4e4ff",
-            }}
+           className="review-item"
+            
           >
-            <s-grid
-              gridTemplateColumns="1fr auto"
+            <s-query-container>
+                 <s-grid
+               gridTemplateColumns="@container (inline-size > 600px) 1fr auto, 1fr"
               gap="small"
               justifyContent="space-between"
               paddingInline="base"
@@ -493,15 +538,20 @@ export default function Index() {
                 </s-button>
               </s-button-group>
             </s-grid>
+            </s-query-container>
+         
           </div>
           {/* End----Preview Header */}
         <ReviewReelPreeview settings={settings} activeDevice={activeDevice} />
-          {/* Start----Preview Content */}
-          {/* End----Preview Content */}
+
+
         </div>
 
         {/* End----Content */}
-      </s-grid>
+       </s-grid>
+
+      </s-query-container>
+ 
     </>
   );
 }
