@@ -258,6 +258,7 @@ export default function Index(VALUES = {}) {
     buttonBackgroundColor: quickReview.colorValues.Submit_Button_Color,
     buttonTextColor: quickReview.colorValues.TEXT_COLOR,
     verifiedBadgeColor: quickReview.colorValues.VERIFIED_BADGE_COLOR,
+    barFileColor: quickReview.colorValues.BAR_FILE_COLOR,
     // -------------- widget ---------
     borderRadius: `${quickReview.borderRadius}px`,
 

@@ -171,13 +171,16 @@
 }
 
 .quickreview-pill.is-active {
-  background-color: var(--qr-color-primary);
+  background-color: var(--button-background-color);
   border-color: var(--qr-color-primary);
-  color: var(--qr-color-white);
+  color: var(--button-text-color);
 }
 
 .quickreview-pill__star {
   font-size: 11px;
+}
+.quickreview-pill__star svg path{
+  fill: var(--star-color);
 }
 
 @media (max-width: 749px) {

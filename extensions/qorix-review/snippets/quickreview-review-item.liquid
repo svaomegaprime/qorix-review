@@ -25,7 +25,9 @@
       <template x-for="i in 5" :key="i">
         <span>
           <template x-if="i <= review.rating">
-            {% render 'icon', name: 'rating-star' %}
+            <span class="review-star-color">
+              {% render 'icon', name: 'rating-star' %}
+            </span>
           </template>
           <template x-if="i > review.rating">
             {% render 'icon', name: 'rating-star-withoutfield' %}
