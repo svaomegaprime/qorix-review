@@ -30,10 +30,18 @@ const DEFAULT_CONTENTS = {
 const DEFAULT_VISIBILITY = {
     HIDE_IF_NO_REVIEWS: true
 }
+
+const DEFAULT_ADVANCE_CSS = ``;
 // End----Default selected values
 
 export async function loader () {
-    return {typography: DEFAULT_TYPOGRAPHY, colors: DEFAULT_COLORS, contents: DEFAULT_CONTENTS, visibility: DEFAULT_VISIBILITY};
+    return {
+        typography: DEFAULT_TYPOGRAPHY,
+        colors: DEFAULT_COLORS,
+        contents: DEFAULT_CONTENTS,
+        visibility: DEFAULT_VISIBILITY,
+        advanceCss: DEFAULT_ADVANCE_CSS,
+    };
 }
 
 export default function Index() {
@@ -51,6 +59,7 @@ export default function Index() {
     const [colors, setColors] = useState(loaderData.colors);
     const [typography, setTypography] = useState(loaderData.typography);
     const [visibility, setVisibility] = useState(loaderData.visibility);
+    const [customCss, setCustomCss] = useState(loaderData.advanceCss);
     const [sidebarResetKey, setSidebarResetKey] = useState(0);
     // End----State for loader selected values
 
@@ -70,6 +79,7 @@ export default function Index() {
         setColors(loaderData.colors);
         setTypography(loaderData.typography);
         setVisibility(loaderData.visibility);
+        setCustomCss(loaderData.advanceCss);
         setSidebarResetKey((key) => key + 1);
     }
     // End----Handlers for discard changes
@@ -94,6 +104,11 @@ export default function Index() {
         saveBar.triggerDiscard();
     }
     // End----Handlers for reset to defaults
+
+    const handleCssChange = (value) => {
+        setCustomCss(value);
+        saveBar.triggerChange();
+    };
 
     // Start----Handlers for changing styles
     const handleChange = (e) => {
@@ -124,14 +139,16 @@ export default function Index() {
             contents: nextContents,
             colors: nextColors,
             typography: nextTypography,
-            visibility: nextVisibility
+            visibility: nextVisibility,
+            advanceCss: customCss,
         };
 
         const originalValues = {
             contents: loaderData.contents,
             colors: loaderData.colors,
             typography: loaderData.typography,
-            visibility: loaderData.visibility
+            visibility: loaderData.visibility,
+            advanceCss: loaderData.advanceCss,
         };
 
         const hasChanged = JSON.stringify(nextValues) !== JSON.stringify(originalValues);
@@ -160,7 +177,13 @@ export default function Index() {
     console.clear();
     console.log("SaveBar submit trigger:", {contents, colors, typography, visibility});
 
-    const selectedValues = {typography, colors, contents, visibility};
+    const selectedValues = {
+        typography,
+        colors,
+        contents,
+        visibility,
+        advanceCss: customCss,
+    };
     
     return (
         <>  
@@ -213,6 +236,8 @@ export default function Index() {
                         VALUES={selectedValues}
                         handleChange={handleChange}
                         handleResetToDefaults={handleResetToDefaults}
+                        customCss={customCss}
+                        handleCssChange={handleCssChange}
                     />
                     {/* End----Sidebar */}
 
