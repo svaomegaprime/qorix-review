@@ -168,10 +168,44 @@ export default function Index() {
             <s-button onClick={saveBar.triggerChange}>Change two</s-button>
             <s-button onClick={saveBar.triggerSubmit}>Submit trigger</s-button>
             <s-button onClick={saveBar.triggerDiscard}>Discard trigger</s-button> */}
+   <style>
+        {`
+          .review-item {
+  height: 76px;
+  display: grid;
+  align-items: center;
+  border-bottom: 1px solid #e4e4e4;
+          margin: 0 auto;
+}
+
+.sidebar-content {
+  height: calc(100vh - 77px);
+  overflow: hidden auto;
+  background: #fff;
+  padding: 1rem;
+}
+
+
+@media (max-width: 900px) {
+
+  .sidebar-content {
+    height: auto;
+    overflow: visible;
+    padding: 0.75rem;
+  }
+
+  .review-item {
+    height: 200px;
+   width: 70%;
+  }
+}
+        `}
+      </style>
+
 
             <SaveBar saveBar={saveBar} />
             <s-query-container> {/* @container (inline-size < 590px) 1fr, 5fr 7fr */}
-                <s-grid gridTemplateColumns="@container (inline-size > 600px) 346px 1fr, 1fr" alignItems="start">
+                <s-grid gridTemplateColumns="@container (inline-size > 900px) 346px 1fr, 1fr" alignItems="start">
                     {/* Start----Sidebar */}
                     <Sidebar
                         key={sidebarResetKey}
@@ -193,14 +227,10 @@ export default function Index() {
                     >
                         {/* Start----Preview Header */}
                         <div 
-                            style={{
-                                height: "76px",
-                                display: "grid",
-                                alignItems: "center",
-                                borderBottom: "1px solid #e4e4e4ff"
-                            }}
+                            className="review-item"
                         >
-                            <s-grid gridTemplateColumns="1fr auto" gap="small" justifyContent="space-between" paddingInline="base">
+                            <s-query-container>
+                                <s-grid   gridTemplateColumns="@container (inline-size > 600px) 1fr auto, 1fr" gap="small" justifyContent="space-between" paddingInline="base">
                                 <s-stack alignItems="center">
                                     <s-button-group gap="none">
                                         <s-button slot="secondary-actions" icon="desktop" onClick={() => setActiveDevice("desktop")}>
@@ -224,7 +254,11 @@ export default function Index() {
                                         </div>
                                     </s-button>
                                 </s-button-group>
-                            </s-grid>
+                                  </s-grid>
+ 
+                            </s-query-container>
+                        
+
                         </div>
                         {/* End----Preview Header */}
 
