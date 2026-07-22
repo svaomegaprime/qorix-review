@@ -12,6 +12,7 @@ import {
   markOrderProductReviewed,
   syncReviewedOrderFromShopify,
 } from "../../services/orders.server.js";
+import { addJobInQueue, reviewQueue } from "../../lib/bullmq/bullmq.queue";
 
 function buildFromAddress(displayName, email) {
   const cleanEmail = String(email || "").trim();
@@ -225,52 +226,103 @@ async function postReview(request, session, admin) {
     }
 
     if (reviewData.reviewerEmail) {
-      try {
-        await sendEmail({
-          to: reviewData.reviewerEmail,
-          from: buildFromAddress(storeName, senderEmail),
-          replyTo: replyToEmail,
-          templateName: "ConfirmEmail",
+      const clientEmailData = {
+        to: reviewData.reviewerEmail,
+        from: buildFromAddress(storeName, senderEmail),
+        replyTo: replyToEmail,
+        templateName: "ConfirmEmail",
+        subject:
+          emailSettings.confirmationEmailSubject ?? "Thank you for your review",
+        templateData: {
           subject:
-            emailSettings.confirmationEmailSubject ??
+            emailSettings.confirmatisonEmailSubject ??
             "Thank you for your review",
-          templateData: {
-            subject:
-              emailSettings.confirmatisonEmailSubject ??
-              "Thank you for your review",
-            storeName,
-            logo: brandingSettings.storeLogo ?? "",
-            tagline: brandingSettings.storeTagline ?? "",
-            customerName: reviewData.reviewerName ?? "",
-            emailBody,
-            buttonUrl: productUrl,
-            buttonText: "View your review",
+          storeName,
+          logo: brandingSettings.storeLogo ?? "",
+          tagline: brandingSettings.storeTagline ?? "",
+          customerName: reviewData.reviewerName ?? "",
+          emailBody,
+          buttonUrl: productUrl,
+          buttonText: "View your review",
 
-            emailPrimaryButtonColor:
-              brandingSettings.emailPrimaryButtonColor ?? "#269e1bff",
-            emailButtonTextColor:
-              brandingSettings.emailButtonTextColor ?? "#FFFFFF",
-            emailBackgroundColor:
-              brandingSettings.emailBackgroundColor ?? "#eef0ee",
-            emailHeadingColor: brandingSettings.emailHeadingColor ?? "#303030",
-            emailBodyTextColor:
-              brandingSettings.emailBodyTextColor ?? "#108848",
-            emailAccentBorderColor:
-              brandingSettings.emailAccentBorderColor ?? "#f0f0f0",
+          emailPrimaryButtonColor:
+            brandingSettings.emailPrimaryButtonColor ?? "#269e1bff",
+          emailButtonTextColor:
+            brandingSettings.emailButtonTextColor ?? "#FFFFFF",
+          emailBackgroundColor:
+            brandingSettings.emailBackgroundColor ?? "#eef0ee",
+          emailHeadingColor: brandingSettings.emailHeadingColor ?? "#303030",
+          emailBodyTextColor: brandingSettings.emailBodyTextColor ?? "#108848",
+          emailAccentBorderColor:
+            brandingSettings.emailAccentBorderColor ?? "#f0f0f0",
 
-            product: {
-              title: reviewData.productTitle ?? "",
-            },
-            review: {
-              rating: reviewData.rating ?? 0,
-              date: formattedDate,
-            },
-            emailFooterText: brandingSettings.emailFooterText ?? "",
-            unsubscribeUrl,
-            isShowFooterBadge: brandingSettings.isShowFooterBadge ?? false,
+          product: {
+            title: reviewData.productTitle ?? "",
           },
-          smtpConfig: buildSmtpConfig(emailSettings),
-        });
+          review: {
+            rating: reviewData.rating ?? 0,
+            date: formattedDate,
+          },
+          emailFooterText: brandingSettings.emailFooterText ?? "",
+          unsubscribeUrl,
+          isShowFooterBadge: brandingSettings.isShowFooterBadge ?? false,
+        },
+        smtpConfig: buildSmtpConfig(emailSettings),
+      };
+      try {
+        const clientConfirmationEmailJobResponse = await addJobInQueue(
+          reviewQueue,
+          "JOB_CLIENT_CONFIRMATION_EMAIL",
+          {
+            emailData: clientEmailData,
+          },
+          0,
+          `JOB_CLIENT_CONFIRMATION_EMAIL_${reviewData.reviewerEmail}`,
+        );
+
+        // await sendEmail({
+        //   to: reviewData.reviewerEmail,
+        //   from: buildFromAddress(storeName, senderEmail),
+        //   replyTo: replyToEmail,
+        //   templateName: "ConfirmEmail",
+        //   subject:
+        //     emailSettings.confirmationEmailSubject ??
+        //     "Thank you for your review",
+        //   templateData: {
+        //     subject:
+        //       emailSettings.confirmatisonEmailSubject ??
+        //       "Thank you for your review",
+        //     storeName,
+        //     logo: brandingSettings.storeLogo ?? "",
+        //     tagline: brandingSettings.storeTagline ?? "",
+        //     customerName: reviewData.reviewerName ?? "",
+        //     emailBody,
+        //     buttonUrl: productUrl,
+        //     buttonText: "View your review",
+        //     emailPrimaryButtonColor:
+        //       brandingSettings.emailPrimaryButtonColor ?? "#269e1bff",
+        //     emailButtonTextColor:
+        //       brandingSettings.emailButtonTextColor ?? "#FFFFFF",
+        //     emailBackgroundColor:
+        //       brandingSettings.emailBackgroundColor ?? "#eef0ee",
+        //     emailHeadingColor: brandingSettings.emailHeadingColor ?? "#303030",
+        //     emailBodyTextColor:
+        //       brandingSettings.emailBodyTextColor ?? "#108848",
+        //     emailAccentBorderColor:
+        //       brandingSettings.emailAccentBorderColor ?? "#f0f0f0",
+        //     product: {
+        //       title: reviewData.productTitle ?? "",
+        //     },
+        //     review: {
+        //       rating: reviewData.rating ?? 0,
+        //       date: formattedDate,
+        //     },
+        //     emailFooterText: brandingSettings.emailFooterText ?? "",
+        //     unsubscribeUrl,
+        //     isShowFooterBadge: brandingSettings.isShowFooterBadge ?? false,
+        //   },
+        //   smtpConfig: buildSmtpConfig(emailSettings),
+        // });
       } catch (error) {
         console.error("[WARN::api.review.confirmationEmail]", error);
         sideEffectErrors.push("confirmation_email");
@@ -319,32 +371,41 @@ async function postReview(request, session, admin) {
     }
 
     if (adminEmails.length && shouldSendAdminEmail) {
-      try {
-        await sendEmail({
-          to: adminEmails[0],
-          bcc: adminEmails.slice(1),
-          from: buildFromAddress(storeName, senderEmail),
-          replyTo: replyToEmail,
-          templateName: "AdminNotify",
+      const adminEmailData = {
+        to: adminEmails[0],
+        bcc: adminEmails.slice(1),
+        from: buildFromAddress(storeName, senderEmail),
+        replyTo: replyToEmail,
+        templateName: "AdminNotify",
+        subject: adminSubject,
+        templateData: {
           subject: adminSubject,
-          templateData: {
-            subject: adminSubject,
-            storeName,
-            logo: brandingSettings.storeLogo ?? "",
-            tagline: brandingSettings.storeTagline ?? "",
-            reviewerName: reviewData.reviewerName ?? "Anonymous",
-            reviewerEmail: reviewData.reviewerEmail ?? "",
-            rating: reviewData.rating ?? 0,
-            reviewBody: res.body ?? "",
-            status: res.status ?? "PENDING",
-            productTitle: reviewData.productTitle ?? "",
-            productUrl,
-            manageUrl: `https://${storeURL}/admin/apps/qorix-review/app/reviews`,
-            submittedDate: formattedDate,
-            adminEmailBody,
+          storeName,
+          logo: brandingSettings.storeLogo ?? "",
+          tagline: brandingSettings.storeTagline ?? "",
+          reviewerName: reviewData.reviewerName ?? "Anonymous",
+          reviewerEmail: reviewData.reviewerEmail ?? "",
+          rating: reviewData.rating ?? 0,
+          reviewBody: res.body ?? "",
+          status: res.status ?? "PENDING",
+          productTitle: reviewData.productTitle ?? "",
+          productUrl,
+          manageUrl: `https://${storeURL}/admin/apps/qorix-review/app/reviews`,
+          submittedDate: formattedDate,
+          adminEmailBody,
+        },
+        smtpConfig: buildSmtpConfig(emailSettings),
+      };
+      try {
+        const adminConfirmationEmailJobResponse = await addJobInQueue(
+          reviewQueue,
+          "JOB_CLIENT_CONFIRMATION_EMAIL",
+          {
+            emailData: adminEmailData,
           },
-          smtpConfig: buildSmtpConfig(emailSettings),
-        });
+          0,
+          `JOB_ADMIN_NOTIFICATION_EMAIL_${reviewData.reviewerEmail}`,
+        );
       } catch (error) {
         console.error("[WARN::api.review.adminEmail]", error);
         sideEffectErrors.push("admin_email");

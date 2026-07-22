@@ -5,7 +5,6 @@ async function sendQueuedEmail(jobData) {
   const emailData = jobData?.emailData || jobData;
   const payload = jobData?.payload;
   try {
-
     await sendEmail(emailData);
     console.log("email sent successfully");
 
@@ -44,9 +43,34 @@ async function sendQueuedEmail(jobData) {
   }
 }
 
+async function clientConfirmationEmailSend(jobData) {
+  const emailData = jobData?.emailData || jobData;
+  try {
+    await sendEmail(emailData);
+    console.log("email sent successfully");
+    return;
+  } catch (error) {
+    console.log("email sent not successfully");
+    return;
+  }
+}
+async function adminConfirmationEmailSend(jobData) {
+  const emailData = jobData?.emailData || jobData;
+  try {
+    await sendEmail(emailData);
+    console.log("email sent successfully");
+    return;
+  } catch (error) {
+    console.log("email sent not successfully");
+    return;
+  }
+}
+
 const bullmqService = {
   scheduleEmailSend: sendQueuedEmail,
   reminderEmailSend: sendQueuedEmail,
+  clientConfirmationEmailSend: clientConfirmationEmailSend,
+  adminConfirmationEmailSend: adminConfirmationEmailSend,
 };
 
 export default bullmqService;
