@@ -14,6 +14,16 @@ const reviewWorker = new Worker(
         console.log("worker is working", job.data);
         await bullmqService.reminderEmailSend(job.data);
         break;
+      case "JOB_CLIENT_CONFIRMATION_EMAIL":
+        console.log("worker is working", job.data);
+        await bullmqService.clientConfirmationEmailSend(job.data);
+
+        break;
+      case "JOB_ADMIN_NOTIFICATION_EMAIL":
+        console.log("worker is working", job.data);
+        await bullmqService.adminConfirmationEmailSend(job.data);
+
+        break;
 
       default:
         throw new Error(`Unknown job name: ${job.name}`);

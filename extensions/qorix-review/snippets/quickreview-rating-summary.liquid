@@ -1,0 +1,24 @@
+{{ 'quickreview-rating-summary.css' | asset_url | stylesheet_tag }}
+<div class="quickreview-summary" data-quickreview-summary>
+  <div class="quickreview-summary__score" data-quickreview-average>
+    <span x-text="averageRating"></span>
+    <span class="quickreview-summary__count" data-quickreview-count
+      >( <span x-text="totalReviews"></span> reviews )</span
+    >
+  </div>
+  <div class="quickreview-summary__stars" data-quickreview-stars aria-label="Rating">
+    <template x-for="i in averageRating" :key="i">
+      <span class="quickreview-star" :data-star-index="i">
+        {%- render 'icon', name: 'rating-star' -%}
+      </span>
+    </template>
+  </div>
+  <button
+    type="button"
+    class="quickreview-summary__write-btn"
+    data-quickreview-write-review
+    @click="openModal()"
+  >
+    Write your review
+  </button>
+</div>

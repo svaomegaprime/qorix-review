@@ -1,0 +1,111 @@
+/* ---------- Media Modal ---------- */
+.quickreview-media-modal {
+  position: fixed;
+  inset: 0;
+  z-index: 999;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.quickreview-media-modal[hidden] {
+  display: none !important;
+}
+
+.quickreview-media-modal__overlay {
+  position: absolute;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.5);
+}
+
+.quickreview-media-modal__box {
+  position: relative;
+  width: 860px;
+  max-width: 92vw;
+  height: 640px;
+  max-height: 82vh;
+  background: var(--qr-color-white, #fff);
+  border-radius: 12px;
+  padding: 24px;
+  box-shadow: var(--qr-shadow-menu, 0 4px 20px rgba(0, 0, 0, 0.12));
+}
+
+.quickreview-media-modal__close {
+  position: absolute;
+  top: -14px;
+  right: -14px;
+  width: 32px;
+  height: 32px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: var(--qr-color-white, #fff);
+  border: none;
+  border-radius: 50%;
+  box-shadow: var(--qr-shadow-nav, 0 1px 6px rgba(0, 0, 0, 0.18));
+  cursor: pointer;
+  z-index: 2;
+}
+
+.quickreview-media-modal__close:hover {
+  background: var(--qr-color-hover-bg, #f5f5f5);
+}
+
+.quickreview-media-modal__body {
+  width: 100%;
+  height: 100%;
+  overflow-y: auto;
+  padding-right: 6px;
+}
+
+.quickreview-media-modal__grid {
+  display: grid;
+  grid-template-columns: repeat(6, 1fr);
+  gap: 14px;
+}
+
+.quickreview-media-modal__item {
+  width: 100%;
+  aspect-ratio: 1 / 1;
+  border-radius: 10px;
+  overflow: hidden;
+}
+
+.quickreview-media-modal__item img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+}
+
+/* ---------- Responsive ---------- */
+@media (max-width: 989px) {
+  .quickreview-media-modal__box {
+    width: 92vw;
+    height: 80vh;
+    padding: 18px;
+  }
+  .quickreview-media-modal__grid {
+    grid-template-columns: repeat(4, 1fr);
+    gap: 10px;
+  }
+}
+
+@media (max-width: 749px) {
+  .quickreview-media-modal__box {
+    width: 92vw;
+    height: 78vh;
+    padding: 14px;
+    border-radius: 10px;
+  }
+  .quickreview-media-modal__grid {
+    grid-template-columns: repeat(3, 1fr);
+    gap: 8px;
+  }
+  .quickreview-media-modal__close {
+    top: -10px;
+    right: -10px;
+    width: 28px;
+    height: 28px;
+  }
+}

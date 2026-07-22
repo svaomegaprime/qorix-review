@@ -1,7 +1,12 @@
-<div class="qr-lightbox" id="qrLightbox">
-  <button class="qr-lightbox-close" type="button" aria-label="Close">&times;</button>
-  <div class="qr-lightbox-content">
-    <img alt="" class="qr-lightbox-img" style="display:none;" width="" height="">
-    <video class="qr-lightbox-video" style="display:none;" controls playsinline></video>
+{{ 'lightbox.css' | asset_url | stylesheet_tag }}
+<div class="lightbox" id="lightbox" :class="{ open: lightboxOpen }" @click="closeLightbox($event)">
+  <button class="lightbox-close" type="button" @click="closeLightbox()">&#x2715;</button>
+  <div class="lightbox-content" id="lightbox-content">
+    <template x-if="lightboxMedia && lightboxMedia.type === 'IMAGE'">
+      <img :src="lightboxMedia.url" alt="media" width="" height="">
+    </template>
+    <template x-if="lightboxMedia && lightboxMedia.type === 'VIDEO'">
+      <video :src="lightboxMedia.url" controls autoplay></video>
+    </template>
   </div>
 </div>
