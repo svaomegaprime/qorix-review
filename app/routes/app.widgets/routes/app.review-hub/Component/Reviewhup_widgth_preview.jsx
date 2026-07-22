@@ -5,6 +5,8 @@ import ReviewSummary, {
   StarSVG,
 } from "../../../components/elements/ReviewSummary";
 
+import LodeMoreButton from "../../../components/elements/LodeMoreButton";
+
 export default function ReviewHubWidget({ settings, activeDevice }) {
   // layout: "3 column grid",
   // filterSorting: "Filter & sorting both",
@@ -20,18 +22,21 @@ export default function ReviewHubWidget({ settings, activeDevice }) {
     showMediaAsset,
     showShareOption,
     showAppreciationOption,
-    colors,
     layout,
     filterSorting,
     reviewsPerPage,
     reviewStats,
-  } = settings;
+  } = settings || {};
+
+  const colors = settings?.colors || {};
   const {
-    STAR_COLOR,
-    TEXT_COLOR,
-    VERIFIED_BADGE_COLOR,
-    Card_Background_Color,
-    Border_Color,
+    STAR_COLOR = "#34C759",
+    TEXT_COLOR = "#1A1A1A",
+    VERIFIED_BADGE_COLOR = "#1D9E75",
+    Card_Background_Color = "#FFFFFF",
+    FILTER_CHIP_COLOR = "#108848",
+    Border_Color = "#F0F0F0",
+    FILTER_CHIP_COLOR_STAR_COLOR = "#ffffff",
   } = colors;
 
   const [activeRating, setActiveRating] = useState(4);
@@ -428,8 +433,8 @@ overflow: auto;
 
         /* Exact match active green state for rating badge */
         .tb-badge.active-rating-green {
-          background: var(--tb-green) !important;
-          border-color: var(--tb-green) !important;
+          background: ${FILTER_CHIP_COLOR} !important;
+          border-color:  ${FILTER_CHIP_COLOR}   !important;
           color: #ffffff !important;
           font-weight: 500;
         }
@@ -606,7 +611,7 @@ display: block;
                         {typeof rate === "number" && (
 
                            <StarSVG
-                    STAR_COLOR={isActive ? "#ffffff" : "#ff9c00"}
+                    STAR_COLOR={isActive ? FILTER_CHIP_COLOR_STAR_COLOR :  STAR_COLOR}
                     size={24}
                   />
                          
@@ -765,9 +770,13 @@ display: block;
               </div>
             );
           })}
-          </div>
-        </section>
+          </div>      <div>    <LodeMoreButton />  </div>        
+         
+        </section>   
+  
+
       </div>
+   
     </>
   );
 }
