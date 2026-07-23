@@ -82,6 +82,7 @@ class QuickReviewWidget {
     // used as an x-data object. If you're using Alpine, keep these;
     // otherwise remove references to this.$refs / this.$nextTick below.
     this.$refs = this.$refs || {};
+    this.attachments = [];
   }
 
   initUploadSettings(el) {
@@ -160,7 +161,8 @@ class QuickReviewWidget {
       this.totalPages = result.data?.totalPages ?? 1;
       this.totalReviews = result.data?.totalReviews ?? 0;
       this.averageRating = result.data?.averageRating.toFixed(1) ?? 0.0;
-      this.starCount = this.getRatingCounts();
+      this.starCount = result.data?.ratingCounts ?? { 5: 0, 4: 0, 3: 0, 2: 0, 1: 0 };
+      this.attachments = result.data?.attachments ?? [];
 
       console.log("GET Review:", result);
       return result;
