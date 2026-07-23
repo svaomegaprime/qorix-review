@@ -1,24 +1,28 @@
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import Loader from "../../../../../components/essentials/Loader";
 import CustomSection from "../../../../../components/essentials/CustomSection";
 import Text from "../../../../../components/essentials/elements/Text";
 import SaveBar from "../../../components/savebar/SaveBar";
 import { useSaveBarTrigger } from "../../../components/savebar/useSaveBarTrigger";
 import { requestAppWindowClose } from "../../../utils/useAppWindowClose";
-import { useNavigation } from "react-router";
+import { useFetcher, useLoaderData, useNavigation } from "react-router";
 import Header from "../../../components/Header";
 import ColorPicker from "../../../components/elements/ColorPicker";
 import QuoteLoopWidget from "../component/quite_loop_preview";
 import Range from "../../../components/elements/Range";
 import ResetToDefaults from "../../../components/elements/ResetToDefaults";
 import AdvanceCSS from "../../../components/elements/AdvanceCSS";
+import { authenticate } from "../../../../../shopify.server";
+import prisma from "../../../../../db.server";
+import { getStoreData } from "../../../../../utils/getStoreData";
+import { adminErrorResponse } from "../../../../../utils/adminError.server";
+import { useAdminFetcherToast } from "../../../../../utils/useAdminFetcherToast";
 
 const COLOR_PICKERS_ELEMENTS = [
   {
     key: "Card_Background_Color",
     label: "Card background",
   },
-
   {
     key: "TEXT_COLOR",
     label: "Review text",
@@ -27,7 +31,6 @@ const COLOR_PICKERS_ELEMENTS = [
     key: "QUOTE_MARK_COLOR",
     label: "Quote mark and badge color",
   },
-
   {
     key: "STAR_COLOR",
     label: "Star color",
@@ -50,7 +53,7 @@ const createDefaultSettings = () => ({
   subheading: "Watch and hear what our customers have to say.",
   reviewStats: "Show review count & verified badge",
 
-  // Display elements and loop beahavior
+  // Display elements and loop behavior
   showStarDistribution: true,
   showReviewerName: true,
   showQuoteMarkIcon: true,
@@ -65,7 +68,7 @@ const createDefaultSettings = () => ({
   filterSorting: "Filter & sorting both",
   fiteringMinStart: "3 star and above",
 
-  // color piker
+  // color picker
   colors: { ...DEFAULT_COLOR_VALUES },
 
   // Typography
@@ -74,16 +77,85 @@ const createDefaultSettings = () => ({
   advanceCss: "",
 });
 
+const cloneSettings = (settings) => JSON.parse(JSON.stringify(settings));
+
+export async function loader({ request }) {
+  try {
+    const { admin } = await authenticate.admin(request);
+    const { id } = await getStoreData(admin);
+
+    console.log("[LOADER] storeId used for lookup:", id); // DEBUG
+
+    const res = await prisma.quoteLoopWidget.findUnique({
+      where: {
+        storeId: id,
+      },
+    });
+
+    console.log("[LOADER] found record:", res); // DEBUG
+
+    return res?.settings ?? createDefaultSettings();
+  } catch (error) {
+    console.error("[LOADER] ERROR:", error); // DEBUG
+    return adminErrorResponse(error);
+  }
+}
+
+export async function action({ request }) {
+  try {
+    const { admin } = await authenticate.admin(request);
+    console.log("[ACTION] Auth OK"); // DEBUG
+
+    const data = await request.json();
+    console.log("[ACTION] Received data:", JSON.stringify(data, null, 2)); // DEBUG
+
+    const { id } = await getStoreData(admin);
+    console.log("[ACTION] storeId (connect target):", id); // DEBUG
+
+    const res = await prisma.quoteLoopWidget.upsert({
+      where: {
+        storeId: id,
+      },
+      update: {
+        settings: data,
+      },
+      create: {
+        settings: data,
+        store: {
+          connect: {
+            storeGID: id,
+          },
+        },
+      },
+    });
+
+    console.log("[ACTION] Upsert success:", res); // DEBUG
+
+    return {
+      ok: true,
+      widget: res,
+    };
+  } catch (error) {
+    console.error("[ACTION] ERROR NAME:", error?.name); // DEBUG
+    console.error("[ACTION] ERROR MESSAGE:", error?.message); // DEBUG
+    console.error("[ACTION] ERROR FULL:", error); // DEBUG
+    return adminErrorResponse(error);
+  }
+}
+
 export default function Index(VALUES = {}) {
   // Start----Default CSR loading state checking for navigation
   const navigation = useNavigation();
   const loading = navigation.state === "loading";
   // End----Default CSR loading state checking for navigation
 
+  const loaderData = useLoaderData();
+  console.log("[CLIENT] loaderData:", loaderData); // DEBUG
+
   const [activeDevice, setActiveDevice] = useState("desktop");
 
-  const [settings, setSettings] = useState(() => createDefaultSettings());
-  const [customCss, setCss] = useState(() => createDefaultSettings().advanceCss || "");
+  const [settings, setSettings] = useState(() => cloneSettings(loaderData || createDefaultSettings()));
+  const [customCss, setCss] = useState(() => loaderData?.advanceCss ?? createDefaultSettings().advanceCss ?? "");
 
   const handleSettingChange = (key, value) => {
     if (typeof key !== "string") {
@@ -111,6 +183,42 @@ export default function Index(VALUES = {}) {
     handleSettingChange("advanceCss", value);
   };
 
+  const postData = () => {
+    const data = { ...settings };
+    console.log("[CLIENT] postData raw:", data); // DEBUG
+    try {
+      console.log("[CLIENT] postData JSON stringify check:", JSON.stringify(data)); // DEBUG
+    } catch (err) {
+      console.error("[CLIENT] postData JSON stringify FAILED:", err); // DEBUG
+    }
+    return data;
+  };
+
+  const fetcher = useFetcher();
+  useAdminFetcherToast(fetcher);
+  const initSettingsRef = useRef(null);
+  const savePendingRef = useRef(false);
+
+  if (initSettingsRef.current === null) {
+    initSettingsRef.current = cloneSettings(settings);
+  }
+
+  const handleSubmit = () => {
+    savePendingRef.current = true;
+    const data = postData();
+    console.log("[CLIENT] Submitting via fetcher.submit:", data); // DEBUG
+    fetcher.submit(data, {
+      method: "post",
+      encType: "application/json",
+    });
+  };
+
+  // DEBUG: track fetcher state/response
+  useEffect(() => {
+    console.log("[CLIENT] fetcher.state:", fetcher.state); // DEBUG
+    console.log("[CLIENT] fetcher.data:", fetcher.data); // DEBUG
+  }, [fetcher.state, fetcher.data]);
+
   // Start----Handlers for hide app window
   const handleHideAppWindow = () => {
     requestAppWindowClose("quote_loop");
@@ -119,19 +227,42 @@ export default function Index(VALUES = {}) {
 
   // Start----Handlers for SaveBar
   const saveBar = useSaveBarTrigger({
-    onSubmit: (formData) => {
-      console.log("SaveBar submit trigger:", formData);
-      setTimeout(() => {
-        requestAppWindowClose("quote_loop");
-      }, 2000);
+    onSubmit: () => {
+      handleSubmit();
     },
-    onDiscard: (formData) => {
-      console.log("SaveBar discard trigger:", formData);
+    onDiscard: () => {
+      setSettings(cloneSettings(initSettingsRef.current));
+      setCss(initSettingsRef.current?.advanceCss || "");
     },
   });
   // End----Handlers for SaveBar
 
   // Start----Hide app window padding and remove app nav
+  useEffect(() => {
+    if (
+      !savePendingRef.current ||
+      fetcher.state !== "idle" ||
+      fetcher.data === undefined ||
+      fetcher.data?.ok === false
+    ) {
+      return;
+    }
+
+    initSettingsRef.current = cloneSettings(settings);
+    savePendingRef.current = false;
+  }, [fetcher.data, fetcher.state, settings]);
+
+  useEffect(() => {
+    const hasChanged =
+      JSON.stringify(settings) !== JSON.stringify(initSettingsRef.current);
+
+    if (hasChanged) {
+      saveBar.triggerChange();
+    } else {
+      saveBar.triggerDiscard({ silent: true });
+    }
+  }, [settings, saveBar.triggerChange, saveBar.triggerDiscard]);
+
   useEffect(() => {
     const body = document.querySelector("body");
     if (body) body.style.margin = "0";
@@ -146,11 +277,6 @@ export default function Index(VALUES = {}) {
 
   return (
     <>
-      {/* <s-button onClick={saveBar.triggerChange}>Change one</s-button>
-            <s-button onClick={saveBar.triggerChange}>Change two</s-button>
-            <s-button onClick={saveBar.triggerSubmit}>Submit trigger</s-button>
-            <s-button onClick={saveBar.triggerDiscard}>Discard trigger</s-button> */}
-
      <style>
         {`
           .review-item {
@@ -183,8 +309,6 @@ export default function Index(VALUES = {}) {
 }
         `}
       </style>
-
-
 
       <SaveBar saveBar={saveBar} />
       <s-query-container>
@@ -391,7 +515,6 @@ export default function Index(VALUES = {}) {
               </s-stack>
             </div>
             {/* ----------Layout option end ------------ */}
-            {/* ----------Layout option end ------------ */}
 
             <div style={{ padding: "1rem" }}>
               <s-stack
@@ -489,9 +612,7 @@ export default function Index(VALUES = {}) {
           }}
         >
           {/* Start----Preview Header */}
-          <div className="review-item"
-           
-          >
+          <div className="review-item">
             <s-query-container>
             <s-grid
            gridTemplateColumns="@container (inline-size > 600px)  1fr auto, 1fr "
