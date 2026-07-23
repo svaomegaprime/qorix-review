@@ -81,7 +81,7 @@
   data-sort="{{ quick_review_metafield.defaultSort }}"
   data-limit="{{ quick_review_metafield.reviewPerPage }}"
   data-page-type="{{ template.name }}"
-  {% comment %} dddd="{{ quick_review_metafield }}" {% endcomment %}
+  dddd="{{ quick_review_metafield }}"
 >
   <div
     class="quickreview-card {{ card_modifier }}"
@@ -113,7 +113,7 @@
   </div>
   {% render 'lightbox' %}
 
-  {% render 'quickreview-reviews' %}
+  {% render 'quickreview-reviews', quick_review_metafield: quick_review_metafield %}
 </div>
 <script src="{{ 'swiper-bundle.min.js' | asset_url }}" defer></script>
 <script src="{{ 'quickreview.js' | asset_url }}" defer></script>

@@ -40,12 +40,12 @@ const DEFAULT_QUICK_REVIEW_STATE = {
   colorValues: DEFAULT_COLOR_VALUES,
   borderRadius: 15,
   showReviewerName: true,
-  showMediaImageAndVideo: true,
-  showReviewerVideo: true,
+  showMediaThumbnails: true,
   showProductName: true,
   showVerifiedBadge: true,
   showReviewDate: true,
-  showRatingFilter: true,
+  showStarRatingOnCard: true,
+  showHelpfulButton: true,
   reviewPerPage: 10,
   isShowStarDistribution:true,
   isShowMediaStrip:true,
@@ -107,18 +107,18 @@ const buildQuickReviewState = (data) => {
     borderRadius: parseBorderRadius(data.borderRadius),
     showReviewerName:
       data.isShowReviewerName ?? DEFAULT_QUICK_REVIEW_STATE.showReviewerName,
-    showMediaImageAndVideo:
-      data.isshowMediaImageAndVideo ?? DEFAULT_QUICK_REVIEW_STATE.showMediaImageAndVideo,
-    showReviewerVideo:
-      data.isShowReviewerVideo ?? DEFAULT_QUICK_REVIEW_STATE.showReviewerVideo,
+    showMediaThumbnails:
+      data.isShowMediaThumbnails ?? DEFAULT_QUICK_REVIEW_STATE.showMediaThumbnails,
     showProductName:
       data.isShowProductName ?? DEFAULT_QUICK_REVIEW_STATE.showProductName,
     showVerifiedBadge:
       data.isShowVerifiedBadge ?? DEFAULT_QUICK_REVIEW_STATE.showVerifiedBadge,
     showReviewDate:
       data.isShowReviewDate ?? DEFAULT_QUICK_REVIEW_STATE.showReviewDate,
-    showRatingFilter:
-      data.isShowRatingFilter ?? DEFAULT_QUICK_REVIEW_STATE.showRatingFilter,
+    showStarRatingOnCard:
+      data.isShowStarRatingOnCard ?? DEFAULT_QUICK_REVIEW_STATE.showStarRatingOnCard,
+    showHelpfulButton:
+      data.isShowHelpfulButton ?? DEFAULT_QUICK_REVIEW_STATE.showHelpfulButton,
     reviewPerPage:
       data.reviewPerPage ?? DEFAULT_QUICK_REVIEW_STATE.reviewPerPage,
     defaultSort: data.defaultSort ?? DEFAULT_QUICK_REVIEW_STATE.defaultSort,
@@ -263,12 +263,12 @@ export default function Index(VALUES = {}) {
     borderRadius: `${quickReview.borderRadius}px`,
 
     isShowReviewerName: quickReview.showReviewerName,
-    isshowMediaImageAndVideo: quickReview.showMediaImageAndVideo,
-    isShowReviewerVideo: quickReview.showReviewerVideo,
+    isShowMediaThumbnails: quickReview.showMediaThumbnails,
     isShowProductName: quickReview.showProductName,
     isShowVerifiedBadge: quickReview.showVerifiedBadge,
     isShowReviewDate: quickReview.showReviewDate,
-    isShowRatingFilter: quickReview.showRatingFilter,
+    isShowStarRatingOnCard: quickReview.showStarRatingOnCard,
+    isShowHelpfulButton: quickReview.showHelpfulButton,
     writeReviewButtonText: quickReview.writeReviewButtonText,
     reviewPerPage: Number(quickReview.reviewPerPage),
     defaultSort: quickReview.defaultSort,
@@ -794,10 +794,9 @@ export default function Index(VALUES = {}) {
                   />
                   <s-switch
                     label="Show media thumbnails"
-                    checked={quickReview.showMediaImageAndVideo || undefined}
-                    onchange={handleSwitch("showMediaImageAndVideo")}
+                    checked={quickReview.showMediaThumbnails || undefined}
+                    onchange={handleSwitch("showMediaThumbnails")}
                   />
-                  
                   <s-switch
                     label="Show product name on card"
                     checked={quickReview.showProductName || undefined}
@@ -815,13 +814,13 @@ export default function Index(VALUES = {}) {
                   />
                   <s-switch
                     label="Show star rating on card"
-                    checked={quickReview.showRatingFilter || undefined}
-                    onchange={handleSwitch("showRatingFilter")}
+                    checked={quickReview.showStarRatingOnCard || undefined}
+                    onchange={handleSwitch("showStarRatingOnCard")}
                   />
-                     <s-switch
-                    label="Show Helpful button"
-                    checked={quickReview.showHelfullButton || undefined}
-                    onchange={handleSwitch("showHelfullButton")}
+                  <s-switch
+                    label="Show helpful button"
+                    checked={quickReview.showHelpfulButton || undefined}
+                    onchange={handleSwitch("showHelpfulButton")}
                   />
                       
 

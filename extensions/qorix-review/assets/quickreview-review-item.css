@@ -185,6 +185,9 @@
 .review-star-color > svg > path{
   fill: var(--star-color);
 }
+.qr-quick-review-verified-check svg{
+  fill: var(--verified-badge-color);
+}
 @media (max-width: 749px) {
   .quickreview-reviews__header {
     align-items: center;

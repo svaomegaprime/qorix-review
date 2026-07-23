@@ -71,6 +71,7 @@ class QuickReviewWidget {
 
     this.currentPage = 1;
     this.limit = 10;
+    this.baseLimit = 10;
     this.totalPages = 1;
     this.totalReviews = 0;
     this.averageRating = 0;
@@ -111,7 +112,8 @@ class QuickReviewWidget {
   async productInit(productJson, defaultSort, limit) {
     console.log("productInit called", productJson);
     try {
-      this.limit = limit;
+      this.limit = Number(limit) || 10;
+      this.baseLimit = this.limit;
       this.sort = defaultSort;
 
       if (!productJson) {
@@ -370,6 +372,16 @@ class QuickReviewWidget {
     this.getReview(this.sort);
   }
 
+  loadMore() {
+    this.limit += this.baseLimit;
+    this.currentPage = 1;
+    this.getReview(this.sort);
+  }
+
+  hasMoreReviews() {
+    return this.reviews.length < this.totalReviews;
+  }
+
   nextPage() {
     if (this.currentPage < this.totalPages) {
       this.currentPage++;
@@ -440,6 +452,8 @@ class QuickReviewWidget {
     this.activeSort = option;
     this.sortOpen = false;
     this.sort = option;
+    this.limit = this.baseLimit;
+    this.currentPage = 1;
     await this.getReview(option);
   }
 
