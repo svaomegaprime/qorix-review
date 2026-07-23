@@ -71,21 +71,31 @@ model QuoteLoopWidget {
   showAppreciationOption Boolean @default(true)
   speed                  Int     @default(450)
 
-  filterSorting     String @default("Filter & sorting both")
-  fiteringMinStart  String @default("3 star and above")
+  filterSorting    String @default("Filter & sorting both")
+  fiteringMinStart String @default("3 star and above")
 
   // Colors
   starColor           String @default("#F59E0B")
-  textColor            String @default("#303030")
-  quoteMarkColor       String @default("#1D9E75")
-  cardBackgroundColor  String @default("#FFFFFF")
+  textColor           String @default("#303030")
+  quoteMarkColor      String @default("#1D9E75")
+  cardBackgroundColor String @default("#FFFFFF")
 
   // Typography
   quoteFontSize Int    @default(24)
   textLength    Int    @default(160)
   advanceCss    String @default("")
 
-  quoteLoopWidgetSettings Json?  @default("{}")
+  quoteLoopWidgetSettings Json? @default("{}")
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+model ReviewHubWidget {
+  id String @id @default(uuid()) @db.Uuid
+
+  storeId String @unique
+  store   Store  @relation(fields: [storeId], references: [storeGID], onDelete: Cascade)
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt

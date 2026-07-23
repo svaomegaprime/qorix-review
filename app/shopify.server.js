@@ -169,22 +169,22 @@ const shopify = shopifyApp({
         );
 
         // Quote Loop Widget data set in the database for the first time and update if already exists
-        const quoteLoopWidget = await prisma.quoteLoopWidget.upsert({
-          where: {
-            storeId: shopData.id,
-          },
-          update: {},
-          create: {
-            ...DEFAULT_DB_FORMATED_DATA,
-            storeId: shopData.id,
-          },
-        });
+        // const quoteLoopWidget = await prisma.quoteLoopWidget.upsert({
+        //   where: {
+        //     storeId: shopData.id,
+        //   },
+        //   update: {},
+        //   create: {
+        //     ...DEFAULT_DB_FORMATED_DATA,
+        //     storeId: shopData.id,
+        //   },
+        // });
 
-        const metafieldResult1 = await setAppMetafield(
-          admin,
-          "quote_loop",
-          quoteLoopWidget,
-        );
+        // const metafieldResult1 = await setAppMetafield(
+        //   admin,
+        //   "quote_loop",
+        //   quoteLoopWidget,
+        // );
       } catch (error) {
         console.error("afterAuth shop fetch failed:", error);
       }

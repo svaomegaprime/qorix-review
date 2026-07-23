@@ -37,7 +37,7 @@ const COLOR_PICKERS_ELEMENTS = [
     key: "FILTER_CHIP_COLOR",
     label: "Filter chip (active)",
   },
-    {
+  {
     key: "FILTER_CHIP_COLOR_STAR_COLOR",
     label: "Filter chip star color (active)",
   },
@@ -61,7 +61,7 @@ const createDefaultSettings = () => ({
   heading: "Reviews from people",
   subheading: "Watch and hear what our customers have to say.",
   reviewStats: "Show review count & verified badge",
-// Display elements
+  // Display elements
   showStarDistribution: true,
   showReviewerName: true,
   showReviewTimer: true,
@@ -69,11 +69,12 @@ const createDefaultSettings = () => ({
   showMediaAsset: true,
   showShareOption: true,
   showAppreciationOption: true,
-// -------Carousel behavior
+  // -------Carousel behavior
   layout: "3 column grid",
   filterSorting: "Filter & sorting both",
   reviewsPerPage: "9 reviews",
-// color piker
+  // color piker
+
   colors: { ...DEFAULT_COLOR_VALUES },
   // advance css
   advanceCss: "",
@@ -88,7 +89,9 @@ export default function Index({ VALUES = {}, handleChange }) {
   const [activeDevice, setActiveDevice] = useState("desktop");
 
   const [settings, setSettings] = useState(() => createDefaultSettings());
-  const [coustomCss, setCss] = useState(() => createDefaultSettings().advanceCss || "");
+  const [coustomCss, setCss] = useState(
+    () => createDefaultSettings().advanceCss || "",
+  );
 
   const handleSettingChange = (key, value) => {
     if (typeof key !== "string") {
@@ -159,33 +162,33 @@ export default function Index({ VALUES = {}, handleChange }) {
       <style>
         {`
           .review-item {
-  height: 76px;
-  display: grid;
-  align-items: center;
-  border-bottom: 1px solid #e4e4e4;
-}
+            height: 76px;
+            display: grid;
+            align-items: center;
+            border-bottom: 1px solid #e4e4e4;
+          }
 
-.sidebar-content {
-  height: calc(100vh - 77px);
-  overflow: hidden auto;
-  background: #fff;
-  padding: 1rem;
-}
+          .sidebar-content {
+            height: calc(100vh - 77px);
+            overflow: hidden auto;
+            background: #fff;
+            padding: 1rem;
+          }
 
 
-@media (max-width: 900px) {
+          @media (max-width: 900px) {
 
-  .sidebar-content {
-    height: auto;
-    overflow: visible;
-    padding: 0.75rem;
-  }
+            .sidebar-content {
+              height: auto;
+              overflow: visible;
+              padding: 0.75rem;
+            }
 
-  .review-item {
-    height: 248px;
-   
-  }
-}
+            .review-item {
+              height: 248px;
+            
+            }
+          }
         `}
       </style>
       {/* End----Hide app window padding and remove app nav */}
@@ -439,13 +442,15 @@ export default function Index({ VALUES = {}, handleChange }) {
                 </s-stack>
               </div>
 
-               <s-stack>
-                  <AdvanceCSS setCss={handleCssChange} css={coustomCss} />
-               </s-stack>
-                
-                <s-stack gap="large" paddingBlockEnd="large">
-                   <ResetToDefaults handleResetToDefaults={handleResetToDefaults}/>
-                </s-stack>
+              <s-stack>
+                <AdvanceCSS setCss={handleCssChange} css={coustomCss} />
+              </s-stack>
+
+              <s-stack gap="large" paddingBlockEnd="large">
+                <ResetToDefaults
+                  handleResetToDefaults={handleResetToDefaults}
+                />
+              </s-stack>
               {/* End----Sidebar content */}
             </div>
           </CustomSection>
@@ -464,7 +469,7 @@ export default function Index({ VALUES = {}, handleChange }) {
             <div className="review-item">
               <s-query-container>
                 <s-grid
-              gridTemplateColumns="@container (inline-size > 900px) 1fr auto, 1fr"
+                  gridTemplateColumns="@container (inline-size > 900px) 1fr auto, 1fr"
                   gap="small"
                   justifyContent="space-between"
                   paddingInline="base"
