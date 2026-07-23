@@ -97,6 +97,40 @@ model ReviewHubWidget {
   storeId String @unique
   store   Store  @relation(fields: [storeId], references: [storeGID], onDelete: Cascade)
 
+  // Header option
+  showHeader   Boolean @default(true)
+  headerStyle  String  @default("center")
+  eyebrowLabel String  @default("CUSTOMER REVIEWS")
+  heading      String  @default("Reviews from people")
+  subheading   String  @default("Watch and hear what our customers have to say.")
+  reviewStats  String  @default("Show review count & verified badge")
+
+  // Display elements
+  showStarDistribution   Boolean @default(true)
+  showReviewerName       Boolean @default(true)
+  showReviewTimer        Boolean @default(true)
+  showVerifiedBadge      Boolean @default(true)
+  showMediaAsset         Boolean @default(true)
+  showShareOption        Boolean @default(true)
+  showAppreciationOption Boolean @default(true)
+
+  // Carousel behavior
+  layout         String @default("3 column grid")
+  filterSorting  String @default("Filter & sorting both")
+  reviewsPerPage String @default("9 reviews")
+
+  // Colors
+  starColor           String @default("#34C759")
+  textColor           String @default("#1A1A1A")
+  verifiedBadgeColor  String @default("#1D9E75")
+  cardBackgroundColor String @default("#FFFFFF")
+  borderColor         String @default("#F0F0F0")
+  filterChipColor     String @default("#108848")
+  filterChipStarColor String @default("#FFFFFF")
+
+  // Advanced CSS
+  advanceCss String @default("")
+
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 }

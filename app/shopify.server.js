@@ -19,6 +19,7 @@ import {
 } from "./routes/app.settings/data/defaultData";
 import { DEFAULT_DB_FORMATED_DATA } from "./routes/app.widgets/routes/app.quick-review/data/defaultData";
 import { setAppMetafield } from "./utils/appMetafields.server";
+import { DEFAULT_REVIEW_HUB_DB_DATA } from "./routes/app.widgets/routes/app.review-hub/data/defaultData";
 const GET_SHOP_BASIC_INFO = `#graphql
   query GetShopBasicInfo {
     shop {
@@ -185,6 +186,25 @@ const shopify = shopifyApp({
         //   "quote_loop",
         //   quoteLoopWidget,
         // );
+
+        // all data is set in the database for the first time and update if already exists
+        const reviewHubWidget = await prisma.quickReviewWidget.upsert({
+          where: {
+            storeId: shopData.id,
+          },
+          update: {},
+          create: {
+            ...DEFAULT_REVIEW_HUB_DB_DATA,
+
+            storeId: shopData.id,
+          },
+        });
+
+        const metafieldReviewHubResult = await setAppMetafield(
+          admin,
+          "review_hub",
+          reviewHubWidget,
+        );
       } catch (error) {
         console.error("afterAuth shop fetch failed:", error);
       }

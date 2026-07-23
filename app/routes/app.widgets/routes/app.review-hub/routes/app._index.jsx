@@ -11,74 +11,14 @@ import ColorPicker from "../../../components/elements/ColorPicker";
 import ReviewHumComponent from "../Component/Reviewhup_widgth_preview";
 import ResetToDefaults from "../../../components/elements/ResetToDefaults";
 import AdvanceCSS from "../../../components/elements/AdvanceCSS";
+import {
+  COLOR_PICKERS_ELEMENTS,
+  DEFAULT_COLOR_VALUES,
+  DEFAULT_REVIEW_HUB_DATA,
+} from "../data/defaultData";
 
-const COLOR_PICKERS_ELEMENTS = [
-  {
-    key: "STAR_COLOR",
-    label: "Star color",
-  },
-  {
-    key: "TEXT_COLOR",
-    label: "Text color",
-  },
-  {
-    key: "VERIFIED_BADGE_COLOR",
-    label: "Verified badge color",
-  },
-  {
-    key: "Card_Background_Color",
-    label: "Card background",
-  },
-  {
-    key: "Border_Color",
-    label: "Border color",
-  },
-  {
-    key: "FILTER_CHIP_COLOR",
-    label: "Filter chip (active)",
-  },
-  {
-    key: "FILTER_CHIP_COLOR_STAR_COLOR",
-    label: "Filter chip star color (active)",
-  },
-];
-
-const DEFAULT_COLOR_VALUES = {
-  STAR_COLOR: "#34C759",
-  TEXT_COLOR: "#1A1A1A",
-  VERIFIED_BADGE_COLOR: "#1D9E75",
-  Card_Background_Color: "#FFFFFF",
-  Border_Color: "#F0F0F0",
-  FILTER_CHIP_COLOR: "#108848",
-  FILTER_CHIP_COLOR_STAR_COLOR: "#fff",
-};
-
-const createDefaultSettings = () => ({
-  // Header option
-  showHeader: true,
-  headerStyle: "center",
-  eyebrowLabel: "CUSTOMER REVIEWS",
-  heading: "Reviews from people",
-  subheading: "Watch and hear what our customers have to say.",
-  reviewStats: "Show review count & verified badge",
-  // Display elements
-  showStarDistribution: true,
-  showReviewerName: true,
-  showReviewTimer: true,
-  showVerifiedBadge: true,
-  showMediaAsset: true,
-  showShareOption: true,
-  showAppreciationOption: true,
-  // -------Carousel behavior
-  layout: "3 column grid",
-  filterSorting: "Filter & sorting both",
-  reviewsPerPage: "9 reviews",
-  // color piker
-
-  colors: { ...DEFAULT_COLOR_VALUES },
-  // advance css
-  advanceCss: "",
-});
+export function loader() {}
+export function action() {}
 
 export default function Index({ VALUES = {}, handleChange }) {
   // Start----Default CSR loading state checking for navigation
@@ -88,9 +28,11 @@ export default function Index({ VALUES = {}, handleChange }) {
 
   const [activeDevice, setActiveDevice] = useState("desktop");
 
-  const [settings, setSettings] = useState(() => createDefaultSettings());
+  const [settings, setSettings] = useState(() => ({
+    ...DEFAULT_REVIEW_HUB_DATA,
+  }));
   const [coustomCss, setCss] = useState(
-    () => createDefaultSettings().advanceCss || "",
+    () => DEFAULT_REVIEW_HUB_DATA.advanceCss || "",
   );
 
   const handleSettingChange = (key, value) => {
@@ -104,7 +46,7 @@ export default function Index({ VALUES = {}, handleChange }) {
   console.log("Settings:", settings);
 
   const handleResetToDefaults = () => {
-    const defaults = createDefaultSettings();
+    const defaults = { ...DEFAULT_REVIEW_HUB_DATA };
     setSettings(defaults);
     setCss(defaults.advanceCss || "");
   };
