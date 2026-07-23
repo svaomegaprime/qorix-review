@@ -17,6 +17,7 @@ import prisma from "../../../../../db.server";
 import { getStoreData } from "../../../../../utils/getStoreData";
 import { adminErrorResponse } from "../../../../../utils/adminError.server";
 import { useAdminFetcherToast } from "../../../../../utils/useAdminFetcherToast";
+import { setAppMetafield } from "../../../../../utils/appMetafields.server";
 
 const COLOR_PICKERS_ELEMENTS = [
   {
@@ -79,12 +80,92 @@ const createDefaultSettings = () => ({
 
 const cloneSettings = (settings) => JSON.parse(JSON.stringify(settings));
 
+// ---------------------------------------------------------------------------
+// DB <-> Frontend mapping helpers
+// The DB now stores flat structured columns (no JSON blob for settings).
+// The frontend UI still works with a nested `settings` object (with a
+// `colors` sub-object), so these two helpers convert between the shapes.
+// ---------------------------------------------------------------------------
+
+function dbRowToSettings(row) {
+  if (!row) return createDefaultSettings();
+
+  return {
+    showHeader: row.showHeader,
+    headerStyle: row.headerStyle,
+    eyebrowLabel: row.eyebrowLabel,
+    heading: row.heading,
+    subheading: row.subheading,
+    reviewStats: row.reviewStats,
+
+    showStarDistribution: row.showStarDistribution,
+    showReviewerName: row.showReviewerName,
+    showQuoteMarkIcon: row.showQuoteMarkIcon,
+    showVerifiedBadge: row.showVerifiedBadge,
+    showMediaAsset: row.showMediaAsset,
+    showArrowControls: row.showArrowControls,
+    showProductName: row.showProductName,
+    autoSlider: row.autoSlider,
+    showAppreciationOption: row.showAppreciationOption,
+    speed: row.speed,
+
+    filterSorting: row.filterSorting,
+    fiteringMinStart: row.fiteringMinStart,
+
+    colors: {
+      STAR_COLOR: row.starColor,
+      TEXT_COLOR: row.textColor,
+      QUOTE_MARK_COLOR: row.quoteMarkColor,
+      Card_Background_Color: row.cardBackgroundColor,
+    },
+
+    quoteFontSize: row.quoteFontSize,
+    textLength: row.textLength,
+    advanceCss: row.advanceCss,
+  };
+}
+
+function settingsToDbFields(settings) {
+  return {
+    showHeader: settings.showHeader,
+    headerStyle: settings.headerStyle,
+    eyebrowLabel: settings.eyebrowLabel,
+    heading: settings.heading,
+    subheading: settings.subheading,
+    reviewStats: settings.reviewStats,
+
+    showStarDistribution: settings.showStarDistribution,
+    showReviewerName: settings.showReviewerName,
+    showQuoteMarkIcon: settings.showQuoteMarkIcon,
+    showVerifiedBadge: settings.showVerifiedBadge,
+    showMediaAsset: settings.showMediaAsset,
+    showArrowControls: settings.showArrowControls,
+    showProductName: settings.showProductName,
+    autoSlider: settings.autoSlider,
+    showAppreciationOption: settings.showAppreciationOption,
+    speed: settings.speed,
+
+    filterSorting: settings.filterSorting,
+    fiteringMinStart: settings.fiteringMinStart,
+
+    starColor: settings.colors?.STAR_COLOR ?? DEFAULT_COLOR_VALUES.STAR_COLOR,
+    textColor: settings.colors?.TEXT_COLOR ?? DEFAULT_COLOR_VALUES.TEXT_COLOR,
+    quoteMarkColor:
+      settings.colors?.QUOTE_MARK_COLOR ?? DEFAULT_COLOR_VALUES.QUOTE_MARK_COLOR,
+    cardBackgroundColor:
+      settings.colors?.Card_Background_Color ??
+      DEFAULT_COLOR_VALUES.Card_Background_Color,
+
+    quoteFontSize: settings.quoteFontSize,
+    textLength: settings.textLength,
+    advanceCss: settings.advanceCss,
+  };
+}
+
 export async function loader({ request }) {
   try {
     const { admin } = await authenticate.admin(request);
     const { id } = await getStoreData(admin);
-
-    console.log("[LOADER] storeId used for lookup:", id); // DEBUG
 
     const res = await prisma.quoteLoopWidget.findUnique({
       where: {
@@ -92,11 +173,9 @@ export async function loader({ request }) {
       },
     });
 
-    console.log("[LOADER] found record:", res); // DEBUG
-
-    return res?.settings ?? createDefaultSettings();
+    return dbRowToSettings(res);
   } catch (error) {
-    console.error("[LOADER] ERROR:", error); // DEBUG
+    console.error("[LOADER] ERROR:", error);
     return adminErrorResponse(error);
   }
 }
@@ -104,23 +183,19 @@ export async function loader({ request }) {
 export async function action({ request }) {
   try {
     const { admin } = await authenticate.admin(request);
-    console.log("[ACTION] Auth OK"); // DEBUG
 
     const data = await request.json();
-    console.log("[ACTION] Received data:", JSON.stringify(data, null, 2)); // DEBUG
-
     const { id } = await getStoreData(admin);
-    console.log("[ACTION] storeId (connect target):", id); // DEBUG
+
+    const dbFields = settingsToDbFields(data);
 
     const res = await prisma.quoteLoopWidget.upsert({
       where: {
         storeId: id,
       },
-      update: {
-        settings: data,
-      },
+      update: dbFields,
       create: {
-        settings: data,
+        ...dbFields,
         store: {
           connect: {
             storeGID: id,
@@ -129,16 +204,15 @@ export async function action({ request }) {
       },
     });
 
-    console.log("[ACTION] Upsert success:", res); // DEBUG
+    const settingsForMetafield = dbRowToSettings(res);
+    await setAppMetafield(admin, "quote_loop", settingsForMetafield);
 
     return {
       ok: true,
       widget: res,
     };
   } catch (error) {
-    console.error("[ACTION] ERROR NAME:", error?.name); // DEBUG
-    console.error("[ACTION] ERROR MESSAGE:", error?.message); // DEBUG
-    console.error("[ACTION] ERROR FULL:", error); // DEBUG
+    console.error("[ACTION] ERROR:", error);
     return adminErrorResponse(error);
   }
 }
@@ -150,12 +224,15 @@ export default function Index(VALUES = {}) {
   // End----Default CSR loading state checking for navigation
 
   const loaderData = useLoaderData();
-  console.log("[CLIENT] loaderData:", loaderData); // DEBUG
 
   const [activeDevice, setActiveDevice] = useState("desktop");
 
-  const [settings, setSettings] = useState(() => cloneSettings(loaderData || createDefaultSettings()));
-  const [customCss, setCss] = useState(() => loaderData?.advanceCss ?? createDefaultSettings().advanceCss ?? "");
+  const [settings, setSettings] = useState(() =>
+    cloneSettings(loaderData || createDefaultSettings()),
+  );
+  const [customCss, setCss] = useState(
+    () => loaderData?.advanceCss ?? createDefaultSettings().advanceCss ?? "",
+  );
 
   const handleSettingChange = (key, value) => {
     if (typeof key !== "string") {
@@ -183,16 +260,9 @@ export default function Index(VALUES = {}) {
     handleSettingChange("advanceCss", value);
   };
 
-  const postData = () => {
-    const data = { ...settings };
-    console.log("[CLIENT] postData raw:", data); // DEBUG
-    try {
-      console.log("[CLIENT] postData JSON stringify check:", JSON.stringify(data)); // DEBUG
-    } catch (err) {
-      console.error("[CLIENT] postData JSON stringify FAILED:", err); // DEBUG
-    }
-    return data;
-  };
+  const postData = () => ({
+    ...settings,
+  });
 
   const fetcher = useFetcher();
   useAdminFetcherToast(fetcher);
@@ -205,19 +275,11 @@ export default function Index(VALUES = {}) {
 
   const handleSubmit = () => {
     savePendingRef.current = true;
-    const data = postData();
-    console.log("[CLIENT] Submitting via fetcher.submit:", data); // DEBUG
-    fetcher.submit(data, {
+    fetcher.submit(postData(), {
       method: "post",
       encType: "application/json",
     });
   };
-
-  // DEBUG: track fetcher state/response
-  useEffect(() => {
-    console.log("[CLIENT] fetcher.state:", fetcher.state); // DEBUG
-    console.log("[CLIENT] fetcher.data:", fetcher.data); // DEBUG
-  }, [fetcher.state, fetcher.data]);
 
   // Start----Handlers for hide app window
   const handleHideAppWindow = () => {
@@ -277,7 +339,7 @@ export default function Index(VALUES = {}) {
 
   return (
     <>
-     <style>
+      <style>
         {`
           .review-item {
   height: 76px;
@@ -312,383 +374,413 @@ export default function Index(VALUES = {}) {
 
       <SaveBar saveBar={saveBar} />
       <s-query-container>
-      <s-grid gridTemplateColumns="@container (inline-size > 900px) 346px 1fr, 1fr" alignItems="start">
-        {/* Start----Sidebar */}
-        <CustomSection
-          borderRadius="0"
-          boxShadow="none"
-          borderLeft="none"
-          borderTop="none"
-          borderBottom="none"
-          padding="none"
-          background="#fff"
+        <s-grid
+          gridTemplateColumns="@container (inline-size > 900px) 346px 1fr, 1fr"
+          alignItems="start"
         >
-          <s-grid
-            gridTemplateColumns="auto 1fr"
-            gap="small"
-            padding="small base"
+          {/* Start----Sidebar */}
+          <CustomSection
+            borderRadius="0"
+            boxShadow="none"
+            borderLeft="none"
+            borderTop="none"
+            borderBottom="none"
+            padding="none"
+            background="#fff"
           >
-            <s-button variant="tertiary" onClick={handleHideAppWindow}>
-              <s-icon type="arrow-left" />
-            </s-button>
-            <s-box>
-              <s-stack direction="inline" alignItems="center" gap="small">
-                <Text as="h3">QuoteLoop</Text>
-                <s-badge tone="caution">Not installed</s-badge>
-              </s-stack>
-              <s-paragraph color="subdued">
-                Show quotes on your storefront
-              </s-paragraph>
-            </s-box>
-          </s-grid>
-          <s-divider />
+            <s-grid
+              gridTemplateColumns="auto 1fr"
+              gap="small"
+              padding="small base"
+            >
+              <s-button variant="tertiary" onClick={handleHideAppWindow}>
+                <s-icon type="arrow-left" />
+              </s-button>
+              <s-box>
+                <s-stack direction="inline" alignItems="center" gap="small">
+                  <Text as="h3">QuoteLoop</Text>
+                  <s-badge tone="caution">Not installed</s-badge>
+                </s-stack>
+                <s-paragraph color="subdued">
+                  Show quotes on your storefront
+                </s-paragraph>
+              </s-box>
+            </s-grid>
+            <s-divider />
+            <div
+              style={{
+                height: "calc(100vh - 77px)",
+                overflow: "hidden auto",
+                background: "#fff",
+              }}
+            >
+              {/* Start----Sidebar content */}
+
+              {/* ----------Display Elements start ------------ */}
+              <div style={{ padding: "1rem" }} className="sidebar-content">
+                <Header
+                  handleSettingChange={handleSettingChange}
+                  settings={settings}
+                />
+                <br></br>
+                <s-stack
+                  border="base"
+                  borderRadius="base"
+                  padding="large"
+                  gap="small"
+                >
+                  <s-heading level="1">Display elements</s-heading>
+
+                  <s-stack paddingBlockStart="small">
+                    <s-switch
+                      id="show-star-distribution"
+                      label="Show star rating"
+                      checked={settings.showStarDistribution}
+                      onChange={(e) =>
+                        handleSettingChange(
+                          "showStarDistribution",
+                          e.target.checked,
+                        )
+                      }
+                    ></s-switch>
+                  </s-stack>
+
+                  <s-stack>
+                    <s-switch
+                      id="show-reviewer-name"
+                      label="Show reviewer name"
+                      checked={settings.showReviewerName}
+                      onChange={(e) =>
+                        handleSettingChange(
+                          "showReviewerName",
+                          e.target.checked,
+                        )
+                      }
+                    ></s-switch>
+                  </s-stack>
+
+                  <s-stack>
+                    <s-switch
+                      id="show-quote-mark-icon"
+                      label="Show quote mark icon"
+                      checked={settings.showQuoteMarkIcon}
+                      onChange={(e) =>
+                        handleSettingChange(
+                          "showQuoteMarkIcon",
+                          e.target.checked,
+                        )
+                      }
+                    ></s-switch>
+                  </s-stack>
+
+                  <s-stack>
+                    <s-switch
+                      id="show-verified-badge"
+                      label="Show verified badge"
+                      checked={settings.showVerifiedBadge}
+                      onChange={(e) =>
+                        handleSettingChange(
+                          "showVerifiedBadge",
+                          e.target.checked,
+                        )
+                      }
+                    ></s-switch>
+                  </s-stack>
+
+                  <s-stack>
+                    <s-switch
+                      id="show-media-asset"
+                      label="Show auth image"
+                      checked={settings.showMediaAsset}
+                      onChange={(e) =>
+                        handleSettingChange("showMediaAsset", e.target.checked)
+                      }
+                    ></s-switch>
+                  </s-stack>
+
+                  <s-stack>
+                    <s-switch
+                      id="show-share-option"
+                      label="Show product Name"
+                      checked={settings.showProductName}
+                      onChange={(e) =>
+                        handleSettingChange(
+                          "showProductName",
+                          e.target.checked,
+                        )
+                      }
+                    ></s-switch>
+                  </s-stack>
+                </s-stack>
+              </div>
+              {/* ----------Display Elements end ------------ */}
+
+              {/* ----------Layout option start ------------ */}
+              <div style={{ padding: "1rem" }}>
+                <s-stack
+                  border="base"
+                  borderRadius="base"
+                  padding="large"
+                  gap="small"
+                >
+                  <s-heading level="1">Loop behavior</s-heading>
+                  <s-stack>
+                    <s-switch
+                      id="show-arrow-controls"
+                      label="Show arrow controls"
+                      checked={settings.showArrowControls}
+                      onChange={(e) =>
+                        handleSettingChange(
+                          "showArrowControls",
+                          e.target.checked,
+                        )
+                      }
+                    ></s-switch>
+                  </s-stack>
+
+                  <s-stack>
+                    <s-switch
+                      id="auto-rotate"
+                      label="Auto-rotate"
+                      checked={settings.autoSlider}
+                      onChange={(e) =>
+                        handleSettingChange("autoSlider", e.target.checked)
+                      }
+                    ></s-switch>
+                  </s-stack>
+
+                  <s-stack
+                    padding="small"
+                    border="base"
+                    borderRadius="large"
+                    gap="small"
+                  >
+                    <s-heading level="3">Autoplay speed</s-heading>
+                    <Range
+                      onChange={(e) =>
+                        handleSettingChange("speed", Number(e.target.value))
+                      }
+                      unit="ms"
+                      defaultValue={settings?.speed}
+                      min={400}
+                      max={600}
+                    />
+                  </s-stack>
+
+                  <s-stack
+                    border="base"
+                    paddingInlineStart="small"
+                    borderRadius="base"
+                    padding="small"
+                  >
+                    <s-select
+                      label="Filter min stars"
+                      value={settings.fiteringMinStart}
+                      onChange={(e) =>
+                        handleSettingChange(
+                          "fiteringMinStart",
+                          e.target.value,
+                        )
+                      }
+                    >
+                      <s-option value="Show all ratings">
+                        Show all ratings
+                      </s-option>
+                      <s-option value="3 star and above">
+                        3 star and above
+                      </s-option>
+                      <s-option value="4 star and above">
+                        4 star and above
+                      </s-option>
+                      <s-option value="5 star only">5 star only</s-option>
+                    </s-select>
+                  </s-stack>
+                </s-stack>
+              </div>
+              {/* ----------Layout option end ------------ */}
+
+              <div style={{ padding: "1rem" }}>
+                <s-stack
+                  border="base"
+                  borderRadius="base"
+                  padding="large"
+                  gap="small"
+                >
+                  <s-heading level="1">Color</s-heading>
+
+                  {COLOR_PICKERS_ELEMENTS.map((picker) => (
+                    <ColorPicker
+                      key={picker.key}
+                      data={picker}
+                      defaultColor={
+                        VALUES[picker.key] ?? settings?.colors[picker.key]
+                      }
+                      onChange={(value) =>
+                        handleChangeColors({ [picker.key]: value })
+                      }
+                    />
+                  ))}
+                </s-stack>
+              </div>
+
+              {/* Typography & layout */}
+
+              <div style={{ padding: "1rem" }}>
+                <s-stack
+                  border="base"
+                  borderRadius="base"
+                  padding="large"
+                  gap="small"
+                >
+                  <s-heading level="1">Typography & layout</s-heading>
+
+                  <s-stack
+                    padding="small"
+                    border="base"
+                    borderRadius="large"
+                    gap="small"
+                  >
+                    <s-heading level="3">Quote font size</s-heading>
+                    <Range
+                      onChange={(e) =>
+                        handleSettingChange(
+                          "quoteFontSize",
+                          Number(e.target.value),
+                        )
+                      }
+                      unit="px"
+                      defaultValue={settings?.quoteFontSize}
+                      min={20}
+                      max={40}
+                    />
+                  </s-stack>
+
+                  <s-stack
+                    padding="small"
+                    border="base"
+                    borderRadius="large"
+                    gap="small"
+                  >
+                    <s-heading level="3">Max text length</s-heading>
+                    <Range
+                      onChange={(e) =>
+                        handleSettingChange(
+                          "textLength",
+                          Number(e.target.value),
+                        )
+                      }
+                      unit="ch"
+                      defaultValue={settings?.textLength}
+                      max={160}
+                    />
+                  </s-stack>
+                </s-stack>
+
+                <s-stack>
+                  <AdvanceCSS css={customCss} setCss={handleCssChange} />
+                </s-stack>
+
+                <s-stack>
+                  <ResetToDefaults
+                    handleResetToDefaults={handleResetToDefaults}
+                  />
+                </s-stack>
+              </div>
+              {/* End----Sidebar content */}
+            </div>
+          </CustomSection>
+          {/* End----Sidebar */}
+
+          {/* Start----Content */}
           <div
             style={{
-              height: "calc(100vh - 77px)",
-              overflow: "hidden auto",
+              height: "100vh",
+              overflow: "hidden",
               background: "#fff",
             }}
           >
-            {/* Start----Sidebar content */}
-
-            {/* ----------Display Elements start ------------ */}
-            <div style={{ padding: "1rem" }} className="sidebar-content">
-              <Header
-                handleSettingChange={handleSettingChange}
-                settings={settings}
-              />
-              <br></br>
-              <s-stack
-                border="base"
-                borderRadius="base"
-                padding="large"
-                gap="small"
-              >
-                <s-heading level="1">Display elements</s-heading>
-
-                <s-stack paddingBlockStart="small">
-                  <s-switch
-                    id="show-star-distribution"
-                    label="Show star rating"
-                    checked={settings.showStarDistribution}
-                    onChange={(e) =>
-                      handleSettingChange(
-                        "showStarDistribution",
-                        e.target.checked,
-                      )
-                    }
-                  ></s-switch>
-                </s-stack>
-
-                <s-stack>
-                  <s-switch
-                    id="show-reviewer-name"
-                    label="Show reviewer name"
-                    checked={settings.showReviewerName}
-                    onChange={(e) =>
-                      handleSettingChange("showReviewerName", e.target.checked)
-                    }
-                  ></s-switch>
-                </s-stack>
-
-                <s-stack>
-                  <s-switch
-                    id="show-quote-mark-icon"
-                    label="Show quote mark icon"
-                    checked={settings.showQuoteMarkIcon}
-                    onChange={(e) =>
-                      handleSettingChange("showQuoteMarkIcon", e.target.checked)
-                    }
-                  ></s-switch>
-                </s-stack>
-
-                <s-stack>
-                  <s-switch
-                    id="show-verified-badge"
-                    label="Show verified badge"
-                    checked={settings.showVerifiedBadge}
-                    onChange={(e) =>
-                      handleSettingChange("showVerifiedBadge", e.target.checked)
-                    }
-                  ></s-switch>
-                </s-stack>
-
-                <s-stack>
-                  <s-switch
-                    id="show-media-asset"
-                    label="Show auth image"
-                    checked={settings.showMediaAsset}
-                    onChange={(e) =>
-                      handleSettingChange("showMediaAsset", e.target.checked)
-                    }
-                  ></s-switch>
-                </s-stack>
-
-                <s-stack>
-                  <s-switch
-                    id="show-share-option"
-                    label="Show product Name"
-                    checked={settings.showProductName}
-                    onChange={(e) =>
-                      handleSettingChange("showProductName", e.target.checked)
-                    }
-                  ></s-switch>
-                </s-stack>
-              </s-stack>
-            </div>
-            {/* ----------Display Elements end ------------ */}
-
-            {/* ----------Layout option start ------------ */}
-            <div style={{ padding: "1rem" }}>
-              <s-stack
-                border="base"
-                borderRadius="base"
-                padding="large"
-                gap="small"
-              >
-                <s-heading level="1">Loop behavior</s-heading>
-                <s-stack>
-                  <s-switch
-                    id="show-arrow-controls"
-                    label="Show arrow controls"
-                    checked={settings.showArrowControls}
-                    onChange={(e) =>
-                      handleSettingChange("showArrowControls", e.target.checked)
-                    }
-                  ></s-switch>
-                </s-stack>
-
-                <s-stack>
-                  <s-switch
-                    id="auto-rotate"
-                    label="Auto-rotate"
-                    checked={settings.autoSlider}
-                    onChange={(e) =>
-                      handleSettingChange("autoSlider", e.target.checked)
-                    }
-                  ></s-switch>
-                </s-stack>
-
-                <s-stack
-                  padding="small"
-                  border="base"
-                  borderRadius="large"
+            {/* Start----Preview Header */}
+            <div className="review-item">
+              <s-query-container>
+                <s-grid
+                  gridTemplateColumns="@container (inline-size > 600px)  1fr auto, 1fr "
                   gap="small"
+                  justifyContent="space-between"
+                  paddingInline="base"
                 >
-                  <s-heading level="3">Autoplay speed</s-heading>
-                  <Range
-                    onChange={(e) =>
-                      handleSettingChange("speed", Number(e.target.value))
-                    }
-                    unit="ms"
-                    defaultValue={settings?.speed}
-                    min={400}
-                    max={600}
-                  />
-                </s-stack>
-
-                <s-stack
-                  border="base"
-                  paddingInlineStart="small"
-                  borderRadius="base"
-                  padding="small"
-                >
-                  <s-select
-                    label="Filter min stars"
-                    value={settings.fiteringMinStart}
-                    onChange={(e) =>
-                      handleSettingChange("fiteringMinStart", e.target.value)
-                    }
+                  <s-stack
+                    alignItems="center"
+                    justifyContent="center"
+                    gap="small"
                   >
-                    <s-option value="Show all ratings">
-                      Show all ratings
-                    </s-option>
-                    <s-option value="3 star and above">
-                      3 star and above
-                    </s-option>
-                    <s-option value="4 star and above">
-                      4 star and above
-                    </s-option>
-                    <s-option value="5 star only">5 star only</s-option>
-                  </s-select>
-                </s-stack>
-              </s-stack>
+                    <s-button-group gap="none">
+                      <s-button
+                        slot="secondary-actions"
+                        icon="desktop"
+                        onClick={() => setActiveDevice("desktop")}
+                      >
+                        <div
+                          style={{
+                            position: "absolute",
+                            top: "0",
+                            left: "0",
+                            width: "100%",
+                            height: "100%",
+                            background:
+                              activeDevice === "desktop"
+                                ? "#0000000f"
+                                : "transparent",
+                            borderRadius: "8px 0 0 8px",
+                          }}
+                        ></div>
+                        Desktop preview
+                      </s-button>
+                      <s-button
+                        slot="secondary-actions"
+                        icon="mobile"
+                        onClick={() => setActiveDevice("mobile")}
+                      >
+                        <div
+                          style={{
+                            position: "absolute",
+                            top: "0",
+                            left: "0",
+                            width: "100%",
+                            height: "100%",
+                            background:
+                              activeDevice === "mobile"
+                                ? "#0000000f"
+                                : "transparent",
+                            borderRadius: "0 8px 8px 0",
+                          }}
+                        ></div>
+                        Mobile preview
+                      </s-button>
+                    </s-button-group>
+                  </s-stack>
+                  <s-button-group gap="base">
+                    <s-button slot="secondary-actions">Need help?</s-button>
+                    <s-button variant="primary" slot="primary-action">
+                      <div
+                        style={{
+                          display: "flex",
+                          alignItems: "center",
+                        }}
+                      >
+                        Preview on store <s-icon type="arrow-up-right" />
+                      </div>
+                    </s-button>
+                  </s-button-group>
+                </s-grid>
+              </s-query-container>
             </div>
-            {/* ----------Layout option end ------------ */}
-
-            <div style={{ padding: "1rem" }}>
-              <s-stack
-                border="base"
-                borderRadius="base"
-                padding="large"
-                gap="small"
-              >
-                <s-heading level="1">Color</s-heading>
-
-                {COLOR_PICKERS_ELEMENTS.map((picker) => (
-                  <ColorPicker
-                    key={picker.key}
-                    data={picker}
-                    defaultColor={
-                      VALUES[picker.key] ?? settings?.colors[picker.key]
-                    }
-                    onChange={(value) =>
-                      handleChangeColors({ [picker.key]: value })
-                    }
-                  />
-                ))}
-              </s-stack>
-            </div>
-
-            {/* Typography & layout */}
-
-            <div style={{ padding: "1rem" }}>
-              <s-stack
-                border="base"
-                borderRadius="base"
-                padding="large"
-                gap="small"
-              >
-                <s-heading level="1">Typography & layout</s-heading>
-
-                <s-stack
-                  padding="small"
-                  border="base"
-                  borderRadius="large"
-                  gap="small"
-                >
-                  <s-heading level="3">Quote font size</s-heading>
-                  <Range
-                    onChange={(e) =>
-                      handleSettingChange(
-                        "quoteFontSize",
-                        Number(e.target.value),
-                      )
-                    }
-                    unit="px"
-                    defaultValue={settings?.quoteFontSize}
-                    min={20}
-                    max={40}
-                  />
-                </s-stack>
-
-                <s-stack
-                  padding="small"
-                  border="base"
-                  borderRadius="large"
-                  gap="small"
-                >
-                  <s-heading level="3">Max text length</s-heading>
-                  <Range
-                    onChange={(e) =>
-                      handleSettingChange("textLength", Number(e.target.value))
-                    }
-                    unit="ch"
-                    defaultValue={settings?.textLength}
-                    max={160}
-                  />
-                </s-stack>
-              </s-stack>
-
-              <s-stack>
-                <AdvanceCSS css={customCss} setCss={handleCssChange} />
-              </s-stack>
-
-              <s-stack>
-                <ResetToDefaults handleResetToDefaults={handleResetToDefaults} />
-              </s-stack>
-            </div>
-            {/* End----Sidebar content */}
+            {/* End----Preview Header */}
+            <QuoteLoopWidget settings={settings} activeDevice={activeDevice} />
+            {/* Start----Preview Content */}
+            {/* End----Preview Content */}
           </div>
-        </CustomSection>
-        {/* End----Sidebar */}
-
-        {/* Start----Content */}
-        <div
-          style={{
-            height: "100vh",
-            overflow: "hidden",
-            background: "#fff",
-          }}
-        >
-          {/* Start----Preview Header */}
-          <div className="review-item">
-            <s-query-container>
-            <s-grid
-           gridTemplateColumns="@container (inline-size > 600px)  1fr auto, 1fr "
-              gap="small"
-              justifyContent="space-between"
-              paddingInline="base"
-            >
-              <s-stack alignItems="center" justifyContent="center" gap="small">
-                <s-button-group gap="none">
-                  <s-button
-                    slot="secondary-actions"
-                    icon="desktop"
-                    onClick={() => setActiveDevice("desktop")}
-                  >
-                    <div
-                      style={{
-                        position: "absolute",
-                        top: "0",
-                        left: "0",
-                        width: "100%",
-                        height: "100%",
-                        background:
-                          activeDevice === "desktop"
-                            ? "#0000000f"
-                            : "transparent",
-                        borderRadius: "8px 0 0 8px",
-                      }}
-                    ></div>
-                    Desktop preview
-                  </s-button>
-                  <s-button
-                    slot="secondary-actions"
-                    icon="mobile"
-                    onClick={() => setActiveDevice("mobile")}
-                  >
-                    <div
-                      style={{
-                        position: "absolute",
-                        top: "0",
-                        left: "0",
-                        width: "100%",
-                        height: "100%",
-                        background:
-                          activeDevice === "mobile"
-                            ? "#0000000f"
-                            : "transparent",
-                        borderRadius: "0 8px 8px 0",
-                      }}
-                    ></div>
-                    Mobile preview
-                  </s-button>
-                </s-button-group>
-              </s-stack>
-              <s-button-group gap="base">
-                <s-button slot="secondary-actions">Need help?</s-button>
-                <s-button variant="primary" slot="primary-action">
-                  <div
-                    style={{
-                      display: "flex",
-                      alignItems: "center",
-                    }}
-                  >
-                    Preview on store <s-icon type="arrow-up-right" />
-                  </div>
-                </s-button>
-              </s-button-group>
-            </s-grid>
-            </s-query-container>
-          </div>
-          {/* End----Preview Header */}
-          <QuoteLoopWidget settings={settings} activeDevice={activeDevice} />
-          {/* Start----Preview Content */}
-          {/* End----Preview Content */}
-        </div>
-        {/* End----Content */}
-      </s-grid>
+          {/* End----Content */}
+        </s-grid>
       </s-query-container>
     </>
   );

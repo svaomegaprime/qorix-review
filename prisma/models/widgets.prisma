@@ -47,10 +47,44 @@ model QuickReviewWidget {
 }
 
 model QuoteLoopWidget {
-  id        String   @id @default(uuid()) @db.Uuid
-  storeId   String   @unique
-  settings  Json
+  id      String @id @default(uuid()) @db.Uuid
+  storeId String @unique
+  store   Store  @relation(fields: [storeId], references: [storeGID], onDelete: Cascade)
+
+  // Header option
+  showHeader   Boolean @default(true)
+  headerStyle  String  @default("center")
+  eyebrowLabel String  @default("CUSTOMER REVIEWS")
+  heading      String  @default("Reviews from people")
+  subheading   String  @default("Watch and hear what our customers have to say.")
+  reviewStats  String  @default("Show review count & verified badge")
+
+  // Display elements and loop behavior
+  showStarDistribution   Boolean @default(true)
+  showReviewerName       Boolean @default(true)
+  showQuoteMarkIcon      Boolean @default(true)
+  showVerifiedBadge      Boolean @default(true)
+  showMediaAsset         Boolean @default(true)
+  showArrowControls      Boolean @default(true)
+  showProductName        Boolean @default(true)
+  autoSlider             Boolean @default(false)
+  showAppreciationOption Boolean @default(true)
+  speed                  Int     @default(450)
+
+  filterSorting     String @default("Filter & sorting both")
+  fiteringMinStart  String @default("3 star and above")
+
+  // Colors
+  starColor           String @default("#F59E0B")
+  textColor            String @default("#303030")
+  quoteMarkColor       String @default("#1D9E75")
+  cardBackgroundColor  String @default("#FFFFFF")
+
+  // Typography
+  quoteFontSize Int    @default(24)
+  textLength    Int    @default(160)
+  advanceCss    String @default("")
+
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
-  store     Store    @relation(fields: [storeId], references: [storeGID], onDelete: Cascade)
 }
