@@ -52,7 +52,7 @@
                 value="ALL"
                 class=""
                 @click="setSort(option.value)"
-                :class="{ 'is-active': '{{quick_review_metafield.defaultSort}}' === option.value || option.value === activeSort }"
+                :class="{ 'is-active': option.value === activeSort }"
                 x-text="option.label"
               ></li>
             </template>
