@@ -69,6 +69,8 @@ const createDefaultSettings = () => ({
   filterSorting: "Filter & sorting both",
   fiteringMinStart: "3 star and above",
 
+  quoteLoopWidgetSettings: {},
+
   // color picker
   colors: { ...DEFAULT_COLOR_VALUES },
 
@@ -80,7 +82,7 @@ const createDefaultSettings = () => ({
 
 const cloneSettings = (settings) => JSON.parse(JSON.stringify(settings));
 
-// ---------------------------------------------------------------------------
+// ---------------------------Effta ata porba then kag korba------------------------------------------------
 // DB <-> Frontend mapping helpers
 // The DB now stores flat structured columns (no JSON blob for settings).
 // The frontend UI still works with a nested `settings` object (with a
@@ -205,7 +207,9 @@ export async function action({ request }) {
     });
 
     const settingsForMetafield = dbRowToSettings(res);
-    await setAppMetafield(admin, "quote_loop", settingsForMetafield);
+   const metaObjectdata =  await setAppMetafield(admin, "quote_loop", settingsForMetafield);
+
+
 
     return {
       ok: true,

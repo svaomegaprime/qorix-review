@@ -85,6 +85,8 @@ model QuoteLoopWidget {
   textLength    Int    @default(160)
   advanceCss    String @default("")
 
+  quoteLoopWidgetSettings Json?  @default("{}")
+
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 }
