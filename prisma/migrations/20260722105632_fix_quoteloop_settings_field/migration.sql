@@ -33,7 +33,6 @@ CREATE TABLE "Order" (
     "fulfillmentStatus" TEXT NOT NULL,
     "paymentStatus" TEXT NOT NULL,
     "userEmail" TEXT,
-    "projuctJson" JSONB,
     "reviewCheckStatus" "ReviewCheckStatus" NOT NULL DEFAULT 'PENDING',
     "requestType" "RequestType" NOT NULL DEFAULT 'AUTOMATIC',
     "totalPrice" TEXT,
@@ -43,6 +42,23 @@ CREATE TABLE "Order" (
     "updatedAt" TIMESTAMP(3) NOT NULL,
 
     CONSTRAINT "Order_pkey" PRIMARY KEY ("id")
+);
+
+-- CreateTable
+CREATE TABLE "OrderLineItem" (
+    "id" UUID NOT NULL,
+    "orderId" UUID NOT NULL,
+    "productId" TEXT NOT NULL,
+    "title" TEXT NOT NULL,
+    "quantity" INTEGER NOT NULL,
+    "handle" TEXT,
+    "url" TEXT,
+    "image" TEXT,
+    "isReviewed" BOOLEAN NOT NULL DEFAULT false,
+    "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    "updatedAt" TIMESTAMP(3) NOT NULL,
+
+    CONSTRAINT "OrderLineItem_pkey" PRIMARY KEY ("id")
 );
 
 -- CreateTable
@@ -59,7 +75,7 @@ CREATE TABLE "Review" (
     "title" TEXT,
     "body" TEXT,
     "status" "ReviewStatus" NOT NULL DEFAULT 'PENDING',
-    "source" "ReviewSource" NOT NULL,
+    "source" "ReviewSource",
     "isVerified" BOOLEAN NOT NULL DEFAULT false,
     "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
     "updatedAt" TIMESTAMP(3) NOT NULL,
@@ -71,9 +87,9 @@ CREATE TABLE "Review" (
 CREATE TABLE "HelpfulCount" (
     "id" UUID NOT NULL,
     "reviewId" UUID NOT NULL,
-    "count" INTEGER NOT NULL,
+    "isHelpful" BOOLEAN NOT NULL,
     "customerId" TEXT NOT NULL,
-    "email" TEXT NOT NULL,
+    "customerEmail" TEXT NOT NULL,
     "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
     "updatedAt" TIMESTAMP(3) NOT NULL,
 
@@ -249,33 +265,52 @@ CREATE TABLE "QuickReviewWidget" (
     "id" UUID NOT NULL,
     "storeId" TEXT NOT NULL,
     "isShowNameField" BOOLEAN NOT NULL DEFAULT true,
-    "isShowEmailField" BOOLEAN NOT NULL DEFAULT false,
+    "isShowEmailField" BOOLEAN NOT NULL DEFAULT true,
     "isPhotoUpload" BOOLEAN NOT NULL DEFAULT true,
     "isVideoUpload" BOOLEAN NOT NULL DEFAULT true,
+    "isshowMediaImageAndVideo" BOOLEAN NOT NULL DEFAULT true,
     "formTitle" TEXT NOT NULL DEFAULT 'How was your experience?',
     "formSubtitle" TEXT NOT NULL DEFAULT 'Your feedback helps others',
     "submitButtonText" TEXT NOT NULL DEFAULT 'Submit review',
     "successMessageTitle" TEXT NOT NULL DEFAULT 'Review submitted!',
     "successButtonText" TEXT NOT NULL DEFAULT 'Continue Shopping',
     "successMessage" TEXT NOT NULL DEFAULT 'Thank you for your review. It has been submitted successfully.',
-    "starColor" TEXT,
-    "buttonBackgroundColor" TEXT,
-    "buttonTextColor" TEXT,
-    "verifiedBadgeColor" TEXT,
-    "borderRadius" TEXT NOT NULL DEFAULT '8px',
+    "starColor" TEXT DEFAULT '#f59e0b',
+    "buttonBackgroundColor" TEXT DEFAULT '#1D9E75',
+    "buttonTextColor" TEXT DEFAULT '#fff',
+    "verifiedBadgeColor" TEXT DEFAULT '#1D9E75',
+    "barFileColor" TEXT DEFAULT '#34C759',
+    "borderRadius" TEXT NOT NULL DEFAULT '15px',
     "isShowReviewerName" BOOLEAN NOT NULL DEFAULT true,
     "isShowReviewerImage" BOOLEAN NOT NULL DEFAULT true,
     "isShowReviewerVideo" BOOLEAN NOT NULL DEFAULT true,
-    "isShowProductName" BOOLEAN NOT NULL DEFAULT false,
+    "isShowProductName" BOOLEAN NOT NULL DEFAULT true,
     "isShowVerifiedBadge" BOOLEAN NOT NULL DEFAULT true,
     "isShowReviewDate" BOOLEAN NOT NULL DEFAULT true,
     "isShowRatingFilter" BOOLEAN NOT NULL DEFAULT true,
+    "isShowStarDistribution" BOOLEAN NOT NULL DEFAULT true,
+    "isShowMediaStrip" BOOLEAN NOT NULL DEFAULT true,
+    "isShowReviewCount" BOOLEAN NOT NULL DEFAULT true,
+    "writeReviewButtonText" TEXT NOT NULL DEFAULT 'Write a review',
+    "showHelfullButton" BOOLEAN NOT NULL DEFAULT true,
+    "filterAndSorting" TEXT NOT NULL DEFAULT 'FILTER_AND_SORTING',
     "reviewPerPage" INTEGER NOT NULL DEFAULT 10,
     "defaultSort" TEXT NOT NULL DEFAULT 'MOST_RECENT',
     "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
     "updatedAt" TIMESTAMP(3) NOT NULL,
 
     CONSTRAINT "QuickReviewWidget_pkey" PRIMARY KEY ("id")
+);
+
+-- CreateTable
+CREATE TABLE "QuoteLoopWidget" (
+    "id" UUID NOT NULL,
+    "storeId" TEXT NOT NULL,
+    "settings" JSONB NOT NULL,
+    "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    "updatedAt" TIMESTAMP(3) NOT NULL,
+
+    CONSTRAINT "QuoteLoopWidget_pkey" PRIMARY KEY ("id")
 );
 
 -- CreateTable
@@ -334,6 +369,9 @@ CREATE TABLE "Subscription" (
 CREATE UNIQUE INDEX "Order_storeId_orderId_key" ON "Order"("storeId", "orderId");
 
 -- CreateIndex
+CREATE UNIQUE INDEX "OrderLineItem_orderId_productId_key" ON "OrderLineItem"("orderId", "productId");
+
+-- CreateIndex
 CREATE INDEX "Review_storeId_idx" ON "Review"("storeId");
 
 -- CreateIndex
@@ -353,6 +391,9 @@ CREATE INDEX "Review_createdAt_idx" ON "Review"("createdAt");
 
 -- CreateIndex
 CREATE UNIQUE INDEX "Review_storeId_productId_reviewerEmail_key" ON "Review"("storeId", "productId", "reviewerEmail");
+
+-- CreateIndex
+CREATE UNIQUE INDEX "HelpfulCount_reviewId_customerEmail_key" ON "HelpfulCount"("reviewId", "customerEmail");
 
 -- CreateIndex
 CREATE UNIQUE INDEX "Reply_reviewId_key" ON "Reply"("reviewId");
@@ -385,6 +426,9 @@ CREATE UNIQUE INDEX "TrustBarWidget_storeId_key" ON "TrustBarWidget"("storeId");
 CREATE UNIQUE INDEX "QuickReviewWidget_storeId_key" ON "QuickReviewWidget"("storeId");
 
 -- CreateIndex
+CREATE UNIQUE INDEX "QuoteLoopWidget_storeId_key" ON "QuoteLoopWidget"("storeId");
+
+-- CreateIndex
 CREATE UNIQUE INDEX "Store_storeGID_key" ON "Store"("storeGID");
 
 -- CreateIndex
@@ -395,6 +439,9 @@ CREATE INDEX "Subscription_plan_idx" ON "Subscription"("plan");
 
 -- AddForeignKey
 ALTER TABLE "Order" ADD CONSTRAINT "Order_storeId_fkey" FOREIGN KEY ("storeId") REFERENCES "Store"("storeGID") ON DELETE CASCADE ON UPDATE CASCADE;
+
+-- AddForeignKey
+ALTER TABLE "OrderLineItem" ADD CONSTRAINT "OrderLineItem_orderId_fkey" FOREIGN KEY ("orderId") REFERENCES "Order"("id") ON DELETE CASCADE ON UPDATE CASCADE;
 
 -- AddForeignKey
 ALTER TABLE "Review" ADD CONSTRAINT "Review_storeId_fkey" FOREIGN KEY ("storeId") REFERENCES "Store"("storeGID") ON DELETE CASCADE ON UPDATE CASCADE;
@@ -434,6 +481,9 @@ ALTER TABLE "TrustBarWidget" ADD CONSTRAINT "TrustBarWidget_storeId_fkey" FOREIG
 
 -- AddForeignKey
 ALTER TABLE "QuickReviewWidget" ADD CONSTRAINT "QuickReviewWidget_storeId_fkey" FOREIGN KEY ("storeId") REFERENCES "Store"("storeGID") ON DELETE CASCADE ON UPDATE CASCADE;
+
+-- AddForeignKey
+ALTER TABLE "QuoteLoopWidget" ADD CONSTRAINT "QuoteLoopWidget_storeId_fkey" FOREIGN KEY ("storeId") REFERENCES "Store"("storeGID") ON DELETE CASCADE ON UPDATE CASCADE;
 
 -- AddForeignKey
 ALTER TABLE "Subscription" ADD CONSTRAINT "Subscription_storeId_fkey" FOREIGN KEY ("storeId") REFERENCES "Store"("storeGID") ON DELETE CASCADE ON UPDATE CASCADE;
