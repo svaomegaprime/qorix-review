@@ -21,7 +21,6 @@ import { setAppMetafield } from "../../../../../utils/appMetafields.server";
 import {
   COLOR_PICKERS_ELEMENTS,
   DEFAULT_COLOR_VALUES,
-  DEFAULT_QUOTE_LOOP_SETTINGS,
   createDefaultSettings,
 } from "../data/quoteReviewDefault";
 
@@ -151,8 +150,8 @@ export async function action({ request }) {
       },
     });
 
-    const settingsForMetafield = dbRowToSettings(res);
-   const metaObjectdata =  await setAppMetafield(admin, "quote_loop", settingsForMetafield);
+
+    const metaObjectdata = await setAppMetafield(admin, "quote_loop", res);
 
 
 

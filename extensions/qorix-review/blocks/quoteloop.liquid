@@ -1,19 +1,28 @@
 {{ 'swiper-bundle.min.css' | asset_url | stylesheet_tag }}
 {{ 'quoteloop.css' | asset_url | stylesheet_tag }}
 
+{% assign quote_loop_metafield = app.metafields.qorix_review.quote_loop.value %}
+
+
 <div class="qr-quoteloop">
+
+  {% if quote_loop_metafield.showHeader != blank %}
   {% render 'heading',
-    label: block.settings.label,
-    title: block.settings.title,
-    subtitle: block.settings.subtitle,
+    label: quote_loop_metafield.eyebrowLabel,
+    title: quote_loop_metafield.heading,
+    subtitle: quote_loop_metafield.subheading,
     rating: block.settings.rating,
     review_count: block.settings.review_count
+    headerStyle:quote_loop_metafield.headerStyle
   %}
+  {% endif %}
+
   {% assign total_slides = 10 %}
   <div
     class="swiper qr-quote-swiper"
     data-desktop-slides="{{ block.settings.desktop_cards  }}"
     data-total-slides="{{ total_slides }}"
+    data-quote-loop-metafield="{{ quote_loop_metafield }}"
   >
     <div class="swiper-wrapper">
       {% for i in (1..5) %}
@@ -24,7 +33,8 @@
             avatar: 'reviwer_img.png',
             name: 'Hasan R.',
             product: 'Vitamin C Serum',
-            verified: true
+            verified: true,
+            cardBackgroundColor:quote_loop_metafield.cardBackgroundColor
           %}
         </div>
       {% endfor %}
@@ -37,12 +47,12 @@
             avatar: 'reviwer_img.png',
             name: 'Hasan R.',
             product: 'Vitamin C Serum',
-            verified: true
+            verified: true,
+            cardBackgroundColor:quote_loop_metafield.cardBackgroundColor
           %}
         </div>
       {% endfor %}
     </div>
-
     <div class="swiper-pagination"></div>
     <div class="swiper-button-prev">
       <svg width="6" height="10" viewBox="0 0 6 10" fill="none" xmlns="http://www.w3.org/2000/svg">

@@ -20,6 +20,7 @@ const dbRowToSettings = (data) => {
         return { ...DEFAULT_TRUST_BAR_SETTINGS };
     }
 
+
     return {
         starColor: data.starColor ?? DEFAULT_TRUST_BAR_SETTINGS.starColor,
         textColor: data.textColor ?? DEFAULT_TRUST_BAR_SETTINGS.textColor,

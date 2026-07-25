@@ -58,6 +58,7 @@
   border: 1px solid var(--qr-color-border);
   border-radius: var(--qr-radius);
   padding: var(--qr-card-padding);
+  background-color: var(--card-bg);
   height: auto;
   width: 100%;
   max-width: none;

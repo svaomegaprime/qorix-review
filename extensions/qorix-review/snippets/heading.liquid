@@ -1,7 +1,7 @@
 {{ 'heading.css' | asset_url | stylesheet_tag }}
 {%- assign display_rating = rating | default: 4.9 -%}
 
-<div class="qr-heading-wrapper">
+<div class="qr-heading-wrapper" style="">
   <p class="qr-heading-label">{{ label | default: 'Customer Reviews' }}</p>
   <h2 class="qr-heading-title">{{ title | default: 'What customers love about us' }}</h2>
   <p class="qr-heading-subtitle">{{ subtitle | default: 'Watch and hear what our customers have to say.' }}</p>
