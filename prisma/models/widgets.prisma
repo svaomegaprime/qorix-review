@@ -110,3 +110,32 @@ model VideoStackSettings {
   overlayTintColor     String   @default("#1A1A1A")
   advanceCss           String   @default("")
 }
+
+model ReviewReelSettings {
+  id                 String   @id @default(cuid())
+  shop               String   @unique
+  createdAt          DateTime @default(now())
+  updatedAt          DateTime @updatedAt
+  showHeader         Boolean  @default(true)
+  headerStyle        String   @default("center")
+  eyebrowLabel       String   @default("CUSTOMER REVIEWS")
+  heading            String   @default("Real reviews from real people")
+  subheading         String   @default("Watch and hear what our customers have to say.")
+  reviewStats        String   @default("Show review count & verified badge")
+  showReviewerName   Boolean  @default(true)
+  showReviewImage    Boolean  @default(true)
+  showVerifiedBadge  Boolean  @default(true)
+  showProductName    Boolean  @default(true)
+  showReviewDate     Boolean  @default(true)
+  showAutoPlay       Boolean  @default(true)
+  showNavigationDots Boolean  @default(true)
+  showArrowControls  Boolean  @default(true)
+  autoplaySpeed      Int      @default(4)
+  cardsVisible       Int      @default(3)
+  fiteringMinStart   String   @default("3 star and above")
+  startColor         String   @default("#34C759")
+  activeDotColor     String   @default("#34C759")
+  cardBackgorud      String   @default("#FFF")
+  cardTextColor      String   @default("#000")
+  advanceCss         String   @default("")
+}
