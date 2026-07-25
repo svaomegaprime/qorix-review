@@ -111,7 +111,7 @@ const shopify = shopifyApp({
 
         // Full settings install ar sathe sathe update korte hobe
 
-        const storeSettings = await prisma.storeSettings.upsert({
+        await prisma.storeSettings.upsert({
           where: {
             storeId: shopData.id,
           },
@@ -163,11 +163,7 @@ const shopify = shopifyApp({
           },
         });
 
-        const metafieldResult = await setAppMetafield(
-          admin,
-          "quick_review",
-          quickReviewWidget,
-        );
+        await setAppMetafield(admin, "quick_review", quickReviewWidget);
 
         // Quote Loop Widget data set in the database for the first time and update if already exists
         // const quoteLoopWidget = await prisma.quoteLoopWidget.upsert({
@@ -188,7 +184,7 @@ const shopify = shopifyApp({
         // );
 
         // all data is set in the database for the first time and update if already exists
-        const reviewHubWidget = await prisma.quickReviewWidget.upsert({
+        const reviewHubWidget = await prisma.reviewHubWidget.upsert({
           where: {
             storeId: shopData.id,
           },
@@ -200,11 +196,7 @@ const shopify = shopifyApp({
           },
         });
 
-        const metafieldReviewHubResult = await setAppMetafield(
-          admin,
-          "review_hub",
-          reviewHubWidget,
-        );
+        await setAppMetafield(admin, "review_hub", reviewHubWidget);
       } catch (error) {
         console.error("afterAuth shop fetch failed:", error);
       }

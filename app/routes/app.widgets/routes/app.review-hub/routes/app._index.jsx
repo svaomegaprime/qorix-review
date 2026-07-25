@@ -1,11 +1,11 @@
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import Loader from "../../../../../components/essentials/Loader";
 import CustomSection from "../../../../../components/essentials/CustomSection";
 import Text from "../../../../../components/essentials/elements/Text";
 import SaveBar from "../../../components/savebar/SaveBar";
 import { useSaveBarTrigger } from "../../../components/savebar/useSaveBarTrigger";
 import { requestAppWindowClose } from "../../../utils/useAppWindowClose";
-import { useNavigation } from "react-router";
+import { useFetcher, useLoaderData, useNavigation } from "react-router";
 import Header from "../../../components/Header";
 import ColorPicker from "../../../components/elements/ColorPicker";
 import ReviewHumComponent from "../Component/Reviewhup_widgth_preview";
@@ -16,23 +16,171 @@ import {
   DEFAULT_COLOR_VALUES,
   DEFAULT_REVIEW_HUB_DATA,
 } from "../data/defaultData";
+import { authenticate } from "../../../../../shopify.server";
+import prisma from "../../../../../db.server";
+import { getStoreData } from "../../../../../utils/getStoreData";
+import { setAppMetafield } from "../../../../../utils/appMetafields.server";
+import { adminErrorResponse } from "../../../../../utils/adminError.server";
+import { useAdminFetcherToast } from "../../../../../utils/useAdminFetcherToast";
+const createDefaultSettings = () => ({
+  ...DEFAULT_REVIEW_HUB_DATA,
+  colors: { ...DEFAULT_COLOR_VALUES },
+});
 
-export function loader() {}
-export function action() {}
+const cloneSettings = (settings) => JSON.parse(JSON.stringify(settings));
 
-export default function Index({ VALUES = {}, handleChange }) {
+function dbRowToSettings(row) {
+  if (!row) return createDefaultSettings();
+
+  return {
+    showHeader: row.showHeader,
+    headerStyle: row.headerStyle,
+    eyebrowLabel: row.eyebrowLabel,
+    heading: row.heading,
+    subheading: row.subheading,
+    reviewStats: row.reviewStats,
+
+    showStarDistribution: row.showStarDistribution,
+    showReviewerName: row.showReviewerName,
+    showReviewTimer: row.showReviewTimer,
+    showVerifiedBadge: row.showVerifiedBadge,
+    showMediaAsset: row.showMediaAsset,
+    showShareOption: row.showShareOption,
+    showAppreciationOption: row.showAppreciationOption,
+
+    layout: row.layout,
+    filterSorting: row.filterSorting,
+    reviewsPerPage: row.reviewsPerPage,
+
+    colors: {
+      STAR_COLOR: row.starColor,
+      TEXT_COLOR: row.textColor,
+      VERIFIED_BADGE_COLOR: row.verifiedBadgeColor,
+      Card_Background_Color: row.cardBackgroundColor,
+      Border_Color: row.borderColor,
+      FILTER_CHIP_COLOR: row.filterChipColor,
+      FILTER_CHIP_COLOR_STAR_COLOR: row.filterChipStarColor,
+    },
+
+    advanceCss: row.advanceCss,
+  };
+}
+
+function settingsToDbFields(settings) {
+  return {
+    showHeader: settings.showHeader,
+    headerStyle: settings.headerStyle,
+    eyebrowLabel: settings.eyebrowLabel,
+    heading: settings.heading,
+    subheading: settings.subheading,
+    reviewStats: settings.reviewStats,
+
+    showStarDistribution: settings.showStarDistribution,
+    showReviewerName: settings.showReviewerName,
+    showReviewTimer: settings.showReviewTimer,
+    showVerifiedBadge: settings.showVerifiedBadge,
+    showMediaAsset: settings.showMediaAsset,
+    showShareOption: settings.showShareOption,
+    showAppreciationOption: settings.showAppreciationOption,
+
+    layout: settings.layout,
+    filterSorting: settings.filterSorting,
+    reviewsPerPage: settings.reviewsPerPage,
+
+    starColor: settings.colors?.STAR_COLOR ?? DEFAULT_COLOR_VALUES.STAR_COLOR,
+    textColor: settings.colors?.TEXT_COLOR ?? DEFAULT_COLOR_VALUES.TEXT_COLOR,
+    verifiedBadgeColor:
+      settings.colors?.VERIFIED_BADGE_COLOR ??
+      DEFAULT_COLOR_VALUES.VERIFIED_BADGE_COLOR,
+    cardBackgroundColor:
+      settings.colors?.Card_Background_Color ??
+      DEFAULT_COLOR_VALUES.Card_Background_Color,
+    borderColor:
+      settings.colors?.Border_Color ?? DEFAULT_COLOR_VALUES.Border_Color,
+    filterChipColor:
+      settings.colors?.FILTER_CHIP_COLOR ??
+      DEFAULT_COLOR_VALUES.FILTER_CHIP_COLOR,
+    filterChipStarColor:
+      settings.colors?.FILTER_CHIP_COLOR_STAR_COLOR ??
+      DEFAULT_COLOR_VALUES.FILTER_CHIP_COLOR_STAR_COLOR,
+
+    advanceCss: settings.advanceCss,
+  };
+}
+
+export async function loader({ request }) {
+  try {
+    const { admin } = await authenticate.admin(request);
+    const { id } = await getStoreData(admin);
+
+    const res = await prisma.reviewHubWidget.findUnique({
+      where: {
+        storeId: id,
+      },
+    });
+
+    return dbRowToSettings(res);
+  } catch (error) {
+    return adminErrorResponse(error);
+  }
+}
+export async function action({ request }) {
+  try {
+    const { admin } = await authenticate.admin(request);
+
+    const data = await request.json();
+    const { id } = await getStoreData(admin);
+    const dbFields = settingsToDbFields(data);
+
+    const res = await prisma.reviewHubWidget.upsert({
+      where: {
+        storeId: id,
+      },
+      update: dbFields,
+      create: {
+        ...dbFields,
+        store: {
+          connect: {
+            storeGID: id,
+          },
+        },
+      },
+    });
+
+    const metafieldResult = await setAppMetafield(admin, "review_hub", res);
+    const metafieldErrors =
+      metafieldResult?.data?.metafieldsSet?.userErrors ?? [];
+
+    if (metafieldErrors.length > 0) {
+      throw new Error(metafieldErrors.map(({ message }) => message).join(", "));
+    }
+
+    return {
+      ok: true,
+      widget: dbRowToSettings(res),
+      metafieldResult,
+    };
+  } catch (error) {
+    return adminErrorResponse(error);
+  }
+}
+
+export default function Index() {
   // Start----Default CSR loading state checking for navigation
   const navigation = useNavigation();
+  const loaderData = useLoaderData();
+  const fetcher = useFetcher();
+  useAdminFetcherToast(fetcher);
   const loading = navigation.state === "loading";
   // End----Default CSR loading state checking for navigation
 
   const [activeDevice, setActiveDevice] = useState("desktop");
 
-  const [settings, setSettings] = useState(() => ({
-    ...DEFAULT_REVIEW_HUB_DATA,
-  }));
+  const [settings, setSettings] = useState(() =>
+    cloneSettings(loaderData || createDefaultSettings()),
+  );
   const [coustomCss, setCss] = useState(
-    () => DEFAULT_REVIEW_HUB_DATA.advanceCss || "",
+    () => loaderData?.advanceCss ?? DEFAULT_REVIEW_HUB_DATA.advanceCss,
   );
 
   const handleSettingChange = (key, value) => {
@@ -46,7 +194,7 @@ export default function Index({ VALUES = {}, handleChange }) {
   console.log("Settings:", settings);
 
   const handleResetToDefaults = () => {
-    const defaults = { ...DEFAULT_REVIEW_HUB_DATA };
+    const defaults = createDefaultSettings();
     setSettings(defaults);
     setCss(defaults.advanceCss || "");
   };
@@ -61,20 +209,66 @@ export default function Index({ VALUES = {}, handleChange }) {
     requestAppWindowClose("review_hub");
   };
   // End----Handlers for hide app window
+  const postData = () => ({
+    ...settings,
+    advanceCss: coustomCss,
+  });
+
+  const initSettingsRef = useRef(null);
+  const savePendingRef = useRef(false);
+
+  const handleSubmit = () => {
+    const submittedSettings = postData();
+
+    savePendingRef.current = true;
+    fetcher.submit(submittedSettings, {
+      method: "post",
+      encType: "application/json",
+    });
+  };
 
   // Start----Handlers for SaveBar
   const saveBar = useSaveBarTrigger({
-    onSubmit: (formData) => {
-      console.log("SaveBar submit trigger:", formData);
-      setTimeout(() => {
-        requestAppWindowClose("review_hub");
-      }, 2000);
+    onSubmit: () => {
+      handleSubmit();
     },
-    onDiscard: (formData) => {
-      console.log("SaveBar discard trigger:", formData);
+    onDiscard: () => {
+      setSettings(cloneSettings(initSettingsRef.current));
+      setCss(initSettingsRef.current?.advanceCss || "");
     },
   });
+  const { triggerChange, triggerDiscard } = saveBar;
   // End----Handlers for SaveBar
+
+  // Start----Detect settings changes → show/hide SaveBar
+  if (initSettingsRef.current === null) {
+    initSettingsRef.current = cloneSettings(settings);
+  }
+
+  useEffect(() => {
+    if (
+      !savePendingRef.current ||
+      fetcher.state !== "idle" ||
+      fetcher.data?.ok !== true
+    ) {
+      return;
+    }
+
+    initSettingsRef.current = cloneSettings(fetcher.data.widget);
+    savePendingRef.current = false;
+  }, [fetcher.data, fetcher.state]);
+
+  useEffect(() => {
+    const hasChanged =
+      JSON.stringify(settings) !== JSON.stringify(initSettingsRef.current);
+
+    if (hasChanged) {
+      triggerChange();
+    } else {
+      triggerDiscard({ silent: true });
+    }
+  }, [settings, triggerChange, triggerDiscard]);
+  // End----Detect settings changes → show/hide SaveBar
 
   // Start----Hide app window padding and remove app nav
   useEffect(() => {
@@ -90,8 +284,6 @@ export default function Index({ VALUES = {}, handleChange }) {
       ...(settings?.colors || DEFAULT_COLOR_VALUES),
       ...e,
     });
-
-    // handleChange({target: "colors", value: e});
   };
 
   if (loading) {
@@ -134,10 +326,6 @@ export default function Index({ VALUES = {}, handleChange }) {
         `}
       </style>
       {/* End----Hide app window padding and remove app nav */}
-      {/* <s-button onClick={saveBar.triggerChange}>Change one</s-button>
-            <s-button onClick={saveBar.triggerChange}>Change two</s-button>
-            <s-button onClick={saveBar.triggerSubmit}>Submit trigger</s-button>
-            <s-button onClick={saveBar.triggerDiscard}>Discard trigger</s-button> */}
 
       <SaveBar saveBar={saveBar} />
       <s-query-container>
@@ -350,9 +538,9 @@ export default function Index({ VALUES = {}, handleChange }) {
                       <s-option value="6 reviews">6 reviews</s-option>
                       <s-option value="9 reviews">9 reviews</s-option>
                       <s-option value="12 reviews">12 reviews</s-option>
-                      <s-option value="12 reviews">15 reviews</s-option>
-                      <s-option value="12 reviews">18 reviews</s-option>
-                      <s-option value="12 reviews">24 reviews</s-option>
+                      <s-option value="15 reviews">15 reviews</s-option>
+                      <s-option value="18 reviews">18 reviews</s-option>
+                      <s-option value="24 reviews">24 reviews</s-option>
                     </s-select>
                   </s-stack>
                 </s-stack>
@@ -373,9 +561,7 @@ export default function Index({ VALUES = {}, handleChange }) {
                     <ColorPicker
                       key={picker.key}
                       data={picker}
-                      defaultColor={
-                        VALUES[picker.key] ?? settings?.colors[picker.key]
-                      }
+                      defaultColor={settings?.colors?.[picker.key]}
                       onChange={(value) =>
                         handleChangeColors({ [picker.key]: value })
                       }
