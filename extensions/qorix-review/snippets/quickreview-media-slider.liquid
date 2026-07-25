@@ -15,32 +15,31 @@
 
     <div class="quickreview-media__slider swiper" data-quickreview-swiper>
       <div class="swiper-wrapper">
-        <template x-for="review in reviews" :key="review.id">
-          <template x-if="review.attachments?.length">
-            <template x-for="attachment in review.attachments" :key="attachment.id">
-              <div class="swiper-slide quickreview-media__slide" @click="openLightbox(attachment)">
-                <template x-if="attachment.type === 'IMAGE'">
-                  <img
-                    class="quickreview-media__img"
-                    :src="attachment.url"
-                    alt="Review media"
-                    loading="lazy"
-                    width=""
-                    height=""
-                  >
-                </template>
+        <template x-if="attachments?.length">
+          <template x-for="attachment in attachments" :key="attachment.id">
+            <div class="swiper-slide quickreview-media__slide" @click="openLightbox(attachment)">
+              <template x-if="attachment.type === 'IMAGE'">
+                <img
+                  class="quickreview-media__img"
+                  :src="attachment.url"
+                  alt="Review media"
+                  loading="lazy"
+                  width=""
+                  height=""
+                >
+              </template>
 
-                <template x-if="attachment.type === 'VIDEO'">
-                  <video
-                    class="quickreview-media__img"
-                    :src="attachment.url"
-                    preload="metadata"
-                  ></video>
-                </template>
-              </div>
-            </template>
+              <template x-if="attachment.type === 'VIDEO'">
+                <video
+                  class="quickreview-media__img"
+                  :src="attachment.url"
+                  preload="metadata"
+                ></video>
+              </template>
+            </div>
           </template>
         </template>
+        <div x-show="attachments?.length == 0"></div>
       </div>
     </div>
 

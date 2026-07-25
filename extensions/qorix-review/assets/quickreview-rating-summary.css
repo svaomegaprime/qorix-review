@@ -45,8 +45,8 @@
 }
 
 .quickreview-summary__write-btn {
-  background-color: var(--qr-color-primary);
-  color: var(--qr-color-white);
+  background-color: var(--button-background-color);
+  color: var(--button-text-color);
   border: none;
   border-radius: 8px;
   padding: 12px 32px;
@@ -57,7 +57,12 @@
 }
 
 .quickreview-summary__write-btn:hover {
-  background-color: var(--qr-color-primary-hover);
+  background-color: var(--button-background-color);
+  opacity: 0.9;
+}
+
+.quickreview-star svg path{
+  fill: var(--star-color);
 }
 
 /* ------- Responsive ----------- */

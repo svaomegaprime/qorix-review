@@ -483,11 +483,16 @@ async function getReview(request, session, admin) {
         });
       }
     }
+    // Base where — unfiltered, used for ratingCounts and allAttachments
+    const baseWhere = {
+      storeId: id,
+      ...(productId ? { productId } : {}),
+    };
+
     // Base query
     const query = {
       where: {
-        storeId: id,
-        ...(productId ? { productId } : {}),
+        ...baseWhere,
       },
       include: {
         attachments: true,
@@ -562,11 +567,9 @@ async function getReview(request, session, admin) {
         };
     }
 
-    // const res = await prisma.review.findMany(query);
-    const [res, info] = await Promise.all([
+    const [res, info, ratingGroups, allAttachments] = await Promise.all([
       prisma.review.findMany(query),
 
-      // prisma.review.count({where: query.where}),
       prisma.review.aggregate({
         where: query.where,
 
@@ -578,7 +581,41 @@ async function getReview(request, session, admin) {
           rating: true,
         },
       }),
+
+      // Rating counts across ALL reviews for this product (ignores sort/filter/pagination)
+      prisma.review.groupBy({
+        by: ["rating"],
+        where: baseWhere,
+        _count: {
+          _all: true,
+        },
+      }),
+
+      // All attachments across ALL reviews for this product
+      prisma.attachment.findMany({
+        where: {
+          review: baseWhere,
+        },
+        select: {
+          id: true,
+          type: true,
+          url: true,
+          reviewId: true,
+        },
+        orderBy: {
+          createdAt: "desc",
+        },
+      }),
     ]);
+
+    // Build ratingCounts object: { 5: n, 4: n, 3: n, 2: n, 1: n }
+    const ratingCounts = { 5: 0, 4: 0, 3: 0, 2: 0, 1: 0 };
+    for (const group of ratingGroups) {
+      const r = Number(group.rating);
+      if (ratingCounts[r] !== undefined) {
+        ratingCounts[r] = group._count._all;
+      }
+    }
 
     return sendResponse(null, {
       ok: true,
@@ -590,6 +627,8 @@ async function getReview(request, session, admin) {
         totalPages: Math.ceil(info._count._all / limit),
         currentPage: page,
         averageRating: Number((info._avg.rating || 0).toFixed(1)),
+        ratingCounts,
+        attachments: allAttachments,
       },
     });
   } catch (error) {

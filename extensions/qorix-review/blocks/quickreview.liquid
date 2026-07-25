@@ -20,7 +20,7 @@
     --button-background-color: {{ quick_review_metafield.buttonBackgroundColor }};
     --button-text-color : {{ quick_review_metafield.buttonTextColor }};
     --verified-badge-color : {{ quick_review_metafield.verifiedBadgeColor }};
-    --bar-file-color : {{ quick_review_metafield.barFileColor }}
+    --bar-file-color : {{ quick_review_metafield.barFileColor }};
     {% comment %} quickreview-rating-summary {% endcomment %}
     --qr-color-border: #CFCFCF;
     --qr-color-text-dark: #303030;
@@ -48,8 +48,8 @@
 {{ 'swiper-bundle.min.css' | asset_url | stylesheet_tag }}
 {{ 'quickreview.css' | asset_url | stylesheet_tag }}
 
-{% assign show_bar = block.settings.show_rating_bar %}
-{% assign show_media = block.settings.show_media_slider %}
+{% assign show_bar = quick_review_metafield.isShowStarDistribution %}
+{% assign show_media = quick_review_metafield.isShowMediaStrip %}
 
 {% if show_bar and show_media %}
   {% assign card_modifier = 'quickreview-card--full' %}
@@ -89,7 +89,11 @@
     id="quickreview-{{ block.id }}"
     {{ block.shopify_attributes }}
   >
-    {% render 'quickreview-rating-summary', product: product, block: block %}
+    {% render 'quickreview-rating-summary',
+      product: product,
+      block: block,
+      quick_review_metafield: quick_review_metafield
+    %}
 
     {% if show_bar %}
       {% render 'quickreview-rating-bar', product: product, block: block %}
@@ -108,7 +112,7 @@
   </div>
   {% render 'lightbox' %}
 
-  {% render 'quickreview-reviews' %}
+  {% render 'quickreview-reviews', quick_review_metafield: quick_review_metafield %}
 </div>
 <script src="{{ 'swiper-bundle.min.js' | asset_url }}" defer></script>
 <script src="{{ 'quickreview.js' | asset_url }}" defer></script>

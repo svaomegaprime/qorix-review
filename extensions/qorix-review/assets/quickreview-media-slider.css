@@ -43,7 +43,7 @@
 
 .quickreview-media__see-all {
   font-size: 13px;
-  color: var(--qr-color-link);
+  color: var(--button-background-color);
   text-decoration: none;
   font-weight: 500;
   line-height: 1.01;

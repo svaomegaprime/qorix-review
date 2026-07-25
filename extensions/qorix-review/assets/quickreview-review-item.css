@@ -1,4 +1,4 @@
-:root {
+/* :root {
   --qr-color-border: #CFCFCF;
   --qr-color-text-dark: #303030;
   --qr-color-text-secondary: #616161;
@@ -17,7 +17,7 @@
   --qr-color-load-more-bg: #F2F2F2;
   --qr-shadow-nav: 0 1px 6px rgba(0, 0, 0, 0.18);
   --qr-shadow-menu: 0 4px 20px rgba(0, 0, 0, 0.12);
-}
+} */
 /* ---------- Review list ---------- */
 .quickreview-reviews__list {
   display: flex;
@@ -181,6 +181,12 @@
 
 .quickreview-reviews__load-more:hover {
   background: var(--qr-color-hover-bg);
+}
+.review-star-color > svg > path{
+  fill: var(--star-color);
+}
+.qr-quick-review-verified-check svg{
+  fill: var(--verified-badge-color);
 }
 @media (max-width: 749px) {
   .quickreview-reviews__header {

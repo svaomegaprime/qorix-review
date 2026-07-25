@@ -2,9 +2,11 @@
 <div class="quickreview-summary" data-quickreview-summary>
   <div class="quickreview-summary__score" data-quickreview-average>
     <span x-text="averageRating"></span>
-    <span class="quickreview-summary__count" data-quickreview-count
-      >( <span x-text="totalReviews"></span> reviews )</span
-    >
+    {% if quick_review_metafield.isShowReviewCount %}
+      <span class="quickreview-summary__count" data-quickreview-count
+        >( <span x-text="totalReviews"></span> reviews )</span
+      >
+    {% endif %}
   </div>
   <div class="quickreview-summary__stars" data-quickreview-stars aria-label="Rating">
     <template x-for="i in averageRating" :key="i">
@@ -19,6 +21,6 @@
     data-quickreview-write-review
     @click="openModal()"
   >
-    Write your review
+    {{ quick_review_metafield.writeReviewButtonText }}
   </button>
 </div>

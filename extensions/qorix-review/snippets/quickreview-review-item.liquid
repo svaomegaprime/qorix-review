@@ -6,6 +6,7 @@
     <div class="quickreview-review__head">
       <div class="quickreview-review__avatar">
         <img
+          x-show="false"
           class="quickreview-media__img"
           src="{{ '' | asset_url }}"
           alt="Reviewer image"
@@ -13,79 +14,100 @@
           height=""
           width=""
         >
+        <span x-show="true" x-text="review.reviewerName[0].toUpperCase()" style="font-size: 18px;"></span>
       </div>
 
       <div class="quickreview-review__meta">
-        <span class="quickreview-review__author" x-text="review.reviewerName"></span>
-        <span class="quickreview-review__date" x-text="timeAgo(review.createdAt)"></span>
+        {% if quick_review_metafield.isShowReviewerName %}
+          <div style="display: flex; gap:9px;">
+            <span class="quickreview-review__author" x-text="review.reviewerName"></span>
+            {% if quick_review_metafield.isShowVerifiedBadge %}
+              <span class="qr-quick-review-verified-check">
+                <svg width="16" height="16" viewBox="0 0 512 512">
+                  <path d="M256 0C114.6 0 0 114.6 0 256s114.6 256 256 256s256-114.6 256-256S397.4 0 256 0zM371.1 204.1l-128 128c-6.3 6.3-16.4 6.3-22.6 0l-64-64c-6.3-6.3-6.3-16.4 0-22.6s16.4-6.3 22.6 0L232 297.4l116.5-116.5c6.3-6.3 16.4-6.3 22.6 0s6.3 16.4 0 22.6z"></path>
+                </svg>
+              </span>
+            {% endif %}
+          </div>
+        {% endif %}
+        {% if quick_review_metafield.isShowReviewDate %}
+          <span class="quickreview-review__date" x-text="timeAgo(review.createdAt)"></span>
+        {% endif %}
       </div>
     </div>
-
-    <div class="quickreview-review__stars">
-      <template x-for="i in 5" :key="i">
-        <span>
-          <template x-if="i <= review.rating">
-            {% render 'icon', name: 'rating-star' %}
-          </template>
-          <template x-if="i > review.rating">
-            {% render 'icon', name: 'rating-star-withoutfield' %}
-          </template>
-        </span>
-      </template>
-    </div>
-
-    <h3 class="quickreview-review__product" x-text="review.productTitle"></h3>
-
+    {% if quick_review_metafield.isShowStarRatingOnCard %}
+      <div class="quickreview-review__stars">
+        <template x-for="i in 5" :key="i">
+          <span>
+            <template x-if="i <= review.rating">
+              <span class="review-star-color">
+                {% render 'icon', name: 'rating-star' %}
+              </span>
+            </template>
+            <template x-if="i > review.rating">
+              {% render 'icon', name: 'rating-star-withoutfield' %}
+            </template>
+          </span>
+        </template>
+      </div>
+    {% endif %}
+    {% if quick_review_metafield.isShowProductName %}
+      <h3 class="quickreview-review__product" x-text="review.productTitle"></h3>
+    {% endif %}
     <p class="quickreview-review__body" x-text="review.body"></p>
 
-    <div class="quickreview-review__media" x-show="review.attachments.length > 0">
-      <template x-for="attachment in review.attachments" :key="attachment.id">
-        <div class="quickreview-review__media-item" @click="openLightbox(attachment)">
-          <template x-if="attachment.type === 'IMAGE'">
-            <img
-              class="quickreview-review__media-img"
-              :src="attachment.url"
-              alt="Review media"
-              loading="lazy"
-              width=""
-              height=""
-            >
-          </template>
+    {% if quick_review_metafield.isShowMediaThumbnails %}
+      <div class="quickreview-review__media" x-show="review.attachments.length > 0">
+        <template x-for="attachment in review.attachments" :key="attachment.id">
+          <div class="quickreview-review__media-item" @click="openLightbox(attachment)">
+            <template x-if="attachment.type === 'IMAGE'">
+              <img
+                class="quickreview-review__media-img"
+                :src="attachment.url"
+                alt="Review media"
+                loading="lazy"
+                width=""
+                height=""
+              >
+            </template>
 
-          <template x-if="attachment.type === 'VIDEO'">
-            <video
-              class="quickreview-review__media-img"
-              :src="attachment.url"
-              preload="metadata"
-              muted
-              playsinline
-              loading="lazy"
-            ></video>
-          </template>
-        </div>
-      </template>
-    </div>
+            <template x-if="attachment.type === 'VIDEO'">
+              <video
+                class="quickreview-review__media-img"
+                :src="attachment.url"
+                preload="metadata"
+                muted
+                playsinline
+                loading="lazy"
+              ></video>
+            </template>
+          </div>
+        </template>
+      </div>
+    {% endif %}
 
-    <div class="quickreview-review__footer">
-      <button
-        type="button"
-        class="quickreview-review__helpful"
-        :class="{ 'is-helpful': review.isHelpful }"
-        data-quickreview-review-helpful
-        :aria-pressed="review.isHelpful ? 'true' : 'false'"
-        @click="helpfulToggle(review, '{{ customer.id }}', '{{ customer.email }}')"
-      >
-        <svg width="20" height="20" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg">
-          <path fill-rule="evenodd" clip-rule="evenodd" d="M12.539 14.57C11.135 14.6039 9.74167 14.3173 8.465 13.732L8.158 13.591C7.79141 13.4236 7.40053 13.3156 7 13.271V8.049C7.052 8.019 7.102 7.986 7.15 7.95C8.43497 6.9846 9.31672 5.57737 9.625 4C9.82051 4.00337 10.0132 4.04736 10.1908 4.12919C10.3684 4.21102 10.527 4.32889 10.6566 4.47531C10.7862 4.62174 10.8839 4.79351 10.9435 4.97973C11.0032 5.16595 11.0234 5.36253 11.003 5.557L10.87 6.817C10.8444 7.06087 10.8703 7.30741 10.946 7.54063C11.0218 7.77385 11.1457 7.98855 11.3097 8.1708C11.4738 8.35305 11.6743 8.49879 11.8983 8.59857C12.1223 8.69835 12.3648 8.74994 12.61 8.75H14.205C14.963 8.75 15.547 9.42 15.444 10.17L15.106 12.619C15.033 13.1484 14.774 13.6345 14.3753 13.9903C13.9766 14.3461 13.4642 14.5484 12.93 14.561L12.539 14.57ZM5.5 8.25H4.5V13.25H5.5V8.25ZM7.84 15.095C9.32384 15.7753 10.9431 16.1087 12.575 16.07L12.966 16.06C13.8562 16.0389 14.7098 15.7018 15.3742 15.1089C16.0385 14.516 16.4702 13.7061 16.592 12.824L16.929 10.376C16.9827 9.98681 16.9524 9.59062 16.8401 9.21412C16.7279 8.83762 16.5362 8.48955 16.2781 8.19334C16.02 7.89714 15.7014 7.65968 15.3438 7.49696C14.9862 7.33423 14.5979 7.25002 14.205 7.25H12.611C12.5759 7.25005 12.5413 7.24273 12.5092 7.22851C12.4772 7.21429 12.4485 7.19349 12.425 7.16746C12.4015 7.14144 12.3838 7.11076 12.3729 7.07743C12.3621 7.0441 12.3584 7.00886 12.362 6.974L12.495 5.714C12.5376 5.30845 12.4945 4.89847 12.3685 4.51065C12.2424 4.12283 12.0363 3.76583 11.7634 3.46279C11.4906 3.15976 11.1571 2.91745 10.7845 2.75159C10.412 2.58573 10.0088 2.50001 9.601 2.5H9.237C8.737 2.5 8.309 2.857 8.22 3.349L8.165 3.652C7.93885 4.8887 7.25511 5.99481 6.25 6.75H4.25C3.56 6.75 3 7.31 3 8V13.5C3 14.19 3.56 14.75 4.25 14.75H6.595C6.919 14.75 7.239 14.82 7.533 14.955L7.84 15.095Z" :fill="review.isHelpful ? '#000' : '#303030'"/>
-        </svg>
-        Helpful (<span data-quickreview-review-helpful-count x-text="review.helpfulTotal || 0">0</span>)
-      </button>
-      {% comment %}
-        <div class="quickreview-review__report-divider">
-          <button type="button" class="quickreview-review__report" data-quickreview-review-report>Report</button>
-        </div>
-      {% endcomment %}
-    </div>
+    {% if quick_review_metafield.isShowHelpfulButton %}
+      <div class="quickreview-review__footer">
+        <button
+          type="button"
+          class="quickreview-review__helpful"
+          :class="{ 'is-helpful': review.isHelpful }"
+          data-quickreview-review-helpful
+          :aria-pressed="review.isHelpful ? 'true' : 'false'"
+          @click="helpfulToggle(review, '{{ customer.id }}', '{{ customer.email }}')"
+        >
+          <svg width="20" height="20" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg">
+            <path fill-rule="evenodd" clip-rule="evenodd" d="M12.539 14.57C11.135 14.6039 9.74167 14.3173 8.465 13.732L8.158 13.591C7.79141 13.4236 7.40053 13.3156 7 13.271V8.049C7.052 8.019 7.102 7.986 7.15 7.95C8.43497 6.9846 9.31672 5.57737 9.625 4C9.82051 4.00337 10.0132 4.04736 10.1908 4.12919C10.3684 4.21102 10.527 4.32889 10.6566 4.47531C10.7862 4.62174 10.8839 4.79351 10.9435 4.97973C11.0032 5.16595 11.0234 5.36253 11.003 5.557L10.87 6.817C10.8444 7.06087 10.8703 7.30741 10.946 7.54063C11.0218 7.77385 11.1457 7.98855 11.3097 8.1708C11.4738 8.35305 11.6743 8.49879 11.8983 8.59857C12.1223 8.69835 12.3648 8.74994 12.61 8.75H14.205C14.963 8.75 15.547 9.42 15.444 10.17L15.106 12.619C15.033 13.1484 14.774 13.6345 14.3753 13.9903C13.9766 14.3461 13.4642 14.5484 12.93 14.561L12.539 14.57ZM5.5 8.25H4.5V13.25H5.5V8.25ZM7.84 15.095C9.32384 15.7753 10.9431 16.1087 12.575 16.07L12.966 16.06C13.8562 16.0389 14.7098 15.7018 15.3742 15.1089C16.0385 14.516 16.4702 13.7061 16.592 12.824L16.929 10.376C16.9827 9.98681 16.9524 9.59062 16.8401 9.21412C16.7279 8.83762 16.5362 8.48955 16.2781 8.19334C16.02 7.89714 15.7014 7.65968 15.3438 7.49696C14.9862 7.33423 14.5979 7.25002 14.205 7.25H12.611C12.5759 7.25005 12.5413 7.24273 12.5092 7.22851C12.4772 7.21429 12.4485 7.19349 12.425 7.16746C12.4015 7.14144 12.3838 7.11076 12.3729 7.07743C12.3621 7.0441 12.3584 7.00886 12.362 6.974L12.495 5.714C12.5376 5.30845 12.4945 4.89847 12.3685 4.51065C12.2424 4.12283 12.0363 3.76583 11.7634 3.46279C11.4906 3.15976 11.1571 2.91745 10.7845 2.75159C10.412 2.58573 10.0088 2.50001 9.601 2.5H9.237C8.737 2.5 8.309 2.857 8.22 3.349L8.165 3.652C7.93885 4.8887 7.25511 5.99481 6.25 6.75H4.25C3.56 6.75 3 7.31 3 8V13.5C3 14.19 3.56 14.75 4.25 14.75H6.595C6.919 14.75 7.239 14.82 7.533 14.955L7.84 15.095Z" :fill="review.isHelpful ? '#000' : '#303030'"/>
+          </svg>
+          Helpful (<span data-quickreview-review-helpful-count x-text="review.helpfulTotal || 0">0</span>)
+        </button>
+        {% comment %}
+          <div class="quickreview-review__report-divider">
+            <button type="button" class="quickreview-review__report" data-quickreview-review-report>Report</button>
+            </div>
+        {% endcomment %}
+      </div>
+    {% endif %}
   </div>
 </template>
 <p
