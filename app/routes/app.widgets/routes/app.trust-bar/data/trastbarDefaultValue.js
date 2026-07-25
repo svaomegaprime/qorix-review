@@ -1,24 +1,23 @@
-export const DEFAULT_COLORS = {
-    STAR_COLOR: "#F59E0B",
-    TEXT_COLOR: "#1A1A1A",
-    VERIFIED_BADGE_COLOR: "#088728"
+export const DEFAULT_TRUST_BAR_SETTINGS = {
+    // Colors
+    starColor: "#F59E0B",
+    textColor: "#1A1A1A",
+    verifiedBadgeColor: "#088728",
+    
+    // Typography
+    fontSize: 16,
+    starSize: 16,
+    fontWeight: "MEDIUM",
+    
+    // Contents
+    showAverageRating: true,
+    showReviewCount: true,
+    showVerifiedBadge: true,
+    reviewSource: "DEMO_REVIEW_SOURCE",
+    
+    // Visibility
+    hideIfNoReviews: true,
+    
+    // Custom CSS
+    advanceCss: ""
 };
-
-export const DEFAULT_TYPOGRAPHY = {
-    FONT_SIZE: 16,
-    STAR_SIZE: 16,
-    FONT_WEIGHT: "MEDIUM"
-};
-
-export const DEFAULT_CONTENTS = {
-    SHOW_AVERAGE_RATING: true,
-    SHOW_REVIEW_COUNT: true,
-    SHOW_VERIFIED_BADGE: true,
-    REVIEW_SOURCE: "DEMO_REVIEW_SOURCE"
-}
-
-export const DEFAULT_VISIBILITY = {
-    HIDE_IF_NO_REVIEWS: true
-}
-
-export const DEFAULT_ADVANCE_CSS = ``;
