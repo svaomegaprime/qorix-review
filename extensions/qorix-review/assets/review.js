@@ -14,7 +14,7 @@ class QuickReviewWidget {
 
     this.activeFilter = "ALL";
     this.activeSort = "MOST_RECENT";
-    this.filtersOpen = true;
+    this.filtersOpen = false;
     this.sortOpen = false;
     this.modalOpen = false;
     this.submitSuccess = false;
@@ -161,7 +161,13 @@ class QuickReviewWidget {
       this.totalPages = result.data?.totalPages ?? 1;
       this.totalReviews = result.data?.totalReviews ?? 0;
       this.averageRating = result.data?.averageRating.toFixed(1) ?? 0.0;
-      this.starCount = result.data?.ratingCounts ?? { 5: 0, 4: 0, 3: 0, 2: 0, 1: 0 };
+      this.starCount = result.data?.ratingCounts ?? {
+        5: 0,
+        4: 0,
+        3: 0,
+        2: 0,
+        1: 0,
+      };
       this.attachments = result.data?.attachments ?? [];
 
       console.log("GET Review:", result);

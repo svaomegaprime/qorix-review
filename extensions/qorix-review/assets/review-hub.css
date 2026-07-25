@@ -210,6 +210,9 @@
 
   z-index: 99;
 }
+.qr-sort-menu li.is-active{
+  background-color: var(--qr-color-bg-hover)
+}
 
 .qr-sort-dropdown.is-open .qr-sort-menu {
   opacity: 1;

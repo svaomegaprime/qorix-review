@@ -14,4 +14,5 @@ DROP COLUMN "isShowReviewerVideo",
 DROP COLUMN "isshowMediaImageAndVideo",
 ADD COLUMN     "isShowHelpfulButton" BOOLEAN NOT NULL DEFAULT true,
 ADD COLUMN     "isShowMediaThumbnails" BOOLEAN NOT NULL DEFAULT true,
-ADD COLUMN     "isShowStarRatingOnCard" BOOLEAN NOT NULL DEFAULT true;
+ADD COLUMN     "isShowStarRatingOnCard" BOOLEAN NOT NULL DEFAULT true,
+ALTER COLUMN "filterAndSorting" SET DEFAULT 'FILTER_AND_SORT';

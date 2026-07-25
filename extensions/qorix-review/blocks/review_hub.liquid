@@ -53,8 +53,8 @@
       {% render 'review-card' %}
     </div>
 
-    <div class="qr-load-more-wrap">
-      <button class="qr-load-more-btn" type="button">Load more reviews</button>
+    <div class="qr-load-more-wrap" x-show="hasMoreReviews()">
+      <button class="qr-load-more-btn" type="button" @click="loadMore()">Load more reviews</button>
     </div>
   </div>
   {% render 'lightbox' %}
