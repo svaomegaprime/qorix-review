@@ -1,9 +1,32 @@
 model TrustBarWidget {
-  id        String   @id @default(uuid()) @db.Uuid
-  storeId   String   @unique
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
-  store     Store    @relation(fields: [storeId], references: [storeGID], onDelete: Cascade)
+  id                    String   @id @default(uuid()) @db.Uuid
+  storeId               String   @unique
+  createdAt             DateTime @default(now())
+  updatedAt             DateTime @updatedAt
+  
+  // Colors
+  starColor             String   @default("#F59E0B")
+  textColor             String   @default("#1A1A1A")
+  verifiedBadgeColor    String   @default("#088728")
+  
+  // Typography
+  fontSize              Int      @default(16)
+  starSize              Int      @default(16)
+  fontWeight            String   @default("MEDIUM")
+  
+  // Contents
+  showAverageRating     Boolean  @default(true)
+  showReviewCount       Boolean  @default(true)
+  showVerifiedBadge     Boolean  @default(true)
+  reviewSource          String   @default("DEMO_REVIEW_SOURCE")
+  
+  // Visibility
+  hideIfNoReviews       Boolean  @default(true)
+  
+  // Custom CSS
+  advanceCss            String   @default("")
+  
+  store                 Store    @relation(fields: [storeId], references: [storeGID], onDelete: Cascade)
 }
 
 model QuickReviewWidget {
