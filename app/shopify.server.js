@@ -7,7 +7,16 @@ import {
 } from "@shopify/shopify-app-react-router/server";
 import { PrismaSessionStorage } from "@shopify/shopify-app-session-storage-prisma";
 import prisma from "./db.server";
-import { DEFAULT_ADMIN_NOTIFICATION, DEFAULT_BRANDING, DEFAULT_OUTGOING_REQUEST_EMAIL, DEFAULT_POST_REQUEST_EMAIL, DEFAULT_PUBLISHING_MODERATION, DEFAULT_REQUEST_SCHEDULING, DEFAULT_SMTP_SETUP, DEFAULT_WIDGET } from "./routes/app.settings/data/defaultData";
+import {
+  DEFAULT_ADMIN_NOTIFICATION,
+  DEFAULT_BRANDING,
+  DEFAULT_OUTGOING_REQUEST_EMAIL,
+  DEFAULT_POST_REQUEST_EMAIL,
+  DEFAULT_PUBLISHING_MODERATION,
+  DEFAULT_REQUEST_SCHEDULING,
+  DEFAULT_SMTP_SETUP,
+  DEFAULT_WIDGET,
+} from "./routes/app.settings/data/defaultData";
 import { DEFAULT_DB_FORMATED_DATA } from "./routes/app.widgets/routes/app.quick-review/data/defaultData";
 import { setAppMetafield } from "./utils/appMetafields.server";
 const GET_SHOP_BASIC_INFO = `#graphql
@@ -85,8 +94,7 @@ const shopify = shopifyApp({
           return;
         }
 
-  
-
+        //full store data send to the database for the first time and update if already exists
         await prisma.store.upsert({
           where: { storeGID: shopData.id },
           update: {
@@ -117,7 +125,7 @@ const shopify = shopifyApp({
                 ...DEFAULT_SMTP_SETUP,
                 ...DEFAULT_OUTGOING_REQUEST_EMAIL,
                 ...DEFAULT_POST_REQUEST_EMAIL,
-              }
+              },
             },
             publishingModeration: {
               create: DEFAULT_PUBLISHING_MODERATION,
@@ -126,11 +134,11 @@ const shopify = shopifyApp({
               create: DEFAULT_WIDGET,
             },
             brandingSettings: {
-              create: DEFAULT_BRANDING
+              create: DEFAULT_BRANDING,
             },
             adminNotification: {
-              create: DEFAULT_ADMIN_NOTIFICATION
-            }
+              create: DEFAULT_ADMIN_NOTIFICATION,
+            },
           },
           include: {
             requestScheduling: true,
@@ -138,21 +146,21 @@ const shopify = shopifyApp({
             publishingModeration: true,
             widgetsSettings: true,
             brandingSettings: true,
-            adminNotification: true
-          }
+            adminNotification: true,
+          },
         });
 
+        // all data is set in the database for the first time and update if already exists
         const quickReviewWidget = await prisma.quickReviewWidget.upsert({
           where: {
-            storeId: shopData.id
-            ,
+            storeId: shopData.id,
           },
           update: {},
           create: {
             ...DEFAULT_DB_FORMATED_DATA,
             storeId: shopData.id,
-          }
-        })
+          },
+        });
 
         const metafieldResult = await setAppMetafield(
           admin,
@@ -160,6 +168,23 @@ const shopify = shopifyApp({
           quickReviewWidget,
         );
 
+        // Quote Loop Widget data set in the database for the first time and update if already exists
+        const quoteLoopWidget = await prisma.quoteLoopWidget.upsert({
+          where: {
+            storeId: shopData.id,
+          },
+          update: {},
+          create: {
+            ...DEFAULT_DB_FORMATED_DATA,
+            storeId: shopData.id,
+          },
+        });
+
+        const metafieldResult1 = await setAppMetafield(
+          admin,
+          "quote_loop",
+          quoteLoopWidget,
+        );
       } catch (error) {
         console.error("afterAuth shop fetch failed:", error);
       }
