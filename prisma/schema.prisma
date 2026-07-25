@@ -37,6 +37,7 @@ model Store {
   order             Order[]
   quickReviewWidget QuickReviewWidget?
   quoteLoopWidget   QuoteLoopWidget?
+  reviewHubWidget   ReviewHubWidget?
   reviews           Review[]
   storeSettings     StoreSettings?
   subscription      Subscription?

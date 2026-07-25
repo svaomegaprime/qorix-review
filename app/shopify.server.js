@@ -19,6 +19,7 @@ import {
 } from "./routes/app.settings/data/defaultData";
 import { DEFAULT_DB_FORMATED_DATA } from "./routes/app.widgets/routes/app.quick-review/data/defaultData";
 import { setAppMetafield } from "./utils/appMetafields.server";
+import { DEFAULT_REVIEW_HUB_DB_DATA } from "./routes/app.widgets/routes/app.review-hub/data/defaultData";
 const GET_SHOP_BASIC_INFO = `#graphql
   query GetShopBasicInfo {
     shop {
@@ -110,7 +111,7 @@ const shopify = shopifyApp({
 
         // Full settings install ar sathe sathe update korte hobe
 
-        const storeSettings = await prisma.storeSettings.upsert({
+        await prisma.storeSettings.upsert({
           where: {
             storeId: shopData.id,
           },
@@ -162,29 +163,40 @@ const shopify = shopifyApp({
           },
         });
 
-        const metafieldResult = await setAppMetafield(
-          admin,
-          "quick_review",
-          quickReviewWidget,
-        );
+        await setAppMetafield(admin, "quick_review", quickReviewWidget);
 
         // Quote Loop Widget data set in the database for the first time and update if already exists
-        const quoteLoopWidget = await prisma.quoteLoopWidget.upsert({
+        // const quoteLoopWidget = await prisma.quoteLoopWidget.upsert({
+        //   where: {
+        //     storeId: shopData.id,
+        //   },
+        //   update: {},
+        //   create: {
+        //     ...DEFAULT_DB_FORMATED_DATA,
+        //     storeId: shopData.id,
+        //   },
+        // });
+
+        // const metafieldResult1 = await setAppMetafield(
+        //   admin,
+        //   "quote_loop",
+        //   quoteLoopWidget,
+        // );
+
+        // all data is set in the database for the first time and update if already exists
+        const reviewHubWidget = await prisma.reviewHubWidget.upsert({
           where: {
             storeId: shopData.id,
           },
           update: {},
           create: {
-            ...DEFAULT_DB_FORMATED_DATA,
+            ...DEFAULT_REVIEW_HUB_DB_DATA,
+
             storeId: shopData.id,
           },
         });
 
-        const metafieldResult1 = await setAppMetafield(
-          admin,
-          "quote_loop",
-          quoteLoopWidget,
-        );
+        await setAppMetafield(admin, "review_hub", reviewHubWidget);
       } catch (error) {
         console.error("afterAuth shop fetch failed:", error);
       }
