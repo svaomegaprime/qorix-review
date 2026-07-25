@@ -494,9 +494,9 @@ export default function Index() {
                         handleSettingChange("layout", e.target.value)
                       }
                     >
-                      <s-option value="2 column grid">2 column grid</s-option>
-                      <s-option value="3 column grid">3 column grid</s-option>
-                      <s-option value="4 column grid">4 column grid</s-option>
+                      <s-option value="2">2 column grid</s-option>
+                      <s-option value="3">3 column grid</s-option>
+                      <s-option value="4">4 column grid</s-option>
                     </s-select>
                   </s-stack>
 
@@ -513,12 +513,12 @@ export default function Index() {
                         handleSettingChange("filterSorting", e.target.value)
                       }
                     >
-                      <s-option value="Filter & sorting both">
+                      <s-option value="FILTER_AND_SORTING">
                         Filter & sorting both
                       </s-option>
-                      <s-option value="Filter only">Filter only</s-option>
-                      <s-option value="Sorting only">Sorting only</s-option>
-                      <s-option value="None">None</s-option>
+                      <s-option value="FILTER_ONLY">Filter only</s-option>
+                      <s-option value="SORTING_ONLY">Sorting only</s-option>
+                      <s-option value="NONE">None</s-option>
                     </s-select>
                   </s-stack>
 
@@ -532,15 +532,18 @@ export default function Index() {
                       label="Reviews per page"
                       value={settings.reviewsPerPage}
                       onChange={(e) =>
-                        handleSettingChange("reviewsPerPage", e.target.value)
+                        handleSettingChange(
+                          "reviewsPerPage",
+                          Number(e.target.value),
+                        )
                       }
                     >
-                      <s-option value="6 reviews">6 reviews</s-option>
-                      <s-option value="9 reviews">9 reviews</s-option>
-                      <s-option value="12 reviews">12 reviews</s-option>
-                      <s-option value="15 reviews">15 reviews</s-option>
-                      <s-option value="18 reviews">18 reviews</s-option>
-                      <s-option value="24 reviews">24 reviews</s-option>
+                      <s-option value="6">6 reviews</s-option>
+                      <s-option value="9">9 reviews</s-option>
+                      <s-option value="12">12 reviews</s-option>
+                      <s-option value="15">15 reviews</s-option>
+                      <s-option value="18">18 reviews</s-option>
+                      <s-option value="24">24 reviews</s-option>
                     </s-select>
                   </s-stack>
                 </s-stack>

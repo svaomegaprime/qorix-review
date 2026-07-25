@@ -1,13 +1,28 @@
-{%- assign full_stars = rating | round -%}
-
 <div class="qr-stars">
-  {%- for i in (1..5) -%}
+  <template x-for="star in 5" :key="star">
     <span class="qr-star-icon">
-      {%- if i <= full_stars -%}
+      <template x-if="star <= Math.floor(averageRating)">
         {% render 'icon', name: 'star', color: '#34C759' %}
-      {%- else -%}
+      </template>
+
+      <template x-if="star > Math.floor(averageRating)">
         {% render 'icon', name: 'star', color: '#E0E0E0' %}
-      {%- endif -%}
+      </template>
     </span>
-  {%- endfor -%}
+  </template>
 </div>
+{% comment %}
+  <div class="qr-stars">
+    {%- for i in (1..5) -%}
+      <span class="qr-star-icon">
+        <template x-for="">
+          {% render 'icon', name: 'star', color: '#34C759' %}
+        </template>
+        {%- if i <= full_stars -%}
+        {%- else -%}
+          {% render 'icon', name: 'star', color: '#E0E0E0' %}
+        {%- endif -%}
+      </span>
+    {%- endfor -%}
+  </div>
+{% endcomment %}

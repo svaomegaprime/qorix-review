@@ -116,8 +116,8 @@ model ReviewHubWidget {
 
   // Carousel behavior
   layout         String @default("3 column grid")
-  filterSorting  String @default("Filter & sorting both")
-  reviewsPerPage String @default("9 reviews")
+  filterSorting  String @default("FILTER_AND_SORTING")
+  reviewsPerPage Int    @default(6)
 
   // Colors
   starColor           String @default("#34C759")

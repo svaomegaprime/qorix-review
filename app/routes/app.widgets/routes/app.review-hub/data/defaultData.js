@@ -86,7 +86,7 @@ export const DEFAULT_REVIEW_HUB_DB_DATA = {
 
   // Carousel behavior
   layout: "3 column grid",
-  filterSorting: "Filter & sorting both",
+  filterSorting: "FILTER_AND_SORTING",
   reviewsPerPage: "9 reviews",
 
   // Colors
