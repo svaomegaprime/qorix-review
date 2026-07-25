@@ -13,7 +13,6 @@ export default function ReviewHubWidget({ settings, activeDevice }) {
   // reviewsPerPage: "9 reviews",
   // reviewStats: "Show review count & verified badge",
 
-   
   const {
     showStarDistribution,
     showReviewerName,
@@ -54,7 +53,8 @@ export default function ReviewHubWidget({ settings, activeDevice }) {
     "Most helpful",
   ];
   const visibleReviewCount =
-    Number.parseInt(String(reviewsPerPage || ""), 10) || reviewHubReviews.length;
+    Number.parseInt(String(reviewsPerPage || ""), 10) ||
+    reviewHubReviews.length;
   const visibleReviews = reviewHubReviews.slice(0, visibleReviewCount);
 
   return (
@@ -509,14 +509,13 @@ display: block;
       <div className="qr-reviews-container">
         <section className="qr-reviews-section">
           <ReaviewHeader activeDevice={activeDevice} settings={settings} />
-
           {/* -----------Filtering and Sorting----------- */}
           <div className="tb-container">
             {filterSorting !== "None" && (
               <div className="tb-top-row">
                 {/* FILTER */}
-                {(filterSorting === "Filter & sorting both" ||
-                  filterSorting === "Filter only") && (
+                {(filterSorting === "FILTER_AND_SORTING" ||
+                  filterSorting === "FILTER_ONLY") && (
                   <button
                     onClick={() => setIsFilterign(!isFilterign)}
                     className="tb-filter-main-btn"
@@ -548,8 +547,8 @@ display: block;
                 )}
 
                 {/* SORTING */}
-                {(filterSorting === "Filter & sorting both" ||
-                  filterSorting === "Sorting only") && (
+                {(filterSorting === "FILTER_AND_SORTING" ||
+                  filterSorting === "SORTING_ONLY") && (
                   <div className="tb-sort-wrapper">
                     <button
                       className="tb-sort-trigger"
@@ -601,20 +600,22 @@ display: block;
                     return (
                       <button
                         key={rate}
-                         style={{
-      padding: rate === "All" ? "7px 25px" : "3px 14px",
-    }}
+                        style={{
+                          padding: rate === "All" ? "7px 25px" : "3px 14px",
+                        }}
                         onClick={() => setActiveRating(rate)}
                         className={`tb-badge ${isActive ? "active-rating-green" : ""}`}
                       >
                         {rate}
                         {typeof rate === "number" && (
-
-                           <StarSVG
-                    STAR_COLOR={isActive ? FILTER_CHIP_COLOR_STAR_COLOR :  STAR_COLOR}
-                    size={24}
-                  />
-                         
+                          <StarSVG
+                            STAR_COLOR={
+                              isActive
+                                ? FILTER_CHIP_COLOR_STAR_COLOR
+                                : STAR_COLOR
+                            }
+                            size={24}
+                          />
                         )}
                       </button>
                     );
@@ -623,7 +624,6 @@ display: block;
               </div>
             )}
           </div>
-
           {/* Grid Layout */}
           <div className="qr-reviews-grid">
             {/* Card exactly matched with image_57bf9f.png */}
@@ -633,150 +633,167 @@ display: block;
               const extraMediaCount = Math.max(review.media.length - 2, 0);
 
               return (
-              <div className="qr-review-card" key={review.id}>
-                {/* Top Row: User Avatar & Meta */}
-                <div className="qr-reviewer-info">
-                  <img
-                    className="qr-reviewer-avatar"
-                    src={review.avatar}
-                    alt={review.name}
-                  />
-                  <div className="qr-reviewer-meta">
-                    <div className="qr-reviewer-name-row">
-                      {showReviewerName && (
-                        <span className="qr-reviewer-name">{review.name}</span>
-                      )}
-                      {showVerifiedBadge && (
-                        <span className="qr-verified-check">
-                          <svg
-                            width="16"
-                            height="16"
-                            viewBox="0 0 512 512"
-                            fill={`${VERIFIED_BADGE_COLOR}`}
-                          >
-                            <path d="M256 0C114.6 0 0 114.6 0 256s114.6 256 256 256s256-114.6 256-256S397.4 0 256 0zM371.1 204.1l-128 128c-6.3 6.3-16.4 6.3-22.6 0l-64-64c-6.3-6.3-6.3-16.4 0-22.6s16.4-6.3 22.6 0L232 297.4l116.5-116.5c6.3-6.3 16.4-6.3 22.6 0s6.3 16.4 0 22.6z" />
-                          </svg>
-                        </span>
+                <div className="qr-review-card" key={review.id}>
+                  {/* Top Row: User Avatar & Meta */}
+                  <div className="qr-reviewer-info">
+                    <img
+                      className="qr-reviewer-avatar"
+                      src={review.avatar}
+                      alt={review.name}
+                    />
+                    <div className="qr-reviewer-meta">
+                      <div className="qr-reviewer-name-row">
+                        {showReviewerName && (
+                          <span className="qr-reviewer-name">
+                            {review.name}
+                          </span>
+                        )}
+                        {showVerifiedBadge && (
+                          <span className="qr-verified-check">
+                            <svg
+                              width="16"
+                              height="16"
+                              viewBox="0 0 512 512"
+                              fill={`${VERIFIED_BADGE_COLOR}`}
+                            >
+                              <path d="M256 0C114.6 0 0 114.6 0 256s114.6 256 256 256s256-114.6 256-256S397.4 0 256 0zM371.1 204.1l-128 128c-6.3 6.3-16.4 6.3-22.6 0l-64-64c-6.3-6.3-6.3-16.4 0-22.6s16.4-6.3 22.6 0L232 297.4l116.5-116.5c6.3-6.3 16.4-6.3 22.6 0s6.3 16.4 0 22.6z" />
+                            </svg>
+                          </span>
+                        )}
+                      </div>
+                      {showReviewTimer && (
+                        <span className="qr-reviewer-time">{review.time}</span>
                       )}
                     </div>
-                    {showReviewTimer && (
-                      <span className="qr-reviewer-time">{review.time}</span>
+                  </div>
+
+                  {/* Stars Row */}
+                  {showStarDistribution && (
+                    <div className="qr-card-stars">
+                      {[...Array(5)].map((_, i) => (
+                        <svg
+                          key={i}
+                          width="16"
+                          height="15"
+                          viewBox="0 0 17 16"
+                          fill={i < review.rating ? `${STAR_COLOR}` : "#d6d6d6"}
+                        >
+                          <path d="M9.51964 0.855C8.97604 -0.285 7.35604 -0.285 6.81244 0.855L5.14444 4.3494L1.30564 4.8546C0.0552353 5.0202 -0.446365 6.561 0.469235 7.4298L3.27724 10.0962L2.57284 13.9026C2.34244 15.1434 3.65404 16.0962 4.76284 15.495L8.16604 13.647L11.5692 15.495C12.678 16.0962 13.9896 15.1434 13.7592 13.9026L13.0548 10.0962L15.8628 7.4298C16.7772 6.561 16.2768 5.0202 15.0264 4.8546L11.1864 4.3494L9.51964 0.855Z" />
+                        </svg>
+                      ))}
+                    </div>
+                  )}
+
+                  {/* Review Content Text */}
+                  <p className="qr-review-text">{review.review}</p>
+
+                  {/* Image Gallery Row */}
+                  {showMediaAsset && visibleMedia.length > 0 && (
+                    <div
+                      className={`qr-review-gallery ${
+                        visibleMedia.length === 1 ? "single-media" : ""
+                      }`}
+                    >
+                      {visibleMedia.map((media, mediaIndex) => (
+                        <div
+                          className="qr-gallery-item"
+                          key={`${review.id}-${mediaIndex}`}
+                        >
+                          <img
+                            className="qr-gallery-img"
+                            src={
+                              media.type === "video" ? media.thumb : media.url
+                            }
+                            alt={media.alt}
+                          />
+                          {media.type === "video" && (
+                            <span className="qr-gallery-play">
+                              <svg
+                                xmlns="http://www.w3.org/2000/svg"
+                                width="11"
+                                height="12"
+                                viewBox="0 0 11 12"
+                                fill="none"
+                              >
+                                <path
+                                  fill-rule="evenodd"
+                                  clip-rule="evenodd"
+                                  d="M9.65428 4.35495C10.767 4.99762 10.767 6.60332 9.65428 7.24504L2.50296 11.3737C1.39022 12.0164 0 11.2135 0 9.92916V1.67178C0 0.386447 1.39022 -0.416407 2.50296 0.226257L9.65428 4.35495ZM8.93915 6.00643C8.97538 5.9855 9.00547 5.95541 9.02639 5.91918C9.04731 5.88294 9.05832 5.84183 9.05832 5.79999C9.05832 5.75815 9.04731 5.71705 9.02639 5.68081C9.00547 5.64457 8.97538 5.61448 8.93915 5.59356L1.78783 1.46487C1.75156 1.44392 1.71041 1.43291 1.66852 1.43293C1.62664 1.43295 1.5855 1.44401 1.54925 1.46498C1.513 1.48596 1.48291 1.51612 1.46202 1.55242C1.44113 1.58873 1.43018 1.62989 1.43026 1.67178V9.92916C1.43035 9.97097 1.44142 10.012 1.46238 10.0482C1.48334 10.0844 1.51344 10.1144 1.54966 10.1352C1.58588 10.1561 1.62696 10.1671 1.66876 10.1671C1.71056 10.167 1.75163 10.156 1.78783 10.1351L8.93915 6.00643Z"
+                                  fill="#303030"
+                                />
+                              </svg>
+                            </span>
+                          )}
+                          {mediaIndex === 1 && extraMediaCount > 0 && (
+                            <div className="qr-gallery-overlay">
+                              +{extraMediaCount}
+                            </div>
+                          )}
+                        </div>
+                      ))}
+                    </div>
+                  )}
+
+                  {/* Product Tag Badge */}
+                  <div className="qr-product-tag">
+                    <span className="qr-product-icon">🧴</span>
+                    <span className="qr-product-name">
+                      {review.productName}
+                    </span>
+                  </div>
+
+                  {/* Bottom Footer Actions */}
+                  <div className="qr-card-footer">
+                    {showAppreciationOption && (
+                      <button className="qr-helpful-btn">
+                        <svg
+                          width="15"
+                          height="15"
+                          viewBox="0 0 24 24"
+                          fill="none"
+                          stroke="currentColor"
+                          strokeWidth="2"
+                          strokeLinecap="round"
+                          strokeLinejoin="round"
+                        >
+                          <path d="M14 9V5a3 3 0 0 0-3-3l-4 9v11h11.28a2 2 0 0 0 2-1.7l1.38-9a2 2 0 0 0-2-2.3zM7 22H4a2 2 0 0 1-2-2v-7a2 2 0 0 1 2-2h3" />
+                        </svg>
+                        Helpful ({review.helpfulCount})
+                      </button>
+                    )}
+
+                    {showShareOption && (
+                      <button className="qr-share-btn">
+                        <svg
+                          width="15"
+                          height="15"
+                          viewBox="0 0 24 24"
+                          fill="none"
+                          stroke="currentColor"
+                          strokeWidth="2"
+                          strokeLinecap="round"
+                          strokeLinejoin="round"
+                        >
+                          <circle cx="18" cy="5" r="3" />
+                          <circle cx="6" cy="12" r="3" />
+                          <circle cx="18" cy="19" r="3" />
+                          <line x1="8.59" y1="13.51" x2="15.42" y2="17.49" />
+                          <line x1="15.41" y1="6.51" x2="8.59" y2="10.49" />
+                        </svg>
+                        Share
+                      </button>
                     )}
                   </div>
                 </div>
-
-                {/* Stars Row */}
-                {showStarDistribution && (
-                  <div className="qr-card-stars">
-                    {[...Array(5)].map((_, i) => (
-                      <svg
-                        key={i}
-                        width="16"
-                        height="15"
-                        viewBox="0 0 17 16"
-                        fill={i < review.rating ? `${STAR_COLOR}` : "#d6d6d6"}
-                      >
-                        <path d="M9.51964 0.855C8.97604 -0.285 7.35604 -0.285 6.81244 0.855L5.14444 4.3494L1.30564 4.8546C0.0552353 5.0202 -0.446365 6.561 0.469235 7.4298L3.27724 10.0962L2.57284 13.9026C2.34244 15.1434 3.65404 16.0962 4.76284 15.495L8.16604 13.647L11.5692 15.495C12.678 16.0962 13.9896 15.1434 13.7592 13.9026L13.0548 10.0962L15.8628 7.4298C16.7772 6.561 16.2768 5.0202 15.0264 4.8546L11.1864 4.3494L9.51964 0.855Z" />
-                      </svg>
-                    ))}
-                  </div>
-                )}
-
-                {/* Review Content Text */}
-                <p className="qr-review-text">{review.review}</p>
-
-                {/* Image Gallery Row */}
-                {showMediaAsset && visibleMedia.length > 0 && (
-                  <div
-                    className={`qr-review-gallery ${
-                      visibleMedia.length === 1 ? "single-media" : ""
-                    }`}
-                  >
-                    {visibleMedia.map((media, mediaIndex) => (
-                      <div
-                        className="qr-gallery-item"
-                        key={`${review.id}-${mediaIndex}`}
-                      >
-                        <img
-                          className="qr-gallery-img"
-                          src={media.type === "video" ? media.thumb : media.url}
-                          alt={media.alt}
-                        />
-                        {media.type === "video" && (
-                          <span className="qr-gallery-play">
-                            <svg xmlns="http://www.w3.org/2000/svg" width="11" height="12" viewBox="0 0 11 12" fill="none">
-<path fill-rule="evenodd" clip-rule="evenodd" d="M9.65428 4.35495C10.767 4.99762 10.767 6.60332 9.65428 7.24504L2.50296 11.3737C1.39022 12.0164 0 11.2135 0 9.92916V1.67178C0 0.386447 1.39022 -0.416407 2.50296 0.226257L9.65428 4.35495ZM8.93915 6.00643C8.97538 5.9855 9.00547 5.95541 9.02639 5.91918C9.04731 5.88294 9.05832 5.84183 9.05832 5.79999C9.05832 5.75815 9.04731 5.71705 9.02639 5.68081C9.00547 5.64457 8.97538 5.61448 8.93915 5.59356L1.78783 1.46487C1.75156 1.44392 1.71041 1.43291 1.66852 1.43293C1.62664 1.43295 1.5855 1.44401 1.54925 1.46498C1.513 1.48596 1.48291 1.51612 1.46202 1.55242C1.44113 1.58873 1.43018 1.62989 1.43026 1.67178V9.92916C1.43035 9.97097 1.44142 10.012 1.46238 10.0482C1.48334 10.0844 1.51344 10.1144 1.54966 10.1352C1.58588 10.1561 1.62696 10.1671 1.66876 10.1671C1.71056 10.167 1.75163 10.156 1.78783 10.1351L8.93915 6.00643Z" fill="#303030"/>
-</svg>
-                          </span>
-                        )}
-                        {mediaIndex === 1 && extraMediaCount > 0 && (
-                          <div className="qr-gallery-overlay">
-                            +{extraMediaCount}
-                          </div>
-                        )}
-                      </div>
-                    ))}
-                  </div>
-                )}
-
-                {/* Product Tag Badge */}
-                <div className="qr-product-tag">
-                  <span className="qr-product-icon">🧴</span>
-                  <span className="qr-product-name">{review.productName}</span>
-                </div>
-
-                {/* Bottom Footer Actions */}
-                <div className="qr-card-footer">
-                  {showAppreciationOption && (
-                    <button className="qr-helpful-btn">
-                      <svg
-                        width="15"
-                        height="15"
-                        viewBox="0 0 24 24"
-                        fill="none"
-                        stroke="currentColor"
-                        strokeWidth="2"
-                        strokeLinecap="round"
-                        strokeLinejoin="round"
-                      >
-                        <path d="M14 9V5a3 3 0 0 0-3-3l-4 9v11h11.28a2 2 0 0 0 2-1.7l1.38-9a2 2 0 0 0-2-2.3zM7 22H4a2 2 0 0 1-2-2v-7a2 2 0 0 1 2-2h3" />
-                      </svg>
-                      Helpful ({review.helpfulCount})
-                    </button>
-                  )}
-
-                  {showShareOption && (
-                    <button className="qr-share-btn">
-                      <svg
-                        width="15"
-                        height="15"
-                        viewBox="0 0 24 24"
-                        fill="none"
-                        stroke="currentColor"
-                        strokeWidth="2"
-                        strokeLinecap="round"
-                        strokeLinejoin="round"
-                      >
-                        <circle cx="18" cy="5" r="3" />
-                        <circle cx="6" cy="12" r="3" />
-                        <circle cx="18" cy="19" r="3" />
-                        <line x1="8.59" y1="13.51" x2="15.42" y2="17.49" />
-                        <line x1="15.41" y1="6.51" x2="8.59" y2="10.49" />
-                      </svg>
-                      Share
-                    </button>
-                  )}
-                </div>
-              </div>
-            );
-          })}
-          </div>      <div>    <LodeMoreButton />  </div>        
-         
-        </section>   
-  
-
+              );
+            })}
+          </div>{" "}
+          <div>
+            {" "}
+            <LodeMoreButton />{" "}
+          </div>
+        </section>
       </div>
-   
     </>
   );
 }

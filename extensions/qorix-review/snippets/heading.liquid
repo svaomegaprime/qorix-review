@@ -14,7 +14,7 @@
       or review_hub_metafield.reviewStats == 'Show review count only'
     %}
       <div class="qr-rating-stars">
-        {% render 'stars' %}
+        {% render 'stars', from: 'heading' %}
       </div>
 
       <span class="qr-rating-score" x-text="averageRating">{{ display_rating }}</span>

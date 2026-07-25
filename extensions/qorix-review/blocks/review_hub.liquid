@@ -21,7 +21,7 @@
     data-video-upload="{{ allow_video | json }}"
   {% endcomment %}
   data-sort="{{ review_hub_metafield.filterSorting }}"
-  data-limit="{{ review_hub_metafield.reviewPerPage }}"
+  data-limit="{{ review_hub_metafield.reviewsPerPage }}"
   data-page-type="{{ template.name }}"
 >
   {% if review_hub_metafield.showHeader %}
@@ -35,10 +35,11 @@
   {% endif %}
 
   <div class="qr-reviews-section" ddd="{{review_hub_metafield}}">
-    {% render 'review-filters' %}
+    {% render 'review-filters', review_hub_metafield: review_hub_metafield %}
 
     <div class="qr-review-grid">
-      {%- for i in (1..6) -%}
+      {% comment %}
+        {%- for i in (1..6) -%}
         {%- assign img_count = 1 -%}
         {%- if i == 2 -%}{%- assign img_count = 4 -%}{%- endif -%}
         {%- if i == 5 -%}{%- assign img_count = 4 -%}{%- endif -%}
@@ -47,21 +48,9 @@
         {%- assign media_1_url = 'card_img.png' | asset_url -%}
         {%- assign media_2_type = 'image' -%}
         {%- assign media_2_url = 'card_img.png' | asset_url -%}
+      {% endcomment %}
 
-        {% render 'review-card',
-          reviewer_name: 'Hasan R.',
-          review_date: '2 days ago',
-          rating: 5,
-          review_text: 'Absolutely love the serum! My skin feels so smooth and hydrated.',
-          product_tag: 'Hydrating serum',
-          helpful_count: 24,
-          image_count: img_count,
-          media_1_type: media_1_type,
-          media_1_url: media_1_url,
-          media_2_type: media_2_type,
-          media_2_url: media_2_url
-        %}
-      {%- endfor -%}
+      {% render 'review-card' %}
     </div>
 
     <div class="qr-load-more-wrap">

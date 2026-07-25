@@ -249,6 +249,29 @@ class QuickReviewWidget {
       console.error(error);
     }
   }
+
+  async shareReview(review) {
+    const shareUrl = `${window.location.href.split("#")[0]}/products/${review.productHandle}`;
+    const shareData = {
+      title: document.title,
+      text: "Check out this review!",
+      url: shareUrl,
+    };
+    if (navigator.share) {
+      try {
+        await navigator.share(shareData);
+      } catch (err) {
+        console.log(err);
+      }
+    } else {
+      try {
+        await navigator.clipboard.writeText(shareUrl);
+        alert("Link copied to clipboard");
+      } catch (err) {
+        console.log(err);
+      }
+    }
+  }
   getRatingCounts() {
     const counts = { 5: 0, 4: 0, 3: 0, 2: 0, 1: 0 };
 

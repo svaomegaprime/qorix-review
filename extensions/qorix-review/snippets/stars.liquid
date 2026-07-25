@@ -1,11 +1,25 @@
 <div class="qr-stars">
   <template x-for="star in 5" :key="star">
     <span class="qr-star-icon">
-      <template x-if="star <= Math.floor(averageRating)">
+      <template
+        x-if="
+          star <= Math.floor(
+          {% if from == 'reviewHubCardStar' %}review.rating{% endif %}
+          {% if from == 'heading' %}averageRating{% endif %}
+          )
+        "
+      >
         {% render 'icon', name: 'star', color: '#34C759' %}
       </template>
 
-      <template x-if="star > Math.floor(averageRating)">
+      <template
+        x-if="
+          star > Math.floor(
+          {% if from == 'reviewHubCardStar' %}review.rating{% endif %}
+          {% if from == 'heading' %}averageRating{% endif %}
+          )
+        "
+      >
         {% render 'icon', name: 'star', color: '#E0E0E0' %}
       </template>
     </span>
