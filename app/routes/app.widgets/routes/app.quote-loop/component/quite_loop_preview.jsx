@@ -335,10 +335,10 @@ padding:41px;
 
 const ReviewCard = ({ review, isActive, settings }) => {
   const s  = settings;
-  const qc = s?.colors?.QUOTE_MARK_COLOR      || "#34C759";
-  const sc = s?.colors?.STAR_COLOR            || "#FF9500";
-  const tc = s?.colors?.TEXT_COLOR            || "#1A1A1A";
-  const bg = s?.colors?.Card_Background_Color || "#ffffff";
+  const qc = s?.colors?.QUOTE_MARK_COLOR      || s?.quoteMarkColor      || "#1D9E75";
+  const sc = s?.colors?.STAR_COLOR            || s?.starColor           || "#F59E0B";
+  const tc = s?.colors?.TEXT_COLOR            || s?.textColor           || "#303030";
+  const bg = s?.colors?.Card_Background_Color || s?.cardBackgroundColor || "#FFFFFF";
 
   return (
     <div

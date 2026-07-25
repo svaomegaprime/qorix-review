@@ -18,67 +18,12 @@ import { getStoreData } from "../../../../../utils/getStoreData";
 import { adminErrorResponse } from "../../../../../utils/adminError.server";
 import { useAdminFetcherToast } from "../../../../../utils/useAdminFetcherToast";
 import { setAppMetafield } from "../../../../../utils/appMetafields.server";
-
-const COLOR_PICKERS_ELEMENTS = [
-  {
-    key: "Card_Background_Color",
-    label: "Card background",
-  },
-  {
-    key: "TEXT_COLOR",
-    label: "Review text",
-  },
-  {
-    key: "QUOTE_MARK_COLOR",
-    label: "Quote mark and badge color",
-  },
-  {
-    key: "STAR_COLOR",
-    label: "Star color",
-  },
-];
-
-const DEFAULT_COLOR_VALUES = {
-  STAR_COLOR: "#F59E0B",
-  TEXT_COLOR: "#303030",
-  QUOTE_MARK_COLOR: "#1D9E75",
-  Card_Background_Color: "#FFFFFF",
-};
-
-const createDefaultSettings = () => ({
-  // Header option
-  showHeader: true,
-  headerStyle: "center",
-  eyebrowLabel: "CUSTOMER REVIEWS",
-  heading: "Reviews from people",
-  subheading: "Watch and hear what our customers have to say.",
-  reviewStats: "Show review count & verified badge",
-
-  // Display elements and loop behavior
-  showStarDistribution: true,
-  showReviewerName: true,
-  showQuoteMarkIcon: true,
-  showVerifiedBadge: true,
-  showMediaAsset: true,
-  showArrowControls: true,
-  showProductName: true,
-  autoSlider: false,
-  showAppreciationOption: true,
-  speed: 450,
-
-  filterSorting: "Filter & sorting both",
-  fiteringMinStart: "3 star and above",
-
-  quoteLoopWidgetSettings: {},
-
-  // color picker
-  colors: { ...DEFAULT_COLOR_VALUES },
-
-  // Typography
-  quoteFontSize: 24,
-  textLength: 160,
-  advanceCss: "",
-});
+import {
+  COLOR_PICKERS_ELEMENTS,
+  DEFAULT_COLOR_VALUES,
+  DEFAULT_QUOTE_LOOP_SETTINGS,
+  createDefaultSettings,
+} from "../data/quoteReviewDefault";
 
 const cloneSettings = (settings) => JSON.parse(JSON.stringify(settings));
 
