@@ -60,7 +60,7 @@
     ></video>
     <div
       class="qorix-review-video-stack-overlay"
-      style="position: absolute; bottom: 0; left: 0; right: 0; width: 100%; height: 60%; z-index: 50; pointer-events: none; transform: translateZ(10px); background: linear-gradient(180deg, rgba(0, 0, 0, 0) 30%, {{ overlay_tint_val }});"
+      style="position: absolute; bottom: 0; left: 0; right: 0; width: 100%; height: 60%; z-index: 50; pointer-events: none; transform: translateZ(10px); background-image: linear-gradient(180deg, rgba(0, 0, 0, 0) 30%, {{ overlay_tint_val }});"
     ></div>
     <div class="qorix-review-video-stack-topbar" style="position: absolute; z-index: 100; transform: translateZ(20px);">
       {% if show_duration != false and show_duration != 'false' %}
@@ -76,7 +76,7 @@
     </div>
     <div
       class="qorix-review-video-stack-info"
-      style="position: absolute; bottom: 0; left: 0; right: 0; width: 100%; box-sizing: border-box; padding: 60px 16px 20px 16px; display: flex; flex-direction: column; gap: 8px; z-index: 100; transform: translateZ(20px); background: linear-gradient(180deg, rgba(0, 0, 0, 0) 0%, rgba(0, 0, 0, 0.6) 45%, rgba(0, 0, 0, 0.9) 100%);"
+      style="position: absolute; bottom: 0; left: 0; right: 0; width: 100%; box-sizing: border-box; padding: 107px 16px 20px 16px; display: flex; flex-direction: column; gap: 8px; z-index: 100; transform: translateZ(20px); background-image: linear-gradient(180deg, rgba(0, 0, 0, 0) 30%, {{ overlay_tint_val }});"
     >
       {% if show_star_dist != false and show_star_dist != 'false' %}
         <div class="qorix-review-video-stack-card-stars" aria-label="{{ rating | default: 5 }} stars">
