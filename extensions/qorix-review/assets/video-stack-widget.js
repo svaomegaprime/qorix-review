@@ -3,13 +3,28 @@
     const section = document.querySelector('[data-section="qorix-review-video-stack-widget"]');
     if (!section) return;
 
-    /* ── Read CSS custom properties (var() declarations) ── */
+    /* ── Parse metafield settings ── */
+    let metafieldData = {};
+    try {
+      const rawMeta = section.getAttribute('data-video-stack-metafield');
+      if (rawMeta) {
+        metafieldData = JSON.parse(rawMeta);
+      }
+    } catch (_e) {}
+
+    /* ── Read CSS custom properties & metafield settings ── */
     const computedStyle = getComputedStyle(section);
-    const navCols = parseInt(computedStyle.getPropertyValue('--nav-cols').trim()) || 5;
-    const autoplayEnabled = computedStyle.getPropertyValue('--autoplay-enabled').trim() === 'false';
-    const autoplaySpeed = parseInt(computedStyle.getPropertyValue('--autoplay-speed').trim()) || 3000;
-    const autoplayOnHover = computedStyle.getPropertyValue('--autoplay-on-hover').trim() === 'true';
-    const loopVideoSetting = computedStyle.getPropertyValue('--loop-video').trim() === 'true';
+    const navCols = metafieldData.thumbnailsShown
+      ? parseInt(metafieldData.thumbnailsShown, 10)
+      : (parseInt(computedStyle.getPropertyValue('--nav-cols').trim(), 10) || 5);
+    const autoplayEnabled = computedStyle.getPropertyValue('--autoplay-enabled').trim() === 'true';
+    const autoplaySpeed = parseInt(computedStyle.getPropertyValue('--autoplay-speed').trim(), 10) || 3000;
+    const autoplayOnHover = metafieldData.autoplayOnHover !== undefined
+      ? Boolean(metafieldData.autoplayOnHover)
+      : (computedStyle.getPropertyValue('--autoplay-on-hover').trim() === 'true');
+    const loopVideoSetting = metafieldData.showLoopVideo !== undefined
+      ? Boolean(metafieldData.showLoopVideo)
+      : (computedStyle.getPropertyValue('--loop-video').trim() === 'true');
 
     const stackSlides = Array.from(section.querySelectorAll('.qorix-review-video-stack-swiper-slide'));
     const paginationContainer = section.querySelector('.qorix-review-video-stack-custom-pagination');
@@ -188,6 +203,7 @@
     }
 
     function initPagination() {
+      if (!paginationContainer) return;
       paginationContainer.innerHTML = '';
       stackDots = [];
       for (let i = 0; i < stackSlides.length; i++) {
@@ -259,12 +275,16 @@
     }
 
     /* ── Nav arrow clicks ── */
-    stackPrev.addEventListener('click', function () {
-      goToVideo(activeVideoIndex - 1);
-    });
-    stackNext.addEventListener('click', function () {
-      goToVideo(activeVideoIndex + 1);
-    });
+    if (stackPrev) {
+      stackPrev.addEventListener('click', function () {
+        goToVideo(activeVideoIndex - 1);
+      });
+    }
+    if (stackNext) {
+      stackNext.addEventListener('click', function () {
+        goToVideo(activeVideoIndex + 1);
+      });
+    }
 
     /* ── Play/Pause video logic helper ── */
     function playVideo(video, playBtn) {

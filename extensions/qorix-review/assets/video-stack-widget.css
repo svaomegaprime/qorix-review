@@ -23,6 +23,13 @@
   padding: 80px 0;
 }
 
+/* ════════ HEADING CONTAINER ════════ */
+[data-section="qorix-review-video-stack-widget"] .qorix-review-video-stack-heading-container {
+  width: 90vw;
+  margin: 0 auto;
+  box-sizing: border-box;
+}
+
 /* ════════ CAROUSEL WRAPPER ════════ */
 [data-section="qorix-review-video-stack-widget"] .qorix-review-video-stack-carousel {
   width: 90vw;
@@ -384,6 +391,10 @@
 /* ── Responsive ── */
 
 @media (max-width: 768px) {
+  [data-section="qorix-review-video-stack-widget"] .qorix-review-video-stack-heading-container {
+    width: 95vw;
+  }
+
   [data-section="qorix-review-video-stack-widget"] .qorix-review-video-stack-swiper {
     --gap: var(--gap-between-cards-mobile, 10px);
     height: 450px;

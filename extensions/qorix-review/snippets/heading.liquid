@@ -3,7 +3,7 @@
 
 <div
   class="qr-heading-wrapper"
-  style="align-items:{% if position == 'left' %} flex-start; {% endif %} {% if position == 'center' %} center; {% endif %}"
+  style="align-items:{% if position == 'left' %} flex-start; text-align: left; {% elsif position == 'right' %} flex-end; text-align: right; {% else %} center; text-align: center; {% endif %}"
 >
   <p class="qr-heading-label">{{ label | default: 'Customer Reviews' }}</p>
   <h2 class="qr-heading-title">{{ title | default: 'What customers love about us' }}</h2>
