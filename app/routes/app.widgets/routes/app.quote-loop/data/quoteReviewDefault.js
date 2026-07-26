@@ -26,7 +26,7 @@ export const DEFAULT_COLOR_VALUES = {
 
 export const DEFAULT_QUOTE_LOOP_SETTINGS = {
   advanceCss: "",
-  autoSlider: false,
+  autoSlider: true,
   cardBackgroundColor: "#FFFFFF",
   eyebrowLabel: "CUSTOMER REVIEWS",
   filterSorting: "Filter & sorting both",

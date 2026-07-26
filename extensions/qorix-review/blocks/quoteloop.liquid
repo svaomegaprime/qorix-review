@@ -3,12 +3,8 @@
 
 {% assign quote_loop_metafield = app.metafields.qorix_review.quote_loop.value %}
 
-{% assign custom_css = quote_loop_metafield.advanceCss | default: quote_loop_metafield.advanceCSS %}
-{% if custom_css != blank %}
-  <style>
-    {{ custom_css }}
-  </style>
-{% endif %}
+{% render 'custom-css', css: quote_loop_metafield.advanceCss %}
+
 
 <div class="qr-quoteloop">
   {% if quote_loop_metafield.showHeader != blank %}
@@ -16,9 +12,9 @@
       label: quote_loop_metafield.eyebrowLabel,
       title: quote_loop_metafield.heading,
       subtitle: quote_loop_metafield.subheading,
-      rating: block.settings.rating,
-      review_count: block.settings.review_count,
-      headerStyle: quote_loop_metafield.headerStyle
+      position: quote_loop_metafield.headerStyle,
+      reviewStats: quote_loop_metafield.reviewStats,
+      starColor: quote_loop_metafield.starColor
     %}
   {% endif %}
 
