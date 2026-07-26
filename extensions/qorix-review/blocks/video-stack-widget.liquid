@@ -7,6 +7,9 @@
 
 <style>
   [data-section="qorix-review-video-stack-widget"] {
+    position: relative !important;
+    z-index: 1 !important;
+    isolation: isolate !important;
     --nav-cols: {{ video_stack_metafield.thumbnailsShown | default: block.settings.nav_cols | default: 5 }};
     --star-color: {{ video_stack_metafield.startColor | default: '#F59E0B' }};
     --active-dot-color: {{ video_stack_metafield.activeDotColor | default: '#34C759' }};
@@ -42,7 +45,7 @@
     display: flex !important;
     flex-direction: column !important;
     gap: 8px !important;
-    z-index: 100 !important;
+    z-index: 3 !important;
     transform: translateZ(20px) !important;
     background: linear-gradient(
       180deg,
@@ -52,7 +55,7 @@
     ) !important;
   }
   [data-section="qorix-review-video-stack-widget"] .qorix-review-video-stack-topbar {
-    z-index: 100 !important;
+    z-index: 3 !important;
     transform: translateZ(20px) !important;
   }
 </style>
