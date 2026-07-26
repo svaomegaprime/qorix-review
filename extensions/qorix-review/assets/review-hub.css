@@ -148,6 +148,17 @@
   font-size: 13px;
   cursor: pointer;
 }
+.qr-pill.qr-pill-active{
+  background-color: var(--filter-chip-color);
+
+}
+.qr-pill svg path {
+  fill: var(--star-color);
+
+}
+.qr-pill.qr-pill-active svg path{
+  fill: var(--filter-chio-star-color);
+}
 
 .qr-sort-dropdown {
   position: relative;
@@ -304,10 +315,10 @@
 }
 /* Review card */
 .qr-review-card {
-  border: 1px solid var(--qr-color-border-light);
+  border: 1px solid var(--border-color);
   border-radius: 16px;
   padding: 20px;
-  background: var(--qr-color-white);
+  background: var(--card-background-color);
 }
 .qr-review-header {
   display: var(--qr-review-header-display);
@@ -320,6 +331,18 @@
   height: 56px;
   border-radius: 50%;
   object-fit: cover;
+
+}
+span.qr-review-avatar {
+  width: 50px;
+  height: 50px;
+  border-radius: 50%;
+  object-fit: cover;
+  font-size: 24px;
+  background-color: #e2e2e2;
+  display: flex;
+  align-items: center;
+  justify-content: center;
 }
 .qr-review-name-row {
   display: var(--qr-review-name-row-display);
@@ -329,22 +352,23 @@
 .qr-review-name {
   font-weight: 500;
   font-size: 16px;
-  color: var(--qr-text-primary);
+  color: var(--text-color);
 }
 .qr-verified-icon {
-  color: var(--qr-color-primary);
+  background-color: var(--verified-badge-color);
   font-size: 12px;
+  border-radius: 50%;
 }
 .qr-review-date {
   font-size: 16px;
-  color: var(--qr-text-primary);
+  color: var(--text-color);
 }
 .qr-review-stars {
   margin-bottom: 8px;
 }
 .qr-review-text {
   font-size: 16px;
-  color: var(--qr-text-primary);
+  color: var(--text-color);
   margin: 0 0 16px;
   line-height: 1.5;
   min-height: 48px;

@@ -1,176 +1,123 @@
+{% render 'skeleton', type: 'card' %}
 <template x-for="review in filteredReviews()" :key="review.id">
-  <div class="qr-review-card">
+  <div class="qr-review-card" x-show="!loading">
     <div class="qr-review-header">
-      <img
-        src="{{ '' | asset_url }}"
-        alt="{{ reviewer_name }}"
-        class="qr-review-avatar"
-        width=""
-        height=""
-      >
-
-      <div class="qr-review-meta">
-        <div class="qr-review-name-row">
-          <span class="qr-review-name" x-text="review.reviewerName"></span>
-          <span class="qr-verified-icon">{% render 'icon', name: 'check' %}</span>
-        </div>
-        <span class="qr-review-date" x-text="timeAgo(review.createdAt)"></span>
-      </div>
-    </div>
-
-    <div class="qr-review-stars">
-      {% render 'stars', from: 'reviewHubCardStar' %}
-    </div>
-
-    <p class="qr-review-text" x-text="review.body"></p>
-
-    {% comment %}
-      <div class="qr-review-image-wrap qr-image-count-{{ image_count | at_most: 2 }}">
-        {%- if image_count == 1 -%}
-          {%- if media_1_type == 'video' and media_1_url != blank -%}
-            <video
-              class="qr-review-image qr-lightbox-trigger"
-              data-type="video"
-              data-src="{{ media_1_url }}"
-              muted
-              playsinline
-              preload="metadata"
-            ></video>
-          {%- elsif media_1_url != blank -%}
-            <img
-              src="{{ media_1_url }}"
-              alt="review image"
-              class="qr-review-image qr-lightbox-trigger"
-              data-type="image"
-              data-src="{{ media_1_url }}"
-              width=""
-              height=""
-            >
-          {%- endif -%}
-
-        {%- else -%}
-          <div class="qr-review-image-single">
-            {%- if media_1_type == 'video' -%}
-              <video
-                class="qr-lightbox-trigger"
-                data-type="video"
-                data-src="{{ media_1_url }}"
-                muted
-                playsinline
-                preload="metadata"
-              ></video>
-            {%- else -%}
-              <img
-                src="{{ media_1_url }}"
-                alt="review image"
-                class="qr-lightbox-trigger"
-                data-type="image"
-                data-src="{{ media_1_url }}"
-                width=""
-                height=""
-              >
-            {%- endif -%}
-          </div>
-
-          <div class="qr-review-image-single">
-            {%- if media_2_type == 'video' -%}
-              <video
-                class="qr-lightbox-trigger"
-                data-type="video"
-                data-src="{{ media_2_url }}"
-                muted
-                playsinline
-                preload="metadata"
-              ></video>
-            {%- else -%}
-              <img
-                src="{{ media_2_url }}"
-                alt="review image"
-                class="qr-lightbox-trigger"
-                data-type="image"
-                data-src="{{ media_2_url }}"
-                width=""
-                height=""
-              >
-            {%- endif -%}
-
-            {%- if image_count > 2 -%}
-              <span class="qr-review-image-count">+{{ image_count | minus: 2 }}</span>
-            {%- endif -%}
-          </div>
-        {%- endif -%}
-      </div>
-    {% endcomment %}
-    <div
-      class="qr-review-image-wrap"
-      :class="'qr-image-count-' + Math.min(review.attachments.length, 2)"
-    >
-      <!-- single media -->
-      <template x-if="review.attachments.length === 1 && review.attachments[0].type === 'VIDEO'">
-        <video
-          class="qr-review-image qr-lightbox-trigger"
-          data-type="video"
-          :data-src="review.attachments[0].url"
-          muted
-          playsinline
-          preload="metadata"
-        ></video>
-      </template>
-
-      <template x-if="review.attachments.length === 1 && review.attachments[0].type === 'IMAGE'">
+      {% if review_hub_metafield.reviewerImage %}
         <img
-          :src="review.attachments[0].url"
-          alt="review image"
-          class="qr-review-image qr-lightbox-trigger"
-          data-type="image"
-          :data-src="review.attachments[0].url"
+          src="{{ '' | asset_url }}"
+          alt="{{ reviewer_name }}"
+          class="qr-review-avatar"
           width=""
           height=""
         >
-      </template>
+      {% else %}
+        <span
+          class="qr-review-avatar"
+          x-show="true"
+          x-text="review.reviewerName[0].toUpperCase()"
+          style="font-size: 18px;"
+        ></span>
+      {% endif %}
 
-      <!-- multiple media (first 2) -->
-      {% comment %} <div class="qr-review-image-wraper"> {% endcomment %}
-      <template x-if="review.attachments.length > 1">
-        <template x-for="(attachment, index) in review.attachments.slice(0, 2)" :key="index">
-          <div class="qr-review-image-single">
-            <template x-if="attachment.type === 'VIDEO'">
-              <video
-                class="qr-lightbox-trigger"
-                data-type="video"
-                :data-src="attachment.url"
-                muted
-                playsinline
-                preload="metadata"
-              ></video>
-            </template>
-
-            <template x-if="attachment.type === 'IMAGE'">
-              <img
-                :src="attachment.url"
-                alt="review image"
-                class="qr-lightbox-trigger"
-                data-type="image"
-                :data-src="attachment.url"
-                width=""
-                height=""
-              >
-            </template>
-
-            <span
-              class="qr-review-image-count"
-              x-show="index === 1 && review.attachments.length > 2"
-              x-text="'+' + (review.attachments.length - 2)"
-            ></span>
-          </div>
-        </template>
-      </template>
-      <template x-if="review.attachments.length == 0">
-        <div style="height: 180px;"></div>
-      </template>
-
-      {% comment %} </div> {% endcomment %}
+      <div class="qr-review-meta">
+        <div class="qr-review-name-row">
+          {% if review_hub_metafield.showReviewerName %}
+            <span class="qr-review-name" x-text="review.reviewerName"></span>
+          {% endif %}
+          {% if review_hub_metafield.showVerifiedBadge %}
+            <span class="qr-verified-icon">{% render 'icon', name: 'check' %}</span>
+          {% endif %}
+        </div>
+        {% if review_hub_metafield.showReviewTimer %}
+          <span class="qr-review-date" x-text="timeAgo(review.createdAt)"></span>
+        {% endif %}
+      </div>
     </div>
+
+    {% if review_hub_metafield.showStarDistribution %}
+      <div class="qr-review-stars">
+        {% render 'stars',
+          from: 'reviewHubCardStar',
+          starColor: review_hub_metafield.starColor,
+          review_hub_metafield: review_hub_metafield
+        %}
+      </div>
+    {% endif %}
+
+    <p class="qr-review-text" x-text="review.body"></p>
+    {% if review_hub_metafield.showMediaAsset %}
+      <div
+        class="qr-review-image-wrap"
+        :class="'qr-image-count-' + Math.min(review.attachments.length, 2)"
+      >
+        <template x-if="review.attachments.length === 1 && review.attachments[0].type === 'VIDEO'">
+          <video
+            class="qr-review-image qr-lightbox-trigger"
+            :src="review.attachments[0].url + '#t=0.001'"
+            muted
+            playsinline
+            preload="metadata"
+            @click="openLightbox(review.attachments[0])"
+          ></video>
+        </template>
+
+        <template x-if="review.attachments.length === 1 && review.attachments[0].type === 'IMAGE'">
+          <img
+            :src="review.attachments[0].url"
+            alt="review image"
+            class="qr-review-image qr-lightbox-trigger"
+            data-type="image"
+            :data-src="review.attachments[0].url"
+            width=""
+            height=""
+            @click="openLightbox(review.attachments[0])"
+          >
+        </template>
+
+        <template x-if="review.attachments.length > 1">
+          <template x-for="(attachment, index) in review.attachments.slice(0, 2)" :key="index">
+            <div class="qr-review-image-single">
+              <template x-if="attachment.type === 'VIDEO'">
+                <video
+                  class="qr-lightbox-trigger"
+                  data-type="video"
+                  :src="attachment.url + '#t=0.001'"
+                  :data-src="attachment.url"
+                  muted
+                  playsinline
+                  preload="metadata"
+                  @click="showAllMedia = true"
+                ></video>
+              </template>
+
+              <template x-if="attachment.type === 'IMAGE'">
+                <img
+                  :src="attachment.url"
+                  alt="review image"
+                  class="qr-lightbox-trigger"
+                  data-type="image"
+                  :data-src="attachment.url"
+                  width=""
+                  height=""
+                  @click="showAllMedia = true"
+                >
+              </template>
+
+              <span
+                class="qr-review-image-count"
+                x-show="index === 1 && review.attachments.length > 2"
+                x-text="'+' + (review.attachments.length - 2)"
+              ></span>
+            </div>
+          </template>
+        </template>
+        <template x-if="review.attachments.length == 0">
+          <div style="height: 180px;"></div>
+        </template>
+      </div>
+    {% endif %}
+
+    {% render 'show-all-media-modal' %}
 
     <div class="qr-review-tag">
       <span class="qr-tag-icon" x-show="review.productImage"
@@ -181,27 +128,38 @@
         x-text="review.productTitle"
       ></span>
     </div>
+    {% if review_hub_metafield.showAppreciationOption or review_hub_metafield.showShareOption %}
+      <div class="qr-review-actions">
+        {% if review_hub_metafield.showAppreciationOption %}
+          <button
+            class="qr-helpful-btn"
+            type="button"
+            @click="helpfulToggle(review, '{{ customer.id }}', '{{ customer.email }}')"
+            :class="{ 'is-helpful': review.isHelpful }"
 
-    <div class="qr-review-actions">
-      <button
-        class="qr-helpful-btn"
-        type="button"
-        @click="helpfulToggle(review, '{{ customer.id }}', '{{ customer.email }}')"
-        :class="{ 'is-helpful': review.isHelpful }"
-
-        :aria-pressed="review.isHelpful ? 'true' : 'false'"
-      >
-        <span class="qr-thumb-icon">
-          {% render 'icon', name: 'thumbs-up' %}
-        </span>
-        Helpful (<span x-text="review.helpfulTotal || 0"></span>)
-      </button>
-      <button class="qr-share-btn" type="button" @click="shareReview(review)">
-        <span class="qr-share-icon">
-          {% render 'icon', name: 'share' %}
-        </span>
-        Share
-      </button>
-    </div>
+            :aria-pressed="review.isHelpful ? 'true' : 'false'"
+          >
+            <span class="qr-thumb-icon">
+              {% render 'icon', name: 'thumbs-up' %}
+            </span>
+            Helpful (<span x-text="review.helpfulTotal || 0"></span>)
+          </button>
+        {% endif %}
+        {% if review_hub_metafield.showShareOption %}
+          <button class="qr-share-btn" type="button" @click="shareReview(review)">
+            <span class="qr-share-icon">
+              {% render 'icon', name: 'share' %}
+            </span>
+            Share
+          </button>
+        {% endif %}
+      </div>
+    {% endif %}
   </div>
 </template>
+<p
+  x-show="filteredReviews().length === 0"
+  style="color: #888; font-size: 14px; padding: 20px 0"
+>
+  No reviews found.
+</p>

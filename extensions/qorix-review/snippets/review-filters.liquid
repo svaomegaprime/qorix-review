@@ -1,8 +1,8 @@
 <div class="qr-filters-bar">
   {% if review_hub_metafield.filterSorting == 'FILTER_AND_SORTING'
-    or review_hub_metafield.filterSorting == 'SORTING_ONLY'
+    or review_hub_metafield.filterSorting == 'FILTER_ONLY'
   %}
-    <button class="qr-filter-btn" type="button" @click="sortOpen = !sortOpen">
+    <button class="qr-filter-btn" type="button" @click="filtersOpen = !filtersOpen">
       <span class="qr-filter-icon">{% render 'icon', name: 'filter' %}</span>
       Filter
       <span>
@@ -13,10 +13,10 @@
     </button>
   {% endif %}
   {% if review_hub_metafield.filterSorting == 'FILTER_AND_SORTING'
-    or review_hub_metafield.filterSorting == 'FILTER_ONLY'
+    or review_hub_metafield.filterSorting == 'SORTING_ONLY'
   %}
     <div class="qr-sort-dropdown">
-      <button class="qr-sort-btn" @click="filtersOpen = !filtersOpen">
+      <button class="qr-sort-btn" @click="sortOpen = !sortOpen">
         <span class="qr-sort-btn-text">Sort by: <span x-text="activeSort"></span></span>
         <svg width="20" height="20" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg">
           <path fill-rule="evenodd" clip-rule="evenodd"
@@ -24,7 +24,7 @@
               fill="#4A4A4A" />
         </svg>
       </button>
-      <ul class="qr-sort-menu" x-show="filtersOpen">
+      <ul class="qr-sort-menu" x-show="sortOpen">
         <template x-for="option in sortOptions" :key="option.value">
           <li
             value="ALL"
@@ -41,21 +41,7 @@
 {% if review_hub_metafield.filterSorting == 'FILTER_AND_SORTING'
   or review_hub_metafield.filterSorting == 'SORTING_ONLY'
 %}
-  {% comment %}
-    <div class="qr-rating-filter" x-show="sortOpen">
-      <span class="qr-rating-label">Rating</span>
-      <div class="qr-rating-pills">
-        <button class="qr-pill" type="button">All</button>
-        {%- for i in (1..5) -%}
-          <button class="qr-pill{% if i == 4 %} qr-pill-active{% endif %}" type="button">
-            {{ i }}
-            {% render 'icon', name: 'star', color: '#FF9500' %}
-          </button>
-        {%- endfor -%}
-      </div>
-    </div>
-  {% endcomment %}
-  <div class="qr-rating-filter" x-show="sortOpen">
+  <div class="qr-rating-filter" x-show="filtersOpen">
     <span class="qr-rating-label">Rating</span>
     <div class="qr-rating-pills">
       <button
@@ -74,7 +60,7 @@
           @click="setRatingFilter(rating)"
         >
           <span x-text="rating"></span>
-          {%- render 'icon', name: 'star', color: '#FF9500' -%}
+          {%- render 'icon', name: 'star' -%}
         </button>
       </template>
     </div>

@@ -80,6 +80,110 @@
     margin-top: 8px;
   }
 
+  /* Card Skeleton */
+  .qr-skeleton-card-wrapper {
+    grid-column: 1 / -1;
+    display: grid;
+    grid-template-columns: repeat(var(--qr-grid-columns, 3), 1fr);
+    gap: 20px;
+    width: 100%;
+  }
+
+  @media (max-width: 1600px) {
+    .qr-skeleton-card-wrapper {
+      grid-template-columns: repeat(min(var(--qr-grid-columns, 3), 4), 1fr);
+    }
+  }
+
+  @media (max-width: 1279px) {
+    .qr-skeleton-card-wrapper {
+      grid-template-columns: repeat(min(var(--qr-grid-columns, 3), 3), 1fr);
+    }
+  }
+
+  @media (max-width: 991px) {
+    .qr-skeleton-card-wrapper {
+      grid-template-columns: repeat(2, 1fr);
+    }
+  }
+
+  @media (max-width: 575px) {
+    .qr-skeleton-card-wrapper {
+      grid-template-columns: 1fr;
+    }
+  }
+
+  .qr-skeleton-card {
+    display: flex;
+    flex-direction: column;
+    border: 1px solid #f0f0f0;
+    border-radius: 16px;
+    padding: 20px;
+    background: #ffffff;
+  }
+
+  .qr-skeleton-card .qr-skeleton-header {
+    margin-bottom: 20px;
+  }
+
+  .qr-skeleton-card .qr-skeleton-avatar {
+    width: 56px;
+    height: 56px;
+  }
+
+  .qr-skeleton-card .qr-skeleton-stars {
+    margin-bottom: 14px;
+  }
+
+  .qr-skeleton-card-text {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    margin-bottom: 16px;
+  }
+
+  .qr-skeleton-card-text .qr-skeleton-body:nth-child(2) {
+    width: 92%;
+  }
+
+  .qr-skeleton-card-text .qr-skeleton-body-short {
+    width: 70%;
+    margin-top: 0;
+  }
+
+  .qr-skeleton-card-image {
+    width: 100%;
+    height: 180px;
+    border-radius: 8px;
+    margin-bottom: 16px;
+  }
+
+  .qr-skeleton-card-tag {
+    width: 65%;
+    height: 32px;
+    border-radius: 16px;
+    margin: 2px 0 16px 0;
+  }
+
+  .qr-skeleton-card-actions {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    border-top: 1px solid #f3f4f6;
+    padding-top: 12px;
+    margin-top: auto;
+  }
+
+  .qr-skeleton-card-btn {
+    width: 90px;
+    height: 28px;
+    border-radius: 16px;
+  }
+
+  .qr-skeleton-card-actions .qr-skeleton-card-btn:last-child {
+    width: 70px;
+  }
+
   /* Shimmer Animation from Left to Right */
   .qr-shimmer {
     background: #f6f7f8;
