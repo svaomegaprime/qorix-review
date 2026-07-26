@@ -201,9 +201,6 @@
   box-shadow:
     0 4px 12px var(--qr-color-shadow-1),
     0 12px 24px var(--qr-color-shadow-1);
-
-  opacity: 0;
-  visibility: hidden;
   transform: translateY(0.8rem);
 
   transition:
@@ -347,6 +344,7 @@
   color: var(--qr-text-primary);
   margin: 0 0 16px;
   line-height: 1.5;
+  min-height: 48px;
 }
 .qr-review-image-wrap {
   position: relative;
@@ -381,6 +379,10 @@
   flex: 1;
   height: 180px;
 }
+.qr-review-image-wraper{
+  height: 180px;
+
+}
 .qr-review-image-single img {
   width: 100%;
   height: 100%;
@@ -402,6 +404,7 @@
   padding: 4px 16px 4px 8px;
   border-radius: 16px;
   background-color: var(--qr-color-bg-tag);
+  cursor: pointer;
 }
 .qr-review-actions {
   display: var(--qr-review-actions-display);

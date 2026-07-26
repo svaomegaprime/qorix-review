@@ -1,21 +1,36 @@
 {{ 'heading.css' | asset_url | stylesheet_tag }}
-{%- assign display_rating = rating | default: 4.9 -%}
+{%- assign display_rating = rating | default: 0.0 -%}
 
-<div class="qr-heading-wrapper" style="">
+<div
+  class="qr-heading-wrapper"
+  style="align-items:{% if position == 'left' %} flex-start; {% endif %} {% if position == 'center' %} center; {% endif %}"
+>
   <p class="qr-heading-label">{{ label | default: 'Customer Reviews' }}</p>
   <h2 class="qr-heading-title">{{ title | default: 'What customers love about us' }}</h2>
   <p class="qr-heading-subtitle">{{ subtitle | default: 'Watch and hear what our customers have to say.' }}</p>
 
   <div class="qr-rating-summary">
-    <div class="qr-rating-stars">
-      {% render 'stars', rating: display_rating %}
-    </div>
-    <span class="qr-rating-score">{{ display_rating }}</span>
-    <span class="qr-rating-count">({{ review_count | default: 2451 }} reviews)</span>
-    <span class="qr-rating-divider">|</span>
-    <span class="qr-verified-badge">
-      {% render 'icon', name: 'verified' %}
-      Verified reviews
-    </span>
+    {% if review_hub_metafield.reviewStats == 'Show review count & verified badge'
+      or review_hub_metafield.reviewStats == 'Show review count only'
+    %}
+      <div class="qr-rating-stars">
+        {% render 'stars', from: 'heading' %}
+      </div>
+
+      <span class="qr-rating-score" x-text="averageRating">{{ display_rating }}</span>
+      <span class="qr-rating-count">(<span x-text="totalReviews"></span> reviews)</span>
+    {% endif %}
+    {% if review_hub_metafield.reviewStats == 'Show review count & verified badge' %}
+      <span class="qr-rating-divider">|</span>
+    {% endif %}
+
+    {% if review_hub_metafield.reviewStats == 'Show review count & verified badge'
+      or review_hub_metafield.reviewStats == 'Show verified badge only'
+    %}
+      <span class="qr-verified-badge">
+        {% render 'icon', name: 'verified' %}
+        Verified reviews
+      </span>
+    {% endif -%}
   </div>
 </div>

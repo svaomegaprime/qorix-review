@@ -42,19 +42,19 @@ Route naming follows flat-routes conventions: dots (`app.widgets.foo`) map to `/
 
 ### Key files
 
-| File | Purpose |
-|---|---|
-| `app/shopify.server.js` | Shopify app init, auth, webhooks, `afterAuth` hook (creates Store + default Settings + QuickReviewWidget) |
-| `app/db.server.js` | Prisma client singleton (cached on `global` in dev) |
-| `app/routes.js` | Route config with dynamic per-group loading (see above) |
-| `prisma/schema.prisma` | Core DB schema (Session, Store, Subscription, enums) |
-| `prisma/models/*.prisma` | Extended schema: reviews, orders, settings, widgets |
-| `app/lib/s3/s3.config.js` | ZenexCloud S3 client |
-| `app/lib/redis/redis.js` | Redis connection for BullMQ |
-| `app/lib/bullmq/bullmq.worker.js` | Background worker for email scheduling/reminders |
-| `shopify.app.toml` | Shopify app config (scopes, webhooks, API version) |
-| `shopify.web.toml` | Web role config (predev/dev commands differ from `package.json`) |
-| `.graphqlrc.js` | GraphQL codegen config — outputs types to `app/types/` |
+| File                              | Purpose                                                                                                   |
+| --------------------------------- | --------------------------------------------------------------------------------------------------------- |
+| `app/shopify.server.js`           | Shopify app init, auth, webhooks, `afterAuth` hook (creates Store + default Settings + QuickReviewWidget) |
+| `app/db.server.js`                | Prisma client singleton (cached on `global` in dev)                                                       |
+| `app/routes.js`                   | Route config with dynamic per-group loading (see above)                                                   |
+| `prisma/schema.prisma`            | Core DB schema (Session, Store, Subscription, enums)                                                      |
+| `prisma/models/*.prisma`          | Extended schema: reviews, orders, settings, widgets                                                       |
+| `app/lib/s3/s3.config.js`         | ZenexCloud S3 client                                                                                      |
+| `app/lib/redis/redis.js`          | Redis connection for BullMQ                                                                               |
+| `app/lib/bullmq/bullmq.worker.js` | Background worker for email scheduling/reminders                                                          |
+| `shopify.app.toml`                | Shopify app config (scopes, webhooks, API version)                                                        |
+| `shopify.web.toml`                | Web role config (predev/dev commands differ from `package.json`)                                          |
+| `.graphqlrc.js`                   | GraphQL codegen config — outputs types to `app/types/`                                                    |
 
 ## Conventions
 
