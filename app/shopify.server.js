@@ -23,7 +23,7 @@ import { DEFAULT_VIDEO_STACK_SETTINGS } from "./routes/app.widgets/routes/app.vi
 
 import { DEFAULT_DB_FORMATED_DATA } from "./routes/app.widgets/routes/app.quick-review/data/defaultData";
 import { setAppMetafield } from "./utils/appMetafields.server";
-import { DEFAULT_REVIEW_HUB_DB_DATA } from "./routes/app.widgets/routes/app.review-hub/data/defaultData";
+import { DEFAULT_REVIEW_HUB_DATA } from "./routes/app.widgets/routes/app.review-hub/data/defaultData";
 const GET_SHOP_BASIC_INFO = `#graphql
   query GetShopBasicInfo {
     shop {
@@ -195,8 +195,8 @@ const shopify = shopifyApp({
         await setAppMetafield(admin, "quote_loop", quoteLoopWidget);
 
 
-// Video Stack Widget data set in the database for the first time and update if already exists
-         const videoStackWidget = await prisma.videoStackSettings.upsert({
+        // Video Stack Widget data set in the database for the first time and update if already exists
+        const videoStackWidget = await prisma.videoStackSettings.upsert({
           where: {
             storeId: shopData.id,
           },
@@ -206,9 +206,24 @@ const shopify = shopifyApp({
             storeId: shopData.id,
           },
         });
-       
 
-         await setAppMetafield(admin, "video_stack", videoStackWidget);
+
+        await setAppMetafield(admin, "video_stack", videoStackWidget);
+
+
+        const reviewHubWidgetData = await prisma.reviewHubWidget.upsert({
+          where: {
+            storeId: shopData.id,
+          },
+          update: {},
+          create: {
+            ...DEFAULT_REVIEW_HUB_DATA,
+            storeId: shopData.id,
+          },
+        });
+
+
+        await setAppMetafield(admin, "review_hub", reviewHubWidgetData)
 
 
       } catch (error) {
