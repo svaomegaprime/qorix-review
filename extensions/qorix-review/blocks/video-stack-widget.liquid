@@ -1,6 +1,10 @@
 {{ 'swiper-bundle.min.css' | asset_url | stylesheet_tag }}
 {{ 'video-stack-widget.css' | asset_url | stylesheet_tag }}
 
+{% assign video_stack_metafield = app.metafields.qorix_review.video_stack.value %}
+
+{% render 'custom-css', css: video_stack_metafield.advanceCss %}
+
 <style>
   [data-section="qorix-review-video-stack-widget"] {
     --nav-cols: {{ block.settings.nav_cols | default: 5 }};
@@ -46,14 +50,19 @@
   }
 </style>
 
-<section class="qorix-review-video-stack-section" data-section="qorix-review-video-stack-widget">
-  {% render 'heading',
-    label: block.settings.label,
-    title: block.settings.title,
-    subtitle: block.settings.subtitle,
-    rating: block.settings.rating,
-    review_count: block.settings.review_count
-  %}
+<section class="qorix-review-video-stack-section" data-section="qorix-review-video-stack-widget"
+  data-video-stack-metafield="{{ video_stack_metafield | json | escape }}"
+>
+  {% if video_stack_metafield.showHeader != false and video_stack_metafield.showHeader != 'false' %}
+    {% render 'heading',
+      label: video_stack_metafield.eyebrowLabel,
+      title: video_stack_metafield.heading,
+      subtitle: video_stack_metafield.subheading,
+      position: video_stack_metafield.headerStyle,
+      reviewStats: video_stack_metafield.reviewStats,
+      starColor: video_stack_metafield.startColor
+    %}
+  {% endif %}
 
   <!-- ════════ CAROUSEL ════════ -->
   <div class="qorix-review-video-stack-carousel">
