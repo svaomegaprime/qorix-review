@@ -4,8 +4,8 @@ import ReaviewHeader from "../../../components/elements/WidgetsHeader";
 // ── SVG helpers ───────────────────────────────────────────────────────────────
 
 const StarOrange = ({ startColor }) => (
-  <svg xmlns="http://www.w3.org/2000/svg" width="17" height="16" viewBox="0 0 17 16" fill={startColor}>
-    <path d="M9.51964 0.855C8.97604 -0.285 7.35604 -0.285 6.81244 0.855L5.14444 4.3494L1.30564 4.8546C0.0552353 5.0202 -0.446365 6.561 0.469235 7.4298L3.27724 10.0962L2.57284 13.9026C2.34244 15.1434 3.65404 16.0962 4.76284 15.495L8.16604 13.647L11.5692 15.495C12.678 16.0962 13.9896 15.1434 13.7592 13.9026L13.0548 10.0962L15.8628 7.4298C16.7772 6.561 16.2768 5.0202 15.0264 4.8546L11.1864 4.3494L9.51964 0.855Z" fill="#FF9500"/>
+  <svg xmlns="http://www.w3.org/2000/svg" width="17" height="16" viewBox="0 0 17 16">
+    <path d="M9.51964 0.855C8.97604 -0.285 7.35604 -0.285 6.81244 0.855L5.14444 4.3494L1.30564 4.8546C0.0552353 5.0202 -0.446365 6.561 0.469235 7.4298L3.27724 10.0962L2.57284 13.9026C2.34244 15.1434 3.65404 16.0962 4.76284 15.495L8.16604 13.647L11.5692 15.495C12.678 16.0962 13.9896 15.1434 13.7592 13.9026L13.0548 10.0962L15.8628 7.4298C16.7772 6.561 16.2768 5.0202 15.0264 4.8546L11.1864 4.3494L9.51964 0.855Z" fill={startColor || "#FF9500"} />
   </svg>
 );
 
@@ -42,11 +42,11 @@ const ChevronRight = () => (
 // ── Review data ───────────────────────────────────────────────────────────────
 
 const REVIEWS = [
-  { id: 1, quote: "The quality is outstanding and the attention to detail is incredible. I'll definitely be buying again.", name: "Hasan R.",   product: "Vitamin C Serum", avatar: "https://i.pravatar.cc/56?img=11" },
-  { id: 2, quote: "Fast shipping and beautiful packaging. My skin is glowing after just two weeks!",                      name: "Raju Ahmed", product: "Vitamin C Serum", avatar: "https://i.pravatar.cc/56?img=22" },
-  { id: 3, quote: "Amazing product! The serum feels great on my skin and the customer service is top notch.",            name: "Emily Chen", product: "Vitamin C Serum", avatar: "https://i.pravatar.cc/56?img=47" },
-  { id: 4, quote: "Absolutely love this. My skin feels smoother and more radiant than ever before.",                     name: "Sarah M.",   product: "Vitamin C Serum", avatar: "https://i.pravatar.cc/56?img=32" },
-  { id: 5, quote: "High quality and amazing results. Would definitely recommend to anyone!",                             name: "James K.",   product: "Vitamin C Serum", avatar: "https://i.pravatar.cc/56?img=60" },
+  { id: 1, quote: "The quality is outstanding and the attention to detail is incredible. I'll definitely be buying again.", name: "Hasan R.", product: "Vitamin C Serum", avatar: "https://i.pravatar.cc/56?img=11" },
+  { id: 2, quote: "Fast shipping and beautiful packaging. My skin is glowing after just two weeks!", name: "Raju Ahmed", product: "Vitamin C Serum", avatar: "https://i.pravatar.cc/56?img=22" },
+  { id: 3, quote: "Amazing product! The serum feels great on my skin and the customer service is top notch.", name: "Emily Chen", product: "Vitamin C Serum", avatar: "https://i.pravatar.cc/56?img=47" },
+  { id: 4, quote: "Absolutely love this. My skin feels smoother and more radiant than ever before.", name: "Sarah M.", product: "Vitamin C Serum", avatar: "https://i.pravatar.cc/56?img=32" },
+  { id: 5, quote: "High quality and amazing results. Would definitely recommend to anyone!", name: "James K.", product: "Vitamin C Serum", avatar: "https://i.pravatar.cc/56?img=60" },
 ];
 
 // ── Card sizes / layout math ─────────────────────────────────────────────────
@@ -55,17 +55,17 @@ const REVIEWS = [
 // card is keyed by review.id so it animates continuously, never "swaps".)
 
 const ACTIVE_W = 450;
-const SIDE_W   = 360;
+const SIDE_W = 360;
 const ACTIVE_H = 573;
 const CARD_GAP = 24;
 
 const SIDE_SCALE = SIDE_W / ACTIVE_W; // ≈ 0.8
 
 const ACTIVE_HALF = ACTIVE_W / 2;
-const SIDE_HALF   = SIDE_W / 2;
+const SIDE_HALF = SIDE_W / 2;
 
 const STEP_CENTER_TO_SIDE = ACTIVE_HALF + SIDE_HALF + CARD_GAP; // center ↔ ±1
-const STEP_SIDE_TO_SIDE   = SIDE_HALF + SIDE_HALF + CARD_GAP;   // ±1 ↔ ±2
+const STEP_SIDE_TO_SIDE = SIDE_HALF + SIDE_HALF + CARD_GAP;   // ±1 ↔ ±2
 
 function offsetForPos(pos) {
   const n = Math.abs(pos);
@@ -334,11 +334,12 @@ padding:41px;
 // ── ReviewCard ────────────────────────────────────────────────────────────────
 
 const ReviewCard = ({ review, isActive, settings }) => {
-  const s  = settings;
-  const qc = s?.colors?.QUOTE_MARK_COLOR      || "#34C759";
-  const sc = s?.colors?.STAR_COLOR            || "#FF9500";
-  const tc = s?.colors?.TEXT_COLOR            || "#1A1A1A";
-  const bg = s?.colors?.Card_Background_Color || "#ffffff";
+  const s = settings;
+  const qc = s?.colors?.QUOTE_MARK_COLOR || s?.quoteMarkColor || "#1D9E75";
+  const sc = s?.colors?.STAR_COLOR || s?.starColor || "#F59E0B";
+  const tc = s?.colors?.TEXT_COLOR || s?.textColor || "#303030";
+  const bg = s?.colors?.Card_Background_Color || s?.cardBackgroundColor || "#FFFFFF";
+  const vc = s?.colors?.VERIFIED_BADGE_COLOR || s?.verifiedBadgeColor || s?.verifiedBageColor || qc;
 
   return (
     <div
@@ -357,16 +358,18 @@ const ReviewCard = ({ review, isActive, settings }) => {
 
       <div className="qrx-card-body">
         <div className="qrx-card-top">
-          {s?.showStarDistribution && (
-            <ul className="qrx-card-stars">
-              {[...Array(5)].map((_, i) => <li key={i}><StarOrange startColor={sc} /></li>)}
-            </ul>
-          )}
+
           <h3 className="qrx-card-quote">
             {review.quote?.length > s?.textLength
               ? review.quote.slice(0, s?.textLength) + "..."
               : review.quote}
           </h3>
+          <br></br>
+          {s?.showStarDistribution && (
+            <ul className="qrx-card-stars">
+              {[...Array(5)].map((_, i) => <li key={i}><StarOrange startColor={sc} /></li>)}
+            </ul>
+          )}
         </div>
 
         <div className="qrx-card-divider" />
@@ -379,7 +382,7 @@ const ReviewCard = ({ review, isActive, settings }) => {
             {s?.showReviewerName && (
               <p className="qrx-card-name">
                 {review.name}
-                {s?.showVerifiedBadge && <CheckBadge badgeColor={qc} />}
+                {s?.showVerifiedBadge && <CheckBadge badgeColor={vc} />}
               </p>
             )}
             {s?.showProductName && (
@@ -417,11 +420,11 @@ const Dots = ({ total, active }) => (
 // ── Main Component ────────────────────────────────────────────────────────────
 
 export default function ReviewCarousel({ reviews = REVIEWS, settings, activeDevice }) {
-  const s             = settings;
-  const total         = reviews.length;
-  const showArrows    = s?.showArrowControls !== false;
+  const s = settings;
+  const total = reviews.length;
+  const showArrows = s?.showArrowControls !== false;
   const autoplayDelay = s?.autoSlider ? 3000 : 0;
-  const speed         = s?.speed || 450; // shared duration for every card's transform
+  const speed = s?.speed || 450; // shared duration for every card's transform
 
   const [activeIndex, setActiveIndex] = useState(0);
   const lockRef = useRef(false); // simple click-lock while an animation is running
@@ -447,7 +450,7 @@ export default function ReviewCarousel({ reviews = REVIEWS, settings, activeDevi
     return () => clearInterval(id);
   }, [autoplayDelay, goNext]);
 
-  
+
 
   return (
     <>
@@ -463,9 +466,9 @@ export default function ReviewCarousel({ reviews = REVIEWS, settings, activeDevi
             {/* card viewport hides outgoing slides */}
             <div className="qrx-viewport">
               {reviews.map((review, index) => {
-                const pos      = relativePosition(index, activeIndex, total); // -2..2, continuous per card
+                const pos = relativePosition(index, activeIndex, total); // -2..2, continuous per card
                 const isActive = pos === 0;
-                const visible  = Math.abs(pos) <= 1; // only center + immediate neighbors shown
+                const visible = Math.abs(pos) <= 1; // only center + immediate neighbors shown
 
                 return (
                   <div

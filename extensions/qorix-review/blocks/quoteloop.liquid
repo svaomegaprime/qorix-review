@@ -1,0 +1,120 @@
+{{ 'swiper-bundle.min.css' | asset_url | stylesheet_tag }}
+{{ 'quoteloop.css' | asset_url | stylesheet_tag }}
+
+{% assign quote_loop_metafield = app.metafields.qorix_review.quote_loop.value %}
+
+{% render 'custom-css', css: quote_loop_metafield.advanceCss %}
+
+
+<div class="qr-quoteloop">
+  {% if quote_loop_metafield.showHeader != blank %}
+    {% render 'heading',
+      label: quote_loop_metafield.eyebrowLabel,
+      title: quote_loop_metafield.heading,
+      subtitle: quote_loop_metafield.subheading,
+      position: quote_loop_metafield.headerStyle,
+      reviewStats: quote_loop_metafield.reviewStats,
+      starColor: quote_loop_metafield.starColor
+    %}
+  {% endif %}
+
+  {% assign total_slides = 10 %}
+  <div
+    class="swiper qr-quote-swiper"
+    data-desktop-slides="{{ block.settings.desktop_cards  }}"
+    data-total-slides="{{ total_slides }}"
+    data-quote-loop-autoplay="{{ quote_loop_metafield.autoSlider }}"
+    data-quote-loop-speed="{{ quote_loop_metafield.speed }}"
+    data-quote-loop-metafield="{{ quote_loop_metafield }}"
+  >
+    <div class="swiper-wrapper">
+      {% for i in (1..5) %}
+        <div class="swiper-slide">
+          {% render 'quoteloop-review-card',
+            quote: "The quality is understanding and the attention to detail is incredible. I'll definitely be buying again",
+            rating: 5,
+            avatar: 'reviwer_img.png',
+            name: 'Hasan R.',
+            product: 'Vitamin C Serum',
+            verified: true,
+            cardBackgroundColor: quote_loop_metafield.cardBackgroundColor,
+            quoteIconColor: quote_loop_metafield.quoteMarkColor,
+            verifiedBadgeColor: quote_loop_metafield.verifiedBadgeColor,
+            verifiedBageColor: quote_loop_metafield.quoteMarkColor,
+            textColor: quote_loop_metafield.textColor,
+            starColor: quote_loop_metafield.starColor,
+            quoteFontSize: quote_loop_metafield.quoteFontSize,
+            showQuoteMarkIcon: quote_loop_metafield.showQuoteMarkIcon,
+            showReviewerName: quote_loop_metafield.showReviewerName,
+            showStarDistribution: quote_loop_metafield.showStarDistribution,
+            showVerifiedBadge: quote_loop_metafield.showVerifiedBadge,
+            showProductName: quote_loop_metafield.showProductName,
+            textLength: quote_loop_metafield.textLength,
+            showMediaAsset: quote_loop_metafield.showMediaAsset
+          %}
+        </div>
+      {% endfor %}
+
+      {% for i in (1..5) %}
+        <div class="swiper-slide">
+          {% render 'quoteloop-review-card',
+            quote: "The quality is understanding and the attention to detail is incredible. I'll definitely be buying again",
+            rating: 5,
+            avatar: 'reviwer_img.png',
+            name: 'Hasan R.',
+            product: 'Vitamin C Serum',
+            verified: true,
+            cardBackgroundColor: quote_loop_metafield.cardBackgroundColor,
+            quoteIconColor: quote_loop_metafield.quoteMarkColor,
+            verifiedBadgeColor: quote_loop_metafield.verifiedBadgeColor,
+            verifiedBageColor: quote_loop_metafield.quoteMarkColor,
+            textColor: quote_loop_metafield.textColor,
+            starColor: quote_loop_metafield.starColor,
+            quoteFontSize: quote_loop_metafield.quoteFontSize,
+            showQuoteMarkIcon: quote_loop_metafield.showQuoteMarkIcon,
+            showReviewerName: quote_loop_metafield.showReviewerName,
+            showStarDistribution: quote_loop_metafield.showStarDistribution,
+            showVerifiedBadge: quote_loop_metafield.showVerifiedBadge,
+            showProductName: quote_loop_metafield.showProductName,
+            textLength: quote_loop_metafield.textLength,
+            showMediaAsset: quote_loop_metafield.showMediaAsset
+          %}
+        </div>
+      {% endfor %}
+    </div>
+    <div class="swiper-pagination"></div>
+    {% if quote_loop_metafield.showArrowControls != false and quote_loop_metafield.showArrowControls != 'false' %}
+      <div class="swiper-button-prev">
+        <svg width="6" height="10" viewBox="0 0 6 10" fill="none" xmlns="http://www.w3.org/2000/svg">
+          <path fill-rule="evenodd" clip-rule="evenodd" d="M5.27851 9.27953C5.41896 9.13891 5.49785 8.94828 5.49785 8.74953C5.49785 8.55078 5.41896 8.36016 5.27851 8.21953L1.80851 4.74953L5.27851 1.27953C5.34811 1.20993 5.40332 1.1273 5.44099 1.03637C5.47866 0.945429 5.49805 0.847963 5.49805 0.749533C5.49805 0.651103 5.47866 0.553637 5.44099 0.462699C5.40332 0.371762 5.34811 0.289134 5.27851 0.219533C5.20891 0.149933 5.12629 0.0947223 5.03535 0.0570548C4.94441 0.0193872 4.84694 -7.3336e-10 4.74851 0C4.65008 7.33362e-10 4.55262 0.0193872 4.46168 0.0570548C4.37074 0.0947223 4.28811 0.149933 4.21851 0.219533L0.218514 4.21953C0.0780635 4.36016 -0.000826359 4.55078 -0.000826359 4.74953C-0.000826359 4.94828 0.0780635 5.13891 0.218514 5.27953L4.21851 9.27953C4.35914 9.41998 4.54976 9.49887 4.74851 9.49887C4.94726 9.49887 5.13789 9.41998 5.27851 9.27953Z" fill="#4A4A4A"/>
+        </svg>
+      </div>
+      <div class="swiper-button-next">
+        <svg width="6" height="10" viewBox="0 0 6 10" fill="none" xmlns="http://www.w3.org/2000/svg">
+          <path fill-rule="evenodd" clip-rule="evenodd" d="M0.219533 9.27953C0.0790825 9.13891 0.000193119 8.94828 0.000193119 8.74953C0.000193119 8.55078 0.0790825 8.36016 0.219533 8.21953L3.68953 4.74953L0.219533 1.27953C0.149932 1.20993 0.0947226 1.1273 0.057055 1.03637C0.0193874 0.945429 7.33361e-10 0.847963 0 0.749533C-7.33361e-10 0.651103 0.0193874 0.553637 0.057055 0.462699C0.0947226 0.371762 0.149932 0.289134 0.219533 0.219533C0.289134 0.149933 0.371762 0.0947223 0.462699 0.0570548C0.553637 0.0193872 0.651103 -7.3336e-10 0.749533 0C0.847963 7.33362e-10 0.945429 0.0193872 1.03637 0.0570548C1.1273 0.0947223 1.20993 0.149933 1.27953 0.219533L5.27953 4.21953C5.41998 4.36016 5.49887 4.55078 5.49887 4.74953C5.49887 4.94828 5.41998 5.13891 5.27953 5.27953L1.27953 9.27953C1.13891 9.41998 0.948284 9.49887 0.749533 9.49887C0.550783 9.49887 0.360158 9.41998 0.219533 9.27953Z" fill="#4A4A4A"/>
+        </svg>
+      </div>
+    {% endif %}
+  </div>
+</div>
+
+<script src="{{ 'swiper-bundle.min.js' | asset_url }}" defer="defer"></script>
+<script src="{{ 'quoteloop.js' | asset_url }}" defer="defer"></script>
+
+{% schema %}
+{
+  "name": "Quote Loop",
+  "target": "section",
+  "settings": [
+    {
+      "type": "range",
+      "id": "desktop_cards",
+      "min": 3,
+      "max": 5,
+      "step": 1,
+      "default": 3,
+      "label": "Cards to show (Desktop)"
+    }
+  ]
+}
+{% endschema %}

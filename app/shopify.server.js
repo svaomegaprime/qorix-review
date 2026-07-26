@@ -17,6 +17,13 @@ import {
   DEFAULT_SMTP_SETUP,
   DEFAULT_WIDGET,
 } from "./routes/app.settings/data/defaultData";
+
+import {
+ DEFAULT_QUOTE_LOOP_SETTINGS
+} from "./routes/app.widgets/routes/app.quote-loop/data/quoteReviewDefault";
+
+
+
 import { DEFAULT_DB_FORMATED_DATA } from "./routes/app.widgets/routes/app.quick-review/data/defaultData";
 import { setAppMetafield } from "./utils/appMetafields.server";
 import { DEFAULT_REVIEW_HUB_DB_DATA } from "./routes/app.widgets/routes/app.review-hub/data/defaultData";
@@ -190,11 +197,15 @@ const shopify = shopifyApp({
           },
           update: {},
           create: {
+            ...DEFAULT_QUOTE_LOOP_SETTINGS,
             ...DEFAULT_REVIEW_HUB_DB_DATA,
 
             storeId: shopData.id,
           },
         });
+
+       await setAppMetafield(admin, "quote_loop", quoteLoopWidget);
+
 
         await setAppMetafield(admin, "review_hub", reviewHubWidget);
       } catch (error) {
