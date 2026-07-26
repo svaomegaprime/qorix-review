@@ -18,11 +18,7 @@ import {
   DEFAULT_WIDGET,
 } from "./routes/app.settings/data/defaultData";
 
-import {
- DEFAULT_QUOTE_LOOP_SETTINGS
-} from "./routes/app.widgets/routes/app.quote-loop/data/quoteReviewDefault";
-
-
+import { DEFAULT_QUOTE_LOOP_SETTINGS } from "./routes/app.widgets/routes/app.quote-loop/data/quoteReviewDefault";
 
 import { DEFAULT_DB_FORMATED_DATA } from "./routes/app.widgets/routes/app.quick-review/data/defaultData";
 import { setAppMetafield } from "./utils/appMetafields.server";
@@ -172,42 +168,30 @@ const shopify = shopifyApp({
 
         await setAppMetafield(admin, "quick_review", quickReviewWidget);
 
-        // Quote Loop Widget data set in the database for the first time and update if already exists
-        // const quoteLoopWidget = await prisma.quoteLoopWidget.upsert({
-        //   where: {
-        //     storeId: shopData.id,
-        //   },
-        //   update: {},
-        //   create: {
-        //     ...DEFAULT_DB_FORMATED_DATA,
-        //     storeId: shopData.id,
-        //   },
-        // });
-
-        // const metafieldResult1 = await setAppMetafield(
-        //   admin,
-        //   "quote_loop",
-        //   quoteLoopWidget,
-        // );
-
-        // all data is set in the database for the first time and update if already exists
         const reviewHubWidget = await prisma.reviewHubWidget.upsert({
           where: {
             storeId: shopData.id,
           },
           update: {},
           create: {
-            ...DEFAULT_QUOTE_LOOP_SETTINGS,
             ...DEFAULT_REVIEW_HUB_DB_DATA,
-
             storeId: shopData.id,
           },
         });
-
-       await setAppMetafield(admin, "quote_loop", quoteLoopWidget);
-
-
         await setAppMetafield(admin, "review_hub", reviewHubWidget);
+
+        // Quote Loop Widget data set in the database for the first time and update if already exists
+        const quoteLoopWidget = await prisma.quoteLoopWidget.upsert({
+          where: {
+            storeId: shopData.id,
+          },
+          update: {},
+          create: {
+            ...DEFAULT_QUOTE_LOOP_SETTINGS,
+            storeId: shopData.id,
+          },
+        });
+        await setAppMetafield(admin, "quote_loop", quoteLoopWidget);
       } catch (error) {
         console.error("afterAuth shop fetch failed:", error);
       }
