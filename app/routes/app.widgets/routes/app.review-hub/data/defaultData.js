@@ -36,7 +36,7 @@ export const DEFAULT_COLOR_VALUES = {
   Card_Background_Color: "#FFFFFF",
   Border_Color: "#F0F0F0",
   FILTER_CHIP_COLOR: "#108848",
-  FILTER_CHIP_COLOR_STAR_COLOR: "#fff",
+  FILTER_CHIP_COLOR_STAR_COLOR: "#FFFFFF",
 };
 
 export const DEFAULT_REVIEW_HUB_DATA = {
@@ -90,13 +90,13 @@ export const DEFAULT_REVIEW_HUB_DB_DATA = {
   reviewsPerPage: 9,
 
   // Colors
-  starColor: "#34C759",
-  textColor: "#1A1A1A",
-  verifiedBadgeColor: "#1D9E75",
-  cardBackgroundColor: "#FFFFFF",
-  borderColor: "#F0F0F0",
-  filterChipColor: "#108848",
-  filterChipStarColor: "#FFFFFF",
+  starColor: DEFAULT_COLOR_VALUES.STAR_COLOR,
+  textColor: DEFAULT_COLOR_VALUES.TEXT_COLOR,
+  verifiedBadgeColor: DEFAULT_COLOR_VALUES.VERIFIED_BADGE_COLOR,
+  cardBackgroundColor: DEFAULT_COLOR_VALUES.Card_Background_Color,
+  borderColor: DEFAULT_COLOR_VALUES.Border_Color,
+  filterChipColor: DEFAULT_COLOR_VALUES.FILTER_CHIP_COLOR,
+  filterChipStarColor: DEFAULT_COLOR_VALUES.FILTER_CHIP_COLOR_STAR_COLOR,
 
   // Advanced CSS
   advanceCss: "",
