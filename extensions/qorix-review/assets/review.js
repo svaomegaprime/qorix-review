@@ -14,7 +14,7 @@ class QuickReviewWidget {
 
     this.activeFilter = "ALL";
     this.activeSort = "MOST_RECENT";
-    this.filtersOpen = true;
+    this.filtersOpen = false;
     this.sortOpen = false;
     this.modalOpen = false;
     this.submitSuccess = false;
@@ -83,6 +83,7 @@ class QuickReviewWidget {
     // otherwise remove references to this.$refs / this.$nextTick below.
     this.$refs = this.$refs || {};
     this.attachments = [];
+    this.showFirst = "";
   }
 
   initUploadSettings(el) {
@@ -93,6 +94,7 @@ class QuickReviewWidget {
       el.dataset.customerId || el.getAttribute("customerId") || "";
     this.customerEmail =
       el.dataset.customerEmail || el.getAttribute("customerEmail") || "";
+    this.showFirst = el.dataset.showFirst || el.getAttribute("showFirst") || "";
   }
 
   isAllowedMediaFile(file) {
@@ -154,14 +156,29 @@ class QuickReviewWidget {
         throw new Error(result.message || "Failed to fetch reviews");
       }
 
-      this.reviews = (result.data?.reviews || []).map((review) =>
-        this.withHelpfulState(review, customerEmail),
-      );
+      this.reviews = (result.data?.reviews || [])
+        .map((review) => this.withHelpfulState(review, customerEmail))
+        .sort((a, b) => {
+          if (this.showFirst !== "IMAGE_VIDEO") return 0;
+
+          const aHasAttachment = (a.attachments?.length || 0) > 0;
+          const bHasAttachment = (b.attachments?.length || 0) > 0;
+
+          if (aHasAttachment === bHasAttachment) return 0;
+
+          return aHasAttachment ? -1 : 1;
+        });
       this.currentPage = result.data?.currentPage ?? 1;
       this.totalPages = result.data?.totalPages ?? 1;
       this.totalReviews = result.data?.totalReviews ?? 0;
       this.averageRating = result.data?.averageRating.toFixed(1) ?? 0.0;
-      this.starCount = result.data?.ratingCounts ?? { 5: 0, 4: 0, 3: 0, 2: 0, 1: 0 };
+      this.starCount = result.data?.ratingCounts ?? {
+        5: 0,
+        4: 0,
+        3: 0,
+        2: 0,
+        1: 0,
+      };
       this.attachments = result.data?.attachments ?? [];
 
       console.log("GET Review:", result);

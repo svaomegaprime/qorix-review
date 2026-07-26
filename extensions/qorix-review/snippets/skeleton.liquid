@@ -1,26 +1,60 @@
 {{ 'skeleton.css' | asset_url | stylesheet_tag }}
 
-<div class="qr-skeleton-wrapper" x-show="loading">
-  {% for i in (1..2) %}
-    <div class="qr-skeleton-item">
-      <div class="qr-skeleton-header">
-        <div class="qr-skeleton-avatar qr-shimmer"></div>
-        <div class="qr-skeleton-meta">
-          <div class="qr-skeleton-name qr-shimmer"></div>
-          <div class="qr-skeleton-date qr-shimmer"></div>
+{% if type == 'card' %}
+  <div class="qr-skeleton-card-wrapper" x-show="loading">
+    {% for i in (1..6) %}
+      <div class="qr-skeleton-card">
+        <div class="qr-skeleton-header">
+          <div class="qr-skeleton-avatar qr-shimmer"></div>
+          <div class="qr-skeleton-meta">
+            <div class="qr-skeleton-name qr-shimmer"></div>
+            <div class="qr-skeleton-date qr-shimmer"></div>
+          </div>
+        </div>
+
+        <div class="qr-skeleton-stars qr-shimmer"></div>
+
+        <div class="qr-skeleton-card-text">
+          <div class="qr-skeleton-body qr-shimmer"></div>
+          <div class="qr-skeleton-body qr-shimmer"></div>
+          <div class="qr-skeleton-body-short qr-shimmer"></div>
+        </div>
+
+        <div class="qr-skeleton-card-image qr-shimmer"></div>
+
+        <div class="qr-skeleton-card-tag qr-shimmer"></div>
+
+        <div class="qr-skeleton-card-actions">
+          <div class="qr-skeleton-card-btn qr-shimmer"></div>
+          <div class="qr-skeleton-card-btn qr-shimmer"></div>
         </div>
       </div>
+    {% endfor %}
+  </div>
+{% endif %}
+{% if type == 'list' or type == blank %}
+  <div class="qr-skeleton-wrapper" x-show="loading">
+    {% for i in (1..2) %}
+      <div class="qr-skeleton-item">
+        <div class="qr-skeleton-header">
+          <div class="qr-skeleton-avatar qr-shimmer"></div>
+          <div class="qr-skeleton-meta">
+            <div class="qr-skeleton-name qr-shimmer"></div>
+            <div class="qr-skeleton-date qr-shimmer"></div>
+          </div>
+        </div>
 
-      <div class="qr-skeleton-stars qr-shimmer"></div>
+        <div class="qr-skeleton-stars qr-shimmer"></div>
 
-      <div class="qr-skeleton-title qr-shimmer"></div>
+        <div class="qr-skeleton-title qr-shimmer"></div>
 
-      <div>
-        <div class="qr-skeleton-body qr-shimmer"></div>
-        <div class="qr-skeleton-body-short qr-shimmer"></div>
+        <div>
+          <div class="qr-skeleton-body qr-shimmer"></div>
+          <div class="qr-skeleton-body-short qr-shimmer"></div>
+        </div>
+
+        <div class="qr-skeleton-button qr-shimmer"></div>
       </div>
-
-      <div class="qr-skeleton-button qr-shimmer"></div>
-    </div>
-  {% endfor %}
-</div>
+    {% endfor %}
+  </div>
+{% endif %}

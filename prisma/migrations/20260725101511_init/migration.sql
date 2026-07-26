@@ -71,6 +71,7 @@ CREATE TABLE "Review" (
     "reviewerName" TEXT,
     "reviewerEmail" TEXT,
     "reviewerPhone" TEXT,
+    "productImage" TEXT,
     "rating" INTEGER NOT NULL DEFAULT 0,
     "title" TEXT,
     "body" TEXT,
@@ -256,6 +257,18 @@ CREATE TABLE "TrustBarWidget" (
     "storeId" TEXT NOT NULL,
     "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
     "updatedAt" TIMESTAMP(3) NOT NULL,
+    "starColor" TEXT NOT NULL DEFAULT '#F59E0B',
+    "textColor" TEXT NOT NULL DEFAULT '#1A1A1A',
+    "verifiedBadgeColor" TEXT NOT NULL DEFAULT '#088728',
+    "fontSize" INTEGER NOT NULL DEFAULT 16,
+    "starSize" INTEGER NOT NULL DEFAULT 16,
+    "fontWeight" TEXT NOT NULL DEFAULT 'MEDIUM',
+    "showAverageRating" BOOLEAN NOT NULL DEFAULT true,
+    "showReviewCount" BOOLEAN NOT NULL DEFAULT true,
+    "showVerifiedBadge" BOOLEAN NOT NULL DEFAULT true,
+    "reviewSource" TEXT NOT NULL DEFAULT 'DEMO_REVIEW_SOURCE',
+    "hideIfNoReviews" BOOLEAN NOT NULL DEFAULT true,
+    "advanceCss" TEXT NOT NULL DEFAULT '',
 
     CONSTRAINT "TrustBarWidget_pkey" PRIMARY KEY ("id")
 );
@@ -306,11 +319,136 @@ CREATE TABLE "QuickReviewWidget" (
 CREATE TABLE "QuoteLoopWidget" (
     "id" UUID NOT NULL,
     "storeId" TEXT NOT NULL,
-    "settings" JSONB NOT NULL,
+    "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    "updatedAt" TIMESTAMP(3) NOT NULL,
+    "advanceCss" TEXT NOT NULL DEFAULT '',
+    "autoSlider" BOOLEAN NOT NULL DEFAULT false,
+    "cardBackgroundColor" TEXT NOT NULL DEFAULT '#FFFFFF',
+    "eyebrowLabel" TEXT NOT NULL DEFAULT 'CUSTOMER REVIEWS',
+    "filterSorting" TEXT NOT NULL DEFAULT 'Filter & sorting both',
+    "fiteringMinStart" TEXT NOT NULL DEFAULT '3 star and above',
+    "headerStyle" TEXT NOT NULL DEFAULT 'center',
+    "heading" TEXT NOT NULL DEFAULT 'Reviews from people',
+    "quoteFontSize" INTEGER NOT NULL DEFAULT 24,
+    "quoteMarkColor" TEXT NOT NULL DEFAULT '#1D9E75',
+    "reviewStats" TEXT NOT NULL DEFAULT 'Show review count & verified badge',
+    "showAppreciationOption" BOOLEAN NOT NULL DEFAULT true,
+    "showArrowControls" BOOLEAN NOT NULL DEFAULT true,
+    "showHeader" BOOLEAN NOT NULL DEFAULT true,
+    "showMediaAsset" BOOLEAN NOT NULL DEFAULT true,
+    "showProductName" BOOLEAN NOT NULL DEFAULT true,
+    "showQuoteMarkIcon" BOOLEAN NOT NULL DEFAULT true,
+    "showReviewerName" BOOLEAN NOT NULL DEFAULT true,
+    "showStarDistribution" BOOLEAN NOT NULL DEFAULT true,
+    "showVerifiedBadge" BOOLEAN NOT NULL DEFAULT true,
+    "speed" INTEGER NOT NULL DEFAULT 450,
+    "starColor" TEXT NOT NULL DEFAULT '#F59E0B',
+    "subheading" TEXT NOT NULL DEFAULT 'Watch and hear what our customers have to say.',
+    "textColor" TEXT NOT NULL DEFAULT '#303030',
+    "textLength" INTEGER NOT NULL DEFAULT 160,
+    "quoteLoopWidgetSettings" JSONB DEFAULT '{}',
+
+    CONSTRAINT "QuoteLoopWidget_pkey" PRIMARY KEY ("id")
+);
+
+-- CreateTable
+CREATE TABLE "VideoStackSettings" (
+    "id" TEXT NOT NULL,
+    "shop" TEXT NOT NULL,
+    "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    "updatedAt" TIMESTAMP(3) NOT NULL,
+    "showHeader" BOOLEAN NOT NULL DEFAULT true,
+    "headerStyle" TEXT NOT NULL DEFAULT 'center',
+    "eyebrowLabel" TEXT NOT NULL DEFAULT 'CUSTOMER REVIEWS',
+    "heading" TEXT NOT NULL DEFAULT 'Reviews from people',
+    "subheading" TEXT NOT NULL DEFAULT 'Watch and hear what our customers have to say.',
+    "reviewStats" TEXT NOT NULL DEFAULT 'Show review count & verified badge',
+    "showStarDistribution" BOOLEAN NOT NULL DEFAULT true,
+    "showReviewerName" BOOLEAN NOT NULL DEFAULT true,
+    "showReviewTextBelow" BOOLEAN NOT NULL DEFAULT true,
+    "showVerifiedBadge" BOOLEAN NOT NULL DEFAULT true,
+    "showVideoDuration" BOOLEAN NOT NULL DEFAULT true,
+    "showProductName" BOOLEAN NOT NULL DEFAULT true,
+    "showLoopVideo" BOOLEAN NOT NULL DEFAULT true,
+    "mutedByDefault" BOOLEAN NOT NULL DEFAULT true,
+    "autoplayOnHover" BOOLEAN NOT NULL DEFAULT true,
+    "showNavigationDots" BOOLEAN NOT NULL DEFAULT true,
+    "showArrowControls" BOOLEAN NOT NULL DEFAULT true,
+    "thumbnailsShown" INTEGER NOT NULL DEFAULT 5,
+    "fiteringMinStart" TEXT NOT NULL DEFAULT '3 star and above',
+    "startColor" TEXT NOT NULL DEFAULT '#F59E0B',
+    "activeDotColor" TEXT NOT NULL DEFAULT '#34C759',
+    "badgeColor" TEXT NOT NULL DEFAULT '#34C759',
+    "overlayTintColor" TEXT NOT NULL DEFAULT '#1A1A1A',
+    "advanceCss" TEXT NOT NULL DEFAULT '',
+
+    CONSTRAINT "VideoStackSettings_pkey" PRIMARY KEY ("id")
+);
+
+-- CreateTable
+CREATE TABLE "ReviewReelSettings" (
+    "id" TEXT NOT NULL,
+    "shop" TEXT NOT NULL,
+    "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    "updatedAt" TIMESTAMP(3) NOT NULL,
+    "showHeader" BOOLEAN NOT NULL DEFAULT true,
+    "headerStyle" TEXT NOT NULL DEFAULT 'center',
+    "eyebrowLabel" TEXT NOT NULL DEFAULT 'CUSTOMER REVIEWS',
+    "heading" TEXT NOT NULL DEFAULT 'Real reviews from real people',
+    "subheading" TEXT NOT NULL DEFAULT 'Watch and hear what our customers have to say.',
+    "reviewStats" TEXT NOT NULL DEFAULT 'Show review count & verified badge',
+    "showReviewerName" BOOLEAN NOT NULL DEFAULT true,
+    "showReviewImage" BOOLEAN NOT NULL DEFAULT true,
+    "showVerifiedBadge" BOOLEAN NOT NULL DEFAULT true,
+    "showProductName" BOOLEAN NOT NULL DEFAULT true,
+    "showReviewDate" BOOLEAN NOT NULL DEFAULT true,
+    "showAutoPlay" BOOLEAN NOT NULL DEFAULT true,
+    "showNavigationDots" BOOLEAN NOT NULL DEFAULT true,
+    "showArrowControls" BOOLEAN NOT NULL DEFAULT true,
+    "autoplaySpeed" INTEGER NOT NULL DEFAULT 4,
+    "cardsVisible" INTEGER NOT NULL DEFAULT 3,
+    "fiteringMinStart" TEXT NOT NULL DEFAULT '3 star and above',
+    "startColor" TEXT NOT NULL DEFAULT '#34C759',
+    "activeDotColor" TEXT NOT NULL DEFAULT '#34C759',
+    "cardBackgorud" TEXT NOT NULL DEFAULT '#FFF',
+    "cardTextColor" TEXT NOT NULL DEFAULT '#000',
+    "advanceCss" TEXT NOT NULL DEFAULT '',
+
+    CONSTRAINT "ReviewReelSettings_pkey" PRIMARY KEY ("id")
+);
+
+-- CreateTable
+CREATE TABLE "ReviewHubWidget" (
+    "id" UUID NOT NULL,
+    "storeId" TEXT NOT NULL,
+    "showHeader" BOOLEAN NOT NULL DEFAULT true,
+    "headerStyle" TEXT NOT NULL DEFAULT 'center',
+    "eyebrowLabel" TEXT NOT NULL DEFAULT 'CUSTOMER REVIEWS',
+    "heading" TEXT NOT NULL DEFAULT 'Reviews from people',
+    "subheading" TEXT NOT NULL DEFAULT 'Watch and hear what our customers have to say.',
+    "reviewStats" TEXT NOT NULL DEFAULT 'Show review count & verified badge',
+    "showStarDistribution" BOOLEAN NOT NULL DEFAULT true,
+    "showReviewerName" BOOLEAN NOT NULL DEFAULT true,
+    "showReviewTimer" BOOLEAN NOT NULL DEFAULT true,
+    "showVerifiedBadge" BOOLEAN NOT NULL DEFAULT true,
+    "showMediaAsset" BOOLEAN NOT NULL DEFAULT true,
+    "showShareOption" BOOLEAN NOT NULL DEFAULT true,
+    "showAppreciationOption" BOOLEAN NOT NULL DEFAULT true,
+    "layout" TEXT NOT NULL DEFAULT '3 column grid',
+    "filterSorting" TEXT NOT NULL DEFAULT 'FILTER_AND_SORTING',
+    "reviewsPerPage" INTEGER NOT NULL DEFAULT 6,
+    "starColor" TEXT NOT NULL DEFAULT '#34C759',
+    "textColor" TEXT NOT NULL DEFAULT '#1A1A1A',
+    "verifiedBadgeColor" TEXT NOT NULL DEFAULT '#1D9E75',
+    "cardBackgroundColor" TEXT NOT NULL DEFAULT '#FFFFFF',
+    "borderColor" TEXT NOT NULL DEFAULT '#F0F0F0',
+    "filterChipColor" TEXT NOT NULL DEFAULT '#108848',
+    "filterChipStarColor" TEXT NOT NULL DEFAULT '#FFFFFF',
+    "advanceCss" TEXT NOT NULL DEFAULT '',
     "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
     "updatedAt" TIMESTAMP(3) NOT NULL,
 
-    CONSTRAINT "QuoteLoopWidget_pkey" PRIMARY KEY ("id")
+    CONSTRAINT "ReviewHubWidget_pkey" PRIMARY KEY ("id")
 );
 
 -- CreateTable
@@ -429,6 +567,15 @@ CREATE UNIQUE INDEX "QuickReviewWidget_storeId_key" ON "QuickReviewWidget"("stor
 CREATE UNIQUE INDEX "QuoteLoopWidget_storeId_key" ON "QuoteLoopWidget"("storeId");
 
 -- CreateIndex
+CREATE UNIQUE INDEX "VideoStackSettings_shop_key" ON "VideoStackSettings"("shop");
+
+-- CreateIndex
+CREATE UNIQUE INDEX "ReviewReelSettings_shop_key" ON "ReviewReelSettings"("shop");
+
+-- CreateIndex
+CREATE UNIQUE INDEX "ReviewHubWidget_storeId_key" ON "ReviewHubWidget"("storeId");
+
+-- CreateIndex
 CREATE UNIQUE INDEX "Store_storeGID_key" ON "Store"("storeGID");
 
 -- CreateIndex
@@ -484,6 +631,9 @@ ALTER TABLE "QuickReviewWidget" ADD CONSTRAINT "QuickReviewWidget_storeId_fkey" 
 
 -- AddForeignKey
 ALTER TABLE "QuoteLoopWidget" ADD CONSTRAINT "QuoteLoopWidget_storeId_fkey" FOREIGN KEY ("storeId") REFERENCES "Store"("storeGID") ON DELETE CASCADE ON UPDATE CASCADE;
+
+-- AddForeignKey
+ALTER TABLE "ReviewHubWidget" ADD CONSTRAINT "ReviewHubWidget_storeId_fkey" FOREIGN KEY ("storeId") REFERENCES "Store"("storeGID") ON DELETE CASCADE ON UPDATE CASCADE;
 
 -- AddForeignKey
 ALTER TABLE "Subscription" ADD CONSTRAINT "Subscription_storeId_fkey" FOREIGN KEY ("storeId") REFERENCES "Store"("storeGID") ON DELETE CASCADE ON UPDATE CASCADE;

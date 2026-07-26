@@ -56,9 +56,9 @@ export const DEFAULT_REVIEW_HUB_DATA = {
   showShareOption: true,
   showAppreciationOption: true,
   // -------Carousel behavior
-  layout: "3 column grid",
-  filterSorting: "Filter & sorting both",
-  reviewsPerPage: "9 reviews",
+  layout: "3",
+  filterSorting: "FILTER_AND_SORTING",
+  reviewsPerPage: 9,
   // color piker
 
   colors: { ...DEFAULT_COLOR_VALUES },
@@ -85,9 +85,9 @@ export const DEFAULT_REVIEW_HUB_DB_DATA = {
   showAppreciationOption: true,
 
   // Carousel behavior
-  layout: "3 column grid",
+  layout: "3",
   filterSorting: "FILTER_AND_SORTING",
-  reviewsPerPage: "9 reviews",
+  reviewsPerPage: 9,
 
   // Colors
   starColor: "#34C759",
