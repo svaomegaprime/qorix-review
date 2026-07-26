@@ -19,6 +19,7 @@ import {
 } from "./routes/app.settings/data/defaultData";
 
 import { DEFAULT_QUOTE_LOOP_SETTINGS } from "./routes/app.widgets/routes/app.quote-loop/data/quoteReviewDefault";
+import { DEFAULT_VIDEO_STACK_SETTINGS } from "./routes/app.widgets/routes/app.video-stack/data/videoStackDefaultData";
 
 import { DEFAULT_DB_FORMATED_DATA } from "./routes/app.widgets/routes/app.quick-review/data/defaultData";
 import { setAppMetafield } from "./utils/appMetafields.server";
@@ -192,6 +193,24 @@ const shopify = shopifyApp({
           },
         });
         await setAppMetafield(admin, "quote_loop", quoteLoopWidget);
+
+
+// Video Stack Widget data set in the database for the first time and update if already exists
+         const videoStackWidget = await prisma.videoStackSettings.upsert({
+          where: {
+            storeId: shopData.id,
+          },
+          update: {},
+          create: {
+            ...DEFAULT_VIDEO_STACK_SETTINGS,
+            storeId: shopData.id,
+          },
+        });
+       
+
+         await setAppMetafield(admin, "video_stack", videoStackWidget);
+
+
       } catch (error) {
         console.error("afterAuth shop fetch failed:", error);
       }

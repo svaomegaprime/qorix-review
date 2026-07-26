@@ -1,0 +1,204 @@
+{{ 'swiper-bundle.min.css' | asset_url | stylesheet_tag }}
+{{ 'video-stack-widget.css' | asset_url | stylesheet_tag }}
+
+{% assign video_stack_metafield = app.metafields.qorix_review.video_stack.value %}
+
+{% render 'custom-css', css: video_stack_metafield.advanceCss %}
+
+<style>
+  [data-section="qorix-review-video-stack-widget"] {
+    position: relative !important;
+    z-index: 1 !important;
+    isolation: isolate !important;
+    --nav-cols: {{ video_stack_metafield.thumbnailsShown | default: block.settings.nav_cols | default: 5 }};
+    --star-color: {{ video_stack_metafield.startColor | default: '#F59E0B' }};
+    --active-dot-color: {{ video_stack_metafield.activeDotColor | default: '#34C759' }};
+    --badge-color: {{ video_stack_metafield.badgeColor | default: '#34C759' }};
+    --overlay-tint: {{ video_stack_metafield.overlayTintColor | default: '#1A1A1A' }};
+  }
+  [data-section="qorix-review-video-stack-widget"] .qorix-review-video-stack-dot.active {
+    background-color: var(--active-dot-color, #34C759) !important;
+  }
+  [data-section="qorix-review-video-stack-widget"] .qorix-review-video-stack-card {
+    position: relative !important;
+    overflow: hidden !important;
+    transform-style: preserve-3d !important;
+  }
+  [data-section="qorix-review-video-stack-widget"] .qorix-review-video-stack-bg {
+    position: absolute !important;
+    top: 0 !important;
+    left: 0 !important;
+    width: 100% !important;
+    height: 100% !important;
+    object-fit: cover !important;
+    z-index: 1 !important;
+    transform: translateZ(0) !important;
+  }
+  [data-section="qorix-review-video-stack-widget"] .qorix-review-video-stack-info {
+    position: absolute !important;
+    bottom: 0 !important;
+    left: 0 !important;
+    right: 0 !important;
+    width: 100% !important;
+    box-sizing: border-box !important;
+    padding: 107px 16px 20px 16px !important;
+    display: flex !important;
+    flex-direction: column !important;
+    gap: 8px !important;
+    z-index: 3 !important;
+    transform: translateZ(20px) !important;
+    background-image: linear-gradient(
+      180deg,
+      rgba(0, 0, 0, 0) 30%,
+      {{ video_stack_metafield.overlayTintColor | default: '#1A1A1A' }}
+    ) !important;
+  }
+  [data-section="qorix-review-video-stack-widget"] .qorix-review-video-stack-topbar {
+    z-index: 3 !important;
+    transform: translateZ(20px) !important;
+  }
+</style>
+
+<section class="qorix-review-video-stack-section" data-section="qorix-review-video-stack-widget"
+  data-video-stack-metafield="{{ video_stack_metafield | json | escape }}"
+>
+  {% if video_stack_metafield.showHeader != false and video_stack_metafield.showHeader != 'false' %}
+    <div class="qorix-review-video-stack-heading-container">
+      {% render 'heading',
+        label: video_stack_metafield.eyebrowLabel,
+        title: video_stack_metafield.heading,
+        subtitle: video_stack_metafield.subheading,
+        position: video_stack_metafield.headerStyle,
+        reviewStats: video_stack_metafield.reviewStats,
+        starColor: video_stack_metafield.startColor
+      %}
+    </div>
+  {% endif %}
+
+  <!-- ════════ CAROUSEL ════════ -->
+  <div class="qorix-review-video-stack-carousel">
+    <!-- Inner clip wrapper hides the outermost half-cards -->
+    <div class="qorix-review-video-stack-swiper-clip">
+      <div class="qorix-review-video-stack-swiper">
+        <div class="qorix-review-video-stack-swiper-wrapper">
+          {% render 'video-stack-widget-card',
+            video_src: 'https://www.pexels.com/download/video/7667953/',
+            rating: 5,
+            reviewer_name: 'Ava Rajib.',
+            verified: true,
+            review_quote: 'My skin has never felt better...',
+            loop_video: true
+          %}
+      {% render 'video-stack-widget-card',
+            video_src: 'https://www.pexels.com/download/video/7667953/',
+            rating: 5,
+            reviewer_name: 'Ava Rajib.',
+            verified: true,
+            review_quote: 'My skin has never felt better...',
+            loop_video: true
+          %}
+             
+          {% render 'video-stack-widget-card',
+            video_src: 'https://cdn.shopify.com/videos/c/o/v/2e6a9e6873fc4c1f9bd5eccc81d2f32d.mp4',
+            rating: 3,
+            reviewer_name: 'Ava adam.',
+            verified: true,
+            review_quote: 'My skin has never felt better. Love it!',
+            product_tag: 'Hydrating serum',
+            loop_video: true
+          %}
+               {% render 'video-stack-widget-card',
+            video_src: 'https://cdn.shopify.com/videos/c/o/v/2e6a9e6873fc4c1f9bd5eccc81d2f32d.mp4',
+            rating: 3,
+            reviewer_name: 'Ava adam.',
+            verified: true,
+            review_quote: 'My skin has never felt better. Love it!',
+            product_tag: 'Hydrating serum',
+            loop_video: true
+          %}
+               {% render 'video-stack-widget-card',
+            video_src: 'https://cdn.shopify.com/videos/c/o/v/2e6a9e6873fc4c1f9bd5eccc81d2f32d.mp4',
+            rating: 3,
+            reviewer_name: 'Ava adam.',
+            verified: true,
+            review_quote: 'My skin has never felt better. Love it!',
+            product_tag: 'Hydrating serum',
+            loop_video: true
+          %}
+          
+
+          {% render 'video-stack-widget-card',
+            video_src: 'https://www.pexels.com/download/video/7667953/',
+            rating: 5,
+            reviewer_name: 'Ava Rokeya.',
+            verified: true,
+            review_quote: 'My skin has never felt better. Love it!',
+            loop_video: true
+          %}
+
+          {% render 'video-stack-widget-card',
+            video_src: 'https://www.pexels.com/download/video/7667953/',
+            rating: 3,
+            reviewer_name: 'Ava Rajina.',
+            verified: true,
+            review_quote: 'My skin has never felt better. Love it!',
+            loop_video: true
+          %}
+
+          {% render 'video-stack-widget-card',
+            video_src: 'https://www.pexels.com/download/video/7667953/',
+            rating: 1,
+            reviewer_name: 'Ava Rubina.',
+            verified: true,
+            review_quote: 'My skin has never felt better...',
+            loop_video: true
+          %}
+        </div>
+        <!-- /.swiper-wrapper -->
+      </div>
+      <!-- /.swiper -->
+    </div>
+    <!-- /.qorix-review-video-stack-swiper-clip -->
+
+    {% if video_stack_metafield.showNavigationDots != false and video_stack_metafield.showNavigationDots != 'false' or video_stack_metafield.showArrowControls != false and video_stack_metafield.showArrowControls != 'false' %}
+      <div class="qorix-review-video-stack-controls">
+        {% if video_stack_metafield.showArrowControls != false and video_stack_metafield.showArrowControls != 'false' %}
+          <button class="qorix-review-video-stack-nav qorix-review-video-stack-nav-prev" aria-label="Previous slide">
+            <svg width="20" height="20" viewBox="0 0 20 20" fill="none">
+              <path fill-rule="evenodd" clip-rule="evenodd"
+                d="M12.2805 14.53C12.4209 14.3894 12.4998 14.1987 12.4998 14C12.4998 13.8012 12.4209 13.6106 12.2805 13.47L8.81047 10 12.2805 6.53C12.4209 6.3894 12.4998 6.1987 12.4998 6C12.4998 5.5858 12.1637 5.25 11.7505 5.25C11.5517 5.25 11.3611 5.3296 11.2205 5.47L7.22047 9.47C7.08002 9.6106 7.00113 9.8012 7.00113 10C7.00113 10.1987 7.08002 10.3894 7.22047 10.53L11.2205 14.53C11.3611 14.6704 11.5517 14.7493 11.7505 14.7493C11.9492 14.7493 12.1398 14.6704 12.2805 14.53Z"
+                fill="#4A4A4A" />
+            </svg>
+          </button>
+        {% endif %}
+
+        {% if video_stack_metafield.showNavigationDots != false and video_stack_metafield.showNavigationDots != 'false' %}
+          <div class="qorix-review-video-stack-custom-pagination"></div>
+        {% endif %}
+
+        {% if video_stack_metafield.showArrowControls != false and video_stack_metafield.showArrowControls != 'false' %}
+          <button class="qorix-review-video-stack-nav qorix-review-video-stack-nav-next" aria-label="Next slide">
+            <svg width="20" height="20" viewBox="0 0 20 20" fill="none">
+              <path fill-rule="evenodd" clip-rule="evenodd"
+                d="M7.71953 14.53C7.57908 14.3894 7.50019 14.1987 7.50019 14C7.50019 13.8012 7.57908 13.6106 7.71953 13.47L11.1895 10 7.71953 6.53C7.57908 6.3894 7.50019 6.1987 7.50019 6C7.50019 5.5858 7.83597 5.25 8.24953 5.25C8.44828 5.25 8.63891 5.3296 8.77953 5.47L12.7795 9.47C12.92 9.6106 12.9989 9.8012 12.9989 10C12.9989 10.1987 12.92 10.3894 12.7795 10.53L8.77953 14.53C8.63891 14.6704 8.44828 14.7493 8.24953 14.7493C8.05078 14.7493 7.86016 14.6704 7.71953 14.53Z"
+                fill="#4A4A4A" />
+            </svg>
+          </button>
+        {% endif %}
+      </div>
+    {% endif %}
+  </div>
+  <!-- /.qorix-review-video-stack-carousel -->
+</section>
+<script src="{{ 'swiper-bundle.min.js' | asset_url }}" defer></script>
+<script src="{{ 'video-stack-widget.js' | asset_url }}" defer></script>
+
+{% schema %}
+{
+  "name": "Qorix Video Stack",
+  "target": "section",
+  "settings": [
+   
+  ]
+}
+{% endschema %}
