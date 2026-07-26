@@ -1,68 +1,94 @@
 {% assign icon_color = quoteIconColor | default: '#088728' %}
 {% assign verified_badge_color = verifiedBageColor | default: verifiedBadgeColor | default: '#088728' %}
-{% assign star_filled_color = starColor | default: '#FF9500' %}
 
 {% assign max_len = textLength | plus: 0 %}
-{% if max_len > 0 and quote.size > max_len %}
-  {% assign display_quote = quote | truncate: max_len, '...' %}
-{% else %}
-  {% assign display_quote = quote %}
-{% endif %}
 
-<div class="qr-review-card" style="--card-bg: {{ cardBackgroundColor }};{% if textColor != blank %} --card-text-color: {{ textColor }}; color: {{ textColor }};{% endif %}">
-  <div class="qr-card-content">
-    {% if showQuoteMarkIcon != false and showQuoteMarkIcon != 'false' %}
-      <div class="qr-quote-icon">
-        <svg width="63" height="45" viewBox="0 0 63 45" fill="none" xmlns="http://www.w3.org/2000/svg">
-          <path fill-rule="evenodd" clip-rule="evenodd" d="M49.7037 12.3435C51.9832 9.15 56.2917 5.71207 62.1575 2.85003C63.6818 2.10625 62.9942 -0.199036 61.3114 0.013813C48.987 1.57275 40.9989 6.97038 36.6367 14.9973C35.0143 17.9827 33.995 21.1604 33.4521 24.4042C33.0942 26.543 32.9997 28.1481 32.9997 30.002C32.9997 38.2862 39.7154 45.002 47.9997 45.002C56.284 45.002 62.9997 38.2862 62.9997 30.002C62.9997 21.7177 56.1768 14.9973 48.3362 14.9973C48.7499 13.8616 48.8492 13.5406 49.7037 12.3435ZM16.7037 12.3435C18.9832 9.15 23.2917 5.71207 29.1575 2.85003C30.6818 2.10625 29.9942 -0.199036 28.3114 0.013813C15.987 1.57275 7.99887 6.97038 3.63669 14.9973C2.01427 17.9827 0.994953 21.1604 0.452118 24.4042C0.0942116 26.543 -0.000312805 28.1481 -0.000312805 30.002C-0.000312805 38.2862 6.71542 45.002 14.9997 45.002C23.284 45.002 29.9997 38.2862 29.9997 30.002C29.9997 21.7177 23.1768 14.9973 15.3362 14.9973C15.7499 13.8616 15.8492 13.5406 16.7037 12.3435Z" fill="{{ icon_color }}"/>
-        </svg>
-      </div>
-    {% endif %}
-
-    <div class="qr-review-text">
-      <p style="{% if quoteFontSize != blank %}font-size: {{ quoteFontSize }}px;{% endif %}{% if textColor != blank %}color: {{ textColor }};{% endif %}">{{ display_quote }}</p>
-    </div>
-
-    {% if showStarDistribution != false and showStarDistribution != 'false' %}
-      <div class="qr-review-stars">
-        {% for i in (1..5) %}
-          {% if i <= rating %}
-            <span class="qr-star qr-star--filled">
-              <svg width="17" height="16" viewBox="0 0 17 16" fill="none" xmlns="http://www.w3.org/2000/svg">
-                <path d="M9.51964 0.855C8.97604 -0.285 7.35604 -0.285 6.81244 0.855L5.14444 4.3494L1.30564 4.8546C0.0552353 5.0202 -0.446365 6.561 0.469235 7.4298L3.27724 10.0962L2.57284 13.9026C2.34244 15.1434 3.65404 16.0962 4.76284 15.495L8.16604 13.647L11.5692 15.495C12.678 16.0962 13.9896 15.1434 13.7592 13.9026L13.0548 10.0962L15.8628 7.4298C16.7772 6.561 16.2768 5.0202 15.0264 4.8546L11.1864 4.3494L9.51964 0.855Z" fill="{{ star_filled_color }}"/>
-              </svg>
-            </span>
-          {% else %}
-            <span class="qr-star">
-              <svg width="17" height="16" viewBox="0 0 17 16" fill="none" xmlns="http://www.w3.org/2000/svg">
-                <path d="M9.51964 0.855C8.97604 -0.285 7.35604 -0.285 6.81244 0.855L5.14444 4.3494L1.30564 4.8546C0.0552353 5.0202 -0.446365 6.561 0.469235 7.4298L3.27724 10.0962L2.57284 13.9026C2.34244 15.1434 3.65404 16.0962 4.76284 15.495L8.16604 13.647L11.5692 15.495C12.678 16.0962 13.9896 15.1434 13.7592 13.9026L13.0548 10.0962L15.8628 7.4298C16.7772 6.561 16.2768 5.0202 15.0264 4.8546L11.1864 4.3494L9.51964 0.855Z" fill="#E5E7EB"/>
-              </svg>
-            </span>
-          {% endif %}
-        {% endfor %}
-      </div>
-    {% endif %}
-  </div>
-
-  <div class="qr-review-footer">
-    {% if showMediaAsset != false and showMediaAsset != 'false' %}
-      <img src="{{ avatar | asset_url }}" class="qr-reviewer-avatar" alt="{{ name }}" width="56" height="56">
-    {% endif %}
-    <div class="qr-reviewer-info">
-      {% if showReviewerName != false and showReviewerName != 'false' %}
-        <span class="qr-reviewer-name" {% if textColor != blank %}style="color: {{ textColor }};"{% endif %}>
-          {{ name }}
-          {% if verified and showVerifiedBadge != false and showVerifiedBadge != 'false' %}
-            <svg width="18" height="18" viewBox="0 0 18 18" fill="none" xmlns="http://www.w3.org/2000/svg">
-              <path d="M9 18C13.9706 18 18 13.9706 18 9C18 4.02944 13.9706 0 9 0C4.02944 0 0 4.02944 0 9C0 13.9706 4.02944 18 9 18Z" fill="{{ verified_badge_color }}"/>
-              <path fill-rule="evenodd" clip-rule="evenodd" d="M13.4844 7.3216C13.4767 7.32982 13.4689 7.33804 13.4609 7.34605L8.28385 12.5231C8.17316 12.6338 8.03972 12.7095 7.89792 12.7501C7.58965 12.8421 7.23893 12.7682 6.9987 12.528L3.94132 9.47061C3.59407 9.1233 3.59088 8.54836 3.94132 8.19786C4.29182 7.84742 4.86364 7.84735 5.21414 8.19779L7.6384 10.622L12.7868 5.47362C13.1373 5.12312 13.711 5.1251 14.0595 5.47362C14.408 5.82214 14.4081 6.39786 14.0596 6.74638L13.4844 7.3216Z" fill="white"/>
+<template x-for="review in filteredReviews()" :key="review.id">
+  <div class="swiper-slide" x-show="!loading">
+    <div
+      class="qr-review-card"
+      style="--card-bg: {{ cardBackgroundColor }};{% if textColor != blank %} --card-text-color: {{ textColor }}; color: {{ textColor }};{% endif %}"
+    >
+      <div class="qr-card-content">
+        {% if showQuoteMarkIcon != false and showQuoteMarkIcon != 'false' %}
+          <div class="qr-quote-icon">
+            <svg width="63" height="45" viewBox="0 0 63 45" fill="none" xmlns="http://www.w3.org/2000/svg">
+              <path fill-rule="evenodd" clip-rule="evenodd" d="M49.7037 12.3435C51.9832 9.15 56.2917 5.71207 62.1575 2.85003C63.6818 2.10625 62.9942 -0.199036 61.3114 0.013813C48.987 1.57275 40.9989 6.97038 36.6367 14.9973C35.0143 17.9827 33.995 21.1604 33.4521 24.4042C33.0942 26.543 32.9997 28.1481 32.9997 30.002C32.9997 38.2862 39.7154 45.002 47.9997 45.002C56.284 45.002 62.9997 38.2862 62.9997 30.002C62.9997 21.7177 56.1768 14.9973 48.3362 14.9973C48.7499 13.8616 48.8492 13.5406 49.7037 12.3435ZM16.7037 12.3435C18.9832 9.15 23.2917 5.71207 29.1575 2.85003C30.6818 2.10625 29.9942 -0.199036 28.3114 0.013813C15.987 1.57275 7.99887 6.97038 3.63669 14.9973C2.01427 17.9827 0.994953 21.1604 0.452118 24.4042C0.0942116 26.543 -0.000312805 28.1481 -0.000312805 30.002C-0.000312805 38.2862 6.71542 45.002 14.9997 45.002C23.284 45.002 29.9997 38.2862 29.9997 30.002C29.9997 21.7177 23.1768 14.9973 15.3362 14.9973C15.7499 13.8616 15.8492 13.5406 16.7037 12.3435Z" fill="{{ icon_color }}"/>
             </svg>
+          </div>
+        {% endif %}
+
+        <div class="qr-review-text">
+          <p
+            x-text="{% if max_len > 0 %}review.body && review.body.length > {{ max_len }} ? review.body.slice(0, {{ max_len }}) + '...' : review.body{% else %}review.body{% endif %}"
+            style="{% if quoteFontSize != blank %}font-size: {{ quoteFontSize }}px;{% endif %}{% if textColor != blank %}color: {{ textColor }};{% endif %}"
+          ></p>
+        </div>
+
+        {% if showStarDistribution != false and showStarDistribution != 'false' %}
+          <div class="qr-review-stars">
+            {% render 'stars',
+              from: 'quoteloopReview',
+              starColor: starColor,
+              quote_loop_metafield: quote_loop_metafield
+            %}
+          </div>
+        {% endif %}
+      </div>
+
+      <div class="qr-review-footer">
+        <img
+          x-show="review.reviewerImage"
+          src="{{ avatar | asset_url }}"
+          class="qr-reviewer-avatar"
+          alt="{{ name }}"
+          width="56"
+          height="56"
+        >
+
+        <span
+          x-show="!review.reviewerImage"
+          class="qr-review-avatar"
+          x-show="true"
+          x-text="review.reviewerName[0].toUpperCase()"
+          style="font-size: 18px;"
+        ></span>
+
+        <div class="qr-reviewer-info">
+          {% if showReviewerName != false and showReviewerName != 'false' %}
+            <span
+              class="qr-reviewer-name"
+              {% if textColor != blank %}
+                style="color: {{ textColor }};"
+              {% endif %}
+            >
+              <span x-text="review.reviewerName"></span>
+              {% if verified and showVerifiedBadge != false and showVerifiedBadge != 'false' %}
+                <svg width="18" height="18" viewBox="0 0 18 18" fill="none" xmlns="http://www.w3.org/2000/svg">
+                  <path d="M9 18C13.9706 18 18 13.9706 18 9C18 4.02944 13.9706 0 9 0C4.02944 0 0 4.02944 0 9C0 13.9706 4.02944 18 9 18Z" fill="{{ verified_badge_color }}"/>
+                  <path fill-rule="evenodd" clip-rule="evenodd" d="M13.4844 7.3216C13.4767 7.32982 13.4689 7.33804 13.4609 7.34605L8.28385 12.5231C8.17316 12.6338 8.03972 12.7095 7.89792 12.7501C7.58965 12.8421 7.23893 12.7682 6.9987 12.528L3.94132 9.47061C3.59407 9.1233 3.59088 8.54836 3.94132 8.19786C4.29182 7.84742 4.86364 7.84735 5.21414 8.19779L7.6384 10.622L12.7868 5.47362C13.1373 5.12312 13.711 5.1251 14.0595 5.47362C14.408 5.82214 14.4081 6.39786 14.0596 6.74638L13.4844 7.3216Z" fill="white"/>
+                </svg>
+              {% endif %}
+            </span>
           {% endif %}
-        </span>
-      {% endif %}
-      {% if showProductName != false and showProductName != 'false' %}
-        <span class="qr-reviewer-product" {% if textColor != blank %}style="color: {{ textColor }}; opacity: 0.8;"{% endif %}>{{ product }}</span>
-      {% endif %}
+          {% if showProductName != false and showProductName != 'false' %}
+            <span
+              class="qr-reviewer-product"
+              {% if textColor != blank %}
+                style="color: {{ textColor }}; opacity: 0.8;"
+              {% endif %}
+              x-text="review.productTitle"
+            >
+            </span>
+          {% endif %}
+        </div>
+      </div>
     </div>
   </div>
-</div>
+</template>
+<p
+  x-show="filteredReviews().length === 0"
+  style="color: #888; font-size: 14px; padding: 20px 0"
+>
+  No reviews found.
+</p>

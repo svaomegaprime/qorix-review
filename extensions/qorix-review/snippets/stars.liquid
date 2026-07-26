@@ -4,8 +4,10 @@
       <template
         x-if="
           star <= Math.floor(
-          {% if from == 'reviewHubCardStar' %}review.rating{% endif %}
-          {% if from == 'heading' %}averageRating{% endif %}
+            {% if from == 'heading' %}averageRating{% endif %}
+            {% if from == 'reviewHubCardStar' %}review.rating{% endif %}
+            {% if from == 'quoteloopReview' %}review.rating{% endif %}
+
           )
         "
       >
@@ -15,8 +17,10 @@
       <template
         x-if="
           star > Math.floor(
-          {% if from == 'reviewHubCardStar' %}review.rating{% endif %}
-          {% if from == 'heading' %}averageRating{% endif %}
+            {% if from == 'heading' %}averageRating{% endif %}
+            {% if from == 'reviewHubCardStar' %}review.rating{% endif %}
+            {% if from == 'quoteloopReview' %}review.rating{% endif %}
+
           )
         "
       >
