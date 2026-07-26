@@ -3,18 +3,16 @@
 
 {% assign quote_loop_metafield = app.metafields.qorix_review.quote_loop.value %}
 
-
 <div class="qr-quoteloop">
-
   {% if quote_loop_metafield.showHeader != blank %}
-  {% render 'heading',
-    label: quote_loop_metafield.eyebrowLabel,
-    title: quote_loop_metafield.heading,
-    subtitle: quote_loop_metafield.subheading,
-    rating: block.settings.rating,
-    review_count: block.settings.review_count
-    headerStyle:quote_loop_metafield.headerStyle
-  %}
+    {% render 'heading',
+      label: quote_loop_metafield.eyebrowLabel,
+      title: quote_loop_metafield.heading,
+      subtitle: quote_loop_metafield.subheading,
+      rating: block.settings.rating,
+      review_count: block.settings.review_count,
+      headerStyle: quote_loop_metafield.headerStyle
+    %}
   {% endif %}
 
   {% assign total_slides = 10 %}
@@ -22,6 +20,8 @@
     class="swiper qr-quote-swiper"
     data-desktop-slides="{{ block.settings.desktop_cards  }}"
     data-total-slides="{{ total_slides }}"
+    data-quote-loop-autoplay="{{ quote_loop_metafield.autoSlider }}"
+    data-quote-loop-speed="{{ quote_loop_metafield.speed }}"
     data-quote-loop-metafield="{{ quote_loop_metafield }}"
   >
     <div class="swiper-wrapper">
@@ -34,7 +34,9 @@
             name: 'Hasan R.',
             product: 'Vitamin C Serum',
             verified: true,
-            cardBackgroundColor:quote_loop_metafield.cardBackgroundColor
+            cardBackgroundColor: quote_loop_metafield.cardBackgroundColor,
+            quoteIconColor: quote_loop_metafield.quoteMarkColor,
+            verifiedBageColor: quote_loop_metafield.quoteMarkColor
           %}
         </div>
       {% endfor %}
@@ -48,7 +50,9 @@
             name: 'Hasan R.',
             product: 'Vitamin C Serum',
             verified: true,
-            cardBackgroundColor:quote_loop_metafield.cardBackgroundColor
+            cardBackgroundColor: quote_loop_metafield.cardBackgroundColor,
+            quoteIconColor: quote_loop_metafield.quoteMarkColor,
+            verifiedBageColor: quote_loop_metafield.quoteMarkColor
           %}
         </div>
       {% endfor %}

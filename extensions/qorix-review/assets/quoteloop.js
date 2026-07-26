@@ -3,8 +3,12 @@ document.addEventListener('DOMContentLoaded', () => {
 
     const desktopSlides = parseInt(slider.dataset.desktopSlides, 10) || 5;
 
+    const isAutoplay = slider.dataset.quoteLoopAutoplay === 'true' || slider.dataset.quoteLoopAutoplay === '1';
+    const speed = parseInt(slider.dataset.quoteLoopSpeed, 10) || 450;
+    console.log('QuoteLoop Autoplay:', isAutoplay, 'Speed:', speed);
+
     new Swiper(slider, {
-      speed: 600,
+      speed: speed,
       loop: true,
       slidesPerGroup: 1,
       allowTouchMove: true,
@@ -13,11 +17,11 @@ document.addEventListener('DOMContentLoaded', () => {
       observeParents: true,
       watchSlidesProgress: true,
 
-      autoplay: {
-        delay: 5000,
+      autoplay: isAutoplay ? {
+        delay: 3000,
         disableOnInteraction: false,
         pauseOnMouseEnter: true,
-      },
+      } : false,
 
       pagination: {
         el: slider.querySelector('.swiper-pagination'),
