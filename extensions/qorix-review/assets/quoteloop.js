@@ -1,15 +1,25 @@
-document.addEventListener('DOMContentLoaded', () => {
+/* global Swiper */
+
+function initQuoteLoopSwiper() {
+  if (typeof Swiper === 'undefined' && typeof window.Swiper === 'undefined') return;
+  const SwiperClass = typeof Swiper !== 'undefined' ? Swiper : window.Swiper;
+
   document.querySelectorAll('.qr-quote-swiper').forEach((slider) => {
+    if (slider.swiper) {
+      slider.swiper.destroy(true, true);
+    }
 
     const desktopSlides = parseInt(slider.dataset.desktopSlides, 10) || 5;
-
     const isAutoplay = slider.dataset.quoteLoopAutoplay === 'true' || slider.dataset.quoteLoopAutoplay === '1';
     const speed = parseInt(slider.dataset.quoteLoopSpeed, 10) || 450;
     console.log('QuoteLoop Autoplay:', isAutoplay, 'Speed:', speed);
 
-    new Swiper(slider, {
+    const slidesCount = slider.querySelectorAll('.swiper-slide:not(.swiper-slide-duplicate)').length;
+    const shouldLoop = slidesCount > 1;
+
+    new SwiperClass(slider, {
       speed: speed,
-      loop: true,
+      loop: shouldLoop,
       slidesPerGroup: 1,
       allowTouchMove: true,
 
@@ -59,6 +69,13 @@ document.addEventListener('DOMContentLoaded', () => {
         }
       },
     });
-
   });
-});
+}
+
+window.initQuoteLoopSwiper = initQuoteLoopSwiper;
+
+if (document.readyState === 'loading') {
+  document.addEventListener('DOMContentLoaded', initQuoteLoopSwiper);
+} else {
+  initQuoteLoopSwiper();
+}
