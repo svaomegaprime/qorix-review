@@ -86,6 +86,22 @@ class QuickReviewWidget {
     this.showFirst = "";
   }
 
+  reinitSwipers() {
+    if (this.$nextTick) {
+      this.$nextTick(() => {
+        if (typeof window.initQuoteLoopSwiper === "function") {
+          window.initQuoteLoopSwiper();
+        }
+      });
+    } else {
+      setTimeout(() => {
+        if (typeof window.initQuoteLoopSwiper === "function") {
+          window.initQuoteLoopSwiper();
+        }
+      }, 50);
+    }
+  }
+
   initUploadSettings(el) {
     console.log("EFT", el);
     this.allowPhotoUpload = el.dataset.photoUpload === "true";
@@ -180,6 +196,8 @@ class QuickReviewWidget {
         1: 0,
       };
       this.attachments = result.data?.attachments ?? [];
+
+      this.reinitSwipers();
 
       console.log("GET Review:", result);
       return result;
@@ -393,6 +411,7 @@ class QuickReviewWidget {
           }
         });
       }
+      this.reinitSwipers();
       this.dataPostLoading = false;
     } catch (error) {
       console.error(error);
@@ -488,6 +507,7 @@ class QuickReviewWidget {
 
   setRatingFilter(rating) {
     this.activeFilter = rating;
+    this.reinitSwipers();
   }
 
   async setSort(option) {

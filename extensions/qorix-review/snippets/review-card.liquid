@@ -2,22 +2,21 @@
 <template x-for="review in filteredReviews()" :key="review.id">
   <div class="qr-review-card" x-show="!loading">
     <div class="qr-review-header">
-      {% if review_hub_metafield.reviewerImage %}
-        <img
-          src="{{ '' | asset_url }}"
-          alt="{{ reviewer_name }}"
-          class="qr-review-avatar"
-          width=""
-          height=""
-        >
-      {% else %}
-        <span
-          class="qr-review-avatar"
-          x-show="true"
-          x-text="review.reviewerName[0].toUpperCase()"
-          style="font-size: 18px;"
-        ></span>
-      {% endif %}
+      <img
+        src="{{ '' | asset_url }}"
+        alt="{{ reviewer_name }}"
+        class="qr-review-avatar"
+        width=""
+        height=""
+        x-show="review.reviewerImage"
+      >
+      <span
+        x-show="true"
+        class="qr-review-avatar"
+        x-show="true"
+        x-text="review.reviewerName[0].toUpperCase()"
+        style="font-size: 18px;"
+      ></span>
 
       <div class="qr-review-meta">
         <div class="qr-review-name-row">

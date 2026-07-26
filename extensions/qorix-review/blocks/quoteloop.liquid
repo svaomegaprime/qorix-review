@@ -5,8 +5,26 @@
 
 {% render 'custom-css', css: quote_loop_metafield.advanceCss %}
 
-
-<div class="qr-quoteloop">
+<div
+  class="qr-quoteloop"
+  customerId="{{ customer.id }}"
+  customerEmail="{{ customer.email }}"
+  {% comment %} xx="{{ product.metafields.reviews.rating }} - {{ product.metafields.reviews.rating_count.value }}" {% endcomment %}
+  id="quick-review"
+  {% comment %} x-data="quickReviewWidget()" {% endcomment %}
+  x-data="ReviewWidget()"
+  x-init="initUploadSettings($el); productInit($el.dataset.product,$el.dataset.sort,$el.dataset.limit)"
+  data-customer-id="{{ customer.id }}"
+  data-customer-email="{{ customer.email }}"
+  data-product="{{ product | json | escape }}"
+  {% comment %}
+    data-photo-upload="{{ allow_photo | json }}"
+    data-video-upload="{{ allow_video | json }}"
+  {% endcomment %}
+  data-sort="{{ quote_loop_metafield.defaultSort }}"
+  data-limit="{{ quote_loop_metafield.reviewPerPage }}"
+  data-page-type="{{ template.name }}"
+>
   {% if quote_loop_metafield.showHeader != blank %}
     {% render 'heading',
       label: quote_loop_metafield.eyebrowLabel,
@@ -25,62 +43,31 @@
     data-total-slides="{{ total_slides }}"
     data-quote-loop-autoplay="{{ quote_loop_metafield.autoSlider }}"
     data-quote-loop-speed="{{ quote_loop_metafield.speed }}"
-    data-quote-loop-metafield="{{ quote_loop_metafield }}"
   >
     <div class="swiper-wrapper">
-      {% for i in (1..5) %}
-        <div class="swiper-slide">
-          {% render 'quoteloop-review-card',
-            quote: "The quality is understanding and the attention to detail is incredible. I'll definitely be buying again",
-            rating: 5,
-            avatar: 'reviwer_img.png',
-            name: 'Hasan R.',
-            product: 'Vitamin C Serum',
-            verified: true,
-            cardBackgroundColor: quote_loop_metafield.cardBackgroundColor,
-            quoteIconColor: quote_loop_metafield.quoteMarkColor,
-            verifiedBadgeColor: quote_loop_metafield.verifiedBadgeColor,
-            verifiedBageColor: quote_loop_metafield.quoteMarkColor,
-            textColor: quote_loop_metafield.textColor,
-            starColor: quote_loop_metafield.starColor,
-            quoteFontSize: quote_loop_metafield.quoteFontSize,
-            showQuoteMarkIcon: quote_loop_metafield.showQuoteMarkIcon,
-            showReviewerName: quote_loop_metafield.showReviewerName,
-            showStarDistribution: quote_loop_metafield.showStarDistribution,
-            showVerifiedBadge: quote_loop_metafield.showVerifiedBadge,
-            showProductName: quote_loop_metafield.showProductName,
-            textLength: quote_loop_metafield.textLength,
-            showMediaAsset: quote_loop_metafield.showMediaAsset
-          %}
-        </div>
-      {% endfor %}
-
-      {% for i in (1..5) %}
-        <div class="swiper-slide">
-          {% render 'quoteloop-review-card',
-            quote: "The quality is understanding and the attention to detail is incredible. I'll definitely be buying again",
-            rating: 5,
-            avatar: 'reviwer_img.png',
-            name: 'Hasan R.',
-            product: 'Vitamin C Serum',
-            verified: true,
-            cardBackgroundColor: quote_loop_metafield.cardBackgroundColor,
-            quoteIconColor: quote_loop_metafield.quoteMarkColor,
-            verifiedBadgeColor: quote_loop_metafield.verifiedBadgeColor,
-            verifiedBageColor: quote_loop_metafield.quoteMarkColor,
-            textColor: quote_loop_metafield.textColor,
-            starColor: quote_loop_metafield.starColor,
-            quoteFontSize: quote_loop_metafield.quoteFontSize,
-            showQuoteMarkIcon: quote_loop_metafield.showQuoteMarkIcon,
-            showReviewerName: quote_loop_metafield.showReviewerName,
-            showStarDistribution: quote_loop_metafield.showStarDistribution,
-            showVerifiedBadge: quote_loop_metafield.showVerifiedBadge,
-            showProductName: quote_loop_metafield.showProductName,
-            textLength: quote_loop_metafield.textLength,
-            showMediaAsset: quote_loop_metafield.showMediaAsset
-          %}
-        </div>
-      {% endfor %}
+      {% render 'quoteloop-review-card',
+        quote: "The quality is understanding and the attention to detail is incredible. I'll definitely be buying again",
+        rating: 5,
+        avatar: 'reviwer_img.png',
+        name: 'Hasan R.',
+        product: 'Vitamin C Serum',
+        verified: true,
+        cardBackgroundColor: quote_loop_metafield.cardBackgroundColor,
+        quoteIconColor: quote_loop_metafield.quoteMarkColor,
+        verifiedBadgeColor: quote_loop_metafield.verifiedBadgeColor,
+        verifiedBageColor: quote_loop_metafield.quoteMarkColor,
+        textColor: quote_loop_metafield.textColor,
+        starColor: quote_loop_metafield.starColor,
+        quoteFontSize: quote_loop_metafield.quoteFontSize,
+        showQuoteMarkIcon: quote_loop_metafield.showQuoteMarkIcon,
+        showReviewerName: quote_loop_metafield.showReviewerName,
+        showStarDistribution: quote_loop_metafield.showStarDistribution,
+        showVerifiedBadge: quote_loop_metafield.showVerifiedBadge,
+        showProductName: quote_loop_metafield.showProductName,
+        textLength: quote_loop_metafield.textLength,
+        showMediaAsset: quote_loop_metafield.showMediaAsset,
+        quote_loop_metafield: quote_loop_metafield
+      %}
     </div>
     <div class="swiper-pagination"></div>
     {% if quote_loop_metafield.showArrowControls != false and quote_loop_metafield.showArrowControls != 'false' %}
@@ -100,7 +87,8 @@
 
 <script src="{{ 'swiper-bundle.min.js' | asset_url }}" defer="defer"></script>
 <script src="{{ 'quoteloop.js' | asset_url }}" defer="defer"></script>
-
+<script src="{{ 'review.js' | asset_url }}" defer></script>
+<script src="{{ 'alpine.js' | asset_url }}" defer></script>
 {% schema %}
 {
   "name": "Quote Loop",
