@@ -353,6 +353,10 @@
   opacity: 0.65;
 }
 
+[data-section="qorix-review-video-stack-widget"] .qorix-review-video-stack-nav svg {
+  pointer-events: none;
+}
+
 [data-section="qorix-review-video-stack-widget"] .qorix-review-video-stack-nav-prev {
   left: 20px;
 }

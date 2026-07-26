@@ -17,14 +17,17 @@
     const navCols = metafieldData.thumbnailsShown
       ? parseInt(metafieldData.thumbnailsShown, 10)
       : (parseInt(computedStyle.getPropertyValue('--nav-cols').trim(), 10) || 5);
-    const autoplayEnabled = computedStyle.getPropertyValue('--autoplay-enabled').trim() === 'true';
-    const autoplaySpeed = parseInt(computedStyle.getPropertyValue('--autoplay-speed').trim(), 10) || 3000;
+    const showLoopVideo = metafieldData.showLoopVideo !== undefined
+      ? Boolean(metafieldData.showLoopVideo)
+      : true;
+    const autoplayEnabled = showLoopVideo;
+    const autoplaySpeed = 3000;
     const autoplayOnHover = metafieldData.autoplayOnHover !== undefined
       ? Boolean(metafieldData.autoplayOnHover)
-      : (computedStyle.getPropertyValue('--autoplay-on-hover').trim() === 'true');
-    const loopVideoSetting = metafieldData.showLoopVideo !== undefined
-      ? Boolean(metafieldData.showLoopVideo)
-      : (computedStyle.getPropertyValue('--loop-video').trim() === 'true');
+      : true;
+    const mutedByDefault = metafieldData.mutedByDefault !== undefined
+      ? Boolean(metafieldData.mutedByDefault)
+      : true;
 
     const stackSlides = Array.from(section.querySelectorAll('.qorix-review-video-stack-swiper-slide'));
     const paginationContainer = section.querySelector('.qorix-review-video-stack-custom-pagination');
@@ -232,13 +235,8 @@
       if (currentVideo) {
         currentVideo.pause();
         currentVideo.muted = true;
-        if (loopVideoSetting) {
-          currentVideo.setAttribute('loop', '');
-        } else {
-          currentVideo.removeAttribute('loop');
-        }
+        currentVideo.setAttribute('loop', '');
         stopCountdown(currentVideo, true);
-        /* restore the play button on the card */
         const card = currentVideo.closest('.qorix-review-video-stack-card');
         if (card) {
           const playBtn = card.querySelector('.qorix-review-video-stack-play');
@@ -251,17 +249,16 @@
       }
     }
 
-    /* ── Navigate to slide — stops any playing video ── */
     function goToVideo(index) {
       stopCurrentVideo();
-      activeVideoIndex = (index + stackSlides.length) % stackSlides.length;
+      const total = stackSlides.length;
+      activeVideoIndex = ((index % total) + total) % total;
       renderStack();
       if (autoplayEnabled) {
         restartAutoplay();
       }
     }
 
-    /* ── Autoplay loop control ── */
     function restartAutoplay() {
       window.clearInterval(autoplayTimer);
       autoplayTimer = window.setInterval(function () {
@@ -276,28 +273,27 @@
 
     /* ── Nav arrow clicks ── */
     if (stackPrev) {
-      stackPrev.addEventListener('click', function () {
+      stackPrev.addEventListener('click', function (e) {
+        e.preventDefault();
+        e.stopPropagation();
         goToVideo(activeVideoIndex - 1);
       });
     }
     if (stackNext) {
-      stackNext.addEventListener('click', function () {
+      stackNext.addEventListener('click', function (e) {
+        e.preventDefault();
+        e.stopPropagation();
         goToVideo(activeVideoIndex + 1);
       });
     }
 
-    /* ── Play/Pause video logic helper ── */
     function playVideo(video, playBtn) {
       if (currentVideo && currentVideo !== video) {
         stopCurrentVideo();
       }
 
-      if (loopVideoSetting) {
-        video.setAttribute('loop', '');
-      } else {
-        video.removeAttribute('loop');
-      }
-      video.muted = false; // unmute to play sound if the video has audio track
+      video.setAttribute('loop', '');
+      video.muted = mutedByDefault;
 
       const playPromise = video.play();
       if (playPromise !== undefined) {
@@ -312,6 +308,17 @@
           })
           .catch(function (error) {
             console.log('Video play failed: ', error);
+            if (!video.muted) {
+              video.muted = true;
+              video.play().then(function() {
+                currentVideo = video;
+                startCountdown(video);
+                if (playBtn) playBtn.innerHTML = PAUSE_ICON;
+                stopAutoplay();
+              }).catch(function(e) {
+                console.log('Fallback muted play failed:', e);
+              });
+            }
           });
       }
     }
@@ -323,6 +330,7 @@
         if (playBtn) {
           playBtn.innerHTML = PLAY_ICON;
         }
+        currentVideo = null;
         if (autoplayEnabled) {
           restartAutoplay();
         }
