@@ -5,126 +5,148 @@
 {% assign overlay_tint_val = overlayTintColor | default: video_stack_metafield.overlayTintColor | default: '#1A1A1A' %}
 
 {% assign show_star_dist = showStarDistribution %}
-{% if show_star_dist == nil %}
+{% if show_star_dist == null %}
   {% assign show_star_dist = video_stack_metafield.showStarDistribution %}
 {% endif %}
 
 {% assign show_reviewer_name = showReviewerName %}
-{% if show_reviewer_name == nil %}
+{% if show_reviewer_name == null %}
   {% assign show_reviewer_name = video_stack_metafield.showReviewerName %}
 {% endif %}
 
 {% assign show_review_text = showReviewTextBelow %}
-{% if show_review_text == nil %}
+{% if show_review_text == null %}
   {% assign show_review_text = video_stack_metafield.showReviewTextBelow %}
 {% endif %}
 
 {% assign show_verified = showVerifiedBadge %}
-{% if show_verified == nil %}
+{% if show_verified == null %}
   {% assign show_verified = video_stack_metafield.showVerifiedBadge %}
 {% endif %}
 
 {% assign show_duration = showVideoDuration %}
-{% if show_duration == nil %}
+{% if show_duration == null %}
   {% assign show_duration = video_stack_metafield.showVideoDuration %}
 {% endif %}
 
 {% assign show_product_name = showProductName %}
-{% if show_product_name == nil %}
+{% if show_product_name == null %}
   {% assign show_product_name = video_stack_metafield.showProductName %}
 {% endif %}
 
 {% assign loop_vid = loop_video %}
-{% if loop_vid == nil %}
+{% if loop_vid == null %}
   {% assign loop_vid = video_stack_metafield.showLoopVideo %}
 {% endif %}
 
 {% assign muted_vid = mutedByDefault %}
-{% if muted_vid == nil %}
+{% if muted_vid == null %}
   {% assign muted_vid = video_stack_metafield.mutedByDefault %}
 {% endif %}
-
-<div class="qorix-review-video-stack-swiper-slide">
-  <div class="qorix-review-video-stack-card" style="position: relative; overflow: hidden; transform-style: preserve-3d;">
-    <video
-      class="qorix-review-video-stack-bg"
-      src="{{ video_src }}"
-      {% if loop_vid != false and loop_vid != 'false' %}
-        loop
-      {% endif %}
-      playsinline
-      {% if muted_vid != false and muted_vid != 'false' %}
-        muted
-      {% endif %}
-      style="position: absolute; top: 0; left: 0; width: 100%; height: 100%; object-fit: cover; z-index: 1; transform: translateZ(0);"
-    ></video>
+<template x-for="review in filteredReviews()" :key="review.id">
+  <div class="qorix-review-video-stack-swiper-slide" x-show="!loading">
     <div
-      class="qorix-review-video-stack-overlay"
-      style="position: absolute; bottom: 0; left: 0; right: 0; width: 100%; height: 60%; z-index: 50; pointer-events: none; transform: translateZ(10px); background-image: linear-gradient(180deg, rgba(0, 0, 0, 0) 30%, {{ overlay_tint_val }});"
-    ></div>
-    <div class="qorix-review-video-stack-topbar" style="position: absolute; z-index: 100; transform: translateZ(20px);">
-      {% if show_duration != false and show_duration != 'false' %}
-        <div class="qorix-review-video-stack-pill">
-          <span>{{ duration | default: '0:00' }}</span>
-        </div>
-      {% endif %}
-      <button class="qorix-review-video-stack-play" aria-label="Play video">
-        <svg width="10" height="12" viewBox="0 0 10 12" fill="none">
-          <path d="M1 1L9 6L1 11V1Z" fill="#303030" />
-        </svg>
-      </button>
-    </div>
-    <div
-      class="qorix-review-video-stack-info"
-      style="position: absolute; bottom: 0; left: 0; right: 0; width: 100%; box-sizing: border-box; padding: 107px 16px 20px 16px; display: flex; flex-direction: column; gap: 8px; z-index: 100; transform: translateZ(20px); background-image: linear-gradient(180deg, rgba(0, 0, 0, 0) 30%, {{ overlay_tint_val }});"
+      class="qorix-review-video-stack-card"
+      style="position: relative; overflow: hidden; transform-style: preserve-3d;"
     >
-      {% if show_star_dist != false and show_star_dist != 'false' %}
-        <div class="qorix-review-video-stack-card-stars" aria-label="{{ rating | default: 5 }} stars">
-          {% assign star_count = rating | default: 5 %}
-          {% for i in (1..star_count) %}
-            <svg width="24" height="24" viewBox="0 0 17 16" fill="none">
-              <path
-                d="M9.51964 0.855C8.97604-.285 7.35604-.285 6.81244.855L5.14444 4.3494 1.30564 4.8546C.0552353 5.0202-.446365 6.561.469235 7.4298L3.27724 10.0962 2.57284 13.9026C2.34244 15.1434 3.65404 16.0962 4.76284 15.495L8.16604 13.647 11.5692 15.495C12.678 16.0962 13.9896 15.1434 13.7592 13.9026L13.0548 10.0962 15.8628 7.4298C16.7772 6.561 16.2768 5.0202 15.0264 4.8546L11.1864 4.3494Z"
-                fill="{{ star_color_val }}" />
-            </svg>
-          {% endfor %}
-        </div>
-      {% endif %}
-      <div class="qorix-review-video-stack-reviewer">
-        {% if show_reviewer_name != false and show_reviewer_name != 'false' %}
-          <span class="qorix-review-video-stack-name">{{ reviewer_name }}</span>
+      <video
+        class="qorix-review-video-stack-bg"
+        :src="review.attachments?.find(a => a.type === 'VIDEO' || a.url?.match(/\.(mp4|webm|mov)$/i))?.url || review.video_url || '{{ video_src }}'"
+        {% if loop_vid != false and loop_vid != 'false' %}
+          loop
         {% endif %}
-        {% if show_verified != false and show_verified != 'false' and verified %}
-          <svg width="18" height="18" viewBox="0 0 18 18" fill="none" aria-label="Verified">
-            <circle cx="9" cy="9" r="9" fill="{{ badge_color_val }}" />
-            <path d="M5 9L7.5 11.5L13 6" stroke="white" stroke-width="1.8" stroke-linecap="round"
-              stroke-linejoin="round" />
+        playsinline
+        {% if muted_vid != false and muted_vid != 'false' %}
+          muted
+        {% endif %}
+        style="position: absolute; top: 0; left: 0; width: 100%; height: 100%; object-fit: cover; z-index: 1; transform: translateZ(0);"
+      ></video>
+      <div
+        class="qorix-review-video-stack-overlay"
+        style="position: absolute; bottom: 0; left: 0; right: 0; width: 100%; height: 60%; z-index: 50; pointer-events: none; transform: translateZ(10px); background-image: linear-gradient(180deg, rgba(0, 0, 0, 0) 30%, {{ overlay_tint_val }});"
+      ></div>
+      <div
+        class="qorix-review-video-stack-topbar"
+        style="position: absolute; z-index: 100; transform: translateZ(20px);"
+      >
+        {% if show_duration != false and show_duration != 'false' %}
+          <div class="qorix-review-video-stack-pill">
+            <span>0:00</span>
+          </div>
+        {% endif %}
+        <button class="qorix-review-video-stack-play" aria-label="Play video">
+          <svg width="10" height="12" viewBox="0 0 10 12" fill="none">
+            <path d="M1 1L9 6L1 11V1Z" fill="#303030" />
           </svg>
+        </button>
+      </div>
+      <div
+        class="qorix-review-video-stack-info"
+        style="position: absolute; bottom: 0; left: 0; right: 0; width: 100%; box-sizing: border-box; padding: 107px 16px 20px 16px; display: flex; flex-direction: column; gap: 8px; z-index: 100; transform: translateZ(20px); background-image: linear-gradient(180deg, rgba(0, 0, 0, 0) 30%, {{ overlay_tint_val }});"
+      >
+        {% if show_star_dist != false and show_star_dist != 'false' %}
+          {% render 'stars',
+            from: 'videoStack',
+            starColor: video_stack_metafield.startColor,
+            video_stack_metafield: video_stack_metafield
+          %}
+        {% endif %}
+        <div class="qorix-review-video-stack-reviewer">
+          {% if show_reviewer_name != false and show_reviewer_name != 'false' %}
+            <span
+              class="qorix-review-video-stack-name"
+              x-text="review.reviewerName || '{{ reviewer_name | default: 'Anonymous' }}'"
+            ></span>
+          {% endif %}
+          {% if show_verified != false and show_verified != 'false' %}
+            <svg
+              x-show="review.isVerified !== undefined ? review.isVerified : {{ verified | default: true }}"
+              width="18"
+              height="18"
+              viewBox="0 0 18 18"
+              fill="none"
+              aria-label="Verified"
+            >
+              <circle cx="9" cy="9" r="9" fill="{{ badge_color_val }}" />
+              <path d="M5 9L7.5 11.5L13 6" stroke="white" stroke-width="1.8" stroke-linecap="round"
+                stroke-linejoin="round" />
+            </svg>
+          {% endif %}
+        </div>
+        {% if show_review_text != false and show_review_text != 'false' %}
+          <p
+            class="qorix-review-video-stack-quote"
+            x-show="review.body || '{{ review_quote }}'"
+            x-text="review.body || '{{ review_quote }}'"
+          ></p>
+        {% endif %}
+        {% if show_product_name != false and show_product_name != 'false' %}
+          <div class="qorix-review-video-stack-tag" x-show="review.productTitle || '{{ product_tag }}'">
+            <svg
+              width="14"
+              height="14"
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="#303030"
+              stroke-width="2"
+              stroke-linecap="round"
+              stroke-linejoin="round"
+              aria-hidden="true"
+            >
+              <path d="M9 3h6v4H9z" />
+              <path d="M6 7h12v14H6z" />
+              <path d="M12 11v4" />
+            </svg>
+            <span x-text="review.productTitle || '{{ product_tag }}'"></span>
+          </div>
         {% endif %}
       </div>
-      {% if show_review_text != false and show_review_text != 'false' and review_quote != blank %}
-        <p class="qorix-review-video-stack-quote">{{ review_quote }}</p>
-      {% endif %}
-      {% if show_product_name != false and show_product_name != 'false' and product_tag != blank %}
-        <div class="qorix-review-video-stack-tag">
-          <svg
-            width="14"
-            height="14"
-            viewBox="0 0 24 24"
-            fill="none"
-            stroke="#303030"
-            stroke-width="2"
-            stroke-linecap="round"
-            stroke-linejoin="round"
-            aria-hidden="true"
-          >
-            <path d="M9 3h6v4H9z" />
-            <path d="M6 7h12v14H6z" />
-            <path d="M12 11v4" />
-          </svg>
-          <span>{{ product_tag }}</span>
-        </div>
-      {% endif %}
     </div>
   </div>
-</div>
+</template>
+<p
+  x-show="filteredReviews().length === 0 && !loading"
+  style="color: #888; font-size: 14px; padding: 20px 0"
+>
+  No reviews found.
+</p>
