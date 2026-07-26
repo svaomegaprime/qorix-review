@@ -515,6 +515,7 @@
 
   [data-section="qorix-review-video-stack-widget"] .qorix-review-video-stack-card {
     height: 250px;
+
   }
 
   [data-section="qorix-review-video-stack-widget"] .qorix-review-video-stack-tier-adjacent .qorix-review-video-stack-card {
@@ -523,5 +524,6 @@
 
   [data-section="qorix-review-video-stack-widget"] .qorix-review-video-stack-tier-center .qorix-review-video-stack-card {
     height: 390px;
+    width: 60vw;
   }
 }
