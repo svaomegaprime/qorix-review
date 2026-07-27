@@ -277,7 +277,7 @@
 
 
 
-@media (max-width: 800px) {
+@media (max-width: 1023px) {
   [data-section="qorix-review-reel-widget"] .qorix-review-reel-real-review-section {
     padding: 48px 16px;
     gap: 32px;
@@ -292,7 +292,7 @@
   }
 
   [data-section="qorix-review-reel-widget"] .qorix-review-reel-swiper-wrapper {
-    padding: 0 0 80px 0 !important;
+    padding: 0 0 70px 0 !important;
     margin: 30px auto 0 auto !important;
     position: relative !important;
   }
@@ -303,13 +303,14 @@
 
   [data-section="qorix-review-reel-widget"] .qorix-review-reel-controls {
     position: absolute !important;
-    bottom: 0 !important;
+    bottom: 10px !important;
+    top: auto !important;
     left: 50% !important;
     transform: translateX(-50%) !important;
     display: flex !important;
     align-items: center !important;
     justify-content: center !important;
-    gap: 20px !important;
+    gap: 16px !important;
     width: auto !important;
     height: 44px !important;
     z-index: 9999 !important;
