@@ -20,7 +20,7 @@ import {
 
 import { DEFAULT_QUOTE_LOOP_SETTINGS } from "./routes/app.widgets/routes/app.quote-loop/data/quoteReviewDefault";
 import { DEFAULT_VIDEO_STACK_SETTINGS } from "./routes/app.widgets/routes/app.video-stack/data/videoStackDefaultData";
-
+import {  DEFAULT_VALUES_REVIEW_REEL } from "./routes/app.widgets/routes/app.review-reel/component/data/reviewRealDefaultData";
 import { DEFAULT_DB_FORMATED_DATA } from "./routes/app.widgets/routes/app.quick-review/data/defaultData";
 import { setAppMetafield } from "./utils/appMetafields.server";
 import { DEFAULT_REVIEW_HUB_DATA } from "./routes/app.widgets/routes/app.review-hub/data/defaultData";
@@ -224,6 +224,21 @@ const shopify = shopifyApp({
 
 
         await setAppMetafield(admin, "review_hub", reviewHubWidgetData)
+
+//------------------------Review Reel------------------------
+        const reviewReelSettings = await prisma.reviewReelSettings.upsert({
+          where: {
+            storeId: shopData.id,
+          },
+          update: {},
+          create: {
+            ...DEFAULT_VALUES_REVIEW_REEL,
+            storeId: shopData.id,
+          },
+        });
+
+
+        await setAppMetafield(admin, "review_reel", reviewReelSettings)
 
 
       } catch (error) {

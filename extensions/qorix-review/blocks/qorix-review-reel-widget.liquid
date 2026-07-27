@@ -1,13 +1,17 @@
 {{ 'swiper-bundle.min.css' | asset_url | stylesheet_tag }}
 {{ 'qorix-review-reel-widget.css' | asset_url | stylesheet_tag }}
 
+{% assign review_reel_metafield = app.metafields.qorix_review.review_reel.value %}
+{% render 'custom-css', css: review_reel_metafield.advanceCss %}
+
 <section data-section="qorix-review-reel-widget" class="qorix-review-reel-real-review-section">
   {% render 'heading',
-    label: 'block.settings.label',
-    title: 'block.settings.title',
-    subtitle: 'block.settings.subtitle',
-    rating: 5,
-    review_count: 'block.settings.review_count'
+      label: review_reel_metafield.eyebrowLabel,
+      title: review_reel_metafield.heading,
+      subtitle: review_reel_metafield.subheading,
+      position: review_reel_metafield.headerStyle,
+      reviewStats: review_reel_metafield.reviewStats,
+      starColor: review_reel_metafield.starColor
   %}
   <!-- ── Swiper ── -->
   <div class="qorix-review-reel-swiper-wrapper">
@@ -67,8 +71,6 @@
 {
   "name": "review reel",
   "target": "section",
-  "settings": [
-   
-  ]
+  "settings": []
 }
 {% endschema %}
