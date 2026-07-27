@@ -783,19 +783,6 @@ border:none;
                   (review.helpful || 0) + (helpfulCounts[review.id] || 0);
                 return (
                   <div key={review.id} className="rv-card">
-                    {showStarRatingOnCard && (
-                      <div className="rv-stars">
-                        {[1, 2, 3, 4, 5].map((s) => (
-                          <StarSVG
-                            key={s}
-                            filled={s <= review.rating}
-                            STAR_COLOR={STAR_COLOR}
-                            size={20}
-                          />
-                        ))}
-                      </div>
-                    )}
-
                     <div className="rv-reviewer">
                       {review.avatar ? (
                         <img
@@ -843,6 +830,19 @@ border:none;
                         )}
                       </div>
                     </div>
+
+                    {showStarRatingOnCard && (
+                      <div className="rv-stars">
+                        {[1, 2, 3, 4, 5].map((s) => (
+                          <StarSVG
+                            key={s}
+                            filled={s <= review.rating}
+                            STAR_COLOR={STAR_COLOR}
+                            size={20}
+                          />
+                        ))}
+                      </div>
+                    )}
 
                     {showProductName && (
                       <p className="rv-product">{review.product}</p>
