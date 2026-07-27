@@ -1,6 +1,5 @@
 {% assign video_stack_metafield = app.metafields.qorix_review.video_stack.value %}
 
-{% assign star_color_val = starColor | default: video_stack_metafield.startColor | default: '#F59E0B' %}
 {% assign badge_color_val = badgeColor | default: video_stack_metafield.badgeColor | default: '#34C759' %}
 {% assign overlay_tint_val = overlayTintColor | default: video_stack_metafield.overlayTintColor | default: '#1A1A1A' %}
 
@@ -98,9 +97,9 @@
               x-text="review.reviewerName || '{{ reviewer_name | default: 'Anonymous' }}'"
             ></span>
           {% endif %}
-          {% if show_verified != false and show_verified != 'false' %}
+          {% if show_verified %}
             <svg
-              x-show="review.isVerified !== undefined ? review.isVerified : {{ verified | default: true }}"
+              x-show="review.isVerified"
               width="18"
               height="18"
               viewBox="0 0 18 18"
@@ -116,29 +115,30 @@
         {% if show_review_text != false and show_review_text != 'false' %}
           <p
             class="qorix-review-video-stack-quote"
-            x-show="review.body || '{{ review_quote }}'"
-            x-text="review.body || '{{ review_quote }}'"
+            x-text="review.body"
           ></p>
         {% endif %}
         {% if show_product_name != false and show_product_name != 'false' %}
-          <div class="qorix-review-video-stack-tag" x-show="review.productTitle || '{{ product_tag }}'">
-            <svg
-              width="14"
-              height="14"
-              viewBox="0 0 24 24"
-              fill="none"
-              stroke="#303030"
-              stroke-width="2"
-              stroke-linecap="round"
-              stroke-linejoin="round"
-              aria-hidden="true"
-            >
-              <path d="M9 3h6v4H9z" />
-              <path d="M6 7h12v14H6z" />
-              <path d="M12 11v4" />
-            </svg>
-            <span x-text="review.productTitle || '{{ product_tag }}'"></span>
-          </div>
+          <a :href="`/products/${review.productHandle}`">
+            <div class="qorix-review-video-stack-tag">
+              <svg
+                width="14px"
+                height="14px"
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="#303030"
+                stroke-width="2"
+                stroke-linecap="round"
+                stroke-linejoin="round"
+                aria-hidden="true"
+              >
+                <path d="M9 3h6v4H9z" />
+                <path d="M6 7h12v14H6z" />
+                <path d="M12 11v4" />
+              </svg>
+              <span x-text="review.productTitle"></span>
+            </div>
+          </a>
         {% endif %}
       </div>
     </div>

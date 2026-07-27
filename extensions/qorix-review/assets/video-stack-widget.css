@@ -310,6 +310,19 @@
   background: #f2f2f2;
   border-radius: 12px;
   width: fit-content;
+
+}
+[data-section="qorix-review-video-stack-widget"] .qorix-review-video-stack-tag span {
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  word-break: break-word;
+  overflow-wrap: anywhere;
+  line-height: 1.4;
+  max-height: calc(1.4em * 2);
 }
 
 [data-section="qorix-review-video-stack-widget"] .qorix-review-video-stack-tag span {
