@@ -139,7 +139,9 @@ function WriteReviewModal({ onClose, quickReview, quickReviewTab }) {
 
               {email && (
                 <div>
-                  <label className="rv-modal-label">Email (Optional)</label>
+                  <label className="rv-modal-label">
+                    Email <span className="rv-req">*</span>
+                  </label>
                   <input
                     className="rv-modal-input"
                     type="email"
@@ -323,12 +325,12 @@ export default function ReviewList({
   return (
     <>
       <style>{`
-        .quick-review { background: #ddd; padding: 40px 0; position: relative; }
+        .quick-review { background: #ddd; padding: 50px 0; position: relative; }
         .rv-wrap {
           background: rgba(0,0,0,0.45);
           align-items: center;
           justify-content: center;
-          max-width: ${activeDevice === "mobile" ? "30%" : "1400px"};
+          max-width: ${activeDevice === "mobile" ? "450px" : "92%"};
           margin: 0 auto;
           padding: ${activeDevice === "mobile" ? "20px" : "40px"};
           color: #1a1a1a;
@@ -507,7 +509,7 @@ border:none;
           justify-content: center;
           align-items: flex-start;
         }
-        .rv-modal { margin-top: 40px; background: #fff; border-radius:${borderRadius}px; padding: 24px; width: 400px; max-width: 50vw; height: auto; position: relative; overflow: visible; }
+        .rv-modal { margin-top:${activeDevice === "mobile" ? "70px" : "40px"}; background: #fff; border-radius:${borderRadius}px; padding: 24px; width:${activeDevice === "mobile" ? "320px" : "400px"}; max-width:${activeDevice === "mobile" ? "70vw" : "70vw"}; height: auto; position: relative; overflow: visible; }
         .rv-modal-header { display: flex; align-items: center; gap: 10px; margin-bottom: 16px; padding-right: 38px; }
         .rv-modal-icon { width: 36px; height: 36px; border-radius: 50%; background: ${Submit_Button_Color}; display: flex; align-items: center; justify-content: center; flex-shrink: 0; }
         .rv-modal-copy { min-width: 0; flex: 1; }
@@ -531,7 +533,6 @@ border:none;
           border-radius: 20px;
           padding: 2.5rem 2rem 2rem;
           max-width: 340px;
-          width: 100%;
           text-align: center !important;
          
         }
@@ -541,10 +542,19 @@ border:none;
         .qucik-review-success-message p { font-size: 14px; color: #666; line-height: 1.6; margin-bottom: 1.75rem; }
         .quick-review-popup .btn { width: 100%; padding: 11px; background: ${Submit_Button_Color}; color: ${TEXT_COLOR}; border: none; border-radius: 8px; font-size: 15px; font-weight: 500; cursor: pointer; }
       
-        @media(max-width:425px)
+       
       
       /* Real responsive breakpoints (viewport-driven) */
-@media (max-width: 1200px) {
+
+      @media (max-width: 1440px){
+      .quick-review { padding: 40px 0;  }
+      
+      }
+
+
+@media (max-width: 1024px) {
+ .quick-review { padding: 30px 0;  }
+
   .rv-summary-card {
     grid-template-columns: 1fr 1fr;
     grid-template-rows: auto auto;
@@ -569,8 +579,10 @@ border:none;
   }
 }
 @media (max-width: 640px) {
+ .quick-review { padding: 20px 0;  }
 .rv-wrap {
   padding: 10px;
+    max-width: ${activeDevice === "mobile" ? "92%" : "92%"};
 }
       
       
@@ -848,19 +860,19 @@ border:none;
                           >
                             {item.type === "image"
                               ? showMediaThumbnails && (
-                                  <img src={item.url} alt={`media-${i}`} />
-                                )
+                                <img src={item.url} alt={`media-${i}`} />
+                              )
                               : showMediaThumbnails && (
-                                  <>
-                                    <img
-                                      src={item.thumb}
-                                      alt={`video-thumb-${i}`}
-                                    />
-                                    <div className="rv-play-overlay">
-                                      <div className="rv-play-icon">▶</div>
-                                    </div>
-                                  </>
-                                )}
+                                <>
+                                  <img
+                                    src={item.thumb}
+                                    alt={`video-thumb-${i}`}
+                                  />
+                                  <div className="rv-play-overlay">
+                                    <div className="rv-play-icon">▶</div>
+                                  </div>
+                                </>
+                              )}
                           </div>
                         ))}
                       </div>

@@ -396,11 +396,12 @@ export default function Index(VALUES = {}) {
             scrollbar-width: none !important;
           }
 
-          .review-item {
+         .review-item {
             height: 76px;
             display: grid;
             align-items: center;
             border-bottom: 1px solid #e4e4e4;
+            margin: 0 auto;
           }
 
           .sidebar-content {
@@ -418,7 +419,8 @@ export default function Index(VALUES = {}) {
             }
 
             .review-item {
-              height: 248px;
+              height: 200px;
+              width: 70%;
             }
           }
         `}
@@ -973,7 +975,7 @@ export default function Index(VALUES = {}) {
             >
               <s-query-container>
                 <s-grid
-                  gridTemplateColumns="@container (inline-size > 900px) 1fr auto, 1fr"
+                  gridTemplateColumns="@container (inline-size > 600px) 1fr auto, 1fr"
                   gap="small"
                   justifyContent="space-between"
                   paddingInline="base"
