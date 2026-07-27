@@ -289,34 +289,43 @@ export default function Index(VALUES = {}) {
     <>
       <style>
         {`
+          *::-webkit-scrollbar, html::-webkit-scrollbar, body::-webkit-scrollbar {
+            display: none !important;
+            width: 0 !important;
+            height: 0 !important;
+          }
+          *, html, body {
+            -ms-overflow-style: none !important;
+            scrollbar-width: none !important;
+          }
+
           .review-item {
-  height: 76px;
-  display: grid;
-  align-items: center;
-  border-bottom: 1px solid #e4e4e4;
-}
+            height: 76px;
+            display: grid;
+            align-items: center;
+            border-bottom: 1px solid #e4e4e4;
+          }
 
-.sidebar-content {
-  height: calc(100vh - 77px);
-  overflow: hidden auto;
-  background: #fff;
-  padding: 1rem;
-}
+          .sidebar-content {
+            height: calc(100vh - 77px);
+            overflow: hidden auto;
+            background: #fff;
+            padding: 1rem;
+            scrollbar-width: none;
+            -ms-overflow-style: none;
+          }
 
+          @media (max-width: 900px) {
+            .sidebar-content {
+              height: auto;
+              overflow: visible;
+              padding: 0.75rem;
+            }
 
-@media (max-width: 900px) {
-
-  .sidebar-content {
-    height: auto;
-    overflow: visible;
-    padding: 0.75rem;
-  }
-
-  .review-item {
-    height: 248px;
-   
-  }
-}
+            .review-item {
+              height: 248px;
+            }
+          }
         `}
       </style>
 
@@ -360,6 +369,8 @@ export default function Index(VALUES = {}) {
                 height: "calc(100vh - 77px)",
                 overflow: "hidden auto",
                 background: "#fff",
+                scrollbarWidth: "none",
+                msOverflowStyle: "none",
               }}
             >
               {/* Start----Sidebar content */}

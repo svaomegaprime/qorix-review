@@ -323,6 +323,16 @@ export default function Index() {
         <>
             <style>
                 {`
+                  *::-webkit-scrollbar, html::-webkit-scrollbar, body::-webkit-scrollbar {
+                    display: none !important;
+                    width: 0 !important;
+                    height: 0 !important;
+                  }
+                  *, html, body {
+                    -ms-overflow-style: none !important;
+                    scrollbar-width: none !important;
+                  }
+
                   .review-item {
                     height: 76px;
                     display: grid;
@@ -336,6 +346,8 @@ export default function Index() {
                     overflow: hidden auto;
                     background: #fff;
                     padding: 1rem;
+                    scrollbar-width: none;
+                    -ms-overflow-style: none;
                   }
 
                   @media (max-width: 900px) {
