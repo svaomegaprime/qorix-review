@@ -5,7 +5,7 @@ import Text from "../../../../../components/essentials/elements/Text";
 import SaveBar from "../../../components/savebar/SaveBar";
 import { useSaveBarTrigger } from "../../../components/savebar/useSaveBarTrigger";
 import { requestAppWindowClose } from "../../../utils/useAppWindowClose";
-import { useFetcher, useLoaderData, useNavigation } from "react-router";
+import { useActionData, useFetcher, useLoaderData, useNavigation } from "react-router";
 import ColorPicker from "../../../components/elements/ColorPicker";
 import QuickReviewComponent from "../componant/quickReviewPreview";
 import TabButton from "../../../../../components/essentials/TabButton";
@@ -180,7 +180,7 @@ export async function action({ request }) {
       },
     });
 
-    console.log("[Quick Review::]: ", res)
+
 
     const metafieldResult = await setAppMetafield(admin, "quick_review", res);
 
@@ -196,6 +196,9 @@ export async function action({ request }) {
 
 export default function Index(VALUES = {}) {
   const loaderData = useLoaderData();
+  const actionData = useActionData();
+
+  console.log("[Quick Review::Action Data]: ", actionData)
 
   const COLOR_PICKERS_ELEMENTS = [
     {
@@ -276,6 +279,7 @@ export default function Index(VALUES = {}) {
   };
   const fetcher = useFetcher();
   useAdminFetcherToast(fetcher);
+  const isSaving = fetcher.state !== "idle";
   const initQuickReviewRef = useRef(null);
   const savePendingRef = useRef(false);
 

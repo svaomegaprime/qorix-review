@@ -7,6 +7,7 @@ import Text from "../../../../../components/essentials/elements/Text";
 import SaveBar from "../../../components/savebar/SaveBar";
 import { useSaveBarTrigger } from "../../../components/savebar/useSaveBarTrigger";
 import { requestAppWindowClose } from "../../../utils/useAppWindowClose";
+import { useAdminFetcherToast } from "../../../../../utils/useAdminFetcherToast";
 import ColorPicker from "../../../components/elements/ColorPicker";
 import Header from "../../../components/Header";
 import ResetToDefaults from "../../../components/elements/ResetToDefaults";
@@ -137,6 +138,7 @@ export default function Index() {
   // loader theke asha data — na thakle default fallback
   const loaderData = useLoaderData() || {};
   const fetcher = useFetcher();
+  useAdminFetcherToast(fetcher);
 
   const [resetKey, setResetKey] = useState(0);
   const [activeDevice, setActiveDevice] = useState("desktop");
