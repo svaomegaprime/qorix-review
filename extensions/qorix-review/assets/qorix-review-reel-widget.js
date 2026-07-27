@@ -31,9 +31,8 @@
         clickable: true,
       },
       breakpoints: {
-        768: { slidesPerView: 2, spaceBetween: gapBetweenCards },
-        1024: { slidesPerView: 3, spaceBetween: gapBetweenCards },
-        1440: { slidesPerView: navCols, spaceBetween: gapBetweenCards },
+        600: { slidesPerView: Math.min(2, navCols), spaceBetween: gapBetweenCards },
+        1024: { slidesPerView: navCols, spaceBetween: gapBetweenCards },
       },
     };
 

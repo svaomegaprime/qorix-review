@@ -1,46 +1,96 @@
+{% assign review_reel_metafield = app.metafields.qorix_review.review_reel.value %}
+
+{% assign show_reviewer_name = showReviewerName %}
+{% if show_reviewer_name == nil %}
+  {% assign show_reviewer_name = review_reel_metafield.showReviewerName %}
+{% endif %}
+
+{% assign show_review_image = showReviewImage %}
+{% if show_review_image == nil %}
+  {% assign show_review_image = review_reel_metafield.showReviewImage %}
+{% endif %}
+
+{% assign show_verified_badge = showVerifiedBadge %}
+{% if show_verified_badge == nil %}
+  {% assign show_verified_badge = review_reel_metafield.showVerifiedBadge %}
+{% endif %}
+
+{% assign show_product_name = showProductName %}
+{% if show_product_name == nil %}
+  {% assign show_product_name = review_reel_metafield.showProductName %}
+{% endif %}
+
+{% assign show_review_date = showReviewDate %}
+{% if show_review_date == nil %}
+  {% assign show_review_date = review_reel_metafield.showReviewDate %}
+{% endif %}
+
+{% assign start_color_val = startColor | default: review_reel_metafield.startColor | default: '#34C759' %}
+
 <div class="qorix-review-reel-swiper-slide swiper-slide">
   <div class="qorix-review-reel-review-card">
-    {% if media_type == 'video' %}
-      <div class="qorix-review-reel-review-card-image" data-media-type="video" data-video-src="{{ video_src }}">
-        <video
-          src="{{ video_src }}"
-          playsinline
-          loop
-          preload="metadata"
-          class="qorix-review-reel-card-video"
-        ></video>
-        <button class="qorix-review-reel-play-btn" aria-label="Play video review">
-          <svg width="40" height="40" viewBox="0 0 40 40" fill="none" xmlns="http://www.w3.org/2000/svg">
-            <path d="M20 0C8.97167 0 0 8.97167 0 20C0 31.0283 8.97167 40 20 40C31.0283 40 40 31.0283 40 20C40 8.97167 31.0283 0 20 0ZM27.34 23.1217L18.6533 27.8783C18.1117 28.1833 17.515 28.335 16.9183 28.335C16.2967 28.335 15.6733 28.17 15.1067 27.84C13.995 27.19 13.3333 26.035 13.3333 24.7483V15.25C13.3333 13.9633 13.995 12.8083 15.1067 12.1583C16.215 11.51 17.5483 11.4983 18.67 12.13L27.3233 16.8683C28.4833 17.52 29.165 18.6867 29.165 19.9983C29.165 21.31 28.4833 22.4767 27.3383 23.12L27.34 23.1217ZM25.8333 20C25.8333 20.145 25.7367 20.1983 25.7233 20.2083L17.0367 24.9667C17.005 24.9833 16.9083 25.0367 16.7917 24.965C16.6683 24.8933 16.6683 24.7867 16.6683 24.7517V15.2533C16.6683 15.2183 16.6683 15.1117 16.7917 15.04C16.8367 15.0133 16.8783 15.005 16.915 15.005C16.975 15.005 17.0233 15.0317 17.0533 15.0483L25.7067 19.7883C25.7383 19.8067 25.8333 19.86 25.8333 20.005V20Z" fill="white"/>
-          </svg>
-        </button>
-      </div>
-    {% else %}
-      <div class="qorix-review-reel-review-card-image" data-media-type="image">
-        <img
-          src="{{ image_src }}"
-          alt="{{ image_alt }}"
-          width=""
-          height=""
-        >
-      </div>
+    {% if show_review_image != false and show_review_image != 'false' %}
+      {% if media_type == 'video' %}
+        <div class="qorix-review-reel-review-card-image" data-media-type="video" data-video-src="{{ video_src }}">
+          <video
+            src="{{ video_src }}"
+            playsinline
+            loop
+            preload="metadata"
+            class="qorix-review-reel-card-video"
+          ></video>
+          <button class="qorix-review-reel-play-btn" aria-label="Play video review">
+            <svg width="40" height="40" viewBox="0 0 40 40" fill="none" xmlns="http://www.w3.org/2000/svg">
+              <path d="M20 0C8.97167 0 0 8.97167 0 20C0 31.0283 8.97167 40 20 40C31.0283 40 40 31.0283 40 20C40 8.97167 31.0283 0 20 0ZM27.34 23.1217L18.6533 27.8783C18.1117 28.1833 17.515 28.335 16.9183 28.335C16.2967 28.335 15.6733 28.17 15.1067 27.84C13.995 27.19 13.3333 26.035 13.3333 24.7483V15.25C13.3333 13.9633 13.995 12.8083 15.1067 12.1583C16.215 11.51 17.5483 11.4983 18.67 12.13L27.3233 16.8683C28.4833 17.52 29.165 18.6867 29.165 19.9983C29.165 21.31 28.4833 22.4767 27.3383 23.12L27.34 23.1217ZM25.8333 20C25.8333 20.145 25.7367 20.1983 25.7233 20.2083L17.0367 24.9667C17.005 24.9833 16.9083 25.0367 16.7917 24.965C16.6683 24.8933 16.6683 24.7867 16.6683 24.7517V15.2533C16.6683 15.2183 16.6683 15.1117 16.7917 15.04C16.8367 15.0133 16.8783 15.005 16.915 15.005C16.975 15.005 17.0233 15.0317 17.0533 15.0483L25.7067 19.7883C25.7383 19.8067 25.8333 19.86 25.8333 20.005V20Z" fill="white"/>
+            </svg>
+          </button>
+        </div>
+      {% else %}
+        <div class="qorix-review-reel-review-card-image" data-media-type="image">
+          <img
+            src="{{ image_src }}"
+            alt="{{ image_alt }}"
+            width=""
+            height=""
+          >
+        </div>
+      {% endif %}
     {% endif %}
+
     <div class="qorix-review-reel-review-card-content">
       <div class="qorix-review-reel-review-text">
-        <p class="qorix-review-reel-product-title">{{ product_title }}</p>
-        <h3 class="qorix-review-reel-review-quote qorix-review-reel-line-clamp">"{{ review_quote }}"</h3>
+        {% if show_product_name != false and show_product_name != 'false' and product_title != blank %}
+          <p class="qorix-review-reel-product-title">{{ product_title }}</p>
+        {% endif %}
+        {% if review_quote != blank %}
+          <h3 class="qorix-review-reel-review-quote qorix-review-reel-line-clamp">"{{ review_quote }}"</h3>
+        {% endif %}
       </div>
       <div class="qorix-review-reel-review-user">
-        <img
-          class="qorix-review-reel-user-avatar"
-          src="{{ user_avatar }}"
-          alt="{{ user_name }}"
-          width=""
-          height=""
-        >
+        {% if user_avatar != blank %}
+          <img
+            class="qorix-review-reel-user-avatar"
+            src="{{ user_avatar }}"
+            alt="{{ user_name }}"
+            width=""
+            height=""
+          >
+        {% endif %}
         <div class="qorix-review-reel-user-info">
-          <p class="qorix-review-reel-user-name">{{ user_name }}</p>
-          <p class="qorix-review-reel-review-date">{{ review_date }}</p>
+          {% if show_reviewer_name != false and show_reviewer_name != 'false' %}
+            <p class="qorix-review-reel-user-name">
+              {{ user_name }}
+              {% if show_verified_badge != false and show_verified_badge != 'false' and verified != false %}
+                <svg width="18" height="18" viewBox="0 0 18 18" fill="none" style="vertical-align: middle; margin-left: 4px; display: inline-block;" aria-label="Verified">
+                  <circle cx="9" cy="9" r="9" fill="{{ start_color_val }}" />
+                  <path d="M5 9L7.5 11.5L13 6" stroke="white" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" />
+                </svg>
+              {% endif %}
+            </p>
+          {% endif %}
+          {% if show_review_date != false and show_review_date != 'false' and review_date != blank %}
+            <p class="qorix-review-reel-review-date">{{ review_date }}</p>
+          {% endif %}
         </div>
       </div>
     </div>
