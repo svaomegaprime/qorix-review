@@ -83,7 +83,7 @@ export default function ReviewHubWidget({ settings, activeDevice }) {
 
        .qr-reviews-container{
           background:#B5B5B5 ;
-        padding:70px;
+        padding:40px;
        overflow: auto;
        height: 760px;
 
@@ -91,13 +91,13 @@ export default function ReviewHubWidget({ settings, activeDevice }) {
 
      
    .qr-reviews-section {
-  max-width: ${activeDevice === "mobile" ? "390px" : "1400px"};
+  max-width: ${activeDevice === "mobile" ? "400px" : "1400px"};
   padding: ${activeDevice === "mobile" ? "20px" : "100px"};
   background: #fff;
   margin: 0 auto;
 overflow: auto;
 
-  border-radius: ${activeDevice === "mobile" ? "40px" : "0"};
+  
 }
 
 
@@ -516,45 +516,23 @@ display: block;
                 {/* FILTER */}
                 {(filterSorting === "FILTER_AND_SORTING" ||
                   filterSorting === "FILTER_ONLY") && (
-                  <button
-                    onClick={() => setIsFilterign(!isFilterign)}
-                    className="tb-filter-main-btn"
-                  >
-                    <svg
-                      width="15"
-                      height="15"
-                      viewBox="0 0 24 24"
-                      fill="none"
-                      stroke="currentColor"
-                      strokeWidth="2"
-                      strokeLinecap="round"
-                      strokeLinejoin="round"
-                    >
-                      <polygon points="22 3 2 3 10 12.46 10 19 14 21 14 12.46 22 3" />
-                    </svg>
-                    Filter
-                    <svg
-                      width="12"
-                      height="12"
-                      viewBox="0 0 24 24"
-                      fill="none"
-                      stroke="currentColor"
-                      strokeWidth="2"
-                    >
-                      <polyline points="6 9 12 15 18 9" />
-                    </svg>
-                  </button>
-                )}
-
-                {/* SORTING */}
-                {(filterSorting === "FILTER_AND_SORTING" ||
-                  filterSorting === "SORTING_ONLY") && (
-                  <div className="tb-sort-wrapper">
                     <button
-                      className="tb-sort-trigger"
-                      onClick={() => setIsSortOpen(!isSortOpen)}
+                      onClick={() => setIsFilterign(!isFilterign)}
+                      className="tb-filter-main-btn"
                     >
-                      Sort by: <span>{selectedSort}</span>
+                      <svg
+                        width="15"
+                        height="15"
+                        viewBox="0 0 24 24"
+                        fill="none"
+                        stroke="currentColor"
+                        strokeWidth="2"
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
+                      >
+                        <polygon points="22 3 2 3 10 12.46 10 19 14 21 14 12.46 22 3" />
+                      </svg>
+                      Filter
                       <svg
                         width="12"
                         height="12"
@@ -566,27 +544,48 @@ display: block;
                         <polyline points="6 9 12 15 18 9" />
                       </svg>
                     </button>
+                  )}
 
-                    {isSortOpen && (
-                      <div className="tb-sort-dropdown">
-                        {sortOptions.map((option) => (
-                          <button
-                            key={option}
-                            className={`tb-sort-item ${
-                              selectedSort === option ? "active-sort" : ""
-                            }`}
-                            onClick={() => {
-                              setSelectedSort(option);
-                              setIsSortOpen(false);
-                            }}
-                          >
-                            {option}
-                          </button>
-                        ))}
-                      </div>
-                    )}
-                  </div>
-                )}
+                {/* SORTING */}
+                {(filterSorting === "FILTER_AND_SORTING" ||
+                  filterSorting === "SORTING_ONLY") && (
+                    <div className="tb-sort-wrapper">
+                      <button
+                        className="tb-sort-trigger"
+                        onClick={() => setIsSortOpen(!isSortOpen)}
+                      >
+                        Sort by: <span>{selectedSort}</span>
+                        <svg
+                          width="12"
+                          height="12"
+                          viewBox="0 0 24 24"
+                          fill="none"
+                          stroke="currentColor"
+                          strokeWidth="2"
+                        >
+                          <polyline points="6 9 12 15 18 9" />
+                        </svg>
+                      </button>
+
+                      {isSortOpen && (
+                        <div className="tb-sort-dropdown">
+                          {sortOptions.map((option) => (
+                            <button
+                              key={option}
+                              className={`tb-sort-item ${selectedSort === option ? "active-sort" : ""
+                                }`}
+                              onClick={() => {
+                                setSelectedSort(option);
+                                setIsSortOpen(false);
+                              }}
+                            >
+                              {option}
+                            </button>
+                          ))}
+                        </div>
+                      )}
+                    </div>
+                  )}
               </div>
             )}
 
@@ -690,9 +689,8 @@ display: block;
                   {/* Image Gallery Row */}
                   {showMediaAsset && visibleMedia.length > 0 && (
                     <div
-                      className={`qr-review-gallery ${
-                        visibleMedia.length === 1 ? "single-media" : ""
-                      }`}
+                      className={`qr-review-gallery ${visibleMedia.length === 1 ? "single-media" : ""
+                        }`}
                     >
                       {visibleMedia.map((media, mediaIndex) => (
                         <div

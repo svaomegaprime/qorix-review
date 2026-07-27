@@ -57,6 +57,7 @@ export default function WidgetsHeader({ settings, activeDevice }) {
         .qr-rating-summary {
           display: inline-flex;
           align-items: center;
+          flex-wrap:wrap;
           gap: 10px;
           justify-content: center;
         }

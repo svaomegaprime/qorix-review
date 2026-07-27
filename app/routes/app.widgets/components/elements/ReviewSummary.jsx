@@ -64,8 +64,8 @@ export default function ReviewSummary({
       : isShowStarDistribution && !isShowMediaStrip
       ? "198px 350px "          
       : !isShowStarDistribution && isShowMediaStrip
-      ? "198px 950px minmax(0, 1fr)"             // শুধু media আছে, star নাই -> 3 column
-      : "198px max-content"                       // দুটোই নাই -> 2 column, space-between
+      ? "198px 950px minmax(0, 1fr)"             
+      : "198px max-content"                       
   };
   gap: ${
     activeDevice === "mobile"
