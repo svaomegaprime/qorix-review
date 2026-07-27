@@ -1,0 +1,28 @@
+{% assign trust_bar_metafield = app.metafields.qorix_review.trust_bar.value %}
+{{ 'trust-bar.css' | asset_url | stylesheet_tag }}
+<style>
+  :root{
+    --qrtb-show-average-rating: {% if trust_bar_metafield.showAverageRating %} block {% else %} none {% endif %};
+    --qrtb-show-review-count:  {% if trust_bar_metafield.showReviewCount %} block {% else %} none {% endif %};
+    --qrtb-show-verified-badge:  {% if trust_bar_metafield.showVerifiedBadge %} block {% else %} none {% endif %};
+
+    --qrtb-star-color: {{ trust_bar_metafield.starColor }};
+    --qrtb-text-color: {{ trust_bar_metafield.textColor }};
+    --qrtb-verified-badge-color: {{ trust_bar_metafield.verifiedBadgeColor }};
+    --qrtb-font-size: {{ trust_bar_metafield.fontSize }};
+    --qrtb-star-size: {{ trust_bar_metafield.starSize }};
+    --qrtb-text-weight: {{ trust_bar_metafield.fontWeight }};
+    --qrtb-no-review-hide:  {% if trust_bar_metafield.hideIfNoReviews %} block {% else %} none {% endif %};
+  }
+</style>
+{% render 'custom-css', css: trust_bar_metafield.advanceCss %}
+
+<script src="{{ 'trust-bar.js' | asset_url }}" defer></script>
+<script src="{{ 'alpine.js' | asset_url }}" defer></script>
+
+{% schema %}
+{
+  "name": "Qorix review",
+  "target": "body"
+}
+{% endschema %}

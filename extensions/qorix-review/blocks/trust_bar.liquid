@@ -1,0 +1,14 @@
+{{ 'trust-bar.css' | asset_url | stylesheet_tag }}
+
+<div x-data="TrustBar({{ product.id | json }})" x-html="trustBarWidget"></div>
+
+{% schema %}
+{
+  "name": "Trust bar Widget",
+  "target": "section",
+  "settings": [],
+  "enabled_on": {
+    "templates": ["product"]
+  }
+}
+{% endschema %}
