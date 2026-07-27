@@ -115,8 +115,8 @@ export async function action({ request }) {
     });
 
     // DB theke ja shave holo, oi data diye storefront metafield update kora hocche
-    const settingsForMetafield = dbRowToSettings(res);
-    await setAppMetafield(admin, "review_reel", settingsForMetafield);
+  
+    await setAppMetafield(admin, "review_reel", res);
 
     return {
       ok: true,

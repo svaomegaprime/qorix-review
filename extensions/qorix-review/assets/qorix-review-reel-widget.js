@@ -4,47 +4,84 @@
     if (!container) return;
 
     let wrapper = container.closest(".qorix-review-reel-real-review-section");
+    let controlsWrapper = wrapper ? wrapper.querySelector(".qorix-review-reel-controls") : null;
+    let slides = container.querySelectorAll(".swiper-slide");
+    let totalSlides = slides.length;
+
     let computedStyle = getComputedStyle(wrapper || container);
     let navCols =
       parseInt(computedStyle.getPropertyValue("--nav-cols").trim()) || 3;
     let gapBetweenCards =
       parseInt(computedStyle.getPropertyValue("--gap-between-cards").trim()) ||
-      8;
+      24;
     let autoplayEnabled =
       computedStyle.getPropertyValue("--autoplay-enabled").trim() === "true";
     let autoplaySpeed =
       parseInt(computedStyle.getPropertyValue("--autoplay-speed").trim()) ||
       4000;
 
+    function getActiveSlidesPerView() {
+      let width = window.innerWidth;
+      if (width < 600) return 1;
+      if (width < 1024) return Math.min(2, navCols);
+      if (width < 1440) return Math.min(3, navCols);
+      return navCols;
+    }
+
+    let initialPerView = getActiveSlidesPerView();
+    let shouldLoop = totalSlides > initialPerView;
+
     let swiperOptions = {
       slidesPerView: 1,
       spaceBetween: gapBetweenCards,
       observer: true,
       observeParents: true,
-      loop: true,
+      watchOverflow: true,
+      loop: shouldLoop,
       navigation: {
-        nextEl: document.querySelector(".qorix-review-reel-swiper-button-next"),
-        prevEl: document.querySelector(".qorix-review-reel-swiper-button-prev"),
+        nextEl: wrapper ? wrapper.querySelector(".qorix-review-reel-swiper-button-next") : ".qorix-review-reel-swiper-button-next",
+        prevEl: wrapper ? wrapper.querySelector(".qorix-review-reel-swiper-button-prev") : ".qorix-review-reel-swiper-button-prev",
       },
       pagination: {
-        el: ".qorix-review-reel-swiper-pagination",
+        el: wrapper ? wrapper.querySelector(".qorix-review-reel-swiper-pagination") : ".qorix-review-reel-swiper-pagination",
         clickable: true,
       },
       breakpoints: {
-        768: { slidesPerView: 2, spaceBetween: gapBetweenCards },
-        1024: { slidesPerView: 3, spaceBetween: gapBetweenCards },
+        600: { slidesPerView: Math.min(2, navCols), spaceBetween: gapBetweenCards },
+        1024: { slidesPerView: Math.min(3, navCols), spaceBetween: gapBetweenCards },
         1440: { slidesPerView: navCols, spaceBetween: gapBetweenCards },
       },
     };
 
-    if (autoplayEnabled) {
+    if (autoplayEnabled && shouldLoop) {
       swiperOptions.autoplay = {
         delay: autoplaySpeed,
         disableOnInteraction: false,
       };
     }
 
-    let swiper = new Swiper(".mySwiper", swiperOptions);
+    let swiper = new Swiper(container, swiperOptions);
+
+    function updateControlsVisibility() {
+      let perView = getActiveSlidesPerView();
+      let hasOverflow = totalSlides > perView;
+
+      if (controlsWrapper) {
+        controlsWrapper.style.display = hasOverflow ? "" : "none";
+      }
+
+      if (!hasOverflow && swiper.autoplay && swiper.autoplay.running) {
+        swiper.autoplay.stop();
+      } else if (hasOverflow && autoplayEnabled && swiper.autoplay && !swiper.autoplay.running) {
+        swiper.autoplay.start();
+      }
+    }
+
+    updateControlsVisibility();
+    swiper.on("breakpoint", updateControlsVisibility);
+    swiper.on("resize", updateControlsVisibility);
+    window.addEventListener("resize", updateControlsVisibility);
+
     let currentVideo = null;
 
     swiper.on("slideChange", function () {
@@ -52,7 +89,7 @@
         currentVideo.pause();
         currentVideo = null;
       }
-      if (autoplayEnabled && swiper.autoplay) {
+      if (autoplayEnabled && swiper.autoplay && swiper.autoplay.running) {
         swiper.autoplay.start();
       }
     });
@@ -61,9 +98,10 @@
       .querySelectorAll(
         '.qorix-review-reel-review-card-image[data-media-type="video"]',
       )
-      .forEach(function (wrapper) {
-        let btn = wrapper.querySelector(".qorix-review-reel-play-btn");
-        let videoSrc = wrapper.dataset.videoSrc;
+      .forEach(function (videoWrapper) {
+        let btn = videoWrapper.querySelector(".qorix-review-reel-play-btn");
+        if (!btn) return;
+        let videoSrc = videoWrapper.dataset.videoSrc;
 
         btn.addEventListener("click", function () {
           if (currentVideo) {
@@ -76,8 +114,8 @@
           video.controls = true;
           video.autoplay = true;
           video.style.cssText =
-            "position:absolute;inset:0;width:100%;height:100%;object-fit:cover;z-index:2;border-radius:8px;";
-          wrapper.appendChild(video);
+            "position:absolute;inset:0;width:100%;height:100%;object-fit:cover;z-index:2;border-radius:12px;";
+          videoWrapper.appendChild(video);
           btn.style.display = "none";
 
           video.addEventListener("play", function () {
@@ -100,7 +138,8 @@
             if (currentVideo === video) {
               currentVideo = null;
             }
-            muteBtn.remove();
+            video.remove();
+            btn.style.display = "";
             if (autoplayEnabled && swiper.autoplay) {
               swiper.autoplay.start();
             }

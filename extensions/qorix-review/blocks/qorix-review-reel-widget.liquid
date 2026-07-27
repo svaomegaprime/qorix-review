@@ -1,14 +1,37 @@
 {{ 'swiper-bundle.min.css' | asset_url | stylesheet_tag }}
 {{ 'qorix-review-reel-widget.css' | asset_url | stylesheet_tag }}
 
+{% assign review_reel_metafield = app.metafields.qorix_review.review_reel.value %}
+{% render 'custom-css', css: review_reel_metafield.advanceCss %}
+
+<style>
+  [data-section="qorix-review-reel-widget"] {
+    --nav-cols: {{ review_reel_metafield.cardsVisible | default: 3 }};
+    --star-color: {{ review_reel_metafield.startColor | default: '#34C759' }};
+    --badge-color: {{ review_reel_metafield.startColor | default: '#34C759' }};
+    --active-dot-color: {{ review_reel_metafield.activeDotColor | default: '#34C759' }};
+    --card-background: {{ review_reel_metafield.cardBackgorud | default: '#FFFFFF' }};
+    --color-text-primary: {{ review_reel_metafield.cardTextColor | default: '#000000' }};
+    --color-text-product-name: {{ review_reel_metafield.cardTextColor | default: '#000000' }};
+    --autoplay-enabled: {% if review_reel_metafield.showAutoPlay != false and review_reel_metafield.showAutoPlay != 'false' %}true{% else %}false{% endif %};
+    --autoplay-speed: {{ review_reel_metafield.autoplaySpeed | default: 4 | times: 1000 }};
+  }
+</style>
+
 <section data-section="qorix-review-reel-widget" class="qorix-review-reel-real-review-section">
-  {% render 'heading',
-    label: 'block.settings.label',
-    title: 'block.settings.title',
-    subtitle: 'block.settings.subtitle',
-    rating: 5,
-    review_count: 'block.settings.review_count'
-  %}
+  {% if review_reel_metafield.showHeader != false and review_reel_metafield.showHeader != 'false' %}
+    {% assign header_position = review_reel_metafield.headerStyle | default: 'center' %}
+    {% assign star_color_val = review_reel_metafield.startColor | default: '#34C759' %}
+    {% render 'heading',
+        label: review_reel_metafield.eyebrowLabel,
+        title: review_reel_metafield.heading,
+        subtitle: review_reel_metafield.subheading,
+        position: header_position,
+        reviewStats: review_reel_metafield.reviewStats,
+        starColor: star_color_val
+    %}
+  {% endif %}
+
   <!-- ── Swiper ── -->
   <div class="qorix-review-reel-swiper-wrapper">
     <div class="qorix-review-reel-swiper swiper mySwiper">
@@ -23,52 +46,54 @@
               review_quote: "I'm grateful for their honesty and transparency throughout the process.",
               user_avatar: 'https://i.pravatar.cc/56?img=47',
               user_name: 'Saoirse Ronan',
-              review_date: '12th April, 2026'
+              review_date: '12th April, 2026',
+              verified: true
+            %}
+          {% else %}
+            {% render 'qorix-review-reel-widget-card',
+              media_type: 'video',
+              video_src: 'https://www.pexels.com/download/video/7667953/',
+              product_title: 'Product: Facial Serum Vitamin C',
+              review_quote: 'I was initially hesitant about applying for a mortgage',
+              user_avatar: 'https://i.pravatar.cc/56?img=32',
+              user_name: 'Jennifer Lawrence',
+              review_date: '16th April, 2026',
+              verified: true
             %}
           {% endif %}
-
-          {% render 'qorix-review-reel-widget-card',
-            media_type: 'video',
-            video_src: 'https://www.pexels.com/download/video/7667953/',
-            product_title: 'Product: Facial Serum Vitamin C',
-            review_quote: 'I was initially hesitant about applying for a mortgage',
-            user_avatar: 'https://i.pravatar.cc/56?img=32',
-            user_name: 'Jennifer Lawrence',
-            review_date: '16th April, 2026'
-          %}
         {% endfor %}
       </div>
-
-      <div class="qorix-review-reel-swiper-pagination"></div>
     </div>
 
-    <div data-swiper-controller class="qorix-review-reel-swiper-button-next ">
-      <svg width="20" height="20" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg">
-        <path fill-rule="evenodd" clip-rule="evenodd"
-          d="M7.71953 14.53C7.57908 14.3894 7.50019 14.1987 7.50019 14C7.50019 13.8012 7.57908 13.6106 7.71953 13.47L11.1895 9.99999L7.71953 6.52999C7.64993 6.46039 7.59472 6.37776 7.55705 6.28682C7.51939 6.19589 7.5 6.09842 7.5 5.99999C7.5 5.90156 7.51939 5.80409 7.55705 5.71316C7.59472 5.62222 7.64993 5.53959 7.71953 5.46999C7.78913 5.40039 7.87176 5.34518 7.9627 5.30751C8.05364 5.26984 8.1511 5.25046 8.24953 5.25046C8.34796 5.25046 8.44543 5.26984 8.53637 5.30751C8.6273 5.34518 8.70993 5.40039 8.77953 5.46999L12.7795 9.46999C12.92 9.61062 12.9989 9.80124 12.9989 9.99999C12.9989 10.1987 12.92 10.3894 12.7795 10.53L8.77953 14.53C8.63891 14.6704 8.44828 14.7493 8.24953 14.7493C8.05078 14.7493 7.86016 14.6704 7.71953 14.53Z"
-          fill="#4A4A4A" />
-      </svg>
-    </div>
-    <div data-swiper-controller class="qorix-review-reel-swiper-button-prev">
-      <svg width="20" height="20" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg">
-        <path fill-rule="evenodd" clip-rule="evenodd"
-          d="M12.2805 14.53C12.4209 14.3894 12.4998 14.1987 12.4998 14C12.4998 13.8012 12.4209 13.6106 12.2805 13.47L8.81047 9.99999L12.2805 6.52999C12.3501 6.46039 12.4053 6.37776 12.4429 6.28682C12.4806 6.19589 12.5 6.09842 12.5 5.99999C12.5 5.90156 12.4806 5.80409 12.4429 5.71316C12.4053 5.62222 12.3501 5.53959 12.2805 5.46999C12.2109 5.40039 12.1282 5.34518 12.0373 5.30751C11.9464 5.26984 11.8489 5.25046 11.7505 5.25046C11.652 5.25046 11.5546 5.26984 11.4636 5.30751C11.3727 5.34518 11.2901 5.40039 11.2205 5.46999L7.22047 9.46999C7.08002 9.61062 7.00113 9.80124 7.00113 9.99999C7.00113 10.1987 7.08002 10.3894 7.22047 10.53L11.2205 14.53C11.3611 14.6704 11.5517 14.7493 11.7505 14.7493C11.9492 14.7493 12.1398 14.6704 12.2805 14.53Z"
-          fill="#4A4A4A" />
-      </svg>
-    </div>
+    {% if review_reel_metafield.showNavigationDots != false and review_reel_metafield.showNavigationDots != 'false' or review_reel_metafield.showArrowControls != false and review_reel_metafield.showArrowControls != 'false' %}
+      <div class="qorix-review-reel-controls">
+        {% if review_reel_metafield.showArrowControls != false and review_reel_metafield.showArrowControls != 'false' %}
+          <div data-swiper-controller class="qorix-review-reel-swiper-button-prev" aria-label="Previous slide">
+            <svg width="20" height="20" viewBox="0 0 20 20" fill="none"><path fill-rule="evenodd" clip-rule="evenodd" d="M12.28 14.53a.75.75 0 0 0 0-1.06L8.81 10l3.47-3.47a.75.75 0 1 0-1.06-1.06l-4 4a.75.75 0 0 0 0 1.06l4 4a.75.75 0 0 0 1.06 0z" fill="#4A4A4A"/></svg>
+          </div>
+        {% endif %}
+
+        {% if review_reel_metafield.showNavigationDots != false and review_reel_metafield.showNavigationDots != 'false' %}
+          <div class="qorix-review-reel-swiper-pagination"></div>
+        {% endif %}
+
+        {% if review_reel_metafield.showArrowControls != false and review_reel_metafield.showArrowControls != 'false' %}
+          <div data-swiper-controller class="qorix-review-reel-swiper-button-next" aria-label="Next slide">
+            <svg width="20" height="20" viewBox="0 0 20 20" fill="none"><path fill-rule="evenodd" clip-rule="evenodd" d="M7.72 14.53a.75.75 0 0 1 0-1.06L11.19 10 7.72 6.53a.75.75 0 0 1 1.06-1.06l4 4a.75.75 0 0 1 0 1.06l-4 4a.75.75 0 0 1-1.06 0z" fill="#4A4A4A"/></svg>
+          </div>
+        {% endif %}
+      </div>
+    {% endif %}
   </div>
 </section>
 
 <script src="{{ 'swiper-bundle.min.js' | asset_url }}" defer></script>
-
 <script src="{{ 'qorix-review-reel-widget.js' | asset_url }}" defer></script>
 
 {% schema %}
 {
   "name": "review reel",
   "target": "section",
-  "settings": [
-   
-  ]
+  "settings": []
 }
 {% endschema %}
