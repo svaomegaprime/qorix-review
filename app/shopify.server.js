@@ -23,7 +23,8 @@ import { DEFAULT_VIDEO_STACK_SETTINGS } from "./routes/app.widgets/routes/app.vi
 
 import { DEFAULT_DB_FORMATED_DATA } from "./routes/app.widgets/routes/app.quick-review/data/defaultData";
 import { setAppMetafield } from "./utils/appMetafields.server";
-import { DEFAULT_REVIEW_HUB_DATA } from "./routes/app.widgets/routes/app.review-hub/data/defaultData";
+import { DEFAULT_REVIEW_HUB_DB_DATA } from "./routes/app.widgets/routes/app.review-hub/data/defaultData";
+import { DEFAULT_TRUST_BAR_SETTINGS } from "./routes/app.widgets/routes/app.trust-bar/data/trastbarDefaultValue";
 const GET_SHOP_BASIC_INFO = `#graphql
   query GetShopBasicInfo {
     shop {
@@ -194,7 +195,6 @@ const shopify = shopifyApp({
         });
         await setAppMetafield(admin, "quote_loop", quoteLoopWidget);
 
-
         // Video Stack Widget data set in the database for the first time and update if already exists
         const videoStackWidget = await prisma.videoStackSettings.upsert({
           where: {
@@ -207,9 +207,7 @@ const shopify = shopifyApp({
           },
         });
 
-
         await setAppMetafield(admin, "video_stack", videoStackWidget);
-
 
         const reviewHubWidgetData = await prisma.reviewHubWidget.upsert({
           where: {
@@ -217,15 +215,25 @@ const shopify = shopifyApp({
           },
           update: {},
           create: {
-            ...DEFAULT_REVIEW_HUB_DATA,
+            ...DEFAULT_REVIEW_HUB_DB_DATA,
             storeId: shopData.id,
           },
         });
 
+        await setAppMetafield(admin, "review_hub", reviewHubWidgetData);
 
-        await setAppMetafield(admin, "review_hub", reviewHubWidgetData)
+        const trustBarWidget = await prisma.trustBarWidget.upsert({
+          where: {
+            storeId: shopData.id,
+          },
+          update: {},
+          create: {
+            ...DEFAULT_TRUST_BAR_SETTINGS,
+            storeId: shopData.id,
+          },
+        });
 
-
+        await setAppMetafield(admin, "trust_bar", trustBarWidget);
       } catch (error) {
         console.error("afterAuth shop fetch failed:", error);
       }
