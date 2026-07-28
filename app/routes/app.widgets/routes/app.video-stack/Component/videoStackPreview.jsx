@@ -371,7 +371,7 @@ overflow-x: hidden;
 @media (max-width: 1450px) {
 
 .qorix-review-main-container{
-height: 670px;
+height: 550px;
 }
 
 section.qorix-review-video-stack-section {
