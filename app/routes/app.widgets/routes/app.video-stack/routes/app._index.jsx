@@ -77,7 +77,7 @@ export async function loader({ request }) {
     const { id: shop } = await getStoreData(admin);
 
     const row = await prisma.videoStackSettings.findUnique({
-      where: { shop },
+      where: { storeId: shop },
     });
 
     return dbRowToSettings(row); // row null hole DEFAULT_VALUES_VIDEO_STACK return kore
@@ -99,10 +99,10 @@ export async function action({ request }) {
     const dbFields = settingsToDbFields(data);
 
     const res = await prisma.videoStackSettings.upsert({
-      where: { shop },
+      where: { storeId: shop },
       update: dbFields,
       create: {
-        shop,
+        storeId: shop,
         ...dbFields,
       },
     });
@@ -425,10 +425,7 @@ export default function Index() {
                       label="Show product Name"
                       checked={settings.showProductName}
                       onChange={(e) =>
-                        handleSettingChange(
-                          "showProductName",
-                          e.target.checked,
-                        )
+                        handleSettingChange("showProductName", e.target.checked)
                       }
                     ></s-switch>
                   </s-stack>
@@ -450,10 +447,7 @@ export default function Index() {
                       label="Autoplay on hover"
                       checked={settings.autoplayOnHover}
                       onChange={(e) =>
-                        handleSettingChange(
-                          "autoplayOnHover",
-                          e.target.checked,
-                        )
+                        handleSettingChange("autoplayOnHover", e.target.checked)
                       }
                     ></s-switch>
                   </s-stack>
@@ -464,10 +458,7 @@ export default function Index() {
                       label="Muted by default"
                       checked={settings.mutedByDefault}
                       onChange={(e) =>
-                        handleSettingChange(
-                          "mutedByDefault",
-                          e.target.checked,
-                        )
+                        handleSettingChange("mutedByDefault", e.target.checked)
                       }
                     ></s-switch>
                   </s-stack>
@@ -551,10 +542,7 @@ export default function Index() {
                       value={settings.fiteringMinStart}
                       details="This option isn't shown in the preview. It will take effect on your live review widget once customers submit reviews."
                       onChange={(e) =>
-                        handleSettingChange(
-                          "fiteringMinStart",
-                          e.target.value,
-                        )
+                        handleSettingChange("fiteringMinStart", e.target.value)
                       }
                     >
                       <s-option value="Show all ratings">
