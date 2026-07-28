@@ -116,7 +116,7 @@ export async function action({ request }) {
     });
 
     // DB theke ja shave holo, oi data diye storefront metafield update kora hocche
-  
+
     await setAppMetafield(admin, "review_reel", res);
 
     return {
@@ -148,8 +148,8 @@ export default function Index() {
   });
   const [customCss, setCss] = useState(
     (loaderData && loaderData.advanceCss) ||
-      DEFAULT_VALUES_REVIEW_REEL.advanceCss ||
-      "",
+    DEFAULT_VALUES_REVIEW_REEL.advanceCss ||
+    "",
   );
 
   // Save Discard button-er jonno "shuru te ja chilo" ta ei ref e rakha thake
@@ -281,7 +281,7 @@ export default function Index() {
           }
 
           .review-item {
-            height: 64px;
+            height: 76px;
             display: grid;
             align-items: center;
             border-bottom: 1px solid #e4e4e4;
@@ -292,6 +292,8 @@ export default function Index() {
             overflow: hidden auto;
             background: #fff;
             padding: 1rem;
+            scrollbar-width: none;
+            -ms-overflow-style: none;
           }
 
           @media (max-width: 900px) {
@@ -302,8 +304,7 @@ export default function Index() {
             }
 
             .review-item {
-              height: 200px;
-              width: 70%;
+              height: 248px;
             }
           }
         `}
