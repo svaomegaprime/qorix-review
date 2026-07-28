@@ -85,14 +85,14 @@ export default function ReviewHubWidget({ settings, activeDevice }) {
           background:#B5B5B5 ;
         padding:40px;
        overflow: auto;
-       height: 760px;
+       height: 660px;
 
         }
 
      
    .qr-reviews-section {
   max-width: ${activeDevice === "mobile" ? "400px" : "1400px"};
-  padding: ${activeDevice === "mobile" ? "20px" : "100px"};
+  padding: ${activeDevice === "mobile" ? "20px" : "60px"};
   background: #fff;
   margin: 0 auto;
 overflow: auto;
@@ -443,6 +443,12 @@ overflow: auto;
           fill: #ffffff !important;
         }
 
+  @media (max-width: 1450px){
+    .qr-reviews-container{
+    height: 600px;
+    }
+  }
+
 
          @media (max-width: 1300px) {
 
@@ -468,6 +474,13 @@ overflow: auto;
        
              
         }
+
+      @media (max-width: 900px) {
+        .qr-reviews-container{
+    height: 420px;
+    }
+      }
+
 
         @media (max-width: 480px) {
 
