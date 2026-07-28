@@ -182,11 +182,8 @@ class QuickReviewWidget {
         .map((review) => this.withHelpfulState(review, customerEmail))
         .filter((review) => {
           if (this.showFirst === "VIDEO") {
-            return (
-              (review.attachments || []).some(
-                (att) =>
-                  att.type === "VIDEO" || att.url?.match(/\.(mp4|webm|mov)$/i),
-              ) || review.video_url
+            return (review.attachments || []).some(
+              (attachment) => attachment.type === "VIDEO",
             );
           }
           return true;
