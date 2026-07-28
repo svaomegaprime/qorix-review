@@ -95,6 +95,9 @@ class QuickReviewWidget {
         if (typeof window.initVideoStack === "function") {
           window.initVideoStack();
         }
+        if (typeof window.initReviewReel === "function") {
+          window.initReviewReel();
+        }
       });
     } else {
       setTimeout(() => {
@@ -103,6 +106,9 @@ class QuickReviewWidget {
         }
         if (typeof window.initVideoStack === "function") {
           window.initVideoStack();
+        }
+        if (typeof window.initReviewReel === "function") {
+          window.initReviewReel();
         }
       }, 50);
     }
@@ -184,6 +190,12 @@ class QuickReviewWidget {
           if (this.showFirst === "VIDEO") {
             return (review.attachments || []).some(
               (attachment) => attachment.type === "VIDEO",
+            );
+          }
+          if (this.showFirst === "ONLY_IMAGE_VIDEO") {
+            return (review.attachments || []).some(
+              (attachment) =>
+                attachment.type === "VIDEO" || attachment.type === "IMAGE",
             );
           }
           return true;

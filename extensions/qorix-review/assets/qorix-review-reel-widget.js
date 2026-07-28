@@ -1,7 +1,11 @@
 (function () {
-  function initReviewReel() {
-    let container = document.querySelector(".mySwiper");
+  window.initReviewReel = function () {
+    let container = document.querySelector(".qorix-review-reel-real-review-section .mySwiper");
     if (!container) return;
+
+    if (container.swiper) {
+      container.swiper.destroy(true, true);
+    }
 
     let wrapper = container.closest(".qorix-review-reel-real-review-section");
     let controlsWrapper = wrapper ? wrapper.querySelector(".qorix-review-reel-controls") : null;
@@ -63,6 +67,7 @@
     let swiper = new Swiper(container, swiperOptions);
 
     function updateControlsVisibility() {
+      totalSlides = container.querySelectorAll(".swiper-slide").length;
       let perView = getActiveSlidesPerView();
       let hasOverflow = totalSlides > perView;
 
@@ -78,6 +83,7 @@
     }
 
     updateControlsVisibility();
+    swiper.on("observerUpdate", updateControlsVisibility);
     swiper.on("breakpoint", updateControlsVisibility);
     swiper.on("resize", updateControlsVisibility);
     window.addEventListener("resize", updateControlsVisibility);
@@ -94,63 +100,62 @@
       }
     });
 
-    document
-      .querySelectorAll(
-        '.qorix-review-reel-review-card-image[data-media-type="video"]',
-      )
-      .forEach(function (videoWrapper) {
-        let btn = videoWrapper.querySelector(".qorix-review-reel-play-btn");
-        if (!btn) return;
-        let videoSrc = videoWrapper.dataset.videoSrc;
+    // Event delegation for video playback
+    container.addEventListener("click", function (e) {
+      let btn = e.target.closest(".qorix-review-reel-play-btn");
+      if (!btn) return;
 
-        btn.addEventListener("click", function () {
-          if (currentVideo) {
-            currentVideo.pause();
-            currentVideo = null;
-          }
+      let videoWrapper = btn.closest('.qorix-review-reel-review-card-image[data-media-type="video"]');
+      if (!videoWrapper) return;
 
-          let video = document.createElement("video");
-          video.src = videoSrc;
-          video.controls = true;
-          video.autoplay = true;
-          video.style.cssText =
-            "position:absolute;inset:0;width:100%;height:100%;object-fit:cover;z-index:2;border-radius:12px;";
-          videoWrapper.appendChild(video);
-          btn.style.display = "none";
+      let videoSrc = videoWrapper.dataset.videoSrc;
 
-          video.addEventListener("play", function () {
-            currentVideo = video;
-            if (swiper.autoplay) {
-              swiper.autoplay.stop();
-            }
-          });
+      if (currentVideo) {
+        currentVideo.pause();
+        currentVideo = null;
+      }
 
-          video.addEventListener("pause", function () {
-            if (currentVideo === video) {
-              currentVideo = null;
-            }
-            if (autoplayEnabled && swiper.autoplay) {
-              swiper.autoplay.start();
-            }
-          });
+      let video = document.createElement("video");
+      video.src = videoSrc;
+      video.controls = true;
+      video.autoplay = true;
+      video.style.cssText =
+        "position:absolute;inset:0;width:100%;height:100%;object-fit:cover;z-index:2;border-radius:12px;";
+      videoWrapper.appendChild(video);
+      btn.style.display = "none";
 
-          video.addEventListener("ended", function () {
-            if (currentVideo === video) {
-              currentVideo = null;
-            }
-            video.remove();
-            btn.style.display = "";
-            if (autoplayEnabled && swiper.autoplay) {
-              swiper.autoplay.start();
-            }
-          });
-        });
+      video.addEventListener("play", function () {
+        currentVideo = video;
+        if (swiper.autoplay) {
+          swiper.autoplay.stop();
+        }
       });
-  }
+
+      video.addEventListener("pause", function () {
+        if (currentVideo === video) {
+          currentVideo = null;
+        }
+        if (autoplayEnabled && swiper.autoplay) {
+          swiper.autoplay.start();
+        }
+      });
+
+      video.addEventListener("ended", function () {
+        if (currentVideo === video) {
+          currentVideo = null;
+        }
+        video.remove();
+        btn.style.display = "";
+        if (autoplayEnabled && swiper.autoplay) {
+          swiper.autoplay.start();
+        }
+      });
+    });
+  };
 
   if (document.readyState === "loading") {
-    document.addEventListener("DOMContentLoaded", initReviewReel);
+    document.addEventListener("DOMContentLoaded", window.initReviewReel);
   } else {
-    initReviewReel();
+    window.initReviewReel();
   }
 })();
