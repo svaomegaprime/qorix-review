@@ -1,0 +1,88 @@
+{{ 'quickreview-reviews.css' | asset_url | stylesheet_tag }}
+
+<div
+  class="quickreview-reviews"
+  data-product-id="{{ product.id }}"
+  id="quickreview-reviews-{{ block.id }}"
+  {{ block.shopify_attributes }}
+>
+  <div class="quickreview-reviews__header">
+    <div class="quickreview-reviews__titles">
+      <h2 class="quickreview-reviews__title">Product Reviews</h2>
+      <p class="quickreview-reviews__subtitle">of Hydrating Eye Cream</p>
+    </div>
+
+    <div class="quickreview-reviews__actions">
+      <button
+        type="button"
+        class="quickreview-reviews__icon-btn"
+        data-quickreview-filters-toggle
+        aria-label="Toggle filters"
+        aria-expanded="false"
+      >
+        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+          <path d="M3.59961 7.19999C3.59961 6.96129 3.69443 6.73237 3.86321 6.56359C4.032 6.39481 4.26091 6.29999 4.49961 6.29999H19.4996C19.7383 6.29999 19.9672 6.39481 20.136 6.56359C20.3048 6.73237 20.3996 6.96129 20.3996 7.19999C20.3996 7.43868 20.3048 7.6676 20.136 7.83638C19.9672 8.00517 19.7383 8.09999 19.4996 8.09999H4.49961C4.26091 8.09999 4.032 8.00517 3.86321 7.83638C3.69443 7.6676 3.59961 7.43868 3.59961 7.19999Z" fill="#303030"/>
+          <path d="M8.09961 16.8C8.09961 16.5613 8.19443 16.3324 8.36321 16.1636C8.532 15.9948 8.76091 15.9 8.99961 15.9H14.9996C15.2383 15.9 15.4672 15.9948 15.636 16.1636C15.8048 16.3324 15.8996 16.5613 15.8996 16.8C15.8996 17.0387 15.8048 17.2676 15.636 17.4364C15.4672 17.6052 15.2383 17.7 14.9996 17.7H8.99961C8.76091 17.7 8.532 17.6052 8.36321 17.4364C8.19443 17.2676 8.09961 17.0387 8.09961 16.8Z" fill="#4A4A4A"/>
+          <path d="M6.59922 11.1C6.36052 11.1 6.13161 11.1948 5.96282 11.3636C5.79404 11.5324 5.69922 11.7613 5.69922 12C5.69922 12.2387 5.79404 12.4676 5.96282 12.6364C6.13161 12.8052 6.36052 12.9 6.59922 12.9H17.3992C17.6379 12.9 17.8668 12.8052 18.0356 12.6364C18.2044 12.4676 18.2992 12.2387 18.2992 12C18.2992 11.7613 18.2044 11.5324 18.0356 11.3636C17.8668 11.1948 17.6379 11.1 17.3992 11.1H6.59922Z" fill="#4A4A4A"/>
+        </svg>
+      </button>
+
+      <div class="quickreview-reviews__sort" data-quickreview-sort>
+        <button
+          type="button"
+          class="quickreview-reviews__icon-btn"
+          data-quickreview-sort-toggle
+          aria-label="Sort reviews"
+          aria-expanded="false"
+        >
+          <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <path d="M12 3C14.755 3 17.455 3.232 20.083 3.678C20.616 3.768 21 4.234 21 4.774V5.818C21 6.11348 20.9418 6.40606 20.8287 6.67904C20.7157 6.95203 20.5499 7.20007 20.341 7.409L14.909 12.841C14.7001 13.0499 14.5343 13.298 14.4213 13.571C14.3082 13.8439 14.25 14.1365 14.25 14.432V17.359C14.2501 17.777 14.1337 18.1867 13.914 18.5423C13.6943 18.8978 13.3799 19.1851 13.006 19.372L9.75 21V14.432C9.75 14.1365 9.69181 13.8439 9.57874 13.571C9.46566 13.298 9.29993 13.0499 9.091 12.841L3.659 7.409C3.45007 7.20007 3.28434 6.95203 3.17126 6.67904C3.05819 6.40606 3 6.11348 3 5.818V4.774C3 4.234 3.384 3.768 3.917 3.678C6.58757 3.22586 9.29143 2.99906 12 3Z" stroke="#4A4A4A" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+          </svg>
+        </button>
+
+        <ul class="quickreview-reviews__sort-menu" data-quickreview-sort-menu hidden>
+          <li data-sort-value="recent" class="is-active">Most recent (default)</li>
+          <li data-sort-value="highest">Highest rating</li>
+          <li data-sort-value="pictures">Only pictures</li>
+          <li data-sort-value="pictures-first">Pictures first</li>
+          <li data-sort-value="videos-first">Videos first</li>
+        </ul>
+      </div>
+    </div>
+  </div>
+
+  <div class="quickreview-reviews__filters" data-quickreview-filters>
+    <span class="quickreview-reviews__filters-label">Filters</span>
+
+    <div class="quickreview-reviews__rating-filter">
+      <span class="quickreview-reviews__rating-label">Rating</span>
+
+      <div class="quickreview-reviews__pills" data-quickreview-rating-pills>
+        <button type="button" class="quickreview-pill " data-rating="all">All</button>
+        <button type="button" class="quickreview-pill" data-rating="1">
+          1 <span class="quickreview-pill__star">{%- render 'icon' name:'rating-star' -%}</span>
+        </button>
+        <button type="button" class="quickreview-pill" data-rating="2">
+          2 <span class="quickreview-pill__star">{%- render 'icon' name:'rating-star' -%}</span>
+        </button>
+        <button type="button" class="quickreview-pill" data-rating="3">
+          3 <span class="quickreview-pill__star">{%- render 'icon' name:'rating-star' -%}</span>
+        </button>
+        <button type="button" class="quickreview-pill is-active" data-rating="4">
+          4 <span class="quickreview-pill__star">{%- render 'icon' name:'rating-star' -%}</span>
+        </button>
+        <button type="button" class="quickreview-pill" data-rating="5">
+          5 <span class="quickreview-pill__star">{%- render 'icon' name:'rating-star' -%}</span>
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <div class="quickreview-reviews__list" data-quickreview-reviews-list>
+    {% for i in (1..3) %}
+      {% render 'quickreview-review-item' %}
+    {% endfor %}
+  </div>
+</div>
+
+<button type="button" class="quickreview-reviews__load-more" data-quickreview-load-more>Load more reviews</button>

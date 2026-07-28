@@ -1,5 +1,6 @@
 const DEFAULT_COLOR_VALUES = {
   STAR_COLOR: "#f59e0b",
+  BAR_FILE_COLOR: "#34C759",
   TEXT_COLOR: "#fff",
   VERIFIED_BADGE_COLOR: "#1D9E75",
   Submit_Button_Color: "#1D9E75",
@@ -7,7 +8,7 @@ const DEFAULT_COLOR_VALUES = {
 
 const DEFAULT_QUICK_REVIEW_STATE = {
   name: true,
-  email: false,
+  email: true,
   photo: true,
   video: true,
   formTitle: "How was your experience?",
@@ -20,16 +21,21 @@ const DEFAULT_QUICK_REVIEW_STATE = {
   colorValues: DEFAULT_COLOR_VALUES,
   borderRadius: 15,
   showReviewerName: true,
-  showReviewerImage: true,
-  showReviewerVideo: true,
-  showProductName: false,
+  showMediaThumbnails: true,
+  showProductName: true,
   showVerifiedBadge: true,
   showReviewDate: true,
-  showRatingFilter: true,
+  showStarRatingOnCard: true,
+  showHelpfulButton: true,
+  isShowStarDistribution: true,
+  isShowMediaStrip: true,
+  isShowReviewCount: true,
+  writeReviewButtonText: "Write a review",
+  showHelfullButton: true,
   reviewPerPage: 10,
   defaultSort: "MOST_RECENT",
+  filterAndSorting: "FILTER_AND_SORT",
 };
-
 
 export const DEFAULT_DB_FORMATED_DATA = {
   // -------- form ----------
@@ -41,6 +47,10 @@ export const DEFAULT_DB_FORMATED_DATA = {
   formTitle: DEFAULT_QUICK_REVIEW_STATE.formTitle,
   formSubtitle: DEFAULT_QUICK_REVIEW_STATE.formSubtitle,
   submitButtonText: DEFAULT_QUICK_REVIEW_STATE.submitButtonText,
+  isShowStarDistribution: DEFAULT_QUICK_REVIEW_STATE.isShowStarDistribution,
+  isShowMediaStrip: DEFAULT_QUICK_REVIEW_STATE.isShowMediaStrip,
+  isShowReviewCount: DEFAULT_QUICK_REVIEW_STATE.isShowReviewCount,
+  showHelfullButton: DEFAULT_QUICK_REVIEW_STATE.showHelfullButton,
   // ---success-----
   successMessageTitle: DEFAULT_QUICK_REVIEW_STATE.successMessageTitle,
   successButtonText: DEFAULT_QUICK_REVIEW_STATE.successButtonText,
@@ -50,17 +60,19 @@ export const DEFAULT_DB_FORMATED_DATA = {
   buttonBackgroundColor: DEFAULT_COLOR_VALUES.Submit_Button_Color,
   buttonTextColor: DEFAULT_COLOR_VALUES.TEXT_COLOR,
   verifiedBadgeColor: DEFAULT_COLOR_VALUES.VERIFIED_BADGE_COLOR,
+  barFileColor: DEFAULT_COLOR_VALUES.BAR_FILE_COLOR,
   // -------------- widget ---------
   borderRadius: `${DEFAULT_QUICK_REVIEW_STATE.borderRadius}px`,
 
   isShowReviewerName: DEFAULT_QUICK_REVIEW_STATE.showReviewerName,
-  isShowReviewerImage: DEFAULT_QUICK_REVIEW_STATE.showReviewerImage,
-  isShowReviewerVideo: DEFAULT_QUICK_REVIEW_STATE.showReviewerVideo,
+  isShowMediaThumbnails: DEFAULT_QUICK_REVIEW_STATE.showMediaThumbnails,
   isShowProductName: DEFAULT_QUICK_REVIEW_STATE.showProductName,
   isShowVerifiedBadge: DEFAULT_QUICK_REVIEW_STATE.showVerifiedBadge,
   isShowReviewDate: DEFAULT_QUICK_REVIEW_STATE.showReviewDate,
-  isShowRatingFilter: DEFAULT_QUICK_REVIEW_STATE.showRatingFilter,
-
+  isShowStarRatingOnCard: DEFAULT_QUICK_REVIEW_STATE.showStarRatingOnCard,
+  isShowHelpfulButton: DEFAULT_QUICK_REVIEW_STATE.showHelpfulButton,
+  writeReviewButtonText: DEFAULT_QUICK_REVIEW_STATE.writeReviewButtonText,
   reviewPerPage: Number(DEFAULT_QUICK_REVIEW_STATE.reviewPerPage),
   defaultSort: DEFAULT_QUICK_REVIEW_STATE.defaultSort,
+  filterAndSorting: DEFAULT_QUICK_REVIEW_STATE.filterAndSorting,
 };

@@ -1,0 +1,97 @@
+{% assign review_reel_metafield = app.metafields.qorix_review.review_reel.value %}
+
+{% assign show_reviewer_name = showReviewerName %}
+{% if show_reviewer_name == nil %}
+  {% assign show_reviewer_name = review_reel_metafield.showReviewerName %}
+{% endif %}
+
+{% assign show_review_image = showReviewImage %}
+{% if show_review_image == nil %}
+  {% assign show_review_image = review_reel_metafield.showReviewImage %}
+{% endif %}
+
+{% assign show_verified_badge = showVerifiedBadge %}
+{% if show_verified_badge == nil %}
+  {% assign show_verified_badge = review_reel_metafield.showVerifiedBadge %}
+{% endif %}
+
+{% assign show_product_name = showProductName %}
+{% if show_product_name == nil %}
+  {% assign show_product_name = review_reel_metafield.showProductName %}
+{% endif %}
+
+{% assign show_review_date = showReviewDate %}
+{% if show_review_date == nil %}
+  {% assign show_review_date = review_reel_metafield.showReviewDate %}
+{% endif %}
+
+{% assign start_color_val = startColor | default: review_reel_metafield.startColor | default: '#34C759' %}
+
+<div class="qorix-review-reel-swiper-slide swiper-slide">
+  <div class="qorix-review-reel-review-card">
+    {% if media_type == 'video' %}
+      <div class="qorix-review-reel-review-card-image" data-media-type="video" data-video-src="{{ video_src }}">
+        <video
+          src="{{ video_src }}"
+          playsinline
+          loop
+          preload="metadata"
+          class="qorix-review-reel-card-video"
+        ></video>
+        <button class="qorix-review-reel-play-btn" aria-label="Play video review">
+          <svg width="44" height="44" viewBox="0 0 44 44" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <circle cx="22" cy="22" r="22" fill="white" />
+            <path d="M27.5 22L19.25 27.1962V16.8038L27.5 22Z" fill="#303030"/>
+          </svg>
+        </button>
+      </div>
+    {% elsif image_src != blank %}
+      <div class="qorix-review-reel-review-card-image" data-media-type="image">
+        <img
+          src="{{ image_src }}"
+          alt="{{ image_alt }}"
+          width=""
+          height=""
+        >
+      </div>
+    {% endif %}
+
+    <div class="qorix-review-reel-review-card-content">
+      <div class="qorix-review-reel-review-text">
+        {% if show_product_name != false and show_product_name != 'false' and product_title != blank %}
+          <p class="qorix-review-reel-product-title">{{ product_title }}</p>
+        {% endif %}
+        {% if review_quote != blank %}
+          <h3 class="qorix-review-reel-review-quote qorix-review-reel-line-clamp">"{{ review_quote }}"</h3>
+        {% endif %}
+      </div>
+      <div class="qorix-review-reel-review-user">
+        {% if show_review_image != false and show_review_image != 'false' and user_avatar != blank %}
+          <img
+            class="qorix-review-reel-user-avatar"
+            src="{{ user_avatar }}"
+            alt="{{ user_name }}"
+            width=""
+            height=""
+          >
+        {% endif %}
+        <div class="qorix-review-reel-user-info">
+          {% if show_reviewer_name != false and show_reviewer_name != 'false' %}
+            <p class="qorix-review-reel-user-name">
+              {{ user_name }}
+              {% if show_verified_badge != false and show_verified_badge != 'false' and verified != false %}
+                <svg width="18" height="18" viewBox="0 0 18 18" fill="none" style="vertical-align: middle; margin-left: 4px; display: inline-block;" aria-label="Verified">
+                  <circle cx="9" cy="9" r="9" fill="{{ start_color_val }}" />
+                  <path d="M5 9L7.5 11.5L13 6" stroke="white" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" />
+                </svg>
+              {% endif %}
+            </p>
+          {% endif %}
+          {% if show_review_date != false and show_review_date != 'false' and review_date != blank %}
+            <p class="qorix-review-reel-review-date">{{ review_date }}</p>
+          {% endif %}
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

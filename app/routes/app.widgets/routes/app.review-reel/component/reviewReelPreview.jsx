@@ -1,6 +1,5 @@
 import { useState, useEffect, useRef, useLayoutEffect, useMemo } from "react";
 import ReaviewHeader from "../../../components/elements/WidgetsHeader";
-
 const GAP = 24;
 const TRANSITION = "transform 0.5s cubic-bezier(0.4, 0, 0.2, 1)";
 
@@ -79,7 +78,6 @@ section.qorix-review-reel-real-review-section {
   padding:var(---stack-mobile_padding, 0px 40px);
 
 }
-
 
   .qorix-review-reel-secound_container {
     width: var(---preview_mobile_width, auto);
@@ -269,7 +267,7 @@ padding-left:var(---preview_mobile_review_header, 70px);
   font-size: 1rem;
   line-height: 1.7;
   letter-spacing: -0.5px;
-  color: var(---color-text-product-name);
+  color: var(--card_text_color, var(---color-text-product-name));
 }
 
 [data-section="qorix-review-reel-widget"] .qorix-review-reel-review-quote {
@@ -278,7 +276,7 @@ padding-left:var(---preview_mobile_review_header, 70px);
   font-size: 24px;
   line-height: 1.4;
   letter-spacing: -1px;
-  color: var(---color-text-primary);
+  color: var(--card_text_color, var(---color-text-primary));
   display: -webkit-box;
   -webkit-line-clamp: 2;
   -webkit-box-orient: vertical;
@@ -312,7 +310,7 @@ padding-left:var(---preview_mobile_review_header, 70px);
   font-size: 1rem;
   line-height: 1.7;
   letter-spacing: -0.5px;
-  color: var(---color-text-primary);
+  color: var(--card_text_color, var(---color-text-primary));
 }
 
 [data-section="qorix-review-reel-widget"] .qorix-review-reel-review-date {
@@ -323,24 +321,71 @@ padding-left:var(---preview_mobile_review_header, 70px);
 }
 
 /* ── Responsive ── */
-@media (max-width: 960px) {
+
+@media (max-width: 1440px) {
+  .qorix-review-reel-secound_container {
+    width: var(---stack-mobile_width, 50%);
+    margin: 0 auto;
+}
+}
+
+@media (max-width: 1030px) {
   [data-section="qorix-review-reel-widget"] .qorix-review-reel-real-review-section {
     padding: 60px 24px;
     gap: 40px;
   }
+
+    .qorix-review-reel-secound_container {
+    width: var(---stack-mobile_width_1024_device, 50%);
+    margin: 0 auto;
+}
+
+    .qorix-review-reel-header {
+    padding:20px ;
+}
+    .qorix-review-reel-main_container{
+
+  height : 600px;
+
+  }
+
+    
   [data-section="qorix-review-reel-widget"] .qorix-review-reel-swiper-button-next { right: -6px; }
   [data-section="qorix-review-reel-widget"] .qorix-review-reel-swiper-button-prev { left:  -6px; }
 }
 
-@media (max-width: 600px) {
+@media (max-width: 900px){
+.qorix-review-reel-main_container{
+  height : 500px;
+  }
+  
+  [data-section="qorix-review-reel-widget"] .qorix-review-reel-review-quote {
+    font-size: 19px;
+}
+
+
+
+}
+
+@media (max-width: 450px) {
   [data-section="qorix-review-reel-widget"] .qorix-review-reel-real-review-section {
     padding: 48px 16px;
     gap: 32px;
   }
+
+.qorix-review-reel-main_container{
+  height : 500px;
+  padding: 12px;
+  }
+
+.qr-reviews-header {
+    margin-bottom: 0px !important;
+}
+
   [data-section="qorix-review-reel-widget"] .qorix-review-reel-review-card-image { height: 220px; }
   [data-section="qorix-review-reel-widget"] .qorix-review-reel-review-quote      { font-size: 20px; }
-  [data-section="qorix-review-reel-widget"] .qorix-review-reel-swiper-button-next,
-  [data-section="qorix-review-reel-widget"] .qorix-review-reel-swiper-button-prev { display: none; }
+ 
+ 
 }
 `;
 
@@ -348,16 +393,16 @@ function useSlideCount(cardsVisible) {
   const [count, setCount] = useState(() => {
     if (typeof window === "undefined") return cardsVisible;
     const w = window.innerWidth;
-    if (w < 601) return 1;
-    if (w < 961) return Math.min(2, cardsVisible);
+    if (w < 451) return 1;
+    if (w < 1031) return Math.min(2, cardsVisible);
     return cardsVisible;
   });
 
   useEffect(() => {
     function update() {
       const w = window.innerWidth;
-      if (w < 601) setCount(1);
-      else if (w < 961) setCount(Math.min(2, cardsVisible));
+      if (w < 451) setCount(1);
+      else if (w < 1031) setCount(Math.min(2, cardsVisible));
       else setCount(cardsVisible);
     }
     update();
@@ -721,10 +766,12 @@ export default function ReviewReelWidget({ settings,activeDevice }) {
         position: "relative",
           "--activedotted_color": settings?.activeDotColor || "#008923",
           "--card_background": settings?.cardBackgorud || "#fff",
+          "--card_text_color": settings?.cardTextColor || "var(---color-text-primary)",
      
           "---preview_mobile_width": activeDevice === "mobile" ? "35%" : "auto",
             "---preview_mobile_review_header": activeDevice === "mobile" ? "20px" : "70px",
             "---stack-mobile_padding": activeDevice === "mobile" ? "0px 40px" : "0px",
+               "---stack-mobile_width_1024_device": activeDevice === "mobile" ? "90%" : "70%px",
         }}
       
       

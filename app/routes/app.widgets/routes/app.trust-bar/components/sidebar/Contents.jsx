@@ -28,12 +28,7 @@ export default function Contents({
                     defaultChecked={VALUES.SHOW_VERIFIED_BADGE}
                 />
             </s-stack>
-            <CustomSection padding="small base base base">
-                <s-select label="Review source" onChange={(e) => handleChangeContents({"REVIEW_SOURCE": e.currentTarget.value})}>
-                    <s-option value="DEMO_REVIEW_SOURCE" defaultSelected={VALUES.REVIEW_SOURCE === "DEMO_REVIEW_SOURCE"}>Qorix demo reviews</s-option>
-                    <s-option value="REAL_REVIEW_SOURCE" defaultSelected={VALUES.REVIEW_SOURCE === "REAL_REVIEW_SOURCE"}>Store real reviews</s-option>
-                </s-select>
-            </CustomSection>
+          
         </CustomSection>
     )
 }

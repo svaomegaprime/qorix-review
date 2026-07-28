@@ -1,7 +1,5 @@
 export default function PreviewStyles() {
-    return (
-        <style>
-            {`
+    const newLocal = `
                 .trust-preview {
                     height: calc(100vh - 76px);
                     overflow: auto;
@@ -256,36 +254,126 @@ export default function PreviewStyles() {
                     margin-top: 12px;
                     flex-wrap: wrap;
                 }
+      
 
-                @media (max-width: 1100px) {
+
+                @media (max-width: 1130px) {
                     .trust-preview--mobile {
                         padding: 16px;
                     }
+
+                    .trust-preview__product {
+    display: grid;
+    grid-template-columns:  1fr;
+   
+}
+
+                    .trust-preview__page {
+                        width: 100%;
+                        min-width: 0;
+                        min-height: calc(100vh - 176px);
+                    }
+                    .trust-preview__cards {
+                        display: grid;
+                        grid-template-columns: repeat(2, minmax(0, 1fr));
+                        gap: 20px;
+                        margin-top: 20px;
+                    }
                 }
 
-                @media (max-width: 700px) {
+                @media (max-width: 900px) {
                     .trust-preview {
                         padding: 16px;
                     }
-
                     .trust-preview__page {
+                        margin: 0 auto;
+                        width: 100%;
+                        min-width: 0;
                         padding: 20px 16px 56px;
                     }
-
                     .trust-preview__cards,
                     .trust-preview--mobile .trust-preview__cards {
                         grid-template-columns: minmax(0, 1fr);
                     }
-
                     .trust-preview__button-row {
                         flex-direction: column;
                     }
-
                     .trust-preview__button-placeholder {
                         width: 100%;
                     }
                 }
-            `}
+                      @media (max-width: 450px) {
+                        .trust-preview {
+                            padding: 8px;
+                            overflow-x: hidden;
+                        }
+                        .trust-preview__page {
+                            width: 100%;
+                            min-width: 0;
+                            min-height: auto;
+                            padding: 16px 12px 48px;
+                        }
+                        .trust-preview__heading {
+                            font-size: 16px;
+                            line-height: 20px;
+                        }
+                        .trust-preview__form-line--title {
+                            max-width: 100%;
+                        }
+                        .trust-preview__form-line--subtitle,
+                        .trust-preview__form-line--body {
+                            max-width: 100%;
+                        }
+                        .trust-preview__rating-row {
+                            gap: 6px;
+                        }
+                        .trust-preview__rating-text,
+                        .trust-preview__verified,
+                        .trust-preview__price-row,
+                        .trust-preview__card-rating-text {
+                            font-size: 13px;
+                        }
+                        .trust-preview__quantity {
+                            width: 100px;
+                            height: 36px;
+                            margin-top: 16px;
+                            margin-bottom: 16px;
+                            font-size: 14px;
+                        }
+                        .trust-preview__button-placeholder {
+                            height: 36px;
+                        }
+                        .trust-preview__collection-section {
+                            margin-top: 40px;
+                        }
+                        .trust-preview__cards {
+                            gap: 10px;
+                        }
+                        .trust-preview__card {
+                            padding: 6px;
+                            min-height: 0;
+                            aspect-ratio: auto;
+                        }
+                        .trust-preview__card-image {
+                            aspect-ratio: 1 / 0.8;
+                        }
+                        .trust-preview__card-line--wide {
+                            margin-top: 10px;
+                            margin-bottom: 10px;
+                        }
+                        .trust-preview__card-variants {
+                            grid-template-columns: repeat(4, 20px);
+                            gap: 6px;
+                        }
+                        .trust-preview__card-rating {
+                            gap: 4px;
+                            margin-top: 8px;
+                        }
+                      }
+            `;
+    return (
+        <style>
+            {newLocal}
         </style>
-    )
+    );
 }

@@ -1,10 +1,46 @@
-{{ 'ratings.stars.label' | t }}:
+<div class="qr-stars">
+  <template x-for="star in 5" :key="star">
+    <span class="qr-star-icon">
+      <template
+        x-if="
+          star <= Math.floor(
+            {% if from == 'heading' %}averageRating{% endif %}
+            {% if from == 'reviewHubCardStar' %}review.rating{% endif %}
+            {% if from == 'quoteloopReview' %}review.rating{% endif %}
 
-{%- for i in (1..rating) -%}
-  ★
-{%- endfor -%}
-{%- assign blank_stars = 5 | minus: rating -%}
-{%- for i in (1..blank_stars) -%}
-  ☆
-{%- endfor -%}
+          )
+        "
+      >
+        {% render 'icon', name: 'star', color: starColor %}
+      </template>
 
+      <template
+        x-if="
+          star > Math.floor(
+            {% if from == 'heading' %}averageRating{% endif %}
+            {% if from == 'reviewHubCardStar' %}review.rating{% endif %}
+            {% if from == 'quoteloopReview' %}review.rating{% endif %}
+
+          )
+        "
+      >
+        {% render 'icon', name: 'star', color: '#E0E0E0' %}
+      </template>
+    </span>
+  </template>
+</div>
+{% comment %}
+  <div class="qr-stars">
+    {%- for i in (1..5) -%}
+      <span class="qr-star-icon">
+        <template x-for="">
+          {% render 'icon', name: 'star', color: '#34C759' %}
+        </template>
+        {%- if i <= full_stars -%}
+        {%- else -%}
+          {% render 'icon', name: 'star', color: '#E0E0E0' %}
+        {%- endif -%}
+      </span>
+    {%- endfor -%}
+  </div>
+{% endcomment %}

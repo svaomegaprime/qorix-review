@@ -18,7 +18,7 @@ export default function WidgetItem({ widget, status = "NOT_INSTALLED" }) {
         <>
             <s-app-window id={appWindowId} src={widget?.editUrl}></s-app-window>
             <CustomSection background="#fff" border="none" boxShadow="none" padding="none" overflow="hidden">
-                <CustomSection background="#E1D8AF" border="none" boxShadow="none" borderRadius="0" aspectRatio="1/0.83">
+                <CustomSection background="#BCE1AF" border="none" boxShadow="none" borderRadius="0" aspectRatio="1/0.83">
                     <CustomSection background="#fff" padding="none" aspectRatio="1/0.8" display="flex" alignItems="center" justifyContent="center" overflow="hidden">
                         <img src={widget?.previewUrl} alt={`${widget?.name} preview`} />
                     </CustomSection>

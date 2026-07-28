@@ -1,85 +1,207 @@
 model TrustBarWidget {
-  id        String   @id @default(uuid()) @db.Uuid()
+  id        String   @id @default(uuid()) @db.Uuid
   storeId   String   @unique
-  store     Store    @relation(fields: [storeId], references: [storeGID], onDelete: Cascade)
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
+
+  // Colors
+  starColor          String @default("#F59E0B")
+  textColor          String @default("#1A1A1A")
+  verifiedBadgeColor String @default("#088728")
+
+  // Typography
+  fontSize   Int    @default(16)
+  starSize   Int    @default(16)
+  fontWeight String @default("MEDIUM")
+
+  // Contents
+  showAverageRating Boolean @default(true)
+  showReviewCount   Boolean @default(true)
+  showVerifiedBadge Boolean @default(true)
+  reviewSource      String  @default("DEMO_REVIEW_SOURCE")
+
+  // Visibility
+  hideIfNoReviews Boolean @default(true)
+
+  // Custom CSS
+  advanceCss String @default("")
+
+  store Store @relation(fields: [storeId], references: [storeGID], onDelete: Cascade)
 }
 
 model QuickReviewWidget {
-  id String @id @default(uuid()) @db.Uuid()
+  id                     String   @id @default(uuid()) @db.Uuid
+  storeId                String   @unique
+  isShowNameField        Boolean  @default(true)
+  isShowEmailField       Boolean  @default(true)
+  isPhotoUpload          Boolean  @default(true)
+  isVideoUpload          Boolean  @default(true)
+  formTitle              String   @default("How was your experience?")
+  formSubtitle           String   @default("Your feedback helps others")
+  submitButtonText       String   @default("Submit review")
+  successMessageTitle    String   @default("Review submitted!")
+  successButtonText      String   @default("Continue Shopping")
+  successMessage         String   @default("Thank you for your review. It has been submitted successfully.")
+  starColor              String?  @default("#f59e0b")
+  buttonBackgroundColor  String?  @default("#1D9E75")
+  buttonTextColor        String?  @default("#fff")
+  verifiedBadgeColor     String?  @default("#1D9E75")
+  barFileColor           String?  @default("#34C759")
+  borderRadius           String   @default("15px")
+  isShowReviewerName     Boolean  @default(true)
+  isShowMediaThumbnails  Boolean  @default(true)
+  isShowProductName      Boolean  @default(true)
+  isShowVerifiedBadge    Boolean  @default(true)
+  isShowReviewDate       Boolean  @default(true)
+  isShowStarRatingOnCard Boolean  @default(true)
+  isShowHelpfulButton    Boolean  @default(true)
+  isShowStarDistribution Boolean  @default(true)
+  isShowMediaStrip       Boolean  @default(true)
+  isShowReviewCount      Boolean  @default(true)
+  writeReviewButtonText  String   @default("Write a review")
+  showHelfullButton      Boolean  @default(true)
+  filterAndSorting       String   @default("FILTER_AND_SORT")
+  reviewPerPage          Int      @default(10)
+  defaultSort            String   @default("MOST_RECENT")
+  createdAt              DateTime @default(now())
+  updatedAt              DateTime @updatedAt
+  store                  Store    @relation(fields: [storeId], references: [storeGID], onDelete: Cascade)
+}
+
+model QuoteLoopWidget {
+  id                      String   @id @default(uuid()) @db.Uuid
+  storeId                 String   @unique
+  createdAt               DateTime @default(now())
+  updatedAt               DateTime @updatedAt
+  advanceCss              String   @default("")
+  autoSlider              Boolean  @default(false)
+  cardBackgroundColor     String   @default("#FFFFFF")
+  eyebrowLabel            String   @default("CUSTOMER REVIEWS")
+  filterSorting           String   @default("Filter & sorting both")
+  fiteringMinStart        String   @default("3 star and above")
+  headerStyle             String   @default("center")
+  heading                 String   @default("Reviews from people")
+  quoteFontSize           Int      @default(24)
+  quoteMarkColor          String   @default("#1D9E75")
+  reviewStats             String   @default("Show review count & verified badge")
+  showAppreciationOption  Boolean  @default(true)
+  showArrowControls       Boolean  @default(true)
+  showHeader              Boolean  @default(true)
+  showMediaAsset          Boolean  @default(true)
+  showProductName         Boolean  @default(true)
+  showQuoteMarkIcon       Boolean  @default(true)
+  showReviewerName        Boolean  @default(true)
+  showStarDistribution    Boolean  @default(true)
+  showVerifiedBadge       Boolean  @default(true)
+  speed                   Int      @default(450)
+  starColor               String   @default("#F59E0B")
+  subheading              String   @default("Watch and hear what our customers have to say.")
+  textColor               String   @default("#303030")
+  textLength              Int      @default(160)
+  quoteLoopWidgetSettings Json?    @default("{}")
+  store                   Store    @relation(fields: [storeId], references: [storeGID], onDelete: Cascade)
+}
+
+model VideoStackSettings {
+  id                   String   @id @default(cuid())
+  shop                 String   @unique
+  createdAt            DateTime @default(now())
+  updatedAt            DateTime @updatedAt
+  showHeader           Boolean  @default(true)
+  headerStyle          String   @default("center")
+  eyebrowLabel         String   @default("CUSTOMER REVIEWS")
+  heading              String   @default("Reviews from people")
+  subheading           String   @default("Watch and hear what our customers have to say.")
+  reviewStats          String   @default("Show review count & verified badge")
+  showStarDistribution Boolean  @default(true)
+  showReviewerName     Boolean  @default(true)
+  showReviewTextBelow  Boolean  @default(true)
+  showVerifiedBadge    Boolean  @default(true)
+  showVideoDuration    Boolean  @default(true)
+  showProductName      Boolean  @default(true)
+  showLoopVideo        Boolean  @default(true)
+  mutedByDefault       Boolean  @default(true)
+  autoplayOnHover      Boolean  @default(true)
+  showNavigationDots   Boolean  @default(true)
+  showArrowControls    Boolean  @default(true)
+  thumbnailsShown      Int      @default(5)
+  fiteringMinStart     String   @default("3 star and above")
+  startColor           String   @default("#F59E0B")
+  activeDotColor       String   @default("#34C759")
+  badgeColor           String   @default("#34C759")
+  overlayTintColor     String   @default("#1A1A1A")
+  advanceCss           String   @default("")
+}
+
+model ReviewReelSettings {
+  id                 String   @id @default(cuid())
+  shop               String   @unique
+  createdAt          DateTime @default(now())
+  updatedAt          DateTime @updatedAt
+  showHeader         Boolean  @default(true)
+  headerStyle        String   @default("center")
+  eyebrowLabel       String   @default("CUSTOMER REVIEWS")
+  heading            String   @default("Real reviews from real people")
+  subheading         String   @default("Watch and hear what our customers have to say.")
+  reviewStats        String   @default("Show review count & verified badge")
+  showReviewerName   Boolean  @default(true)
+  showReviewImage    Boolean  @default(true)
+  showVerifiedBadge  Boolean  @default(true)
+  showProductName    Boolean  @default(true)
+  showReviewDate     Boolean  @default(true)
+  showAutoPlay       Boolean  @default(true)
+  showNavigationDots Boolean  @default(true)
+  showArrowControls  Boolean  @default(true)
+  autoplaySpeed      Int      @default(4)
+  cardsVisible       Int      @default(3)
+  fiteringMinStart   String   @default("3 star and above")
+  startColor         String   @default("#34C759")
+  activeDotColor     String   @default("#34C759")
+  cardBackgorud      String   @default("#FFF")
+  cardTextColor      String   @default("#000")
+  advanceCss         String   @default("")
+}
+
+model ReviewHubWidget {
+  id String @id @default(uuid()) @db.Uuid
 
   storeId String @unique
   store   Store  @relation(fields: [storeId], references: [storeGID], onDelete: Cascade)
 
-  isShowNameField  Boolean @default(true)
-  isShowEmailField Boolean @default(false)
+  // Header option
+  showHeader   Boolean @default(true)
+  headerStyle  String  @default("center")
+  eyebrowLabel String  @default("CUSTOMER REVIEWS")
+  heading      String  @default("Reviews from people")
+  subheading   String  @default("Watch and hear what our customers have to say.")
+  reviewStats  String  @default("Show review count & verified badge")
 
-  isPhotoUpload Boolean @default(true)
-  isVideoUpload Boolean @default(true)
+  // Display elements
+  showStarDistribution   Boolean @default(true)
+  showReviewerName       Boolean @default(true)
+  showReviewTimer        Boolean @default(true)
+  showVerifiedBadge      Boolean @default(true)
+  showMediaAsset         Boolean @default(true)
+  showShareOption        Boolean @default(true)
+  showAppreciationOption Boolean @default(true)
 
-  formTitle           String @default("How was your experience?")
-  formSubtitle        String @default("Your feedback helps others")
-  submitButtonText    String @default("Submit review")
-  successMessageTitle String @default("Review submitted!")
-  successButtonText   String @default("Continue Shopping")
-  successMessage      String @default("Thank you for your review. It has been submitted successfully.")
+  // Carousel behavior
+  layout         String @default("3")
+  filterSorting  String @default("FILTER_AND_SORTING")
+  reviewsPerPage Int    @default(9)
 
-  starColor             String?
-  buttonBackgroundColor String?
-  buttonTextColor       String?
-  verifiedBadgeColor    String?
+  // Colors
+  starColor           String @default("#34C759")
+  textColor           String @default("#1A1A1A")
+  verifiedBadgeColor  String @default("#1D9E75")
+  cardBackgroundColor String @default("#FFFFFF")
+  borderColor         String @default("#F0F0F0")
+  filterChipColor     String @default("#108848")
+  filterChipStarColor String @default("#FFFFFF")
 
-  borderRadius String @default("8px")
-
-  isShowReviewerName  Boolean @default(true)
-  isShowReviewerImage Boolean @default(true)
-  isShowReviewerVideo Boolean @default(true)
-  isShowProductName   Boolean @default(false)
-  isShowVerifiedBadge Boolean @default(true)
-  isShowReviewDate    Boolean @default(true)
-  isShowRatingFilter  Boolean @default(true)
-
-  reviewPerPage Int @default(10)
-
-  defaultSort String @default("MOST_RECENT")
+  // Advanced CSS
+  advanceCss String @default("")
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 }
-
-// model QuickReviewWidget {
-//     id      String @id @default(uuid()) @db.Uuid()
-//     storeId String @db.Uuid()
-//     store   Store  @relation(fields: [storeId], references: [storeGID], onDelete: Cascade)
-
-//      name: true,
-//     email: false,
-
-//     photo: true,
-//     video: true,
-//     // ---from text-----
-//     formTitle: "How was your experience?",
-//     formSubtitle: "Your feedback helps others",
-//     submitButtonText: "Submit review",
-//     successMessageTitle: "Review submitted!",
-//     successButtonText: "Continue Shopping",
-//     successMessage:
-//       "Thank you for your review. It has been submitted successfully.",
-//     // -----color --------
-//     colorValues: DEFAULT_COLOR_VALUES,
-//     borderRadius,
-//     //  Review list display
-//     showReviewerName: true,
-//     showReviewerImage: true,
-//     showReviewerVideo: true,
-//     showProductName: false,
-//     showVerifiedBadge: true,
-//     showReviewDate: true,
-//     showRatingFilter: true,
-//     reviewPerPage: "10",
-//     defaultSort: "Most recent (default)",
-
-//     createdAt DateTime @default(now())
-//     updatedAt DateTime @updatedAt
-// }

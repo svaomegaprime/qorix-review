@@ -12,6 +12,7 @@ import {
   markOrderProductReviewed,
   syncReviewedOrderFromShopify,
 } from "../../services/orders.server.js";
+import { addJobInQueue, reviewQueue } from "../../lib/bullmq/bullmq.queue";
 
 function buildFromAddress(displayName, email) {
   const cleanEmail = String(email || "").trim();
@@ -225,52 +226,103 @@ async function postReview(request, session, admin) {
     }
 
     if (reviewData.reviewerEmail) {
-      try {
-        await sendEmail({
-          to: reviewData.reviewerEmail,
-          from: buildFromAddress(storeName, senderEmail),
-          replyTo: replyToEmail,
-          templateName: "ConfirmEmail",
+      const clientEmailData = {
+        to: reviewData.reviewerEmail,
+        from: buildFromAddress(storeName, senderEmail),
+        replyTo: replyToEmail,
+        templateName: "ConfirmEmail",
+        subject:
+          emailSettings.confirmationEmailSubject ?? "Thank you for your review",
+        templateData: {
           subject:
-            emailSettings.confirmationEmailSubject ??
+            emailSettings.confirmatisonEmailSubject ??
             "Thank you for your review",
-          templateData: {
-            subject:
-              emailSettings.confirmatisonEmailSubject ??
-              "Thank you for your review",
-            storeName,
-            logo: brandingSettings.storeLogo ?? "",
-            tagline: brandingSettings.storeTagline ?? "",
-            customerName: reviewData.reviewerName ?? "",
-            emailBody,
-            buttonUrl: productUrl,
-            buttonText: "View your review",
+          storeName,
+          logo: brandingSettings.storeLogo ?? "",
+          tagline: brandingSettings.storeTagline ?? "",
+          customerName: reviewData.reviewerName ?? "",
+          emailBody,
+          buttonUrl: productUrl,
+          buttonText: "View your review",
 
-            emailPrimaryButtonColor:
-              brandingSettings.emailPrimaryButtonColor ?? "#269e1bff",
-            emailButtonTextColor:
-              brandingSettings.emailButtonTextColor ?? "#FFFFFF",
-            emailBackgroundColor:
-              brandingSettings.emailBackgroundColor ?? "#eef0ee",
-            emailHeadingColor: brandingSettings.emailHeadingColor ?? "#303030",
-            emailBodyTextColor:
-              brandingSettings.emailBodyTextColor ?? "#108848",
-            emailAccentBorderColor:
-              brandingSettings.emailAccentBorderColor ?? "#f0f0f0",
+          emailPrimaryButtonColor:
+            brandingSettings.emailPrimaryButtonColor ?? "#269e1bff",
+          emailButtonTextColor:
+            brandingSettings.emailButtonTextColor ?? "#FFFFFF",
+          emailBackgroundColor:
+            brandingSettings.emailBackgroundColor ?? "#eef0ee",
+          emailHeadingColor: brandingSettings.emailHeadingColor ?? "#303030",
+          emailBodyTextColor: brandingSettings.emailBodyTextColor ?? "#108848",
+          emailAccentBorderColor:
+            brandingSettings.emailAccentBorderColor ?? "#f0f0f0",
 
-            product: {
-              title: reviewData.productTitle ?? "",
-            },
-            review: {
-              rating: reviewData.rating ?? 0,
-              date: formattedDate,
-            },
-            emailFooterText: brandingSettings.emailFooterText ?? "",
-            unsubscribeUrl,
-            isShowFooterBadge: brandingSettings.isShowFooterBadge ?? false,
+          product: {
+            title: reviewData.productTitle ?? "",
           },
-          smtpConfig: buildSmtpConfig(emailSettings),
-        });
+          review: {
+            rating: reviewData.rating ?? 0,
+            date: formattedDate,
+          },
+          emailFooterText: brandingSettings.emailFooterText ?? "",
+          unsubscribeUrl,
+          isShowFooterBadge: brandingSettings.isShowFooterBadge ?? false,
+        },
+        smtpConfig: buildSmtpConfig(emailSettings),
+      };
+      try {
+        const clientConfirmationEmailJobResponse = await addJobInQueue(
+          reviewQueue,
+          "JOB_CLIENT_CONFIRMATION_EMAIL",
+          {
+            emailData: clientEmailData,
+          },
+          0,
+          `JOB_CLIENT_CONFIRMATION_EMAIL_${reviewData.reviewerEmail}`,
+        );
+
+        // await sendEmail({
+        //   to: reviewData.reviewerEmail,
+        //   from: buildFromAddress(storeName, senderEmail),
+        //   replyTo: replyToEmail,
+        //   templateName: "ConfirmEmail",
+        //   subject:
+        //     emailSettings.confirmationEmailSubject ??
+        //     "Thank you for your review",
+        //   templateData: {
+        //     subject:
+        //       emailSettings.confirmatisonEmailSubject ??
+        //       "Thank you for your review",
+        //     storeName,
+        //     logo: brandingSettings.storeLogo ?? "",
+        //     tagline: brandingSettings.storeTagline ?? "",
+        //     customerName: reviewData.reviewerName ?? "",
+        //     emailBody,
+        //     buttonUrl: productUrl,
+        //     buttonText: "View your review",
+        //     emailPrimaryButtonColor:
+        //       brandingSettings.emailPrimaryButtonColor ?? "#269e1bff",
+        //     emailButtonTextColor:
+        //       brandingSettings.emailButtonTextColor ?? "#FFFFFF",
+        //     emailBackgroundColor:
+        //       brandingSettings.emailBackgroundColor ?? "#eef0ee",
+        //     emailHeadingColor: brandingSettings.emailHeadingColor ?? "#303030",
+        //     emailBodyTextColor:
+        //       brandingSettings.emailBodyTextColor ?? "#108848",
+        //     emailAccentBorderColor:
+        //       brandingSettings.emailAccentBorderColor ?? "#f0f0f0",
+        //     product: {
+        //       title: reviewData.productTitle ?? "",
+        //     },
+        //     review: {
+        //       rating: reviewData.rating ?? 0,
+        //       date: formattedDate,
+        //     },
+        //     emailFooterText: brandingSettings.emailFooterText ?? "",
+        //     unsubscribeUrl,
+        //     isShowFooterBadge: brandingSettings.isShowFooterBadge ?? false,
+        //   },
+        //   smtpConfig: buildSmtpConfig(emailSettings),
+        // });
       } catch (error) {
         console.error("[WARN::api.review.confirmationEmail]", error);
         sideEffectErrors.push("confirmation_email");
@@ -319,32 +371,41 @@ async function postReview(request, session, admin) {
     }
 
     if (adminEmails.length && shouldSendAdminEmail) {
-      try {
-        await sendEmail({
-          to: adminEmails[0],
-          bcc: adminEmails.slice(1),
-          from: buildFromAddress(storeName, senderEmail),
-          replyTo: replyToEmail,
-          templateName: "AdminNotify",
+      const adminEmailData = {
+        to: adminEmails[0],
+        bcc: adminEmails.slice(1),
+        from: buildFromAddress(storeName, senderEmail),
+        replyTo: replyToEmail,
+        templateName: "AdminNotify",
+        subject: adminSubject,
+        templateData: {
           subject: adminSubject,
-          templateData: {
-            subject: adminSubject,
-            storeName,
-            logo: brandingSettings.storeLogo ?? "",
-            tagline: brandingSettings.storeTagline ?? "",
-            reviewerName: reviewData.reviewerName ?? "Anonymous",
-            reviewerEmail: reviewData.reviewerEmail ?? "",
-            rating: reviewData.rating ?? 0,
-            reviewBody: res.body ?? "",
-            status: res.status ?? "PENDING",
-            productTitle: reviewData.productTitle ?? "",
-            productUrl,
-            manageUrl: `https://${storeURL}/admin/apps/qorix-review/app/reviews`,
-            submittedDate: formattedDate,
-            adminEmailBody,
+          storeName,
+          logo: brandingSettings.storeLogo ?? "",
+          tagline: brandingSettings.storeTagline ?? "",
+          reviewerName: reviewData.reviewerName ?? "Anonymous",
+          reviewerEmail: reviewData.reviewerEmail ?? "",
+          rating: reviewData.rating ?? 0,
+          reviewBody: res.body ?? "",
+          status: res.status ?? "PENDING",
+          productTitle: reviewData.productTitle ?? "",
+          productUrl,
+          manageUrl: `https://${storeURL}/admin/apps/qorix-review/app/reviews`,
+          submittedDate: formattedDate,
+          adminEmailBody,
+        },
+        smtpConfig: buildSmtpConfig(emailSettings),
+      };
+      try {
+        const adminConfirmationEmailJobResponse = await addJobInQueue(
+          reviewQueue,
+          "JOB_CLIENT_CONFIRMATION_EMAIL",
+          {
+            emailData: adminEmailData,
           },
-          smtpConfig: buildSmtpConfig(emailSettings),
-        });
+          0,
+          `JOB_ADMIN_NOTIFICATION_EMAIL_${reviewData.reviewerEmail}`,
+        );
       } catch (error) {
         console.error("[WARN::api.review.adminEmail]", error);
         sideEffectErrors.push("admin_email");
@@ -372,6 +433,9 @@ async function getReview(request, session, admin) {
     const sort = url.searchParams.get("sort") || "ALL";
     const page = Number(url.searchParams.get("page")) || 1;
     const limit = Number(url.searchParams.get("limit")) || 10;
+    const customerEmail = String(
+      url.searchParams.get("customerEmail") || "",
+    ).trim();
     const isOpen = url.searchParams.get("isOpen") === "true";
     const orderNumber = url.searchParams.get("orderId");
     const orderId = orderNumber
@@ -419,15 +483,32 @@ async function getReview(request, session, admin) {
         });
       }
     }
+    // Base where — unfiltered, used for ratingCounts and allAttachments
+    const baseWhere = {
+      storeId: id,
+      ...(productId ? { productId } : {}),
+    };
+
     // Base query
     const query = {
       where: {
-        storeId: id,
-        ...(productId ? { productId } : {}),
+        ...baseWhere,
       },
       include: {
         attachments: true,
-        helpfulCount: true,
+        helpfulCount: {
+          where: customerEmail
+            ? {
+                OR: [{ isHelpful: true }, { customerEmail }],
+              }
+            : {
+                isHelpful: true,
+              },
+          select: {
+            isHelpful: true,
+            customerEmail: true,
+          },
+        },
       },
       orderBy: {
         createdAt: "desc",
@@ -448,6 +529,11 @@ async function getReview(request, session, admin) {
       case "HIGHEST_RATING":
         query.orderBy = {
           rating: "desc",
+        };
+        break;
+      case "LOWEST_RATING":
+        query.orderBy = {
+          rating: "asc",
         };
         break;
 
@@ -481,11 +567,9 @@ async function getReview(request, session, admin) {
         };
     }
 
-    // const res = await prisma.review.findMany(query);
-    const [res, info] = await Promise.all([
+    const [res, info, ratingGroups, allAttachments] = await Promise.all([
       prisma.review.findMany(query),
 
-      // prisma.review.count({where: query.where}),
       prisma.review.aggregate({
         where: query.where,
 
@@ -497,7 +581,41 @@ async function getReview(request, session, admin) {
           rating: true,
         },
       }),
+
+      // Rating counts across ALL reviews for this product (ignores sort/filter/pagination)
+      prisma.review.groupBy({
+        by: ["rating"],
+        where: baseWhere,
+        _count: {
+          _all: true,
+        },
+      }),
+
+      // All attachments across ALL reviews for this product
+      prisma.attachment.findMany({
+        where: {
+          review: baseWhere,
+        },
+        select: {
+          id: true,
+          type: true,
+          url: true,
+          reviewId: true,
+        },
+        orderBy: {
+          createdAt: "desc",
+        },
+      }),
     ]);
+
+    // Build ratingCounts object: { 5: n, 4: n, 3: n, 2: n, 1: n }
+    const ratingCounts = { 5: 0, 4: 0, 3: 0, 2: 0, 1: 0 };
+    for (const group of ratingGroups) {
+      const r = Number(group.rating);
+      if (ratingCounts[r] !== undefined) {
+        ratingCounts[r] = group._count._all;
+      }
+    }
 
     return sendResponse(null, {
       ok: true,
@@ -509,6 +627,8 @@ async function getReview(request, session, admin) {
         totalPages: Math.ceil(info._count._all / limit),
         currentPage: page,
         averageRating: Number((info._avg.rating || 0).toFixed(1)),
+        ratingCounts,
+        attachments: allAttachments,
       },
     });
   } catch (error) {

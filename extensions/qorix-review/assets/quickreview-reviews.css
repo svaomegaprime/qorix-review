@@ -1,0 +1,211 @@
+:root {
+  --qr-color-border: #CFCFCF;
+  --qr-color-text-dark: #303030;
+  --qr-color-text-secondary: #616161;
+  --qr-color-primary: #108848;
+  --qr-color-primary-hover: #17703c;
+  --qr-color-white: #FFFFFF;
+  --qr-color-track-bg: #e6e6e6;
+  --qr-color-bar-fill: #34C759;
+  --qr-color-star-filled: #f5a623;
+  --qr-color-star-empty: #e0e0e0;
+  --qr-color-avatar-bg: #f0f0f0;
+  --qr-color-avatar-icon: #9a9a9a;
+  --qr-color-hover-bg: #f5f5f5;
+  --qr-color-menu-text: #4a4a4a;
+  --qr-color-link: #008060;
+  --qr-color-load-more-bg: #F2F2F2;
+  --qr-shadow-nav: 0 1px 6px rgba(0, 0, 0, 0.18);
+  --qr-shadow-menu: 0 4px 20px rgba(0, 0, 0, 0.12);
+}
+.quickreview-reviews {
+  width: 100%;
+  font-family: inherit;
+  padding: 30px 30px 0 30px;
+  border: 1px solid var(--qr-color-border);
+  border-radius: 12px;
+  margin-top: 24px;
+}
+
+/* ---------- Header ---------- */
+.quickreview-reviews__header {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  border-bottom: 1px solid var(--qr-color-border);
+  padding-bottom: 24px;
+}
+
+.quickreview-reviews__title {
+  font-size: 24px;
+  font-weight: 500;
+  color: var(--qr-color-text-dark);
+  margin: 0 0 12px 0;
+}
+
+.quickreview-reviews__subtitle {
+  font-size: 14px;
+  color: var(--qr-color-text-secondary);
+  margin: 0;
+}
+
+.quickreview-reviews__actions {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  position: relative;
+}
+
+.quickreview-reviews__icon-btn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 56px;
+  height: 36px;
+  border-radius: 99px;
+  border: 1px solid var(--qr-color-border);
+  background: var(--qr-color-white);
+  cursor: pointer;
+  padding: 8px 16px;
+}
+
+.quickreview-reviews__icon-btn:hover {
+  background: var(--qr-color-hover-bg);
+}
+
+/* ---------- Sort dropdown ---------- */
+.quickreview-reviews__sort {
+  position: relative;
+}
+
+.quickreview-reviews__sort-menu {
+  position: absolute;
+  top: calc(100% + 8px);
+  right: 0;
+  min-width: 200px;
+  background: var(--qr-color-white);
+  border-radius: 10px;
+  box-shadow: var(--qr-shadow-menu);
+  list-style: none;
+  margin: 0;
+  padding: 6px 0;
+  z-index: 10;
+}
+
+.quickreview-reviews__sort-menu[hidden] {
+  display: none;
+}
+
+.quickreview-reviews__sort-menu li {
+  padding: 9px 16px;
+  font-size: 13px;
+  color: var(--qr-color-menu-text);
+  cursor: pointer;
+  white-space: nowrap;
+}
+
+.quickreview-reviews__sort-menu li:hover {
+  background: var(--qr-color-hover-bg);
+}
+
+.quickreview-reviews__sort-menu li.is-active {
+  color: var(--qr-color-primary);
+  font-weight: 600;
+}
+
+/* ---------- Filters row ---------- */
+.quickreview-reviews__filters {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  padding-bottom: 30px;
+  margin-top: 16px;
+}
+
+.quickreview-reviews__filters[hidden] {
+  display: none;
+}
+
+.quickreview-reviews__filters-label {
+  font-size: 16px;
+  font-weight: 600;
+  color: var(--qr-color-text-dark);
+}
+
+.quickreview-reviews__rating-filter {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  flex-wrap: wrap;
+}
+
+.quickreview-reviews__rating-label {
+  font-size: 16px;
+  font-weight: 400;
+  color: var(--qr-color-text-secondary);
+}
+
+.quickreview-reviews__pills {
+  display: flex;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+
+.quickreview-pill {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  padding: 6px 14px;
+  border-radius: 999px;
+  border: 1px solid var(--qr-color-border);
+  background: var(--qr-color-white);
+  color: var(--qr-color-menu-text);
+  font-size: 16px;
+  font-weight: 500;
+  cursor: pointer;
+}
+
+.quickreview-pill:hover {
+  border-color: #b5b5b5;
+}
+
+.quickreview-pill.is-active {
+  background-color: var(--button-background-color);
+  border-color: var(--qr-color-primary);
+  color: var(--button-text-color);
+}
+
+.quickreview-pill__star {
+  font-size: 11px;
+}
+.quickreview-pill__star svg path{
+  fill: var(--star-color);
+}
+
+@media (max-width: 749px) {
+  .quickreview-reviews__header {
+    align-items: center;
+    flex-direction: column;
+    align-items: baseline;
+  }
+
+  .quickreview-reviews__titles{
+    margin-bottom: 10px;
+  }
+  .quickreview-reviews__sort-menu{
+    left:2px;
+  }
+  .quickreview-card{
+    padding: 12px 10px;
+  }
+
+  .quickreview-reviews{
+    padding: 16px 16px 0 16px;
+  }
+
+  .quickreview-review__media-item {
+    width: 56px;
+    height: 56px;
+  }
+}

@@ -7,9 +7,23 @@ import {
 } from "@shopify/shopify-app-react-router/server";
 import { PrismaSessionStorage } from "@shopify/shopify-app-session-storage-prisma";
 import prisma from "./db.server";
-import { DEFAULT_ADMIN_NOTIFICATION, DEFAULT_BRANDING, DEFAULT_OUTGOING_REQUEST_EMAIL, DEFAULT_POST_REQUEST_EMAIL, DEFAULT_PUBLISHING_MODERATION, DEFAULT_REQUEST_SCHEDULING, DEFAULT_SMTP_SETUP, DEFAULT_WIDGET } from "./routes/app.settings/data/defaultData";
+import {
+  DEFAULT_ADMIN_NOTIFICATION,
+  DEFAULT_BRANDING,
+  DEFAULT_OUTGOING_REQUEST_EMAIL,
+  DEFAULT_POST_REQUEST_EMAIL,
+  DEFAULT_PUBLISHING_MODERATION,
+  DEFAULT_REQUEST_SCHEDULING,
+  DEFAULT_SMTP_SETUP,
+  DEFAULT_WIDGET,
+} from "./routes/app.settings/data/defaultData";
+
+import { DEFAULT_QUOTE_LOOP_SETTINGS } from "./routes/app.widgets/routes/app.quote-loop/data/quoteReviewDefault";
+import { DEFAULT_VIDEO_STACK_SETTINGS } from "./routes/app.widgets/routes/app.video-stack/data/videoStackDefaultData";
+import {  DEFAULT_VALUES_REVIEW_REEL } from "./routes/app.widgets/routes/app.review-reel/component/data/reviewRealDefaultData";
 import { DEFAULT_DB_FORMATED_DATA } from "./routes/app.widgets/routes/app.quick-review/data/defaultData";
 import { setAppMetafield } from "./utils/appMetafields.server";
+import { DEFAULT_REVIEW_HUB_DATA } from "./routes/app.widgets/routes/app.review-hub/data/defaultData";
 const GET_SHOP_BASIC_INFO = `#graphql
   query GetShopBasicInfo {
     shop {
@@ -85,8 +99,7 @@ const shopify = shopifyApp({
           return;
         }
 
-  
-
+        //full store data send to the database for the first time and update if already exists
         await prisma.store.upsert({
           where: { storeGID: shopData.id },
           update: {
@@ -102,7 +115,7 @@ const shopify = shopifyApp({
 
         // Full settings install ar sathe sathe update korte hobe
 
-        const storeSettings = await prisma.storeSettings.upsert({
+        await prisma.storeSettings.upsert({
           where: {
             storeId: shopData.id,
           },
@@ -117,7 +130,7 @@ const shopify = shopifyApp({
                 ...DEFAULT_SMTP_SETUP,
                 ...DEFAULT_OUTGOING_REQUEST_EMAIL,
                 ...DEFAULT_POST_REQUEST_EMAIL,
-              }
+              },
             },
             publishingModeration: {
               create: DEFAULT_PUBLISHING_MODERATION,
@@ -126,11 +139,11 @@ const shopify = shopifyApp({
               create: DEFAULT_WIDGET,
             },
             brandingSettings: {
-              create: DEFAULT_BRANDING
+              create: DEFAULT_BRANDING,
             },
             adminNotification: {
-              create: DEFAULT_ADMIN_NOTIFICATION
-            }
+              create: DEFAULT_ADMIN_NOTIFICATION,
+            },
           },
           include: {
             requestScheduling: true,
@@ -138,27 +151,95 @@ const shopify = shopifyApp({
             publishingModeration: true,
             widgetsSettings: true,
             brandingSettings: true,
-            adminNotification: true
-          }
+            adminNotification: true,
+          },
         });
 
+        // all data is set in the database for the first time and update if already exists
         const quickReviewWidget = await prisma.quickReviewWidget.upsert({
           where: {
-            storeId: shopData.id
-            ,
+            storeId: shopData.id,
           },
           update: {},
           create: {
             ...DEFAULT_DB_FORMATED_DATA,
             storeId: shopData.id,
-          }
-        })
+          },
+        });
 
-        const metafieldResult = await setAppMetafield(
-          admin,
-          "quick_review",
-          quickReviewWidget,
-        );
+        await setAppMetafield(admin, "quick_review", quickReviewWidget);
+
+        const reviewHubWidget = await prisma.reviewHubWidget.upsert({
+          where: {
+            storeId: shopData.id,
+          },
+          update: {},
+          create: {
+            ...DEFAULT_REVIEW_HUB_DB_DATA,
+            storeId: shopData.id,
+          },
+        });
+        await setAppMetafield(admin, "review_hub", reviewHubWidget);
+
+        // Quote Loop Widget data set in the database for the first time and update if already exists
+        const quoteLoopWidget = await prisma.quoteLoopWidget.upsert({
+          where: {
+            storeId: shopData.id,
+          },
+          update: {},
+          create: {
+            ...DEFAULT_QUOTE_LOOP_SETTINGS,
+            storeId: shopData.id,
+          },
+        });
+        await setAppMetafield(admin, "quote_loop", quoteLoopWidget);
+
+
+        // Video Stack Widget data set in the database for the first time and update if already exists
+        const videoStackWidget = await prisma.videoStackSettings.upsert({
+          where: {
+            storeId: shopData.id,
+          },
+          update: {},
+          create: {
+            ...DEFAULT_VIDEO_STACK_SETTINGS,
+            storeId: shopData.id,
+          },
+        });
+
+
+        await setAppMetafield(admin, "video_stack", videoStackWidget);
+
+
+        const reviewHubWidgetData = await prisma.reviewHubWidget.upsert({
+          where: {
+            storeId: shopData.id,
+          },
+          update: {},
+          create: {
+            ...DEFAULT_REVIEW_HUB_DATA,
+            storeId: shopData.id,
+          },
+        });
+
+
+        await setAppMetafield(admin, "review_hub", reviewHubWidgetData)
+
+//------------------------Review Reel------------------------
+        const reviewReelSettings = await prisma.reviewReelSettings.upsert({
+          where: {
+            storeId: shopData.id,
+          },
+          update: {},
+          create: {
+            ...DEFAULT_VALUES_REVIEW_REEL,
+            storeId: shopData.id,
+          },
+        });
+
+
+        await setAppMetafield(admin, "review_reel", reviewReelSettings)
+
 
       } catch (error) {
         console.error("afterAuth shop fetch failed:", error);

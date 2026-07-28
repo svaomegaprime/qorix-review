@@ -12,7 +12,9 @@ export default function Sidebar ({
     VALUES,
     handleHideAppWindow,
     handleChange,
-    handleResetToDefaults
+    handleResetToDefaults,
+    customCss,
+    handleCssChange,
 }) {
     const { typography, colors, contents, visibility } = VALUES;
 
@@ -67,7 +69,7 @@ export default function Sidebar ({
                     {/* End----Visibility section */}
 
                     {/* Start----CardCodeSnippet section */}
-                    <CardCodeSnippet/>
+                    <CardCodeSnippet customCss={customCss} handleCssChange={handleCssChange} />
                     {/* End----CardCodeSnippet section */}
 
                     <ResetToDefaults handleResetToDefaults={handleResetToDefaults} />
@@ -102,5 +104,7 @@ Sidebar.propTypes = {
     }).isRequired,
     handleHideAppWindow: PropTypes.func.isRequired,
     handleChange: PropTypes.func.isRequired,
-    handleResetToDefaults: PropTypes.func.isRequired
+    handleResetToDefaults: PropTypes.func.isRequired,
+    customCss: PropTypes.string.isRequired,
+    handleCssChange: PropTypes.func.isRequired,
 }

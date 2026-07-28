@@ -18,7 +18,7 @@ section.qorix-review-video-stack-section {
 background-color: #fff;
 padding: 80px 0px;
  width: var(---preview_mobile_width, 100%);
-  margin:var(---preview_mobile_margin, 0 auto);
+margin:var(---preview_mobile_margin, 0 auto);
 overflow-x: hidden;
 
 }
@@ -363,40 +363,82 @@ overflow-x: hidden;
   border-color: #088728;
 }
 
-// @media (max-width: 1024px) {
-//   [data-section="qorix-review-video-stack-widget"] .qorix-review-video-stack-nav-prev { left: 20px; }
-//   [data-section="qorix-review-video-stack-widget"] .qorix-review-video-stack-nav-next { right: 20px; }
-// }
+.qorix-review-video-stack-heading{
+  padding-left: var(---heading_mobile_padding, 80px);
 
-// @media (max-width: 768px) {
-//   [data-section="qorix-review-video-stack-widget"] .qorix-review-video-stack-section {
-//     padding: 60px 0;
-//     gap: 36px;
-//     width: 95vw;
-//   }
-//   [data-section="qorix-review-video-stack-widget"] .qorix-review-video-stack-header { padding: 0 24px; }
-//   [data-section="qorix-review-video-stack-widget"] .qorix-review-video-stack-heading { font-size: 26px; }
-//   [data-section="qorix-review-video-stack-widget"] .qorix-review-video-stack-swiper { height: 450px; }
-//   [data-section="qorix-review-video-stack-widget"] .qorix-review-video-stack-card { width: 130px; height: 340px; }
-//   [data-section="qorix-review-video-stack-widget"] .qorix-review-video-stack-tier-adjacent .qorix-review-video-stack-card { width: 190px; height: 410px; }
-//   [data-section="qorix-review-video-stack-widget"] .qorix-review-video-stack-tier-center .qorix-review-video-stack-card { width: 230px; height: 450px; }
-//   [data-section="qorix-review-video-stack-widget"] .qorix-review-video-stack-nav { display: none !important; }
-// }
+}
 
-// @media (max-width: 480px) {
-//   [data-section="qorix-review-video-stack-widget"] .qorix-review-video-stack-section {
-//     padding: 48px 0;
-//     gap: 28px;
-//     width: 100vw;
-//   }
-//   [data-section="qorix-review-video-stack-widget"] .qorix-review-video-stack-header { padding: 0 20px; }
-//   [data-section="qorix-review-video-stack-widget"] .qorix-review-video-stack-heading { font-size: 22px; }
-//   [data-section="qorix-review-video-stack-widget"] .qorix-review-video-stack-divider { display: none; }
-//   [data-section="qorix-review-video-stack-widget"] .qorix-review-video-stack-swiper { height: 390px; }
-//   [data-section="qorix-review-video-stack-widget"] .qorix-review-video-stack-card { width: 110px; height: 290px; }
-//   [data-section="qorix-review-video-stack-widget"] .qorix-review-video-stack-tier-adjacent .qorix-review-video-stack-card { width: 155px; height: 350px; }
-//   [data-section="qorix-review-video-stack-widget"] .qorix-review-video-stack-tier-center .qorix-review-video-stack-card { width: 190px; height: 390px; }
-// }
+@media (max-width: 1450px) {
+
+.qorix-review-main-container{
+height: 600px;
+}
+
+section.qorix-review-video-stack-section {
+ width: var(---preview_mobile_width_mobileview_1140_viewport, 100%);
+}
+
+
+}
+
+
+
+@media (max-width: 1030px) {
+.qorix-review-video-stack-heading{
+  padding:30px;
+
+}
+
+section.qorix-review-video-stack-section {
+ width: var(---preview_mobile_width_mobileview, 100%);
+}
+
+
+}
+
+@media (max-width: 900px) {
+.qorix-review-main-container{
+height: 400px;
+}
+
+section.qorix-review-video-stack-section {
+
+    padding: 40px 0px;
+
+}
+
+}
+
+
+ @media (max-width: 480px) {
+ .qorix-review-main-container {
+    background-color: #ddd;
+    padding: 12px;
+    height: 700px;
+    overflow: scroll;
+}
+
+.qorix-review-main-container{
+height: 500px;
+}
+
+[data-section="qorix-review-video-stack-widget"] .qorix-review-video-stack-nav-prev {
+    left: 8px;
+}
+    [data-section="qorix-review-video-stack-widget"] .qorix-review-video-stack-nav-next {
+    right: 8px;
+}
+
+section.qorix-review-video-stack-section {
+
+ width: var(---preview_mobile_width_mobileview, 100%);
+
+
+}
+
+
+
+. }
 `;
 
 // ─── Slide data ───────────────────────────────────────────────────────────────
@@ -761,13 +803,17 @@ export default function ReviewVideoStack({ settings, activeDevice }) {
           "---color-text-secondary": "#616161",
           "---color-text-product-name": "#0d2440",
           "---preview_mobile_width": activeDevice === "mobile" ? "35%" : "auto",
-           "---preview_mobile_margin": activeDevice === "mobile" ? "0 auto" : "",
-            "---stack-mobil_carousel": activeDevice === "mobile" ? "80%" : "85%",
+          "---preview_mobile_margin": activeDevice === "mobile" ? "0 auto" : "",
+          "---stack-mobil_carousel": activeDevice === "mobile" ? "80%" : "85%",
+          "---heading_mobile_padding": activeDevice === "mobile" ? "20px" : "80px",
+          "---preview_mobile_width_mobileview": activeDevice === "mobile" ? "100%" : "100%",
+          "---preview_mobile_width_mobileview_1140_viewport": activeDevice === "mobile" ? "50%" : "100%",
+
         }}
         data-section="qorix-review-video-stack-widget"
       >
         <section className="qorix-review-video-stack-section">
-          <div style={{ paddingLeft: activeDevice === "mobile" ? "20px" : "80px" }}>
+          <div className="qorix-review-video-stack-heading" >
             <WidthHeader settings={settings} activeDevice={activeDevice} />
           </div>
 

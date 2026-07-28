@@ -2,10 +2,11 @@ import { useState } from "react"
 import CustomSection from "../../../../../../components/essentials/CustomSection"
 import Text from "../../../../../../components/essentials/elements/Text"
 import ArrowUpRight from "../icons/ArroUpRight"
+import AdvancedCSS from "../../../../components/elements/AdvanceCSS"
 
 const SNIPPET_CODE = `{% render 'qorix-star-badge', product: product %}`
 
-export default function CardCodeSnippet(){
+export default function CardCodeSnippet({ customCss, handleCssChange }){
     const [copied, setCopied] = useState(false)
 
     const handleCopy = () => {
@@ -38,6 +39,9 @@ export default function CardCodeSnippet(){
                             <s-button icon={copied ? "clipboard-check" : "clipboard"} onClick={handleCopy} />
                         </s-stack>
                     </CustomSection>
+
+                  
+
                     <s-ordered-list>
                         <s-list-item>Copy the snippet above</s-list-item>
                         <s-list-item>Go to <strong>Online Store</strong> → <strong>Themes</strong> → <strong>Edit code</strong></s-list-item>
@@ -49,6 +53,7 @@ export default function CardCodeSnippet(){
                     </Text>
                 </s-grid>
             </CustomSection>
+              <AdvancedCSS css={customCss} setCss={handleCssChange} />
         </CustomSection>
     )
 }
