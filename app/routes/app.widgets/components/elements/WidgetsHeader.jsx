@@ -22,7 +22,7 @@ export default function WidgetsHeader({ settings, activeDevice }) {
         
         .qr-reviews-header {
           text-align: ${headerStyle === "center" ? "center" : "left"};
-          margin-bottom: 50px;
+          margin-bottom: 40px;
           background: var(--qr-white);
           font-family: var(--qr-font-body);
           width: 100%;
@@ -57,6 +57,7 @@ export default function WidgetsHeader({ settings, activeDevice }) {
         .qr-rating-summary {
           display: inline-flex;
           align-items: center;
+          flex-wrap:wrap;
           gap: 10px;
           justify-content: center;
         }

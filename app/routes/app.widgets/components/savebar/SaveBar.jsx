@@ -14,11 +14,14 @@ export default function SaveBar({ saveBar }) {
             key={saveBarFormKey}
             ref={saveBarFormRef}
             data-save-bar
+
             onSubmit={handleSaveBarSubmit}
             onReset={handleSaveBarDiscard}
         >
             {/* Start----Hidden checkbox dirty flag for Shopify data-save-bar */}
             <input {...saveBarTriggerInputProps} />
+
+
             {/* End----Hidden checkbox dirty flag for Shopify data-save-bar */}
         </form>
     )

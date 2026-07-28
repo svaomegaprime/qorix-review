@@ -7,6 +7,7 @@ import Text from "../../../../../components/essentials/elements/Text";
 import SaveBar from "../../../components/savebar/SaveBar";
 import { useSaveBarTrigger } from "../../../components/savebar/useSaveBarTrigger";
 import { requestAppWindowClose } from "../../../utils/useAppWindowClose";
+import { useAdminFetcherToast } from "../../../../../utils/useAdminFetcherToast";
 import ColorPicker from "../../../components/elements/ColorPicker";
 import Header from "../../../components/Header";
 import ResetToDefaults from "../../../components/elements/ResetToDefaults";
@@ -137,6 +138,7 @@ export default function Index() {
   // loader theke asha data — na thakle default fallback
   const loaderData = useLoaderData() || {};
   const fetcher = useFetcher();
+  useAdminFetcherToast(fetcher);
 
   const [resetKey, setResetKey] = useState(0);
   const [activeDevice, setActiveDevice] = useState("desktop");
@@ -268,35 +270,42 @@ export default function Index() {
     <>
       <style>
         {`
+          *::-webkit-scrollbar, html::-webkit-scrollbar, body::-webkit-scrollbar {
+            display: none !important;
+            width: 0 !important;
+            height: 0 !important;
+          }
+          *, html, body {
+            -ms-overflow-style: none !important;
+            scrollbar-width: none !important;
+          }
+
           .review-item {
-  height: 76px;
-  display: grid;
-  align-items: center;
-  border-bottom: 1px solid #e4e4e4;
-          margin: 0 auto;
-}
+            height: 64px;
+            display: grid;
+            align-items: center;
+            border-bottom: 1px solid #e4e4e4;
+          }
 
-.sidebar-content {
-  height: calc(100vh - 77px);
-  overflow: hidden auto;
-  background: #fff;
-  padding: 1rem;
-}
+          .sidebar-content {
+            height: calc(100vh - 77px);
+            overflow: hidden auto;
+            background: #fff;
+            padding: 1rem;
+          }
 
+          @media (max-width: 900px) {
+            .sidebar-content {
+              height: auto;
+              overflow: visible;
+              padding: 0.75rem;
+            }
 
-@media (max-width: 900px) {
-
-  .sidebar-content {
-    height: auto;
-    overflow: visible;
-    padding: 0.75rem;
-  }
-
-  .review-item {
-    height: 200px;
-   width: 70%;
-  }
-}
+            .review-item {
+              height: 200px;
+              width: 70%;
+            }
+          }
         `}
       </style>
 
@@ -340,6 +349,8 @@ export default function Index() {
                 height: "calc(100vh - 77px)",
                 overflow: "hidden auto",
                 background: "#fff",
+                scrollbarWidth: "none",
+                msOverflowStyle: "none",
               }}
             >
               {/* Start----Sidebar content */}

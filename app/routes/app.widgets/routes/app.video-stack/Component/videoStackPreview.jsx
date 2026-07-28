@@ -7,7 +7,7 @@ const STYLES = `
 .qorix-review-main-container{
 background-color: #ddd;
 padding: 50px;
-height: 700px;
+height: 650px;
 overflow: scroll;
 
 
@@ -150,13 +150,13 @@ overflow-x: hidden;
 
 [data-section="qorix-review-video-stack-widget"] .qorix-review-video-stack-tier-adjacent .qorix-review-video-stack-card {
   width: 270px;
-  height: 533px;
+  height: 500px;
   filter: brightness(0.85);
 }
 
 [data-section="qorix-review-video-stack-widget"] .qorix-review-video-stack-tier-center .qorix-review-video-stack-card {
   width: 270px;
-  height: 573px;
+  height: 550px;
   filter: brightness(1);
 }
 
@@ -276,7 +276,7 @@ overflow-x: hidden;
 
 [data-section="qorix-review-video-stack-widget"] .qorix-review-video-stack-nav {
   position: absolute;
-  top: 50%;
+  top: var(---nav_top, 50%);
   transform: translateY(-50%);
   width: 44px;
   height: 44px;
@@ -307,11 +307,11 @@ overflow-x: hidden;
 }
 
 [data-section="qorix-review-video-stack-widget"] .qorix-review-video-stack-nav-prev {
-  left: 50px;
+  left: var(---nav_prev_left, 50px);
 }
 
 [data-section="qorix-review-video-stack-widget"] .qorix-review-video-stack-nav-next {
-  right: 50px;
+  right: var(---nav_next_right, 50px);
 }
 
 [data-section="qorix-review-video-stack-widget"] .qorix-review-video-stack-custom-pagination {
@@ -371,7 +371,7 @@ overflow-x: hidden;
 @media (max-width: 1450px) {
 
 .qorix-review-main-container{
-height: 600px;
+height: 550px;
 }
 
 section.qorix-review-video-stack-section {
@@ -399,6 +399,10 @@ section.qorix-review-video-stack-section {
 @media (max-width: 900px) {
 .qorix-review-main-container{
 height: 400px;
+}
+
+[data-section="qorix-review-video-stack-widget"] .qorix-review-video-stack-nav {
+top:100%;
 }
 
 section.qorix-review-video-stack-section {
@@ -808,6 +812,9 @@ export default function ReviewVideoStack({ settings, activeDevice }) {
           "---heading_mobile_padding": activeDevice === "mobile" ? "20px" : "80px",
           "---preview_mobile_width_mobileview": activeDevice === "mobile" ? "100%" : "100%",
           "---preview_mobile_width_mobileview_1140_viewport": activeDevice === "mobile" ? "50%" : "100%",
+          "---nav_top": activeDevice === "mobile" ? "100%" : "50%",
+          "---nav_prev_left": activeDevice === "mobile" ? "8px" : "50px",
+          "---nav_next_right": activeDevice === "mobile" ? "8px" : "50px",
 
         }}
         data-section="qorix-review-video-stack-widget"
