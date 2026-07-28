@@ -112,7 +112,49 @@ const CAROUSEL_CSS = `
 }
 
 .qrx-section--mobile {
-  max-width: 500px;
+  max-width: 400px;
+  padding: 30px 16px 24px;
+  gap: 20px;
+}
+
+.qrx-section--mobile .qrx-viewport {
+  height: 480px;
+}
+
+.qrx-section--mobile .qrx-card {
+  width: 300px;
+  height: 460px;
+  padding: 30px 16px 20px;
+}
+
+.qrx-section--mobile .qrx-card-body {
+  margin-top: 24px;
+}
+
+.qrx-section--mobile .qrx-card-divider {
+  margin-bottom: 24px;
+}
+
+.qrx-section--mobile .qrx-nav-btn {
+  top: auto;
+  bottom: 0px;
+  transform: none;
+  width: 36px;
+  height: 36px;
+}
+
+.qrx-section--mobile .qrx-nav-btn--prev {
+  left: 70px;
+}
+
+.qrx-section--mobile .qrx-nav-btn--next {
+  right: 70px;
+}
+
+.qrx-section--mobile .qrx-dots {
+  height: 36px;
+  align-items: center;
+  margin-top: 12px;
 }
 
 .qrx-track-container {
@@ -286,8 +328,9 @@ const CAROUSEL_CSS = `
 @media (max-width: 1450px) {
   .qrx-wrapper {
     overflow-y: auto;
-      overflow-x: hidden;
-   padding: 60px 80px 60px 70px;
+    overflow-x: hidden;
+    padding: 60px 80px 60px 70px;
+    height: 550px;
   }
 }
 
@@ -299,35 +342,72 @@ const CAROUSEL_CSS = `
   .qrx-wrapper {
     padding-left: 40px;
     padding-right: 50px;
-     height: 500px;
+    height: 500px;
   }
 
   .qrx-card {
     width: 384px;
   }
 }
-
+@media (max-width: 900px){
+  .qrx-wrapper {
+    height: 420px;
+    padding:20px;
+  }
+}
 @media (max-width: 500px) {
   .qrx-section {
-    width: 75%;
-    gap:20px;
-  }
-.qrx-section{
-padding:41px;
-}
-  .qrx-wrapper {
-    padding-left: 5px;
-    padding-right: 5px;
-    padding-top: 20px;
-    overflow-y: auto;
-    overflow-x: hidden;
-    height: 500px;
+    width: 90%;
+    padding: 30px 16px 24px;
+    gap: 20px;
   }
 
+  .qrx-wrapper {
+    height: 400px;
+  }
+
+  .qrx-viewport {
+    height: 480px;
+  }
+
+
   .qrx-card {
-    width: 280px;
+    width: 300px;
+    height: 460px;
+    padding: 30px 16px 20px;
+  }
+
+  .qrx-card-body {
+    margin-top: 24px;
+  }
+
+  .qrx-card-divider {
+    margin-bottom: 24px;
+  }
+
+  .qrx-nav-btn {
+    top: auto;
+    bottom: 0px;
+    transform: none;
+    width: 36px;
+    height: 36px;
+  }
+
+  .qrx-nav-btn--prev {
+    left: 16px;
+  }
+
+  .qrx-nav-btn--next {
+    right: 16px;
+  }
+
+  .qrx-dots {
+    height: 36px;
+    align-items: center;
+    margin-top: 12px;
   }
 }
+
 
 `;
 
