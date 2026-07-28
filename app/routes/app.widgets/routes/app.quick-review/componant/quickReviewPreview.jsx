@@ -844,8 +844,19 @@ border:none;
                       </div>
                     )}
 
-                    {showProductName && (
-                      <p className="rv-product">{review.product}</p>
+                    {(showProductName || review.productImage) && (
+                      <div style={{ display: "flex", alignItems: "center", gap: "8px", margin: "4px 0 8px" }}>
+                        {review.productImage && (
+                          <img
+                            src={review.productImage}
+                            alt={review.product}
+                            style={{ width: "28px", height: "28px", borderRadius: "4px", objectFit: "cover" }}
+                          />
+                        )}
+                        {showProductName && (
+                          <p className="rv-product" style={{ margin: 0 }}>{review.product}</p>
+                        )}
+                      </div>
                     )}
 
                     <p className="rv-text">{review.review}</p>
