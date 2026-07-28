@@ -1,4 +1,4 @@
-class QuickReviewWidget {
+class ReviewX {
   constructor() {
     this.ratings = [1, 2, 3, 4, 5];
 
@@ -656,6 +656,6 @@ class QuickReviewWidget {
 // Alpine.js usage: x-data="new QuickReviewWidget()"
 // Plain JS usage:  const widget = new QuickReviewWidget(); widget.init();
 
-window.ReviewWidget = () => new QuickReviewWidget();
+window.ReviewWidget = () => new ReviewX();
 
 // export default QuickReviewWidget;
