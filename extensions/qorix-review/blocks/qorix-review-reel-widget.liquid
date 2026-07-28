@@ -18,17 +18,38 @@
   }
 </style>
 
-<section data-section="qorix-review-reel-widget" class="qorix-review-reel-real-review-section">
+<section
+  customerId="{{ customer.id }}"
+  customerEmail="{{ customer.email }}"
+  {% comment %} xx="{{ product.metafields.reviews.rating }} - {{ product.metafields.reviews.rating_count.value }}" {% endcomment %}
+  id="quick-review"
+  {% comment %} x-data="quickReviewWidget()" {% endcomment %}
+  x-data="ReviewWidget()"
+  x-init="initUploadSettings($el); productInit($el.dataset.product,$el.dataset.sort,$el.dataset.limit)"
+  data-customer-id="{{ customer.id }}"
+  data-customer-email="{{ customer.email }}"
+  data-product="{{ product | json | escape }}"
+  {% comment %}
+    data-photo-upload="{{ allow_photo | json }}"
+    data-video-upload="{{ allow_video | json }}"
+  {% endcomment %}
+  data-sort="{{ review_reel_metafield.defaultSort }}"
+  data-limit="{{ review_reel_metafield.reviewPerPage }}"
+  data-page-type="{{ template.name }}"
+  data-section="qorix-review-reel-widget"
+  class="qorix-review-reel-real-review-section"
+  data-show-first="ONLY_IMAGE_VIDEO"
+>
   {% if review_reel_metafield.showHeader != false and review_reel_metafield.showHeader != 'false' %}
     {% assign header_position = review_reel_metafield.headerStyle | default: 'center' %}
     {% assign star_color_val = review_reel_metafield.startColor | default: '#34C759' %}
     {% render 'heading',
-        label: review_reel_metafield.eyebrowLabel,
-        title: review_reel_metafield.heading,
-        subtitle: review_reel_metafield.subheading,
-        position: header_position,
-        reviewStats: review_reel_metafield.reviewStats,
-        starColor: star_color_val
+      label: review_reel_metafield.eyebrowLabel,
+      title: review_reel_metafield.heading,
+      subtitle: review_reel_metafield.subheading,
+      position: header_position,
+      reviewStats: review_reel_metafield.reviewStats,
+      starColor: star_color_val
     %}
   {% endif %}
 
@@ -36,50 +57,29 @@
   <div class="qorix-review-reel-swiper-wrapper">
     <div class="qorix-review-reel-swiper swiper mySwiper">
       <div class="swiper-wrapper">
-        {% for i in (1..5) %}
-          {% if i == 1 %}
-            {% render 'qorix-review-reel-widget-card',
-              media_type: 'image',
-              image_src: 'https://images.unsplash.com/photo-1556228578-8c89e6adf883?w=600&q=80',
-              image_alt: 'Facial Serum Vitamin C product',
-              product_title: 'Product: Facial Serum Vitamin C',
-              review_quote: "I'm grateful for their honesty and transparency throughout the process.",
-              user_avatar: 'https://i.pravatar.cc/56?img=47',
-              user_name: 'Saoirse Ronan',
-              review_date: '12th April, 2026',
-              verified: true
-            %}
-          {% else %}
-            {% render 'qorix-review-reel-widget-card',
-              media_type: 'video',
-              video_src: 'https://www.pexels.com/download/video/7667953/',
-              product_title: 'Product: Facial Serum Vitamin C',
-              review_quote: 'I was initially hesitant about applying for a mortgage',
-              user_avatar: 'https://i.pravatar.cc/56?img=32',
-              user_name: 'Jennifer Lawrence',
-              review_date: '16th April, 2026',
-              verified: true
-            %}
-          {% endif %}
-        {% endfor %}
+        {% render 'qorix-review-reel-widget-card' %}
       </div>
     </div>
 
-    {% if review_reel_metafield.showNavigationDots != false and review_reel_metafield.showNavigationDots != 'false' or review_reel_metafield.showArrowControls != false and review_reel_metafield.showArrowControls != 'false' %}
+    {% if review_reel_metafield.showNavigationDots or review_reel_metafield.showArrowControls %}
       <div class="qorix-review-reel-controls">
-        {% if review_reel_metafield.showArrowControls != false and review_reel_metafield.showArrowControls != 'false' %}
+        {% if review_reel_metafield.showArrowControls %}
           <div data-swiper-controller class="qorix-review-reel-swiper-button-prev" aria-label="Previous slide">
-            <svg width="20" height="20" viewBox="0 0 20 20" fill="none"><path fill-rule="evenodd" clip-rule="evenodd" d="M12.28 14.53a.75.75 0 0 0 0-1.06L8.81 10l3.47-3.47a.75.75 0 1 0-1.06-1.06l-4 4a.75.75 0 0 0 0 1.06l4 4a.75.75 0 0 0 1.06 0z" fill="#4A4A4A"/></svg>
+            <svg width="20" height="20" viewBox="0 0 20 20" fill="none">
+              <path fill-rule="evenodd" clip-rule="evenodd" d="M12.28 14.53a.75.75 0 0 0 0-1.06L8.81 10l3.47-3.47a.75.75 0 1 0-1.06-1.06l-4 4a.75.75 0 0 0 0 1.06l4 4a.75.75 0 0 0 1.06 0z" fill="#4A4A4A"/>
+            </svg>
           </div>
         {% endif %}
 
-        {% if review_reel_metafield.showNavigationDots != false and review_reel_metafield.showNavigationDots != 'false' %}
+        {% if review_reel_metafield.showNavigationDots %}
           <div class="qorix-review-reel-swiper-pagination"></div>
         {% endif %}
 
         {% if review_reel_metafield.showArrowControls != false and review_reel_metafield.showArrowControls != 'false' %}
           <div data-swiper-controller class="qorix-review-reel-swiper-button-next" aria-label="Next slide">
-            <svg width="20" height="20" viewBox="0 0 20 20" fill="none"><path fill-rule="evenodd" clip-rule="evenodd" d="M7.72 14.53a.75.75 0 0 1 0-1.06L11.19 10 7.72 6.53a.75.75 0 0 1 1.06-1.06l4 4a.75.75 0 0 1 0 1.06l-4 4a.75.75 0 0 1-1.06 0z" fill="#4A4A4A"/></svg>
+            <svg width="20" height="20" viewBox="0 0 20 20" fill="none">
+              <path fill-rule="evenodd" clip-rule="evenodd" d="M7.72 14.53a.75.75 0 0 1 0-1.06L11.19 10 7.72 6.53a.75.75 0 0 1 1.06-1.06l4 4a.75.75 0 0 1 0 1.06l-4 4a.75.75 0 0 1-1.06 0z" fill="#4A4A4A"/>
+            </svg>
           </div>
         {% endif %}
       </div>
@@ -89,7 +89,8 @@
 
 <script src="{{ 'swiper-bundle.min.js' | asset_url }}" defer></script>
 <script src="{{ 'qorix-review-reel-widget.js' | asset_url }}" defer></script>
-
+{% comment %} <script src="{{ 'review.js' | asset_url }}" defer></script> {% endcomment %}
+{% comment %} <script src="{{ 'alpine.js' | asset_url }}" defer></script> {% endcomment %}
 {% schema %}
 {
   "name": "review reel",

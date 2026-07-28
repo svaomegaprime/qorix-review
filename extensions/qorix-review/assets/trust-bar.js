@@ -1,6 +1,3 @@
-class TrustBarRenderer {}
-class TrustWidgetRenderer {}
-
 class TrustBar {
   constructor(productId) {
     this.productId = productId;
