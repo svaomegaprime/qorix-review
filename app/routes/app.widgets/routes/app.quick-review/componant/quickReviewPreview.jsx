@@ -466,8 +466,8 @@ border:none;
         .rv-text { font-size: 14px; color: #3d3d3d; margin: 0 0 14px; line-height: 1.5; }
         .rv-media-row { display: flex; gap: 8px; flex-wrap: wrap; margin-bottom: 12px; }
         .rv-media-thumb { position: relative; width: 80px; height: 80px; border-radius: 6px; overflow: hidden; cursor: pointer; flex-shrink: 0; }
-        .rv-media-thumb img { width: 100%; height: 100%; object-fit: cover; display: block; }
-        .rv-media-thumb:hover img { opacity: 0.82; }
+        .rv-media-thumb img, .rv-media-thumb video { width: 100%; height: 100%; object-fit: cover; display: block; }
+        .rv-media-thumb:hover img, .rv-media-thumb:hover video { opacity: 0.82; }
         .rv-play-overlay { position: absolute; inset: 0; display: flex; align-items: center; justify-content: center; background: rgba(0,0,0,0.28); }
         .rv-play-icon { width: 28px; height: 28px; border-radius: 50%; background: rgba(255,255,255,0.9); display: flex; align-items: center; justify-content: center; font-size: 12px; color: #1a1a1a; padding-left: 2px; }
 
@@ -864,9 +864,9 @@ border:none;
                               )
                               : showMediaThumbnails && (
                                 <>
-                                  <img
-                                    src={item.thumb}
-                                    alt={`video-thumb-${i}`}
+                                  <video
+                                    src={item.url || item.thumb}
+                                    playsInline
                                   />
                                   <div className="rv-play-overlay">
                                     <div className="rv-play-icon">▶</div>
