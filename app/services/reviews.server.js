@@ -1,14 +1,20 @@
 import prisma from "../db.server.js";
 import { deleteFile } from "../lib/s3/deleteFile.js";
+import { invalidateReviewCache } from "../lib/redis/reviewCache.js";
 
 /** @param {{ reviewId: string, status: string, storeId: string }} input */
 export async function updateReviewStatus({ reviewId, status, storeId }) {
-  return prisma.review.update({
+  const updated = await prisma.review.update({
     where: { id: reviewId, storeId },
     data: {
       status: /** @type {import("@prisma/client").ReviewStatus} */ (status),
     },
   });
+
+  // Invalidate review cache for this store
+  await invalidateReviewCache(storeId);
+
+  return updated;
 }
 
 /**
@@ -40,5 +46,9 @@ export async function deleteReviewWithAttachments({ reviewId, storeId }) {
   }
 
   await prisma.review.delete({ where: { id: reviewId, storeId } });
+
+  // Invalidate review cache for this store
+  await invalidateReviewCache(storeId);
+
   return true;
 }

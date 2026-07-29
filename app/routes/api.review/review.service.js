@@ -1,4 +1,9 @@
 import { getStoreData } from "../../utils/getStoreData";
+import {
+  getCache,
+  setCache,
+  invalidateReviewCache,
+} from "../../lib/redis/reviewCache.js";
 import prisma from "../../db.server";
 import { uploadFile } from "../../lib/s3/uploadFile";
 import { isFileLike } from "../../utils/isFileLike";
@@ -141,6 +146,9 @@ async function postReview(request, session, admin) {
         attachments: true,
       },
     });
+
+    // Invalidate review cache for this store + product
+    await invalidateReviewCache(id, reviewData.productId);
 
     if (reviewData.reviewerEmail && reviewData.productId) {
       const existingOrderUpdated = orderId
@@ -483,6 +491,48 @@ async function getReview(request, session, admin) {
         });
       }
     }
+    // ── Redis cache-aside ──────────────────────────────────────────
+    const cacheKey = `reviews:${id}:${productId || "all"}:${page}:${limit}:${sort}`;
+    const cached = await getCache(cacheKey);
+
+    if (cached) {
+      console.log("[CACHE::HIT]", cacheKey);
+
+      // Re-apply per-user helpfulCount personalisation on top of cached data
+      if (customerEmail && cached.reviews) {
+        cached.reviews = cached.reviews.map((review) => {
+          const helpfulCount = Array.isArray(review.helpfulCount)
+            ? review.helpfulCount
+            : [];
+          const normalizedEmail = customerEmail.toLowerCase();
+          const helpfulTotal = helpfulCount.reduce(
+            (total, item) => (item?.isHelpful === true ? total + 1 : total),
+            0,
+          );
+          const isHelpful = Boolean(
+            normalizedEmail &&
+              helpfulCount.some(
+                (item) =>
+                  item?.isHelpful === true &&
+                  String(item.customerEmail || "").toLowerCase() ===
+                    normalizedEmail,
+              ),
+          );
+          return { ...review, helpfulTotal, isHelpful };
+        });
+      }
+
+      return sendResponse(null, {
+        ok: true,
+        status: 200,
+        message: "Reviews fetched successfully",
+        data: cached,
+      });
+    }
+
+    console.log("[CACHE::MISS]", cacheKey);
+    // ── End cache check ──────────────────────────────────────────
+
     // Base where — unfiltered, used for ratingCounts and allAttachments
     const baseWhere = {
       storeId: id,
@@ -617,19 +667,24 @@ async function getReview(request, session, admin) {
       }
     }
 
+    const responseData = {
+      reviews: res,
+      totalReviews: info._count._all,
+      totalPages: Math.ceil(info._count._all / limit),
+      currentPage: page,
+      averageRating: Number((info._avg.rating || 0).toFixed(1)),
+      ratingCounts,
+      attachments: allAttachments,
+    };
+
+    // Write to cache (fire-and-forget, don't block response)
+    setCache(cacheKey, responseData);
+
     return sendResponse(null, {
       ok: true,
       status: 200,
       message: "Reviews fetched successfully",
-      data: {
-        reviews: res,
-        totalReviews: info._count._all,
-        totalPages: Math.ceil(info._count._all / limit),
-        currentPage: page,
-        averageRating: Number((info._avg.rating || 0).toFixed(1)),
-        ratingCounts,
-        attachments: allAttachments,
-      },
+      data: responseData,
     });
   } catch (error) {
     console.error("[ERROR::api.review.getReview]", error);
