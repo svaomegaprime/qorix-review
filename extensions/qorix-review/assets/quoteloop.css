@@ -154,17 +154,28 @@
 /* Pagination */
 [data-section="qorix-quoteloop-widget"] .qr-quote-swiper .swiper-pagination {
   bottom: 20px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
 }
 
 [data-section="qorix-quoteloop-widget"] .qr-quote-swiper .swiper-pagination-bullet {
-  width: 8px;
-  height: 8px;
-  background: var(--qr-color-pagination);
-  opacity: 1;
+  width: 10px;
+  height: 10px;
+  background: var(--active-dot-color, var(--qr-color-pagination, #34c759));
+  opacity: 0.25;
+  transition: all 0.3s ease;
+  border-radius: 50%;
+  display: inline-block;
+  margin: 0 4px !important;
 }
 
 [data-section="qorix-quoteloop-widget"] .qr-quote-swiper .swiper-pagination-bullet-active {
-  background: var(--qr-color-pagination-active);
+  width: 28px;
+  height: 10px;
+  border-radius: 99px;
+  opacity: 1;
+  background: var(--active-dot-color, var(--qr-color-pagination-active, #34c759));
 }
 
 /* Navigation arrows — MOBILE: bottom corners */
