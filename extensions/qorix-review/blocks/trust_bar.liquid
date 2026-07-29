@@ -1,13 +1,5 @@
 {{ 'trust-bar.css' | asset_url | stylesheet_tag }}
 
-{% comment %} x-init="data = {{ product.metafields.reviews.rating }} - {{ product.metafields.reviews.rating_count.value }}" {% endcomment %}
-{% comment %}
-  <div
-    x-data="TrustBar({{ product.id | json }})"
-    x-html="trustBarWidget"
-  ></div>
-{% endcomment %}
-
 <div
   x-data="
     TrustBar({
