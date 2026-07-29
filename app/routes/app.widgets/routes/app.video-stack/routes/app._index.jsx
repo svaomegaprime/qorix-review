@@ -7,6 +7,7 @@ import Text from "../../../../../components/essentials/elements/Text";
 import SaveBar from "../../../components/savebar/SaveBar";
 import { useSaveBarTrigger } from "../../../components/savebar/useSaveBarTrigger";
 import { requestAppWindowClose } from "../../../utils/useAppWindowClose";
+import { useAdminFetcherToast } from "../../../../../utils/useAdminFetcherToast";
 import ColorPicker from "../../../components/elements/ColorPicker";
 import Header from "../../../components/Header";
 import ResetToDefaults from "../../../components/elements/ResetToDefaults";
@@ -77,7 +78,7 @@ export async function loader({ request }) {
     const { id: shop } = await getStoreData(admin);
 
     const row = await prisma.videoStackSettings.findUnique({
-      where: { shop },
+      where: { storeId: shop },
     });
 
     return dbRowToSettings(row); // row null hole DEFAULT_VALUES_VIDEO_STACK return kore
@@ -99,10 +100,10 @@ export async function action({ request }) {
     const dbFields = settingsToDbFields(data);
 
     const res = await prisma.videoStackSettings.upsert({
-      where: { shop },
+      where: { storeId: shop },
       update: dbFields,
       create: {
-        shop,
+        storeId: shop,
         ...dbFields,
       },
     });
@@ -129,6 +130,7 @@ export default function Index() {
   // loader theke asha data — na thakle default fallback
   const loaderData = useLoaderData() || {};
   const fetcher = useFetcher();
+  useAdminFetcherToast(fetcher);
 
   const [resetKey, setResetKey] = useState(0);
   const [activeDevice, setActiveDevice] = useState("desktop");
@@ -257,35 +259,43 @@ export default function Index() {
     <>
       <style>
         {`
+          *::-webkit-scrollbar, html::-webkit-scrollbar, body::-webkit-scrollbar {
+            display: none !important;
+            width: 0 !important;
+            height: 0 !important;
+          }
+          *, html, body {
+            -ms-overflow-style: none !important;
+            scrollbar-width: none !important;
+          }
+
           .review-item {
-  height: 76px;
-  display: grid;
-  align-items: center;
-  border-bottom: 1px solid #e4e4e4;
-          margin: 0 auto;
-}
+            height: 76px;
+            display: grid;
+            align-items: center;
+            border-bottom: 1px solid #e4e4e4;
+            margin: 0 auto;
+          }
 
-.sidebar-content {
-  height: calc(100vh - 77px);
-  overflow: hidden auto;
-  background: #fff;
-  padding: 1rem;
-}
+          .sidebar-content {
+            height: calc(100vh - 77px);
+            overflow: hidden auto;
+            background: #fff;
+            padding: 1rem;
+          }
 
+          @media (max-width: 900px) {
+            .sidebar-content {
+              height: auto;
+              overflow: visible;
+              padding: 0.75rem;
+            }
 
-@media (max-width: 900px) {
-
-  .sidebar-content {
-    height: auto;
-    overflow: visible;
-    padding: 0.75rem;
-  }
-
-  .review-item {
-    height: 200px;
-   width: 70%;
-  }
-}
+            .review-item {
+              height: 200px;
+              width: 70%;
+            }
+          }
         `}
       </style>
 
@@ -330,6 +340,8 @@ export default function Index() {
                 height: "calc(100vh - 77px)",
                 overflow: "hidden auto",
                 background: "#fff",
+                scrollbarWidth: "none",
+                msOverflowStyle: "none",
               }}
             >
               {/* Start----Sidebar content */}
@@ -425,10 +437,7 @@ export default function Index() {
                       label="Show product Name"
                       checked={settings.showProductName}
                       onChange={(e) =>
-                        handleSettingChange(
-                          "showProductName",
-                          e.target.checked,
-                        )
+                        handleSettingChange("showProductName", e.target.checked)
                       }
                     ></s-switch>
                   </s-stack>
@@ -450,10 +459,7 @@ export default function Index() {
                       label="Autoplay on hover"
                       checked={settings.autoplayOnHover}
                       onChange={(e) =>
-                        handleSettingChange(
-                          "autoplayOnHover",
-                          e.target.checked,
-                        )
+                        handleSettingChange("autoplayOnHover", e.target.checked)
                       }
                     ></s-switch>
                   </s-stack>
@@ -464,10 +470,7 @@ export default function Index() {
                       label="Muted by default"
                       checked={settings.mutedByDefault}
                       onChange={(e) =>
-                        handleSettingChange(
-                          "mutedByDefault",
-                          e.target.checked,
-                        )
+                        handleSettingChange("mutedByDefault", e.target.checked)
                       }
                     ></s-switch>
                   </s-stack>
@@ -551,10 +554,7 @@ export default function Index() {
                       value={settings.fiteringMinStart}
                       details="This option isn't shown in the preview. It will take effect on your live review widget once customers submit reviews."
                       onChange={(e) =>
-                        handleSettingChange(
-                          "fiteringMinStart",
-                          e.target.value,
-                        )
+                        handleSettingChange("fiteringMinStart", e.target.value)
                       }
                     >
                       <s-option value="Show all ratings">

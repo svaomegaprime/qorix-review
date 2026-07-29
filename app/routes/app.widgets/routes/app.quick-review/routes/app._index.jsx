@@ -5,7 +5,7 @@ import Text from "../../../../../components/essentials/elements/Text";
 import SaveBar from "../../../components/savebar/SaveBar";
 import { useSaveBarTrigger } from "../../../components/savebar/useSaveBarTrigger";
 import { requestAppWindowClose } from "../../../utils/useAppWindowClose";
-import { useFetcher, useLoaderData, useNavigation } from "react-router";
+import { useActionData, useFetcher, useLoaderData, useNavigation } from "react-router";
 import ColorPicker from "../../../components/elements/ColorPicker";
 import QuickReviewComponent from "../componant/quickReviewPreview";
 import TabButton from "../../../../../components/essentials/TabButton";
@@ -19,7 +19,7 @@ import ActiveToggleHeader from "../../../../../routes/app.widgets/components/ele
 
 const DEFAULT_COLOR_VALUES = {
   STAR_COLOR: "#f59e0b",
-  BAR_FILE_COLOR:"#34C759",
+  BAR_FILE_COLOR: "#34C759",
   TEXT_COLOR: "#fff",
   VERIFIED_BADGE_COLOR: "#1D9E75",
   Submit_Button_Color: "#1D9E75",
@@ -47,11 +47,11 @@ const DEFAULT_QUICK_REVIEW_STATE = {
   showStarRatingOnCard: true,
   showHelpfulButton: true,
   reviewPerPage: 10,
-  isShowStarDistribution:true,
-  isShowMediaStrip:true,
-  isShowReviewCount:true,
-  writeReviewButtonText:"Write a review",
-  showHelfullButton:true,
+  isShowStarDistribution: true,
+  isShowMediaStrip: true,
+  isShowReviewCount: true,
+  writeReviewButtonText: "Write a review",
+  showHelfullButton: true,
   defaultSort: "MOST_RECENT",
   filterAndSorting: "FILTER_AND_SORT",
 };
@@ -133,8 +133,8 @@ const buildQuickReviewState = (data) => {
     ,
     showHelfullButton:
       data.showHelfullButton ?? DEFAULT_QUICK_REVIEW_STATE.showHelfullButton,
-      filterAndSorting:
-        data.filterAndSorting ?? DEFAULT_QUICK_REVIEW_STATE.filterAndSorting
+    filterAndSorting:
+      data.filterAndSorting ?? DEFAULT_QUICK_REVIEW_STATE.filterAndSorting
   };
 };
 
@@ -180,7 +180,7 @@ export async function action({ request }) {
       },
     });
 
-    console.log("[Quick Review::]: ",res)
+
 
     const metafieldResult = await setAppMetafield(admin, "quick_review", res);
 
@@ -196,6 +196,9 @@ export async function action({ request }) {
 
 export default function Index(VALUES = {}) {
   const loaderData = useLoaderData();
+  const actionData = useActionData();
+
+  console.log("[Quick Review::Action Data]: ", actionData)
 
   const COLOR_PICKERS_ELEMENTS = [
     {
@@ -230,7 +233,7 @@ export default function Index(VALUES = {}) {
   const loading = navigation.state === "loading";
   // End----Default CSR loading state checking for navigation
   const [activeDevice, setActiveDevice] = useState("desktop");
-    const [activeToggleManu, setActiveToggleManu] = useState(false);
+  const [activeToggleManu, setActiveToggleManu] = useState(false);
   const [quickReview, setQuickReview] = useState(() =>
     buildQuickReviewState(loaderData),
   );
@@ -276,6 +279,7 @@ export default function Index(VALUES = {}) {
   };
   const fetcher = useFetcher();
   useAdminFetcherToast(fetcher);
+  const isSaving = fetcher.state !== "idle";
   const initQuickReviewRef = useRef(null);
   const savePendingRef = useRef(false);
 
@@ -283,7 +287,7 @@ export default function Index(VALUES = {}) {
     initQuickReviewRef.current = cloneQuickReviewState(quickReview);
   }
 
-  console.log("quickReview", quickReview);
+
   const handelSubmit = () => {
     savePendingRef.current = true;
     fetcher.submit(postData, {
@@ -384,36 +388,45 @@ export default function Index(VALUES = {}) {
 
   return (
     <>
-     <style>
+      <style>
         {`
-          .review-item {
-  height: 76px;
-  display: grid;
-  align-items: center;
-  border-bottom: 1px solid #e4e4e4;
-}
+          *::-webkit-scrollbar, html::-webkit-scrollbar, body::-webkit-scrollbar {
+            display: none !important;
+            width: 0 !important;
+            height: 0 !important;
+          }
+          *, html, body {
+            -ms-overflow-style: none !important;
+            scrollbar-width: none !important;
+          }
 
-.sidebar-content {
-  height: calc(100vh - 77px);
-  overflow: hidden auto;
-  background: #fff;
-  padding: 1rem;
-}
+         .review-item {
+            height: 76px;
+            display: grid;
+            align-items: center;
+            border-bottom: 1px solid #e4e4e4;
+            margin: 0 auto;
+          }
 
+          .sidebar-content {
+            height: calc(100vh - 77px);
+            overflow: hidden auto;
+            background: #fff;
+            padding: 1rem;
+          }
 
-@media (max-width: 900px) {
+          @media (max-width: 900px) {
+            .sidebar-content {
+              height: auto;
+              overflow: visible;
+              padding: 0.75rem;
+            }
 
-  .sidebar-content {
-    height: auto;
-    overflow: visible;
-    padding: 0.75rem;
-  }
-
-  .review-item {
-    height: 248px;
-   
-  }
-}
+            .review-item {
+              height: 200px;
+              width: 70%;
+            }
+          }
         `}
       </style>
 
@@ -424,239 +437,241 @@ export default function Index(VALUES = {}) {
 
       <SaveBar saveBar={saveBar} />
       <s-query-container>
-      <s-grid   gridTemplateColumns="@container (inline-size > 900px) 346px 1fr, 1fr" alignItems="start">
-        {/* Start----Sidebar */}
-        <CustomSection
-          borderRadius="0"
-          boxShadow="none"
-          borderLeft="none"
-          borderTop="none"
-          borderBottom="none"
-          padding="none"
-          background="#fff"
-        >
-          <s-grid
-            gridTemplateColumns="auto 1fr"
-            gap="small"
-            padding="small base"
+        <s-grid gridTemplateColumns="@container (inline-size > 900px) 346px 1fr, 1fr" alignItems="start">
+          {/* Start----Sidebar */}
+          <CustomSection
+            borderRadius="0"
+            boxShadow="none"
+            borderLeft="none"
+            borderTop="none"
+            borderBottom="none"
+            padding="none"
+            background="#fff"
           >
-            <s-button variant="tertiary" onClick={handleHideAppWindow}>
-              <s-icon type="arrow-left" />
-            </s-button>
-            <s-box>
-              <s-stack direction="inline" alignItems="center" gap="small">
-                <Text as="h3">QuickReview</Text>
-                <s-badge tone="caution">Not installed</s-badge>
-              </s-stack>
-              <s-paragraph color="subdued">
-                Show a quick review form on your product page.
-              </s-paragraph>
-            </s-box>
-          </s-grid>
-          <s-divider />
-          <div
-            style={{
-              height: "calc(100vh - 77px)",
-              overflow: "hidden auto",
-              background: "#fff",
-            }}
-          >
-            {/* Start----Sidebar content */}
-            <div style={{ padding: "20px" }}>
-              {/* ------------Tab buttons--------------- */}
-              <s-grid
-                gridTemplateColumns="1fr 1fr 1fr"
-                gap="base"
-                paddingBlockEnd="base"
-              >
-                <TabButton
-                  isActive={quickReviewTab.quickReview}
-                  onClick={() => setActiveManualTab({ quickReview: true })}
+            <s-grid
+              gridTemplateColumns="auto 1fr"
+              gap="small"
+              padding="small base"
+            >
+              <s-button variant="tertiary" onClick={handleHideAppWindow}>
+                <s-icon type="arrow-left" />
+              </s-button>
+              <s-box>
+                <s-stack direction="inline" alignItems="center" gap="small">
+                  <Text as="h3">QuickReview</Text>
+                  <s-badge tone="caution">Not installed</s-badge>
+                </s-stack>
+                <s-paragraph color="subdued">
+                  Show a quick review form on your product page.
+                </s-paragraph>
+              </s-box>
+            </s-grid>
+            <s-divider />
+            <div
+              style={{
+                height: "calc(100vh - 77px)",
+                overflow: "hidden auto",
+                background: "#fff",
+                scrollbarWidth: "none",
+                msOverflowStyle: "none",
+              }}
+            >
+              {/* Start----Sidebar content */}
+              <div style={{ padding: "20px" }}>
+                {/* ------------Tab buttons--------------- */}
+                <s-grid
+                  gridTemplateColumns="1fr 1fr 1fr"
+                  gap="base"
+                  paddingBlockEnd="base"
                 >
-                  Widget
-                </TabButton>
-                <TabButton
-                  isActive={quickReviewTab.reviewPopup}
-                  onClick={() => setActiveManualTab({ reviewPopup: true })}
-                >
-                  Form
-                </TabButton>
-                <TabButton
-                  isActive={quickReviewTab.success}
-                  onClick={() => setActiveManualTab({ success: true })}
-                >
-                  Success
-                </TabButton>
-              </s-grid>
-              {/* ---------------Form fields-------------------- */}
-
-              {quickReviewTab.reviewPopup && (
-                <>
-                  <s-stack border="base" borderRadius="base" padding="base">
-                   
-                <ActiveToggleHeader activeToggleManu={activeToggleManu} textHeader="Form Fields"  activeToggleManuText={"Form_Fields"} setActiveToggleManu={setActiveToggleManu} />
-
-
-                    {activeToggleManu==="Form_Fields" && (
-                           <s-stack>
-                    <s-switch
-                      checked={quickReview.name || undefined}
-                      label="Name field"
-                      details="Ask for reviewer's name"
-                      onchange={handleSwitch("name")}
-                    ></s-switch>
-                    <s-switch
-                      checked={quickReview.email || undefined}
-                      label="Email field"
-                      details="Optional email for reply"
-                      onchange={handleSwitch("email")}
-                    ></s-switch>
-
-                    <s-switch
-                      checked={quickReview.photo || undefined}
-                      label="Photo upload"
-                      details="Let customers attach images"
-                      onchange={handleSwitch("photo")}
-                    ></s-switch>
-                    <s-switch
-                      checked={quickReview.video || undefined}
-                      label="Video upload"
-                      details="Let customers attach video"
-                      onchange={handleSwitch("video")}
-                    ></s-switch>
-
-                      </s-stack>
-                    )}
-
-               
-                  </s-stack>
-                  {/* ---------------Form fields End-------------------- */}
-                  <br></br>
-                  {/* ---------------Form text-------------------- */}
-                  <s-stack border="base" borderRadius="base" padding="base">
-                  
-                      <ActiveToggleHeader activeToggleManu={activeToggleManu} textHeader="Form text"  activeToggleManuText={"Form"} setActiveToggleManu={setActiveToggleManu} />
-                    
-                    {activeToggleManu=="Form" && (
-                                  <s-stack  paddingBlockStart="small">
-                    
-                    <s-stack
-                      border="base"
-                      paddingInlineStart="small"
-                      borderRadius="base"
-                      padding="small"
-                    >
-                      <s-text-field
-                        label="Form title"
-                        maxlength="70"
-                        value={quickReview.formTitle}
-                        onchange={handleText("formTitle")}
-                      ></s-text-field>
-                    </s-stack>
-
-                    <s-stack gap="small" paddingBlockStart="small"></s-stack>
-                    <s-stack
-                      border="base"
-                      paddingInlineStart="small"
-                      borderRadius="base"
-                      padding="small"
-                    >
-                      <s-text-field
-                        label="Form subtitle"
-                        maxlength="70"
-                        value={quickReview.formSubtitle}
-                        onchange={handleText("formSubtitle")}
-                      ></s-text-field>
-                    </s-stack>
-
-                    <s-stack gap="small" paddingBlockStart="small"></s-stack>
-                    <s-stack
-                      border="base"
-                      paddingInlineStart="small"
-                      borderRadius="base"
-                      padding="small"
-                    >
-                      <s-text-field
-                        label="Submit button text"
-                        maxlength="50"
-                        value={quickReview.submitButtonText}
-                        onchange={handleText("submitButtonText")}
-                      ></s-text-field>
-                    </s-stack>
-                    </s-stack>
-
-                    )}
-          
-                  </s-stack>
-                  <br></br>
-
-                  {/* --------------laout popup-------------------- */}
-                  <s-stack
-                    border="base"
-                    borderRadius="base"
-                    padding="base"
-                    gap="small"
+                  <TabButton
+                    isActive={quickReviewTab.quickReview}
+                    onClick={() => setActiveManualTab({ quickReview: true })}
                   >
-                    <s-heading>Layout</s-heading>
+                    Widget
+                  </TabButton>
+                  <TabButton
+                    isActive={quickReviewTab.reviewPopup}
+                    onClick={() => setActiveManualTab({ reviewPopup: true })}
+                  >
+                    Form
+                  </TabButton>
+                  <TabButton
+                    isActive={quickReviewTab.success}
+                    onClick={() => setActiveManualTab({ success: true })}
+                  >
+                    Success
+                  </TabButton>
+                </s-grid>
+                {/* ---------------Form fields-------------------- */}
 
-                    <s-stack>
-                      <div
-                        style={{
-                          border: "1px solid #e4e5e7",
-                          borderRadius: 8,
-                          padding: "12px 16px",
-                        }}
-                      >
-                        <p
-                          style={{
-                            margin: "0 0 10px",
-                            fontSize: 14,
-                            fontWeight: 500,
-                            color: "#202223",
-                          }}
-                        >
-                          Form Border radius
-                        </p>
+                {quickReviewTab.reviewPopup && (
+                  <>
+                    <s-stack border="base" borderRadius="base" padding="base">
+
+                      <ActiveToggleHeader activeToggleManu={activeToggleManu} textHeader="Form Fields" activeToggleManuText={"Form_Fields"} setActiveToggleManu={setActiveToggleManu} />
+
+
+                      {activeToggleManu === "Form_Fields" && (
+                        <s-stack>
+                          <s-switch
+                            checked={quickReview.name || undefined}
+                            label="Name field"
+                            details="Ask for reviewer's name"
+                            onchange={handleSwitch("name")}
+                          ></s-switch>
+                          <s-switch
+                            checked={quickReview.email || undefined}
+                            label="Email field"
+                            details="Optional email for reply"
+                            onchange={handleSwitch("email")}
+                          ></s-switch>
+
+                          <s-switch
+                            checked={quickReview.photo || undefined}
+                            label="Photo upload"
+                            details="Let customers attach images"
+                            onchange={handleSwitch("photo")}
+                          ></s-switch>
+                          <s-switch
+                            checked={quickReview.video || undefined}
+                            label="Video upload"
+                            details="Let customers attach video"
+                            onchange={handleSwitch("video")}
+                          ></s-switch>
+
+                        </s-stack>
+                      )}
+
+
+                    </s-stack>
+                    {/* ---------------Form fields End-------------------- */}
+                    <br></br>
+                    {/* ---------------Form text-------------------- */}
+                    <s-stack border="base" borderRadius="base" padding="base">
+
+                      <ActiveToggleHeader activeToggleManu={activeToggleManu} textHeader="Form text" activeToggleManuText={"Form"} setActiveToggleManu={setActiveToggleManu} />
+
+                      {activeToggleManu == "Form" && (
+                        <s-stack paddingBlockStart="small">
+
+                          <s-stack
+                            border="base"
+                            paddingInlineStart="small"
+                            borderRadius="base"
+                            padding="small"
+                          >
+                            <s-text-field
+                              label="Form title"
+                              maxlength="70"
+                              value={quickReview.formTitle}
+                              onchange={handleText("formTitle")}
+                            ></s-text-field>
+                          </s-stack>
+
+                          <s-stack gap="small" paddingBlockStart="small"></s-stack>
+                          <s-stack
+                            border="base"
+                            paddingInlineStart="small"
+                            borderRadius="base"
+                            padding="small"
+                          >
+                            <s-text-field
+                              label="Form subtitle"
+                              maxlength="70"
+                              value={quickReview.formSubtitle}
+                              onchange={handleText("formSubtitle")}
+                            ></s-text-field>
+                          </s-stack>
+
+                          <s-stack gap="small" paddingBlockStart="small"></s-stack>
+                          <s-stack
+                            border="base"
+                            paddingInlineStart="small"
+                            borderRadius="base"
+                            padding="small"
+                          >
+                            <s-text-field
+                              label="Submit button text"
+                              maxlength="50"
+                              value={quickReview.submitButtonText}
+                              onchange={handleText("submitButtonText")}
+                            ></s-text-field>
+                          </s-stack>
+                        </s-stack>
+
+                      )}
+
+                    </s-stack>
+                    <br></br>
+
+                    {/* --------------laout popup-------------------- */}
+                    <s-stack
+                      border="base"
+                      borderRadius="base"
+                      padding="base"
+                      gap="small"
+                    >
+                      <s-heading>Layout</s-heading>
+
+                      <s-stack>
                         <div
                           style={{
-                            display: "flex",
-                            alignItems: "center",
-                            gap: 12,
+                            border: "1px solid #e4e5e7",
+                            borderRadius: 8,
+                            padding: "12px 16px",
                           }}
                         >
-                          <input
-                            type="range"
-                            min={0}
-                            max={25}
-                            value={quickReview?.borderRadius}
-                            onChange={(e) =>
-                              setQuickReview((prev) => ({
-                                ...prev,
-                                borderRadius: Number(e.target.value),
-                              }))
-                            }
+                          <p
                             style={{
-                              flex: 1,
-                              height: 4,
-                              appearance: "none",
-                              WebkitAppearance: "none",
-                              background: `linear-gradient(to right, #8c8c8c ${quickReview.borderRadius * 4}%, #e4e5e7 ${quickReview.borderRadius * 2}%)`,
-                              borderRadius: 2,
-                              outline: "none",
-                              cursor: "pointer",
-                            }}
-                          />
-                          <span
-                            style={{
-                              fontSize: 13,
-                              color: "#6d7175",
-                              minWidth: 36,
-                              textAlign: "right",
+                              margin: "0 0 10px",
+                              fontSize: 14,
+                              fontWeight: 500,
+                              color: "#202223",
                             }}
                           >
-                            {quickReview.borderRadius}px
-                          </span>
-                          <style>{`
+                            Form Border radius
+                          </p>
+                          <div
+                            style={{
+                              display: "flex",
+                              alignItems: "center",
+                              gap: 12,
+                            }}
+                          >
+                            <input
+                              type="range"
+                              min={0}
+                              max={25}
+                              value={quickReview?.borderRadius}
+                              onChange={(e) =>
+                                setQuickReview((prev) => ({
+                                  ...prev,
+                                  borderRadius: Number(e.target.value),
+                                }))
+                              }
+                              style={{
+                                flex: 1,
+                                height: 4,
+                                appearance: "none",
+                                WebkitAppearance: "none",
+                                background: `linear-gradient(to right, #8c8c8c ${quickReview.borderRadius * 4}%, #e4e5e7 ${quickReview.borderRadius * 2}%)`,
+                                borderRadius: 2,
+                                outline: "none",
+                                cursor: "pointer",
+                              }}
+                            />
+                            <span
+                              style={{
+                                fontSize: 13,
+                                color: "#6d7175",
+                                minWidth: 36,
+                                textAlign: "right",
+                              }}
+                            >
+                              {quickReview.borderRadius}px
+                            </span>
+                            <style>{`
                             input[type=range]::-webkit-slider-thumb {
                               -webkit-appearance: none;
                               width: 18px;
@@ -668,380 +683,380 @@ export default function Index(VALUES = {}) {
                               box-shadow: 0 1px 4px rgba(0,0,0,0.15);
                             }
                           `}</style>
+                          </div>
                         </div>
-                      </div>
+                      </s-stack>
+                    </s-stack>
+                  </>
+                )}
+
+                {quickReviewTab?.success && (
+                  <s-stack>
+                    <s-stack gap="small" paddingBlockStart="small"></s-stack>
+                    <s-stack
+                      border="base"
+                      paddingInlineStart="small"
+                      borderRadius="base"
+                      padding="small"
+                    >
+                      <s-text-field
+                        label="Success Title"
+                        maxlength="70"
+                        value={quickReview?.successMessageTitle}
+                        onchange={handleText("successMessageTitle")}
+                      ></s-text-field>
+                    </s-stack>
+
+                    <s-stack gap="small" paddingBlockStart="small"></s-stack>
+                    <s-stack
+                      border="base"
+                      paddingInlineStart="small"
+                      borderRadius="base"
+                      padding="small"
+                    >
+                      <s-text-field
+                        label="Success message"
+                        value={quickReview?.successMessage}
+                        maxlength="120"
+                        onchange={handleText("successMessage")}
+                      ></s-text-field>
+                    </s-stack>
+
+                    <s-stack gap="small" paddingBlockStart="small"></s-stack>
+                    <s-stack
+                      border="base"
+                      paddingInlineStart="small"
+                      borderRadius="base"
+                      padding="small"
+                    >
+                      <s-text-field
+                        label="Button Text"
+                        maxlength="60"
+                        value={quickReview?.successButtonText}
+                        onchange={handleText("successButtonText")}
+                      ></s-text-field>
                     </s-stack>
                   </s-stack>
-                </>
-              )}
+                )}
+                {/* ---------------Form text End-------------------- */}
+                {/* -------------Review list display--------------- */}
+                {quickReviewTab?.quickReview && (
+                  <s-stack >
 
-              {quickReviewTab?.success && (
-                <s-stack>
-                  <s-stack gap="small" paddingBlockStart="small"></s-stack>
-                  <s-stack
-                    border="base"
-                    paddingInlineStart="small"
-                    borderRadius="base"
-                    padding="small"
-                  >
-                    <s-text-field
-                      label="Success Title"
-                      maxlength="70"
-                      value={quickReview?.successMessageTitle}
-                      onchange={handleText("successMessageTitle")}
-                    ></s-text-field>
+                    {/* Summary header */}
+                    <s-stack
+                      border="base"
+                      borderRadius="base"
+                      padding="base"
+                      gap="small"
+                    >
+                      <ActiveToggleHeader activeToggleManu={activeToggleManu} textHeader="Summary header" activeToggleManuText={"Summary"} setActiveToggleManu={setActiveToggleManu} />
+
+
+
+                      {activeToggleManu == "Summary" && (
+                        <s-stack gap="small" paddingBlockStart="small">
+                          <s-switch
+                            label="Show star distribution bars"
+                            checked={quickReview.isShowStarDistribution || undefined}
+                            onchange={handleSwitch("isShowStarDistribution")}
+                          />
+                          <s-switch
+                            label="Show media strip"
+                            checked={quickReview.isShowMediaStrip || undefined}
+                            onchange={handleSwitch("isShowMediaStrip")}
+                          />
+                          <s-switch
+                            label="Show review count"
+                            checked={quickReview.isShowReviewCount || undefined}
+                            onchange={handleSwitch("isShowReviewCount")}
+                          />
+
+                          <s-stack border="base" borderRadius="base" padding="small">
+                            <s-text-field
+                              label="Button text"
+                              maxlength="25"
+                              defaultValue={quickReview?.writeReviewButtonText}
+                              value={quickReview?.writeReviewButtonText}
+                              onchange={handleText("writeReviewButtonText")}
+                            ></s-text-field>
+                          </s-stack>
+
+                        </s-stack>
+
+                      )}
+
+
+
+                    </s-stack>
+
+                    <br></br>
+                    <s-stack
+                      border="base"
+                      borderRadius="base"
+                      padding="base"
+                      gap="small"
+                    >
+                      <ActiveToggleHeader activeToggleManu={activeToggleManu} textHeader="Review list display" activeToggleManuText={"Review_list"} setActiveToggleManu={setActiveToggleManu} />
+
+
+                      {activeToggleManu == "Review_list" && (
+                        <s-stack gap="small" paddingBlockStart="small" >
+                          <s-switch
+                            label="Show reviewer name"
+                            checked={quickReview.showReviewerName || undefined}
+                            onchange={handleSwitch("showReviewerName")}
+                          />
+                          <s-switch
+                            label="Show media thumbnails"
+                            checked={quickReview.showMediaThumbnails || undefined}
+                            onchange={handleSwitch("showMediaThumbnails")}
+                          />
+                          <s-switch
+                            label="Show product name on card"
+                            checked={quickReview.showProductName || undefined}
+                            onchange={handleSwitch("showProductName")}
+                          />
+                          <s-switch
+                            label="Show verified badge"
+                            checked={quickReview.showVerifiedBadge || undefined}
+                            onchange={handleSwitch("showVerifiedBadge")}
+                          />
+                          <s-switch
+                            label="Show review date"
+                            checked={quickReview.showReviewDate || undefined}
+                            onchange={handleSwitch("showReviewDate")}
+                          />
+                          <s-switch
+                            label="Show star rating on card"
+                            checked={quickReview.showStarRatingOnCard || undefined}
+                            onchange={handleSwitch("showStarRatingOnCard")}
+                          />
+                          <s-switch
+                            label="Show helpful button"
+                            checked={quickReview.showHelpfulButton || undefined}
+                            onchange={handleSwitch("showHelpfulButton")}
+                          />
+
+
+                          <s-stack border="base" borderRadius="base" padding="small">
+                            <s-select
+                              label="Review per page"
+                              value={quickReview.reviewPerPage}
+                              onchange={(e) =>
+                                setQuickReview((prev) => ({
+                                  ...prev,
+                                  reviewPerPage: Number(e.target.value),
+                                }))
+                              }
+                            >
+                              <s-option value="6">6</s-option>
+                              <s-option value="10">10</s-option>
+                              <s-option value="16">16</s-option>
+                              <s-option value="20">20</s-option>
+                              <s-option value="24">24</s-option>
+                            </s-select>
+                          </s-stack>
+
+                          <s-stack border="base" borderRadius="base" padding="small">
+                            <s-select
+                              label="Default sort"
+                              value={quickReview.defaultSort}
+                              onchange={(e) =>
+                                setQuickReview((prev) => ({
+                                  ...prev,
+                                  defaultSort: e.target.value,
+                                }))
+                              }
+                            >
+                              <s-option value="MOST_RECENT">
+                                Most recent (default)
+                              </s-option>
+
+                              <s-option value="HIGHEST_RATING">
+                                Highest rating
+                              </s-option>
+
+                              <s-option value="LOWEST_RATING">
+                                Lowest rating
+                              </s-option>
+
+                              <s-option value="ONLY_PICTURES">
+                                Only pictures
+                              </s-option>
+
+                              <s-option value="ONLY_VIDEOS">
+                                Only videos
+                              </s-option>
+
+                              <s-option value="VIDEOS_FIRST">
+                                Videos first
+                              </s-option>
+
+                              <s-option value="MOST_HELPFUL">
+                                Most helpful
+                              </s-option>
+
+                            </s-select>
+                          </s-stack>
+
+                          <s-stack border="base" borderRadius="base" padding="small">
+                            <s-select
+                              label="Filter & sorting"
+                              value={quickReview.filterAndSorting}
+                              onchange={(e) =>
+                                setQuickReview((prev) => ({
+                                  ...prev,
+                                  filterAndSorting: e.target.value,
+                                }))
+                              }
+                            >
+
+                              <s-option value="FILTER_AND_SORTING">
+                                Filter & sorting both
+                              </s-option>
+                              <s-option value="FILTER_ONLY">Filter only</s-option>
+                              <s-option value="SORTING_ONLY">Sorting only</s-option>
+                              <s-option value="NONE">None</s-option>
+
+                            </s-select>
+                          </s-stack>
+
+                        </s-stack>
+
+                      )}
+
+
+                    </s-stack>
                   </s-stack>
-
-                  <s-stack gap="small" paddingBlockStart="small"></s-stack>
-                  <s-stack
-                    border="base"
-                    paddingInlineStart="small"
-                    borderRadius="base"
-                    padding="small"
-                  >
-                    <s-text-field
-                      label="Success message"
-                      value={quickReview?.successMessage}
-                      maxlength="120"
-                      onchange={handleText("successMessage")}
-                    ></s-text-field>
-                  </s-stack>
-
-                  <s-stack gap="small" paddingBlockStart="small"></s-stack>
-                  <s-stack
-                    border="base"
-                    paddingInlineStart="small"
-                    borderRadius="base"
-                    padding="small"
-                  >
-                    <s-text-field
-                      label="Button Text"
-                      maxlength="60"
-                      value={quickReview?.successButtonText}
-                      onchange={handleText("successButtonText")}
-                    ></s-text-field>
-                  </s-stack>
-                </s-stack>
-              )}
-              {/* ---------------Form text End-------------------- */}
-              {/* -------------Review list display--------------- */}
-              {quickReviewTab?.quickReview && (
-                <s-stack >
-
-                  {/* Summary header */}
-                 <s-stack
-                  border="base"
-                  borderRadius="base"
-                  padding="base"
-                  gap="small"
-                >
-                  <ActiveToggleHeader activeToggleManu={activeToggleManu} textHeader="Summary header"   activeToggleManuText={"Summary"} setActiveToggleManu={setActiveToggleManu} />
-                 
-                 
-
-                 {activeToggleManu=="Summary" && (
-                       <s-stack gap="small" paddingBlockStart="small">
-                  <s-switch
-                    label="Show star distribution bars"
-                    checked={quickReview.isShowStarDistribution || undefined}
-                    onchange={handleSwitch("isShowStarDistribution")}
-                  />
-                  <s-switch
-                    label="Show media strip"
-                    checked={quickReview.isShowMediaStrip || undefined}
-                    onchange={handleSwitch("isShowMediaStrip")}
-                  />
-                  <s-switch
-                    label="Show review count"
-                    checked={quickReview.isShowReviewCount || undefined}
-                    onchange={handleSwitch("isShowReviewCount")}
-                  />
-                  
-                  <s-stack border="base" borderRadius="base" padding="small">
-                    <s-text-field
-                      label="Button text"
-                      maxlength="25"
-                      defaultValue={quickReview?.writeReviewButtonText}
-                      value={quickReview?.writeReviewButtonText}
-                      onchange={handleText("writeReviewButtonText")}
-                    ></s-text-field>
-                  </s-stack>
-              
-                       </s-stack>
-            
-                 )}
-             
-
-              
-                </s-stack>
-
-              <br></br>
+                )}
+                {/* -------------color picker---------------- */}
+                <br></br>
                 <s-stack
                   border="base"
                   borderRadius="base"
                   padding="base"
                   gap="small"
                 >
-                   <ActiveToggleHeader activeToggleManu={activeToggleManu} textHeader="Review list display"  activeToggleManuText={"Review_list"} setActiveToggleManu={setActiveToggleManu} />
-                
-
-                {activeToggleManu =="Review_list" && (
-                       <s-stack gap="small" paddingBlockStart="small" >
-                  <s-switch
-                    label="Show reviewer name"
-                    checked={quickReview.showReviewerName || undefined}
-                    onchange={handleSwitch("showReviewerName")}
-                  />
-                  <s-switch
-                    label="Show media thumbnails"
-                    checked={quickReview.showMediaThumbnails || undefined}
-                    onchange={handleSwitch("showMediaThumbnails")}
-                  />
-                  <s-switch
-                    label="Show product name on card"
-                    checked={quickReview.showProductName || undefined}
-                    onchange={handleSwitch("showProductName")}
-                  />
-                  <s-switch
-                    label="Show verified badge"
-                    checked={quickReview.showVerifiedBadge || undefined}
-                    onchange={handleSwitch("showVerifiedBadge")}
-                  />
-                  <s-switch
-                    label="Show review date"
-                    checked={quickReview.showReviewDate || undefined}
-                    onchange={handleSwitch("showReviewDate")}
-                  />
-                  <s-switch
-                    label="Show star rating on card"
-                    checked={quickReview.showStarRatingOnCard || undefined}
-                    onchange={handleSwitch("showStarRatingOnCard")}
-                  />
-                  <s-switch
-                    label="Show helpful button"
-                    checked={quickReview.showHelpfulButton || undefined}
-                    onchange={handleSwitch("showHelpfulButton")}
-                  />
-                      
-
-                  <s-stack border="base" borderRadius="base" padding="small">
-                    <s-select
-                      label="Review per page"
-                      value={quickReview.reviewPerPage}
-                      onchange={(e) =>
-                        setQuickReview((prev) => ({
-                          ...prev,
-                          reviewPerPage: Number(e.target.value),
-                        }))
+                  <s-heading>Colors</s-heading>
+                  {COLOR_PICKERS_ELEMENTS.map((picker) => (
+                    <ColorPicker
+                      key={picker.key}
+                      data={picker}
+                      defaultColor={
+                        VALUES[picker.key] ?? quickReview?.colorValues[picker.key]
                       }
-                    >
-                      <s-option value="6">6</s-option>
-                      <s-option value="10">10</s-option>
-                      <s-option value="16">16</s-option>
-                      <s-option value="20">20</s-option>
-                      <s-option value="24">24</s-option>
-                    </s-select>
-                  </s-stack>
-
-              <s-stack border="base" borderRadius="base" padding="small">
-  <s-select
-    label="Default sort"
-    value={quickReview.defaultSort}
-    onchange={(e) =>
-      setQuickReview((prev) => ({
-        ...prev,
-        defaultSort: e.target.value,
-      }))
-    }
-  >
-    <s-option value="MOST_RECENT">
-      Most recent (default)
-    </s-option>
-
-    <s-option value="HIGHEST_RATING">
-      Highest rating
-    </s-option>
-
-    <s-option value="LOWEST_RATING">
-      Lowest rating
-    </s-option>
-
-    <s-option value="ONLY_PICTURES">
-      Only pictures
-    </s-option>
-
-    <s-option value="ONLY_VIDEOS">
-      Only videos
-    </s-option>
-
-    <s-option value="VIDEOS_FIRST">
-      Videos first
-    </s-option>
-
-        <s-option value="MOST_HELPFUL">
-      Most helpful
-    </s-option>
-
-  </s-select>
-</s-stack>
-
-                    <s-stack border="base" borderRadius="base" padding="small">
-                    <s-select
-                      label="Filter & sorting"
-                      value={quickReview.filterAndSorting}
-                      onchange={(e) =>
-                        setQuickReview((prev) => ({
-                          ...prev,
-                          filterAndSorting: e.target.value,
-                        }))
+                      onChange={(value) =>
+                        handelQoucikReview({ [picker.key]: value })
                       }
-                    >
-                 
-                      <s-option value="FILTER_AND_SORTING">
-                       Filter & sorting both
-                      </s-option>
-                      <s-option value="FILTER_ONLY">Filter only</s-option>
-                      <s-option value="SORTING_ONLY">Sorting only</s-option>
-                      <s-option value="NONE">None</s-option>
-                     
-                    </s-select>
-                  </s-stack>
-
-                </s-stack> 
- 
-                )}
-             
-
+                    />
+                  ))}
                 </s-stack>
-                </s-stack>
-              )}
-              {/* -------------color picker---------------- */}
-              <br></br>
-              <s-stack
-                border="base"
-                borderRadius="base"
-                padding="base"
-                gap="small"
-              >
-                <s-heading>Colors</s-heading>
-                {COLOR_PICKERS_ELEMENTS.map((picker) => (
-                  <ColorPicker
-                    key={picker.key}
-                    data={picker}
-                    defaultColor={
-                      VALUES[picker.key] ?? quickReview?.colorValues[picker.key]
-                    }
-                    onChange={(value) =>
-                      handelQoucikReview({ [picker.key]: value })
-                    }
-                  />
-                ))}
-              </s-stack>
 
-              {/* -------------Layout picker---------------- */}
+                {/* -------------Layout picker---------------- */}
+              </div>
+              {/* End----Sidebar content */}
             </div>
-            {/* End----Sidebar content */}
-          </div>
-        </CustomSection>
-        {/* End----Sidebar */}
+          </CustomSection>
+          {/* End----Sidebar */}
 
-        {/* Start----Content */}
-        <div
-          style={{
-            height: "auto",
-            overflow: "hidden",
-            background: "#fff",
-          }}
-        >
-          {/* Start----Preview Header */}
-          <div className="review-item"
+          {/* Start----Content */}
+          <div
+            style={{
+              height: "auto",
+              overflow: "hidden",
+              background: "#fff",
+            }}
+          >
+            {/* Start----Preview Header */}
+            <div className="review-item"
             // style={{
             //   height: "76px",
             //   display: "grid",
             //   alignItems: "center",
             //   borderBottom: "1px solid #e4e4e4ff",
             // }}
-          >
-            <s-query-container>
-            <s-grid
-             gridTemplateColumns="@container (inline-size > 900px) 1fr auto, 1fr"
-              gap="small"
-              justifyContent="space-between"
-              paddingInline="base"
             >
-              <s-stack alignItems="center">
-                <s-button-group gap="none">
-                  <s-button
-                    slot="secondary-actions"
-                    icon="desktop"
-                    onClick={() => setActiveDevice("desktop")}
-                  >
-                    <div
-                      style={{
-                        position: "absolute",
-                        top: "0",
-                        left: "0",
-                        width: "100%",
-                        height: "100%",
-                        background:
-                          activeDevice === "desktop"
-                            ? "#0000000f"
-                            : "transparent",
-                        borderRadius: "8px 0 0 8px",
-                      }}
-                    ></div>
-                    Desktop preview
-                  </s-button>
-                  <s-button
-                    slot="secondary-actions"
-                    icon="mobile"
-                    onClick={() => setActiveDevice("mobile")}
-                  >
-                    <div
-                      style={{
-                        position: "absolute",
-                        top: "0",
-                        left: "0",
-                        width: "100%",
-                        height: "100%",
-                        background:
-                          activeDevice === "mobile"
-                            ? "#0000000f"
-                            : "transparent",
-                        borderRadius: "0 8px 8px 0",
-                      }}
-                    ></div>
-                    Mobile preview
-                  </s-button>
-                </s-button-group>
-              </s-stack>
-              <s-button-group gap="base">
-                <s-button slot="secondary-actions">Need help?</s-button>
-                <s-button variant="primary" slot="primary-action">
-                  <div
-                    style={{
-                      display: "flex",
-                      alignItems: "center",
-                    }}
-                  >
-                    Preview on store <s-icon type="arrow-up-right" />
-                  </div>
-                </s-button>
-              </s-button-group>
-            </s-grid>
-            </s-query-container>
+              <s-query-container>
+                <s-grid
+                  gridTemplateColumns="@container (inline-size > 600px) 1fr auto, 1fr"
+                  gap="small"
+                  justifyContent="space-between"
+                  paddingInline="base"
+                >
+                  <s-stack alignItems="center">
+                    <s-button-group gap="none">
+                      <s-button
+                        slot="secondary-actions"
+                        icon="desktop"
+                        onClick={() => setActiveDevice("desktop")}
+                      >
+                        <div
+                          style={{
+                            position: "absolute",
+                            top: "0",
+                            left: "0",
+                            width: "100%",
+                            height: "100%",
+                            background:
+                              activeDevice === "desktop"
+                                ? "#0000000f"
+                                : "transparent",
+                            borderRadius: "8px 0 0 8px",
+                          }}
+                        ></div>
+                        Desktop preview
+                      </s-button>
+                      <s-button
+                        slot="secondary-actions"
+                        icon="mobile"
+                        onClick={() => setActiveDevice("mobile")}
+                      >
+                        <div
+                          style={{
+                            position: "absolute",
+                            top: "0",
+                            left: "0",
+                            width: "100%",
+                            height: "100%",
+                            background:
+                              activeDevice === "mobile"
+                                ? "#0000000f"
+                                : "transparent",
+                            borderRadius: "0 8px 8px 0",
+                          }}
+                        ></div>
+                        Mobile preview
+                      </s-button>
+                    </s-button-group>
+                  </s-stack>
+                  <s-button-group gap="base">
+                    <s-button slot="secondary-actions">Need help?</s-button>
+                    <s-button variant="primary" slot="primary-action">
+                      <div
+                        style={{
+                          display: "flex",
+                          alignItems: "center",
+                        }}
+                      >
+                        Preview on store <s-icon type="arrow-up-right" />
+                      </div>
+                    </s-button>
+                  </s-button-group>
+                </s-grid>
+              </s-query-container>
+            </div>
+            {/* End----Preview Header */}
+            <QuickReviewComponent
+              quickReviewTab={quickReviewTab}
+              quickReview={quickReview}
+              activeDevice={activeDevice}
+            />
+            {/* Start----Preview Content */}
+            {/* End----Preview Content */}
           </div>
-          {/* End----Preview Header */}
-          <QuickReviewComponent
-            quickReviewTab={quickReviewTab}
-            quickReview={quickReview}
-            activeDevice={activeDevice}
-          />
-          {/* Start----Preview Content */}
-          {/* End----Preview Content */}
-        </div>
-        {/* End----Content */}
-      </s-grid>
+          {/* End----Content */}
+        </s-grid>
 
       </s-query-container>
     </>

@@ -83,21 +83,21 @@ export default function ReviewHubWidget({ settings, activeDevice }) {
 
        .qr-reviews-container{
           background:#B5B5B5 ;
-        padding:70px;
+        padding:40px;
        overflow: auto;
-       height: 760px;
+       height: 660px;
 
         }
 
      
    .qr-reviews-section {
-  max-width: ${activeDevice === "mobile" ? "390px" : "1400px"};
-  padding: ${activeDevice === "mobile" ? "20px" : "100px"};
+  max-width: ${activeDevice === "mobile" ? "400px" : "1400px"};
+  padding: ${activeDevice === "mobile" ? "20px" : "60px"};
   background: #fff;
   margin: 0 auto;
 overflow: auto;
 
-  border-radius: ${activeDevice === "mobile" ? "40px" : "0"};
+  
 }
 
 
@@ -443,6 +443,12 @@ overflow: auto;
           fill: #ffffff !important;
         }
 
+  @media (max-width: 1450px){
+    .qr-reviews-container{
+    height: 600px;
+    }
+  }
+
 
          @media (max-width: 1300px) {
 
@@ -468,6 +474,13 @@ overflow: auto;
        
              
         }
+
+      @media (max-width: 900px) {
+        .qr-reviews-container{
+    height: 420px;
+    }
+      }
+
 
         @media (max-width: 480px) {
 
@@ -516,45 +529,23 @@ display: block;
                 {/* FILTER */}
                 {(filterSorting === "FILTER_AND_SORTING" ||
                   filterSorting === "FILTER_ONLY") && (
-                  <button
-                    onClick={() => setIsFilterign(!isFilterign)}
-                    className="tb-filter-main-btn"
-                  >
-                    <svg
-                      width="15"
-                      height="15"
-                      viewBox="0 0 24 24"
-                      fill="none"
-                      stroke="currentColor"
-                      strokeWidth="2"
-                      strokeLinecap="round"
-                      strokeLinejoin="round"
-                    >
-                      <polygon points="22 3 2 3 10 12.46 10 19 14 21 14 12.46 22 3" />
-                    </svg>
-                    Filter
-                    <svg
-                      width="12"
-                      height="12"
-                      viewBox="0 0 24 24"
-                      fill="none"
-                      stroke="currentColor"
-                      strokeWidth="2"
-                    >
-                      <polyline points="6 9 12 15 18 9" />
-                    </svg>
-                  </button>
-                )}
-
-                {/* SORTING */}
-                {(filterSorting === "FILTER_AND_SORTING" ||
-                  filterSorting === "SORTING_ONLY") && (
-                  <div className="tb-sort-wrapper">
                     <button
-                      className="tb-sort-trigger"
-                      onClick={() => setIsSortOpen(!isSortOpen)}
+                      onClick={() => setIsFilterign(!isFilterign)}
+                      className="tb-filter-main-btn"
                     >
-                      Sort by: <span>{selectedSort}</span>
+                      <svg
+                        width="15"
+                        height="15"
+                        viewBox="0 0 24 24"
+                        fill="none"
+                        stroke="currentColor"
+                        strokeWidth="2"
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
+                      >
+                        <polygon points="22 3 2 3 10 12.46 10 19 14 21 14 12.46 22 3" />
+                      </svg>
+                      Filter
                       <svg
                         width="12"
                         height="12"
@@ -566,27 +557,48 @@ display: block;
                         <polyline points="6 9 12 15 18 9" />
                       </svg>
                     </button>
+                  )}
 
-                    {isSortOpen && (
-                      <div className="tb-sort-dropdown">
-                        {sortOptions.map((option) => (
-                          <button
-                            key={option}
-                            className={`tb-sort-item ${
-                              selectedSort === option ? "active-sort" : ""
-                            }`}
-                            onClick={() => {
-                              setSelectedSort(option);
-                              setIsSortOpen(false);
-                            }}
-                          >
-                            {option}
-                          </button>
-                        ))}
-                      </div>
-                    )}
-                  </div>
-                )}
+                {/* SORTING */}
+                {(filterSorting === "FILTER_AND_SORTING" ||
+                  filterSorting === "SORTING_ONLY") && (
+                    <div className="tb-sort-wrapper">
+                      <button
+                        className="tb-sort-trigger"
+                        onClick={() => setIsSortOpen(!isSortOpen)}
+                      >
+                        Sort by: <span>{selectedSort}</span>
+                        <svg
+                          width="12"
+                          height="12"
+                          viewBox="0 0 24 24"
+                          fill="none"
+                          stroke="currentColor"
+                          strokeWidth="2"
+                        >
+                          <polyline points="6 9 12 15 18 9" />
+                        </svg>
+                      </button>
+
+                      {isSortOpen && (
+                        <div className="tb-sort-dropdown">
+                          {sortOptions.map((option) => (
+                            <button
+                              key={option}
+                              className={`tb-sort-item ${selectedSort === option ? "active-sort" : ""
+                                }`}
+                              onClick={() => {
+                                setSelectedSort(option);
+                                setIsSortOpen(false);
+                              }}
+                            >
+                              {option}
+                            </button>
+                          ))}
+                        </div>
+                      )}
+                    </div>
+                  )}
               </div>
             )}
 
@@ -636,11 +648,27 @@ display: block;
                 <div className="qr-review-card" key={review.id}>
                   {/* Top Row: User Avatar & Meta */}
                   <div className="qr-reviewer-info">
-                    <img
-                      className="qr-reviewer-avatar"
-                      src={review.avatar}
-                      alt={review.name}
-                    />
+                    {review.avatar ? (
+                      <img
+                        className="qr-reviewer-avatar"
+                        src={review.avatar}
+                        alt={review.name}
+                      />
+                    ) : (
+                      <div
+                        className="qr-reviewer-avatar"
+                        style={{
+                          display: "flex",
+                          alignItems: "center",
+                          justifyContent: "center",
+                          background: "#e5e7eb",
+                          color: "#6b7280",
+                          fontSize: "20px",
+                        }}
+                      >
+                        👤
+                      </div>
+                    )}
                     <div className="qr-reviewer-meta">
                       <div className="qr-reviewer-name-row">
                         {showReviewerName && (
@@ -690,39 +718,46 @@ display: block;
                   {/* Image Gallery Row */}
                   {showMediaAsset && visibleMedia.length > 0 && (
                     <div
-                      className={`qr-review-gallery ${
-                        visibleMedia.length === 1 ? "single-media" : ""
-                      }`}
+                      className={`qr-review-gallery ${visibleMedia.length === 1 ? "single-media" : ""
+                        }`}
                     >
                       {visibleMedia.map((media, mediaIndex) => (
                         <div
                           className="qr-gallery-item"
                           key={`${review.id}-${mediaIndex}`}
                         >
-                          <img
-                            className="qr-gallery-img"
-                            src={
-                              media.type === "video" ? media.thumb : media.url
-                            }
-                            alt={media.alt}
-                          />
-                          {media.type === "video" && (
-                            <span className="qr-gallery-play">
-                              <svg
-                                xmlns="http://www.w3.org/2000/svg"
-                                width="11"
-                                height="12"
-                                viewBox="0 0 11 12"
-                                fill="none"
-                              >
-                                <path
-                                  fillRule="evenodd"
-                                  clipRule="evenodd"
-                                  d="M9.65428 4.35495C10.767 4.99762 10.767 6.60332 9.65428 7.24504L2.50296 11.3737C1.39022 12.0164 0 11.2135 0 9.92916V1.67178C0 0.386447 1.39022 -0.416407 2.50296 0.226257L9.65428 4.35495ZM8.93915 6.00643C8.97538 5.9855 9.00547 5.95541 9.02639 5.91918C9.04731 5.88294 9.05832 5.84183 9.05832 5.79999C9.05832 5.75815 9.04731 5.71705 9.02639 5.68081C9.00547 5.64457 8.97538 5.61448 8.93915 5.59356L1.78783 1.46487C1.75156 1.44392 1.71041 1.43291 1.66852 1.43293C1.62664 1.43295 1.5855 1.44401 1.54925 1.46498C1.513 1.48596 1.48291 1.51612 1.46202 1.55242C1.44113 1.58873 1.43018 1.62989 1.43026 1.67178V9.92916C1.43035 9.97097 1.44142 10.012 1.46238 10.0482C1.48334 10.0844 1.51344 10.1144 1.54966 10.1352C1.58588 10.1561 1.62696 10.1671 1.66876 10.1671C1.71056 10.167 1.75163 10.156 1.78783 10.1351L8.93915 6.00643Z"
-                                  fill="#303030"
-                                />
-                              </svg>
-                            </span>
+                          {media.type === "video" ? (
+                            <>
+                              <video
+                                className="qr-gallery-img"
+                                src={media.url || media.thumb}
+                                playsInline
+                                muted
+                                style={{ width: "100%", height: "100%", objectFit: "cover" }}
+                              />
+                              <span className="qr-gallery-play">
+                                <svg
+                                  xmlns="http://www.w3.org/2000/svg"
+                                  width="11"
+                                  height="12"
+                                  viewBox="0 0 11 12"
+                                  fill="none"
+                                >
+                                  <path
+                                    fillRule="evenodd"
+                                    clipRule="evenodd"
+                                    d="M9.65428 4.35495C10.767 4.99762 10.767 6.60332 9.65428 7.24504L2.50296 11.3737C1.39022 12.0164 0 11.2135 0 9.92916V1.67178C0 0.386447 1.39022 -0.416407 2.50296 0.226257L9.65428 4.35495ZM8.93915 6.00643C8.97538 5.9855 9.00547 5.95541 9.02639 5.91918C9.04731 5.88294 9.05832 5.84183 9.05832 5.79999C9.05832 5.75815 9.04731 5.71705 9.02639 5.68081C9.00547 5.64457 8.97538 5.61448 8.93915 5.59356L1.78783 1.46487C1.75156 1.44392 1.71041 1.43291 1.66852 1.43293C1.62664 1.43295 1.5855 1.44401 1.54925 1.46498C1.513 1.48596 1.48291 1.51612 1.46202 1.55242C1.44113 1.58873 1.43018 1.62989 1.43026 1.67178V9.92916C1.43035 9.97097 1.44142 10.012 1.46238 10.0482C1.48334 10.0844 1.51344 10.1144 1.54966 10.1352C1.58588 10.1561 1.62696 10.1671 1.66876 10.1671C1.71056 10.167 1.75163 10.156 1.78783 10.1351L8.93915 6.00643Z"
+                                    fill="#303030"
+                                  />
+                                </svg>
+                              </span>
+                            </>
+                          ) : (
+                            <img
+                              className="qr-gallery-img"
+                              src={media.url}
+                              alt={media.alt}
+                            />
                           )}
                           {mediaIndex === 1 && extraMediaCount > 0 && (
                             <div className="qr-gallery-overlay">
@@ -736,9 +771,18 @@ display: block;
 
                   {/* Product Tag Badge */}
                   <div className="qr-product-tag">
-                    <span className="qr-product-icon">🧴</span>
+                    {review.productImage ? (
+                      <img
+                        className="qr-product-icon"
+                        src={review.productImage}
+                        alt={review.productName || review.product}
+                        style={{ width: "20px", height: "20px", borderRadius: "4px", objectFit: "cover" }}
+                      />
+                    ) : (
+                      <span className="qr-product-icon">🧴</span>
+                    )}
                     <span className="qr-product-name">
-                      {review.productName}
+                      {review.productName || review.product}
                     </span>
                   </div>
 

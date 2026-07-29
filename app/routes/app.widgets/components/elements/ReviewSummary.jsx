@@ -64,8 +64,8 @@ export default function ReviewSummary({
       : isShowStarDistribution && !isShowMediaStrip
       ? "198px 350px "          
       : !isShowStarDistribution && isShowMediaStrip
-      ? "198px 950px minmax(0, 1fr)"             // শুধু media আছে, star নাই -> 3 column
-      : "198px max-content"                       // দুটোই নাই -> 2 column, space-between
+      ? "198px 950px minmax(0, 1fr)"             
+      : "198px max-content"                       
   };
   gap: ${
     activeDevice === "mobile"
@@ -130,8 +130,8 @@ export default function ReviewSummary({
         .rv-media-arrow:hover { background: #f6f6f7; }
         .rv-media-track { display: flex; gap: 25px; overflow-x: auto; scroll-behavior: smooth; scrollbar-width: none; min-width: 0; flex: 1 1 auto; }
         .rv-media-track::-webkit-scrollbar { display: none; }
-        .rv-media-track-item { width: 108px; height: 108px; border-radius: 10px; overflow: hidden; flex-shrink: 0; cursor: pointer; }
-        .rv-media-track-item img { width: 100%; height: 100%; object-fit: cover; display: block; }
+        .rv-media-track-item { position: relative; width: 108px; height: 108px; border-radius: 10px; overflow: hidden; flex-shrink: 0; cursor: pointer; }
+        .rv-media-track-item img, .rv-media-track-item video { width: 100%; height: 100%; object-fit: cover; display: block; }
 
         /* Media modal (See all media) */
         .rv-media-modal-backdrop { position: absolute; inset: 0; z-index: 9998; background: rgba(0,0,0,0.5); display: flex; align-items: center; justify-content: center; padding: 24px; box-sizing: border-box; }
@@ -139,7 +139,7 @@ export default function ReviewSummary({
         .rv-media-modal-title { font-size: 16px; font-weight: 700; margin: 0 0 16px; }
         .rv-media-grid { display: grid; grid-template-columns: repeat(${activeDevice === "mobile" ? 3 : 6}, 1fr); gap: 10px; }
         .rv-media-grid-item { position: relative; aspect-ratio: 1 / 1; border-radius: 8px; overflow: hidden; cursor: pointer; }
-        .rv-media-grid-item img { width: 100%; height: 100%; object-fit: cover; display: block; }
+        .rv-media-grid-item img, .rv-media-grid-item video { width: 100%; height: 100%; object-fit: cover; display: block; }
         .rv-media-play-overlay { position: absolute; inset: 0; display: flex; align-items: center; justify-content: center; background: rgba(0,0,0,0.28); }
         .rv-media-play-icon { width: 28px; height: 28px; border-radius: 50%; background: rgba(255,255,255,0.9); display: flex; align-items: center; justify-content: center; font-size: 12px; color: #1a1a1a; padding-left: 2px; }
         .rv-summary-lb-close { position: absolute; top: 14px; right: 14px; width: 32px; height: 32px; border-radius: 50%; background: #fff; border: none; cursor: pointer; font-size: 18px; display: flex; align-items: center; justify-content: center; box-shadow: 0 2px 8px rgba(0,0,0,0.25); line-height: 1; }
@@ -271,10 +271,20 @@ export default function ReviewSummary({
                     key={i}
                     onClick={() => onMediaClick?.(item)}
                   >
-                    <img
-                      src={item.type === "video" ? item.thumb : item.url}
-                      alt={`media-${i}`}
-                    />
+                    {item.type === "video" ? (
+                      <>
+                        <video
+                          src={item.url || item.thumb}
+                          playsInline
+                          muted
+                        />
+                        <div className="rv-media-play-overlay">
+                          <div className="rv-media-play-icon">▶</div>
+                        </div>
+                      </>
+                    ) : (
+                      <img src={item.url} alt={`media-${i}`} />
+                    )}
                   </div>
                 ))}
               </div>
@@ -311,14 +321,19 @@ export default function ReviewSummary({
                   className="rv-media-grid-item"
                   onClick={() => handleMediaClick(item)}
                 >
-                  <img
-                    src={item.type === "video" ? item.thumb : item.url}
-                    alt={`all-media-${i}`}
-                  />
-                  {item.type === "video" && (
-                    <div className="rv-media-play-overlay">
-                      <div className="rv-media-play-icon">▶</div>
-                    </div>
+                  {item.type === "video" ? (
+                    <>
+                      <video
+                        src={item.url || item.thumb}
+                        playsInline
+                        muted
+                      />
+                      <div className="rv-media-play-overlay">
+                        <div className="rv-media-play-icon">▶</div>
+                      </div>
+                    </>
+                  ) : (
+                    <img src={item.url} alt={`all-media-${i}`} />
                   )}
                 </div>
               ))}

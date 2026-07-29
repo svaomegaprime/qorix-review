@@ -306,6 +306,7 @@ export default function PreviewStyles() {
                         .trust-preview {
                             padding: 8px;
                             overflow-x: hidden;
+                            height:530px;
                         }
                         .trust-preview__page {
                             width: 100%;

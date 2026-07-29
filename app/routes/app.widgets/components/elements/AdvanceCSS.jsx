@@ -40,7 +40,7 @@ function CheckIcon() {
 const styles = {
   card: {
     width: "100%",
-    maxWidth: "480px",
+
     marginTop: "30px",
     background: "#ffffff",
     borderRadius: "15px",
@@ -149,7 +149,7 @@ export default function AdvancedCSS({ css, setCss }) {
         setCopied(false);
       }, 1500);
 
-    } catch {}
+    } catch { }
   };
 
 
@@ -160,17 +160,17 @@ export default function AdvancedCSS({ css, setCss }) {
 
         // responsive width
         ...(typeof window !== "undefined" &&
-        window.innerWidth <= 1024
+          window.innerWidth <= 1024
           ? {
-              maxWidth: "100%",
-            }
+            maxWidth: "100%",
+          }
           : {}),
 
         ...(typeof window !== "undefined" &&
-        window.innerWidth <= 768
+          window.innerWidth <= 768
           ? {
-              padding: "14px",
-            }
+            padding: "14px",
+          }
           : {}),
       }}
     >

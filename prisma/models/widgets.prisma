@@ -103,8 +103,8 @@ model QuoteLoopWidget {
 }
 
 model VideoStackSettings {
-  id                   String   @id @default(cuid())
-  shop                 String   @unique
+  id                   String   @id @default(uuid()) @db.Uuid
+  storeId              String   @unique
   createdAt            DateTime @default(now())
   updatedAt            DateTime @updatedAt
   showHeader           Boolean  @default(true)
@@ -131,6 +131,7 @@ model VideoStackSettings {
   badgeColor           String   @default("#34C759")
   overlayTintColor     String   @default("#1A1A1A")
   advanceCss           String   @default("")
+  store                Store    @relation(fields: [storeId], references: [storeGID], onDelete: Cascade)
 }
 
 model ReviewReelSettings {

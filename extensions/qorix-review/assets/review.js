@@ -1,4 +1,4 @@
-class QuickReviewWidget {
+class ReviewX {
   constructor() {
     this.ratings = [1, 2, 3, 4, 5];
 
@@ -92,11 +92,23 @@ class QuickReviewWidget {
         if (typeof window.initQuoteLoopSwiper === "function") {
           window.initQuoteLoopSwiper();
         }
+        if (typeof window.initVideoStack === "function") {
+          window.initVideoStack();
+        }
+        if (typeof window.initReviewReel === "function") {
+          window.initReviewReel();
+        }
       });
     } else {
       setTimeout(() => {
         if (typeof window.initQuoteLoopSwiper === "function") {
           window.initQuoteLoopSwiper();
+        }
+        if (typeof window.initVideoStack === "function") {
+          window.initVideoStack();
+        }
+        if (typeof window.initReviewReel === "function") {
+          window.initReviewReel();
         }
       }, 50);
     }
@@ -174,15 +186,31 @@ class QuickReviewWidget {
 
       this.reviews = (result.data?.reviews || [])
         .map((review) => this.withHelpfulState(review, customerEmail))
+        .filter((review) => {
+          if (this.showFirst === "VIDEO") {
+            return (review.attachments || []).some(
+              (attachment) => attachment.type === "VIDEO",
+            );
+          }
+          if (this.showFirst === "ONLY_IMAGE_VIDEO") {
+            return (review.attachments || []).some(
+              (attachment) =>
+                attachment.type === "VIDEO" || attachment.type === "IMAGE",
+            );
+          }
+          return true;
+        })
         .sort((a, b) => {
-          if (this.showFirst !== "IMAGE_VIDEO") return 0;
+          if (this.showFirst === "IMAGE_VIDEO") {
+            const aHasAttachment = (a.attachments?.length || 0) > 0;
+            const bHasAttachment = (b.attachments?.length || 0) > 0;
 
-          const aHasAttachment = (a.attachments?.length || 0) > 0;
-          const bHasAttachment = (b.attachments?.length || 0) > 0;
+            if (aHasAttachment === bHasAttachment) return 0;
 
-          if (aHasAttachment === bHasAttachment) return 0;
-
-          return aHasAttachment ? -1 : 1;
+            return aHasAttachment ? -1 : 1;
+          } else {
+            return 0;
+          }
         });
       this.currentPage = result.data?.currentPage ?? 1;
       this.totalPages = result.data?.totalPages ?? 1;
@@ -628,6 +656,6 @@ class QuickReviewWidget {
 // Alpine.js usage: x-data="new QuickReviewWidget()"
 // Plain JS usage:  const widget = new QuickReviewWidget(); widget.init();
 
-window.ReviewWidget = () => new QuickReviewWidget();
+window.ReviewWidget = () => new ReviewX();
 
 // export default QuickReviewWidget;

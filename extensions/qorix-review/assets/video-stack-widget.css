@@ -28,14 +28,14 @@
 
 /* ════════ HEADING CONTAINER ════════ */
 [data-section="qorix-review-video-stack-widget"] .qorix-review-video-stack-heading-container {
-  width: 90vw;
+  width: 100%;
   margin: 0 auto;
   box-sizing: border-box;
 }
 
 /* ════════ CAROUSEL WRAPPER ════════ */
 [data-section="qorix-review-video-stack-widget"] .qorix-review-video-stack-carousel {
-  width: 90vw;
+  width: 100%;
   margin: 0 auto;
   position: relative;
   /* clip only horizontal overflow so nav arrows stay visible */
@@ -155,6 +155,10 @@
 
   will-change: width, height, filter;
   filter: brightness(0.7);
+}
+[data-section="qorix-review-video-stack-widget"] .qr-stars{
+  display: flex;
+  gap: 8px;
 }
 
 /* Adjacent (prev / next) — medium tier */
@@ -306,6 +310,19 @@
   background: #f2f2f2;
   border-radius: 12px;
   width: fit-content;
+
+}
+[data-section="qorix-review-video-stack-widget"] .qorix-review-video-stack-tag span {
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  word-break: break-word;
+  overflow-wrap: anywhere;
+  line-height: 1.4;
+  max-height: calc(1.4em * 2);
 }
 
 [data-section="qorix-review-video-stack-widget"] .qorix-review-video-stack-tag span {
