@@ -31,12 +31,15 @@ async function replaceOrderLineItems(tx, orderDbId, products) {
   });
 }
 
-export async function upsertOrderWithLineItems({
-  formattedOrder,
-  storeId,
-  reviewCheckStatus = "PENDING",
-  requestType = "AUTOMATIC",
-}) {
+export async function upsertOrderWithLineItems(
+  {
+    formattedOrder,
+    storeId,
+    reviewCheckStatus = "PENDING",
+    requestType = "AUTOMATIC",
+  },
+  retries = 3,
+) {
   const products = formattedOrder.products ?? [];
   const orderFields = {
     orderId: formattedOrder.orderId,
@@ -49,21 +52,32 @@ export async function upsertOrderWithLineItems({
     currency: formattedOrder.currency,
   };
 
-  return prisma.$transaction(async (tx) => {
-    const order = await tx.order.upsert({
-      where: {
-        storeId_orderId: { storeId, orderId: formattedOrder.orderId },
-      },
-      update: orderFields,
-      create: {
-        ...orderFields,
-        store: { connect: { storeGID: storeId } },
-      },
-    });
+  try {
+    return await prisma.$transaction(async (tx) => {
+      const order = await tx.order.upsert({
+        where: {
+          storeId_orderId: { storeId, orderId: formattedOrder.orderId },
+        },
+        update: orderFields,
+        create: {
+          ...orderFields,
+          store: { connect: { storeGID: storeId } },
+        },
+      });
 
-    await replaceOrderLineItems(tx, order.id, products);
-    return order;
-  });
+      await replaceOrderLineItems(tx, order.id, products);
+      return order;
+    });
+  } catch (error) {
+    if (error.code === "P2002" && retries > 0) {
+      console.warn("Race condition in upsertOrderWithLineItems, retrying...");
+      return upsertOrderWithLineItems(
+        { formattedOrder, storeId, reviewCheckStatus, requestType },
+        retries - 1,
+      );
+    }
+    throw error;
+  }
 }
 
 export async function markOrderProductReviewed({
@@ -131,7 +145,9 @@ export async function syncReviewedOrderFromShopify({
     const shopifyOrders = await getOrders(session.shop, session.accessToken);
     const matchedOrder = shopifyOrders.find(
       (order) =>
-        String(order.email ?? "").trim().toLowerCase() === normalizedEmail &&
+        String(order.email ?? "")
+          .trim()
+          .toLowerCase() === normalizedEmail &&
         (order.products ?? []).some(
           (product) =>
             normalizeShopifyId(product.productId) === normalizedProductId,
@@ -153,8 +169,7 @@ export async function syncReviewedOrderFromShopify({
     );
     enrichedOrder.products = enrichedOrder.products.map((product) => ({
       ...product,
-      isReviewed:
-        normalizeShopifyId(product.productId) === normalizedProductId,
+      isReviewed: normalizeShopifyId(product.productId) === normalizedProductId,
     }));
 
     await upsertOrderWithLineItems({

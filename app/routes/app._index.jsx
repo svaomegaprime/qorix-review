@@ -28,7 +28,6 @@ export async function loader({ request }) {
         attachments: true,
         reply: true,
       },
-      take: 3,
     });
     const pendingOrders = await prisma.order.findMany({
       where: {
@@ -201,10 +200,10 @@ export default function Index() {
         paddingBlockEnd="base"
       >
         <Text as="h2">Welcome to Qorix review 👋</Text>
-        <s-grid gridTemplateColumns="auto auto" gap="base">
-          <s-button variant="secondary" icon="plus">
+        <s-grid gridTemplateColumns="auto auto">
+          {/* <s-button variant="secondary" icon="plus">
             Request reviews
-          </s-button>
+          </s-button> */}
           <s-button variant="primary" icon="store">
             View store
           </s-button>
