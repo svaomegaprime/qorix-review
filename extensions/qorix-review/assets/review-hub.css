@@ -355,9 +355,18 @@ span.qr-review-avatar {
   color: var(--text-color);
 }
 .qr-verified-icon {
-  background-color: var(--verified-badge-color);
-  font-size: 12px;
-  border-radius: 50%;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 18px;
+  height: 18px;
+  flex-shrink: 0;
+}
+.qr-verified-icon svg {
+  width: 18px;
+  height: 18px;
+  flex-shrink: 0;
+  display: block;
 }
 .qr-review-date {
   font-size: 16px;
