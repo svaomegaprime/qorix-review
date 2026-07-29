@@ -485,12 +485,25 @@ class ReviewX {
       this.isError = false;
       this.errorMessage = "";
 
+      // Add new review to the top of the list
       this.reviews = [this.withHelpfulState(result.data), ...this.reviews];
       this.totalReviews++;
+      
+      // Update average rating
       const newRating =
         (this.averageRating * (this.totalReviews - 1) + this.starSelected) /
         this.totalReviews;
       this.averageRating = Number(newRating.toFixed(1));
+
+      // Update star count distribution
+      if (this.starSelected >= 1 && this.starSelected <= 5) {
+        this.starCount[this.starSelected] = (this.starCount[this.starSelected] || 0) + 1;
+      }
+
+      // Update global attachments gallery
+      if (result.data && result.data.attachments && result.data.attachments.length > 0) {
+        this.attachments = [...result.data.attachments, ...this.attachments];
+      }
 
       if (this.$nextTick) {
         this.$nextTick(() => {
