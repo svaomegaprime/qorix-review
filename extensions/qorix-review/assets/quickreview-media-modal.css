@@ -57,6 +57,8 @@
   height: 100%;
   overflow-y: auto;
   padding-right: 6px;
+  -webkit-overflow-scrolling: touch;
+  overscroll-behavior: contain;
 }
 
 .quickreview-media-modal__grid {
@@ -68,15 +70,17 @@
 .quickreview-media-modal__item {
   width: 100%;
   aspect-ratio: 1 / 1;
-  border-radius: 10px;
-  overflow: hidden;
+  cursor: pointer;
+  transform: translateZ(0); /* Hardware acceleration */
 }
 
-.quickreview-media-modal__item img {
+.quickreview-media-modal__item img,
+.quickreview-media-modal__item video {
   width: 100%;
   height: 100%;
   object-fit: cover;
   display: block;
+  border-radius: 10px;
 }
 
 /* ---------- Responsive ---------- */
