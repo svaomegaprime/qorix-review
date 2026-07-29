@@ -39,10 +39,12 @@ model Store {
   quoteLoopWidget    QuoteLoopWidget?
   reviewHubWidget    ReviewHubWidget?
   videoStackSettings VideoStackSettings?
-  reviews            Review[]
-  storeSettings      StoreSettings?
-  subscription       Subscription?
   trustBarWidgets    TrustBarWidget?
+  reviewReelSettings ReviewReelSettings?
+
+  reviews       Review[]
+  storeSettings StoreSettings?
+  subscription  Subscription?
 }
 
 model Subscription {

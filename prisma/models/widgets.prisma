@@ -135,8 +135,8 @@ model VideoStackSettings {
 }
 
 model ReviewReelSettings {
-  id                 String   @id @default(cuid())
-  shop               String   @unique
+  id                 String   @id @default(uuid()) @db.Uuid
+  storeId            String   @unique
   createdAt          DateTime @default(now())
   updatedAt          DateTime @updatedAt
   showHeader         Boolean  @default(true)
@@ -161,6 +161,7 @@ model ReviewReelSettings {
   cardBackgorud      String   @default("#FFF")
   cardTextColor      String   @default("#000")
   advanceCss         String   @default("")
+  store              Store    @relation(fields: [storeId], references: [storeGID], onDelete: Cascade)
 }
 
 model ReviewHubWidget {

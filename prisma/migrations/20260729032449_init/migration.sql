@@ -281,7 +281,6 @@ CREATE TABLE "QuickReviewWidget" (
     "isShowEmailField" BOOLEAN NOT NULL DEFAULT true,
     "isPhotoUpload" BOOLEAN NOT NULL DEFAULT true,
     "isVideoUpload" BOOLEAN NOT NULL DEFAULT true,
-    "isshowMediaImageAndVideo" BOOLEAN NOT NULL DEFAULT true,
     "formTitle" TEXT NOT NULL DEFAULT 'How was your experience?',
     "formSubtitle" TEXT NOT NULL DEFAULT 'Your feedback helps others',
     "submitButtonText" TEXT NOT NULL DEFAULT 'Submit review',
@@ -295,18 +294,18 @@ CREATE TABLE "QuickReviewWidget" (
     "barFileColor" TEXT DEFAULT '#34C759',
     "borderRadius" TEXT NOT NULL DEFAULT '15px',
     "isShowReviewerName" BOOLEAN NOT NULL DEFAULT true,
-    "isShowReviewerImage" BOOLEAN NOT NULL DEFAULT true,
-    "isShowReviewerVideo" BOOLEAN NOT NULL DEFAULT true,
+    "isShowMediaThumbnails" BOOLEAN NOT NULL DEFAULT true,
     "isShowProductName" BOOLEAN NOT NULL DEFAULT true,
     "isShowVerifiedBadge" BOOLEAN NOT NULL DEFAULT true,
     "isShowReviewDate" BOOLEAN NOT NULL DEFAULT true,
-    "isShowRatingFilter" BOOLEAN NOT NULL DEFAULT true,
+    "isShowStarRatingOnCard" BOOLEAN NOT NULL DEFAULT true,
+    "isShowHelpfulButton" BOOLEAN NOT NULL DEFAULT true,
     "isShowStarDistribution" BOOLEAN NOT NULL DEFAULT true,
     "isShowMediaStrip" BOOLEAN NOT NULL DEFAULT true,
     "isShowReviewCount" BOOLEAN NOT NULL DEFAULT true,
     "writeReviewButtonText" TEXT NOT NULL DEFAULT 'Write a review',
     "showHelfullButton" BOOLEAN NOT NULL DEFAULT true,
-    "filterAndSorting" TEXT NOT NULL DEFAULT 'FILTER_AND_SORTING',
+    "filterAndSorting" TEXT NOT NULL DEFAULT 'FILTER_AND_SORT',
     "reviewPerPage" INTEGER NOT NULL DEFAULT 10,
     "defaultSort" TEXT NOT NULL DEFAULT 'MOST_RECENT',
     "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
@@ -353,8 +352,8 @@ CREATE TABLE "QuoteLoopWidget" (
 
 -- CreateTable
 CREATE TABLE "VideoStackSettings" (
-    "id" TEXT NOT NULL,
-    "shop" TEXT NOT NULL,
+    "id" UUID NOT NULL,
+    "storeId" TEXT NOT NULL,
     "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
     "updatedAt" TIMESTAMP(3) NOT NULL,
     "showHeader" BOOLEAN NOT NULL DEFAULT true,
@@ -387,8 +386,8 @@ CREATE TABLE "VideoStackSettings" (
 
 -- CreateTable
 CREATE TABLE "ReviewReelSettings" (
-    "id" TEXT NOT NULL,
-    "shop" TEXT NOT NULL,
+    "id" UUID NOT NULL,
+    "storeId" TEXT NOT NULL,
     "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
     "updatedAt" TIMESTAMP(3) NOT NULL,
     "showHeader" BOOLEAN NOT NULL DEFAULT true,
@@ -434,9 +433,9 @@ CREATE TABLE "ReviewHubWidget" (
     "showMediaAsset" BOOLEAN NOT NULL DEFAULT true,
     "showShareOption" BOOLEAN NOT NULL DEFAULT true,
     "showAppreciationOption" BOOLEAN NOT NULL DEFAULT true,
-    "layout" TEXT NOT NULL DEFAULT '3 column grid',
+    "layout" TEXT NOT NULL DEFAULT '3',
     "filterSorting" TEXT NOT NULL DEFAULT 'FILTER_AND_SORTING',
-    "reviewsPerPage" INTEGER NOT NULL DEFAULT 6,
+    "reviewsPerPage" INTEGER NOT NULL DEFAULT 9,
     "starColor" TEXT NOT NULL DEFAULT '#34C759',
     "textColor" TEXT NOT NULL DEFAULT '#1A1A1A',
     "verifiedBadgeColor" TEXT NOT NULL DEFAULT '#1D9E75',
@@ -567,10 +566,10 @@ CREATE UNIQUE INDEX "QuickReviewWidget_storeId_key" ON "QuickReviewWidget"("stor
 CREATE UNIQUE INDEX "QuoteLoopWidget_storeId_key" ON "QuoteLoopWidget"("storeId");
 
 -- CreateIndex
-CREATE UNIQUE INDEX "VideoStackSettings_shop_key" ON "VideoStackSettings"("shop");
+CREATE UNIQUE INDEX "VideoStackSettings_storeId_key" ON "VideoStackSettings"("storeId");
 
 -- CreateIndex
-CREATE UNIQUE INDEX "ReviewReelSettings_shop_key" ON "ReviewReelSettings"("shop");
+CREATE UNIQUE INDEX "ReviewReelSettings_storeId_key" ON "ReviewReelSettings"("storeId");
 
 -- CreateIndex
 CREATE UNIQUE INDEX "ReviewHubWidget_storeId_key" ON "ReviewHubWidget"("storeId");
@@ -631,6 +630,12 @@ ALTER TABLE "QuickReviewWidget" ADD CONSTRAINT "QuickReviewWidget_storeId_fkey" 
 
 -- AddForeignKey
 ALTER TABLE "QuoteLoopWidget" ADD CONSTRAINT "QuoteLoopWidget_storeId_fkey" FOREIGN KEY ("storeId") REFERENCES "Store"("storeGID") ON DELETE CASCADE ON UPDATE CASCADE;
+
+-- AddForeignKey
+ALTER TABLE "VideoStackSettings" ADD CONSTRAINT "VideoStackSettings_storeId_fkey" FOREIGN KEY ("storeId") REFERENCES "Store"("storeGID") ON DELETE CASCADE ON UPDATE CASCADE;
+
+-- AddForeignKey
+ALTER TABLE "ReviewReelSettings" ADD CONSTRAINT "ReviewReelSettings_storeId_fkey" FOREIGN KEY ("storeId") REFERENCES "Store"("storeGID") ON DELETE CASCADE ON UPDATE CASCADE;
 
 -- AddForeignKey
 ALTER TABLE "ReviewHubWidget" ADD CONSTRAINT "ReviewHubWidget_storeId_fkey" FOREIGN KEY ("storeId") REFERENCES "Store"("storeGID") ON DELETE CASCADE ON UPDATE CASCADE;

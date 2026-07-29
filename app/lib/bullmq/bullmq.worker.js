@@ -22,6 +22,11 @@ const reviewWorker = new Worker(
       case "JOB_ADMIN_NOTIFICATION_EMAIL":
         console.log("worker is working", job.data);
         await bullmqService.adminConfirmationEmailSend(job.data);
+        break;
+
+      case "UPDATE_DEFAULT_SETTINGS":
+        console.log("worker is working", job.data);
+        await bullmqService.updateDefaultSettings(job.data);
 
         break;
 
