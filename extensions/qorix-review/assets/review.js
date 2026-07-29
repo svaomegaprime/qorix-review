@@ -41,6 +41,7 @@ class ReviewX {
     this.customerEmail = "";
     this.loading = false;
     this.dataPostLoading = false;
+    this.loadingText = "";
 
     this.reviews = [
       {
@@ -373,6 +374,62 @@ class ReviewX {
     this.isError = false;
     this.errorMessage = "";
     this.dataPostLoading = true;
+
+    const hasFiles = this.uploadedFiles && this.uploadedFiles.length > 0;
+
+    // Create a promise that resolves only when the animation completes
+    const animationPromise = new Promise((resolve) => {
+      if (!hasFiles) {
+        this.loadingText = "Creating review...";
+        resolve();
+        return;
+      }
+
+      // Calculate total file size in MB
+      const totalSizeInBytes = this.uploadedFiles.reduce(
+        (sum, item) => sum + (item.file?.size || 0),
+        0,
+      );
+      const totalSizeInMB = totalSizeInBytes / (1024 * 1024);
+
+      // Estimate upload time: Minimum 1.5s, assuming ~3MB/sec upload speed
+      const estimatedDurationMs = Math.max(1500, (totalSizeInMB / 3) * 1000);
+      const intervalMs = 500;
+      const totalSteps = estimatedDurationMs / intervalMs;
+      const baseIncrement = 100 / totalSteps;
+
+      let progress = 0;
+      this.loadingText = `Uploading your attachments... ${progress}%`;
+
+      const progressInterval = setInterval(() => {
+        if (!this.dataPostLoading) {
+          clearInterval(progressInterval);
+          resolve();
+          return;
+        }
+
+        // Increment randomly around the baseIncrement (between 80% and 120% of base)
+        const currentIncrement = baseIncrement * (0.8 + Math.random() * 0.4);
+        progress += currentIncrement;
+
+        if (progress >= 100) {
+          progress = 100;
+          this.loadingText = `Uploading your attachments... ${Math.round(progress)}%`;
+          clearInterval(progressInterval);
+
+          setTimeout(() => {
+            if (this.dataPostLoading) this.loadingText = "Completed!";
+            setTimeout(() => {
+              if (this.dataPostLoading) this.loadingText = "Creating review...";
+              setTimeout(resolve, 500); // Small buffer before UI switches to success
+            }, 1000);
+          }, 500);
+        } else {
+          this.loadingText = `Uploading your attachments... ${Math.round(progress)}%`;
+        }
+      }, 800);
+    });
+
     console.log(
       this.form.name,
       this.form.email,
@@ -404,13 +461,16 @@ class ReviewX {
 
       console.log("Submitting...", formData);
 
-      const response = await fetch(
+      const fetchPromise = fetch(
         `/apps/qorix-review/review?isOpen=${openFromEmail}&orderId=${orderId}`,
         {
           method: "POST",
           body: formData,
         },
       );
+
+      // Wait for BOTH the network request AND the animation to finish
+      const [response] = await Promise.all([fetchPromise, animationPromise]);
 
       const result = await response.json();
 

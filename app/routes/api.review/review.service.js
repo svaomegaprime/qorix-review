@@ -8,15 +8,9 @@ import prisma from "../../db.server";
 import { uploadFile } from "../../lib/s3/uploadFile";
 import { isFileLike } from "../../utils/isFileLike";
 import { AppError } from "../../utils/appError.server";
-import { updateProductReviewDefineMetafields } from "../../utils/updateProductReviewDefineMetafields";
-import { sendEmail } from "../../utils/sendEmail";
 import checkPublishRules from "./middleware/checkPublishRules";
 import { sendResponse } from "../../utils/sendResponse";
 import { buildSmtpConfig } from "../../services/emailPayload.server.js";
-import {
-  markOrderProductReviewed,
-  syncReviewedOrderFromShopify,
-} from "../../services/orders.server.js";
 import { addJobInQueue, reviewQueue } from "../../lib/bullmq/bullmq.queue";
 
 function buildFromAddress(displayName, email) {
@@ -150,30 +144,25 @@ async function postReview(request, session, admin) {
     // Invalidate review cache for this store + product
     await invalidateReviewCache(id, reviewData.productId);
 
+    // Dispatch heavy side-effects (order sync + metafield update) to background worker
     if (reviewData.reviewerEmail && reviewData.productId) {
-      const existingOrderUpdated = orderId
-        ? await markOrderProductReviewed({
+      try {
+        await addJobInQueue(
+          reviewQueue,
+          "POST_REVIEW_ORDER_METAFIELD_SYNC",
+          {
+            shop: session?.shop,
             storeId: id,
-            orderId,
-            reviewerEmail: String(reviewData.reviewerEmail),
             productId: String(reviewData.productId),
-          })
-        : false;
-
-      if (!isOpen && !existingOrderUpdated) {
-        // Missing-order fallback plan:
-        // 1. Load normalized orders through sync.orders.
-        // 2. Match the newest order by reviewer email and normalized product ID.
-        // 3. Enrich its products through getProduct without duplicating GraphQL logic.
-        // 4. Mark only the matched line item as reviewed.
-        // 5. Persist the Order and OrderLineItem records atomically as MANUAL/REVIEWED.
-        await syncReviewedOrderFromShopify({
-          session,
-          admin,
-          storeId: id,
-          reviewerEmail: String(reviewData.reviewerEmail),
-          productId: String(reviewData.productId),
-        });
+            reviewerEmail: String(reviewData.reviewerEmail),
+            orderId,
+            isOpen,
+          },
+          0,
+          `POST_REVIEW_SYNC_${id}_${reviewData.productId}_${reviewData.reviewerEmail}`,
+        );
+      } catch (err) {
+        console.error("[WARN::api.review.orderMetafieldSyncJob]", err);
       }
     }
 
@@ -220,18 +209,6 @@ async function postReview(request, session, admin) {
     const unsubscribeUrl = replyToEmail
       ? `mailto:${replyToEmail}?subject=Unsubscribe`
       : "";
-    // client mail
-
-    try {
-      await updateProductReviewDefineMetafields(
-        admin,
-        reviewData.productId,
-        reviewData.storeId,
-      );
-    } catch (error) {
-      console.error("[WARN::api.review.metafields]", error);
-      sideEffectErrors.push("metafields");
-    }
 
     if (reviewData.reviewerEmail) {
       const clientEmailData = {
@@ -287,50 +264,6 @@ async function postReview(request, session, admin) {
           0,
           `JOB_CLIENT_CONFIRMATION_EMAIL_${reviewData.reviewerEmail}`,
         );
-
-        // await sendEmail({
-        //   to: reviewData.reviewerEmail,
-        //   from: buildFromAddress(storeName, senderEmail),
-        //   replyTo: replyToEmail,
-        //   templateName: "ConfirmEmail",
-        //   subject:
-        //     emailSettings.confirmationEmailSubject ??
-        //     "Thank you for your review",
-        //   templateData: {
-        //     subject:
-        //       emailSettings.confirmatisonEmailSubject ??
-        //       "Thank you for your review",
-        //     storeName,
-        //     logo: brandingSettings.storeLogo ?? "",
-        //     tagline: brandingSettings.storeTagline ?? "",
-        //     customerName: reviewData.reviewerName ?? "",
-        //     emailBody,
-        //     buttonUrl: productUrl,
-        //     buttonText: "View your review",
-        //     emailPrimaryButtonColor:
-        //       brandingSettings.emailPrimaryButtonColor ?? "#269e1bff",
-        //     emailButtonTextColor:
-        //       brandingSettings.emailButtonTextColor ?? "#FFFFFF",
-        //     emailBackgroundColor:
-        //       brandingSettings.emailBackgroundColor ?? "#eef0ee",
-        //     emailHeadingColor: brandingSettings.emailHeadingColor ?? "#303030",
-        //     emailBodyTextColor:
-        //       brandingSettings.emailBodyTextColor ?? "#108848",
-        //     emailAccentBorderColor:
-        //       brandingSettings.emailAccentBorderColor ?? "#f0f0f0",
-        //     product: {
-        //       title: reviewData.productTitle ?? "",
-        //     },
-        //     review: {
-        //       rating: reviewData.rating ?? 0,
-        //       date: formattedDate,
-        //     },
-        //     emailFooterText: brandingSettings.emailFooterText ?? "",
-        //     unsubscribeUrl,
-        //     isShowFooterBadge: brandingSettings.isShowFooterBadge ?? false,
-        //   },
-        //   smtpConfig: buildSmtpConfig(emailSettings),
-        // });
       } catch (error) {
         console.error("[WARN::api.review.confirmationEmail]", error);
         sideEffectErrors.push("confirmation_email");
@@ -511,12 +444,12 @@ async function getReview(request, session, admin) {
           );
           const isHelpful = Boolean(
             normalizedEmail &&
-              helpfulCount.some(
-                (item) =>
-                  item?.isHelpful === true &&
-                  String(item.customerEmail || "").toLowerCase() ===
-                    normalizedEmail,
-              ),
+            helpfulCount.some(
+              (item) =>
+                item?.isHelpful === true &&
+                String(item.customerEmail || "").toLowerCase() ===
+                  normalizedEmail,
+            ),
           );
           return { ...review, helpfulTotal, isHelpful };
         });

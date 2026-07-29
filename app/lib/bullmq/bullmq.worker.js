@@ -29,6 +29,11 @@ const reviewWorker = new Worker(
         await bullmqService.updateDefaultSettings(job.data);
 
         break;
+      case "POST_REVIEW_ORDER_METAFIELD_SYNC":
+        console.log("worker is working", job.data);
+        await bullmqService.postReviewOrderMetafieldSync(job.data);
+
+        break;
 
       default:
         throw new Error(`Unknown job name: ${job.name}`);

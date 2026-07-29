@@ -2,6 +2,11 @@ import { sendEmail } from "../../utils/sendEmail";
 import prisma from "../../db.server";
 import { setAppMetafield } from "../../utils/appMetafields.server";
 import { unauthenticated } from "../../shopify.server";
+import {
+  markOrderProductReviewed,
+  syncReviewedOrderFromShopify,
+} from "../../services/orders.server.js";
+import { updateProductReviewDefineMetafields } from "../../utils/updateProductReviewDefineMetafields";
 
 async function sendQueuedEmail(jobData) {
   const emailData = jobData?.emailData || jobData;
@@ -108,12 +113,75 @@ async function updateDefaultSettings(jobData) {
     console.log(error);
   }
 }
+
+async function postReviewOrderMetafieldSync(jobData) {
+  const {
+    shop,
+    storeId,
+    productId,
+    reviewerEmail,
+    orderId,
+    isOpen,
+  } = jobData;
+
+  try {
+    const { admin } = await unauthenticated.admin(shop);
+
+    // 1. Mark the order line-item as reviewed (pure DB)
+    let existingOrderUpdated = false;
+    if (orderId) {
+      try {
+        existingOrderUpdated = await markOrderProductReviewed({
+          storeId,
+          orderId,
+          reviewerEmail: String(reviewerEmail),
+          productId: String(productId),
+        });
+      } catch (err) {
+        console.error("[WORKER::markOrderProductReviewed]", err);
+      }
+    }
+
+    // 2. Sync order from Shopify if needed
+    if (!isOpen && !existingOrderUpdated) {
+      try {
+        const session = await prisma.session.findFirst({
+          where: { shop },
+        });
+        if (session?.shop && session?.accessToken) {
+          await syncReviewedOrderFromShopify({
+            session,
+            admin,
+            storeId,
+            reviewerEmail: String(reviewerEmail),
+            productId: String(productId),
+          });
+        } else {
+          console.warn("[WORKER] No offline session found for", shop);
+        }
+      } catch (err) {
+        console.error("[WORKER::syncReviewedOrderFromShopify]", err);
+      }
+    }
+
+    // 3. Update product metafields (rating + rating_count)
+    try {
+      await updateProductReviewDefineMetafields(admin, productId, storeId);
+    } catch (err) {
+      console.error("[WORKER::updateProductReviewDefineMetafields]", err);
+    }
+  } catch (error) {
+    console.error("[WORKER::postReviewOrderMetafieldSync] fatal", error);
+  }
+}
+
 const bullmqService = {
   scheduleEmailSend: sendQueuedEmail,
   reminderEmailSend: sendQueuedEmail,
   clientConfirmationEmailSend: clientConfirmationEmailSend,
   adminConfirmationEmailSend: adminConfirmationEmailSend,
   updateDefaultSettings: updateDefaultSettings,
+  postReviewOrderMetafieldSync: postReviewOrderMetafieldSync,
 };
 
 export default bullmqService;
