@@ -45,10 +45,12 @@ export async function deleteReviewWithAttachments({ reviewId, storeId }) {
     }
   }
 
-  await prisma.review.delete({ where: { id: reviewId, storeId } });
+  const deletedReview = await prisma.review.delete({
+    where: { id: reviewId, storeId },
+  });
 
   // Invalidate review cache for this store
   await invalidateReviewCache(storeId);
 
-  return true;
+  return { productId: deletedReview.productId };
 }
