@@ -99,6 +99,23 @@ async function postReview(request, session, admin) {
       productHandle: formData.get("productHandle") || null,
       productTitle: formData.get("productTitle") || null,
     };
+
+    const isAllreadyExist = await prisma.review.findFirst({
+      where: {
+        storeId: reviewData.storeId,
+        reviewerEmail: reviewData.reviewerEmail,
+        productId: reviewData.productId,
+      },
+    });
+    if (isAllreadyExist)
+      return sendResponse(null, {
+        ok: false,
+        status: 504,
+        message: "This email already exist",
+
+        data: {},
+      });
+
     const publishRules = await checkPublishRules(
       session,
       publishingModeration,
