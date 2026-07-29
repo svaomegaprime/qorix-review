@@ -50,14 +50,21 @@
         :class="'qr-image-count-' + Math.min(review.attachments.length, 2)"
       >
         <template x-if="review.attachments.length === 1 && review.attachments[0].type === 'VIDEO'">
-          <video
-            class="qr-review-image qr-lightbox-trigger"
-            :src="review.attachments[0].url + '#t=0.001'"
-            muted
-            playsinline
-            preload="metadata"
-            @click="openLightbox(review.attachments[0])"
-          ></video>
+          <div style="position: relative; width: 100%; height: 100%;">
+            <video
+              class="qr-review-image qr-lightbox-trigger"
+              :src="review.attachments[0].url + '#t=0.001'"
+              muted
+              playsinline
+              preload="metadata"
+              @click="openLightbox(review.attachments[0])"
+            ></video>
+            <div class="qorix-video-play-badge">
+              <svg width="12" height="14" viewBox="0 0 12 14" fill="none" xmlns="http://www.w3.org/2000/svg">
+                <path d="M3 2.5L10.5 7L3 11.5V2.5Z" fill="#1A1A1A"/>
+              </svg>
+            </div>
+          </div>
         </template>
 
         <template x-if="review.attachments.length === 1 && review.attachments[0].type === 'IMAGE'">
@@ -75,18 +82,25 @@
 
         <template x-if="review.attachments.length > 1">
           <template x-for="(attachment, index) in review.attachments.slice(0, 2)" :key="index">
-            <div class="qr-review-image-single">
+            <div class="qr-review-image-single" style="position: relative;">
               <template x-if="attachment.type === 'VIDEO'">
-                <video
-                  class="qr-lightbox-trigger"
-                  data-type="video"
-                  :src="attachment.url + '#t=0.001'"
-                  :data-src="attachment.url"
-                  muted
-                  playsinline
-                  preload="metadata"
-                  @click="showAllMedia = true"
-                ></video>
+                <div style="position: relative; width: 100%; height: 100%;">
+                  <video
+                    class="qr-lightbox-trigger"
+                    data-type="video"
+                    :src="attachment.url + '#t=0.001'"
+                    :data-src="attachment.url"
+                    muted
+                    playsinline
+                    preload="metadata"
+                    @click="showAllMedia = true"
+                  ></video>
+                  <div class="qorix-video-play-badge">
+                    <svg width="12" height="14" viewBox="0 0 12 14" fill="none" xmlns="http://www.w3.org/2000/svg">
+                      <path d="M3 2.5L10.5 7L3 11.5V2.5Z" fill="#1A1A1A"/>
+                    </svg>
+                  </div>
+                </div>
               </template>
 
               <template x-if="attachment.type === 'IMAGE'">

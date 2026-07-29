@@ -6,15 +6,18 @@
     <div class="quickreview-review__head">
       <div class="quickreview-review__avatar">
         <img
-          x-show="false"
-          class="quickreview-media__img"
-          src="{{ '' | asset_url }}"
-          alt="Reviewer image"
+          x-show="review.reviewerImage"
+          :src="review.reviewerImage"
+          :alt="review.reviewerName"
           loading="lazy"
-          height=""
-          width=""
+          height="60"
+          width="60"
         >
-        <span x-show="true" x-text="review.reviewerName[0].toUpperCase()" style="font-size: 18px;"></span>
+        <span
+          x-show="!review.reviewerImage"
+          x-text="review.reviewerName ? review.reviewerName[0].toUpperCase() : ''"
+          style="font-size: 18px;"
+        ></span>
       </div>
 
       <div class="quickreview-review__meta">
