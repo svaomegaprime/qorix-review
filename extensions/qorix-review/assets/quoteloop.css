@@ -290,3 +290,83 @@
     padding: 40px 24px 50px;
   }
 }
+
+/* ===================== Mobile (450px and below) Card Design ===================== */
+
+@media (max-width: 450px) {
+  [data-section="qorix-quoteloop-widget"] .qr-quote-swiper {
+    padding: 20px 0 65px 0;
+  }
+
+  [data-section="qorix-quoteloop-widget"] .qr-review-card {
+    border: 1px solid #eaeaea;
+    border-radius: 20px;
+    padding: 24px 20px 20px 20px;
+    background-color: var(--card-bg, #ffffff);
+    box-shadow: 0 2px 12px rgba(0, 0, 0, 0.02);
+  }
+
+  [data-section="qorix-quoteloop-widget"] .qr-card-content {
+    margin-top: 4px;
+    margin-bottom: 20px;
+    align-items: center;
+    text-align: center;
+  }
+
+  [data-section="qorix-quoteloop-widget"] .qr-quote-icon {
+    margin-bottom: 20px;
+    justify-content: center;
+  }
+
+  [data-section="qorix-quoteloop-widget"] .qr-quote-icon svg {
+    width: 46px;
+    height: auto;
+  }
+
+  [data-section="qorix-quoteloop-widget"] .qr-review-text,
+  [data-section="qorix-quoteloop-widget"] .qr-review-text p {
+    text-align: center;
+    font-size: 16px !important;
+    line-height: 1.5;
+    color: var(--qr-color-text-dark, #1f2937);
+    margin: 0 0 16px 0;
+  }
+
+  [data-section="qorix-quoteloop-widget"] .qr-review-stars {
+    justify-content: center;
+    gap: 4px;
+    margin-bottom: 0;
+  }
+
+  [data-section="qorix-quoteloop-widget"] .qr-review-footer {
+    border-top: 1px solid #f0f0f0;
+    padding-top: 16px;
+    margin-top: auto;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+  }
+
+  [data-section="qorix-quoteloop-widget"] .qr-reviewer-avatar,
+  [data-section="qorix-quoteloop-widget"] span.qr-review-avatar {
+    width: 48px;
+    height: 48px;
+    min-width: 48px;
+    border-radius: 50%;
+  }
+
+  [data-section="qorix-quoteloop-widget"] .qr-reviewer-name {
+    font-size: 15px;
+    font-weight: 500;
+    margin-bottom: 4px;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+  }
+
+  [data-section="qorix-quoteloop-widget"] .qr-reviewer-product {
+    font-size: 14px;
+    font-weight: 400;
+    color: var(--qr-color-text-gray, #6b7280);
+  }
+}
