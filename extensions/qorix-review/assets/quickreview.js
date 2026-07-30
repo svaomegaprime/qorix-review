@@ -2,7 +2,6 @@ document.addEventListener('DOMContentLoaded', function () {
   const cards = document.querySelectorAll('.quickreview-card');
 
   cards.forEach(function (card) {
-    const productId = card.dataset.productId;
     initSwiper(card);
   });
 
@@ -15,7 +14,7 @@ document.addEventListener('DOMContentLoaded', function () {
 
     new Swiper(swiperEl, {
       slidesPerView: 'auto',
-      spaceBetween: 36,
+      spaceBetween: 20,
       watchOverflow: true, 
       navigation: {
         nextEl: card.querySelector('[data-quickreview-nav-next]'),

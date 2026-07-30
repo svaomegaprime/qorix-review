@@ -6,15 +6,17 @@
     <div class="quickreview-review__head">
       <div class="quickreview-review__avatar">
         <img
-          x-show="false"
-          class="quickreview-media__img"
-          src="{{ '' | asset_url }}"
-          alt="Reviewer image"
-          loading="lazy"
-          height=""
-          width=""
+          x-show="review.reviewerImage"
+          :src="review.reviewerImage"
+          :alt="review.reviewerName"
+          height="60"
+          width="60"
         >
-        <span x-show="true" x-text="review.reviewerName[0].toUpperCase()" style="font-size: 18px;"></span>
+        <span
+          x-show="!review.reviewerImage"
+          x-text="review.reviewerName ? review.reviewerName[0].toUpperCase() : ''"
+          style="font-size: 18px;"
+        ></span>
       </div>
 
       <div class="quickreview-review__meta">
@@ -65,21 +67,26 @@
                 class="quickreview-review__media-img"
                 :src="attachment.url"
                 alt="Review media"
-                loading="lazy"
                 width=""
                 height=""
               >
             </template>
 
             <template x-if="attachment.type === 'VIDEO'">
-              <video
-                class="quickreview-review__media-img"
-                :src="attachment.url"
-                preload="metadata"
-                muted
-                playsinline
-                loading="lazy"
-              ></video>
+              <div style="position: relative; width: 100%; height: 100%;">
+                <video
+                  class="quickreview-review__media-img"
+                  :src="attachment.url + '#t=0.001'"
+                  preload="metadata"
+                  muted
+                  playsinline
+                ></video>
+                <div class="qorix-video-play-badge">
+                  <svg width="12" height="14" viewBox="0 0 12 14" fill="none" xmlns="http://www.w3.org/2000/svg">
+                    <path d="M3 2.5L10.5 7L3 11.5V2.5Z" fill="#1A1A1A"/>
+                  </svg>
+                </div>
+              </div>
             </template>
           </div>
         </template>

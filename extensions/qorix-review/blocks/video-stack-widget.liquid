@@ -16,7 +16,24 @@
     --badge-color: {{ video_stack_metafield.badgeColor | default: '#34C759' }};
     --overlay-tint: {{ video_stack_metafield.overlayTintColor | default: '#1A1A1A' }};
   }
+  [data-section="qorix-review-video-stack-widget"] .qorix-review-video-stack-dot {
+    width: 10px !important;
+    height: 10px !important;
+    border: 0 !important;
+    border-radius: 50% !important;
+    background-color: var(--active-dot-color, #34C759) !important;
+    opacity: 0.25 !important;
+    cursor: pointer !important;
+    padding: 0 !important;
+    margin: 0 4px !important;
+    display: inline-block !important;
+    transition: all 0.3s ease !important;
+  }
   [data-section="qorix-review-video-stack-widget"] .qorix-review-video-stack-dot.active {
+    width: 28px !important;
+    height: 10px !important;
+    border-radius: 99px !important;
+    opacity: 1 !important;
     background-color: var(--active-dot-color, #34C759) !important;
   }
   [data-section="qorix-review-video-stack-widget"] .qorix-review-video-stack-card {

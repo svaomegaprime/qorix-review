@@ -5,8 +5,15 @@
 
 {% render 'custom-css', css: quote_loop_metafield.advanceCss %}
 
+<style>
+  [data-section="qorix-quoteloop-widget"] {
+    --active-dot-color: {{ quote_loop_metafield.activeDotColor | default: quote_loop_metafield.starColor | default: '#34C759' }};
+  }
+</style>
+
 <div
   class="qr-quoteloop"
+  data-section="qorix-quoteloop-widget"
   customerId="{{ customer.id }}"
   customerEmail="{{ customer.email }}"
   {% comment %} xx="{{ product.metafields.reviews.rating }} - {{ product.metafields.reviews.rating_count.value }}" {% endcomment %}
