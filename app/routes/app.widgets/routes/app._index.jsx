@@ -129,10 +129,12 @@ export default function Widegets() {
                     <Text as="h2">Widgets</Text>
                 </s-stack>
                 {/* <s-button icon="settings">Request reviews</s-button> */}
-                <s-select>
+
+            {/* ----------if need to add test-data (live) and real-data (live) functionality then uncomment the below code ---------- */}
+                {/* <s-select>
                     <s-option>test-data (live)</s-option>
                     <s-option>real-data (live)</s-option>
-                </s-select>
+                </s-select> */}
             </s-grid>
             {/* End----Page Header */}
 
