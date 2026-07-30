@@ -107,7 +107,7 @@ async function postReview(request, session, admin) {
         productId: reviewData.productId,
       },
     });
-    if (isAllreadyExist)
+    if (isAllreadyExist && reviewData.reviewerEmail)
       return sendResponse(null, {
         ok: false,
         status: 504,
