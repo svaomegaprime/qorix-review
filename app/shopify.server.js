@@ -20,11 +20,12 @@ import {
 
 import { DEFAULT_QUOTE_LOOP_SETTINGS } from "./routes/app.widgets/routes/app.quote-loop/data/quoteReviewDefault";
 import { DEFAULT_VIDEO_STACK_SETTINGS } from "./routes/app.widgets/routes/app.video-stack/data/videoStackDefaultData";
-import {  DEFAULT_VALUES_REVIEW_REEL } from "./routes/app.widgets/routes/app.review-reel/component/data/reviewRealDefaultData";
+import { DEFAULT_VALUES_REVIEW_REEL } from "./routes/app.widgets/routes/app.review-reel/component/data/reviewRealDefaultData";
 import { DEFAULT_DB_FORMATED_DATA } from "./routes/app.widgets/routes/app.quick-review/data/defaultData";
 import { setAppMetafield } from "./utils/appMetafields.server";
 import { DEFAULT_REVIEW_HUB_DB_DATA } from "./routes/app.widgets/routes/app.review-hub/data/defaultData";
 import { DEFAULT_TRUST_BAR_SETTINGS } from "./routes/app.widgets/routes/app.trust-bar/data/trastbarDefaultValue";
+import { addJobInQueue, reviewQueue } from "./lib/bullmq/bullmq.queue";
 const GET_SHOP_BASIC_INFO = `#graphql
   query GetShopBasicInfo {
     shop {
@@ -156,84 +157,168 @@ const shopify = shopifyApp({
           },
         });
 
-         // all data is set in the database for the first time and update if already exists
-        const quickReviewWidget = await prisma.quickReviewWidget.upsert({
-          where: {
-            storeId: shopData.id,
-          },
-          update: {},
-          create: {
-            ...DEFAULT_DB_FORMATED_DATA,
-            storeId: shopData.id,
-          },
-        });
+        // bullmq
 
-        await setAppMetafield(admin, "quick_review", quickReviewWidget);
+        const updateDefaultSettings = await addJobInQueue(
+          reviewQueue,
+          "UPDATE_DEFAULT_SETTINGS",
+          {
+            shop: shopData.myshopifyDomain,
+            quickReviewWidget: {
+              where: {
+                storeId: shopData.id,
+              },
+              update: {},
+              create: {
+                ...DEFAULT_DB_FORMATED_DATA,
+                storeId: shopData.id,
+              },
+            },
+            reviewHubWidget: {
+              where: {
+                storeId: shopData.id,
+              },
+              update: {},
+              create: {
+                ...DEFAULT_REVIEW_HUB_DB_DATA,
+                storeId: shopData.id,
+              },
+            },
+            quoteLoopWidget: {
+              where: {
+                storeId: shopData.id,
+              },
+              update: {},
+              create: {
+                ...DEFAULT_QUOTE_LOOP_SETTINGS,
+                storeId: shopData.id,
+              },
+            },
+            videoStackSettings: {
+              where: {
+                storeId: shopData.id,
+              },
+              update: {},
+              create: {
+                ...DEFAULT_VIDEO_STACK_SETTINGS,
+                storeId: shopData.id,
+              },
+            },
+            trustBarWidget: {
+              where: {
+                storeId: shopData.id,
+              },
+              update: {},
+              create: {
+                ...DEFAULT_TRUST_BAR_SETTINGS,
+                storeId: shopData.id,
+              },
+            },
+            reviewReelSettings: {
+              where: {
+                storeId: shopData.id,
+              },
+              update: {},
+              create: {
+                ...DEFAULT_VALUES_REVIEW_REEL,
+                storeId: shopData.id,
+              },
+            },
+          },
+          100,
+          `update_UPDATE_DEFAULT_SETTINGS`,
+        );
 
-        const reviewHubWidget = await prisma.reviewHubWidget.upsert({
-          where: {
-            storeId: shopData.id,
-          },
-          update: {},
-          create: {
-            ...DEFAULT_REVIEW_HUB_DB_DATA,
-            storeId: shopData.id,
-          },
-        });
-        await setAppMetafield(admin, "review_hub", reviewHubWidget);
+        // all data is set in the database for the first time and update if already exists
+        // const quickReviewWidget = await prisma.quickReviewWidget.upsert({
+        //   where: {
+        //     storeId: shopData.id,
+        //   },
+        //   update: {},
+        //   create: {
+        //     ...DEFAULT_DB_FORMATED_DATA,
+        //     storeId: shopData.id,
+        //   },
+        // });
+
+        // await setAppMetafield(admin, "quick_review", quickReviewWidget);
+        // const reviewReelWidget = await prisma.reviewReelSettings.upsert({
+        //   where: {
+        //     storeId: shopData.id,
+        //   },
+        //   update: {},
+        //   create: {
+        //     ...DEFAULT_VALUES_REVIEW_REEL,
+        //     storeId: shopData.id,
+        //   },
+        // });
+
+        // await setAppMetafield(admin, "review_reel", reviewReelWidget);
+
+        // const reviewHubWidget = await prisma.reviewHubWidget.upsert({
+        //   where: {
+        //     storeId: shopData.id,
+        //   },
+        //   update: {},
+        //   create: {
+        //     ...DEFAULT_REVIEW_HUB_DB_DATA,
+        //     storeId: shopData.id,
+        //   },
+        // });
+        // await setAppMetafield(admin, "review_hub", reviewHubWidget);
 
         // Quote Loop Widget data set in the database for the first time and update if already exists
-        const quoteLoopWidget = await prisma.quoteLoopWidget.upsert({
-          where: {
-            storeId: shopData.id,
-          },
-          update: {},
-          create: {
-            ...DEFAULT_QUOTE_LOOP_SETTINGS,
-            storeId: shopData.id,
-          },
-        });
-        await setAppMetafield(admin, "quote_loop", quoteLoopWidget);
+        // const quoteLoopWidget = await prisma.quoteLoopWidget.upsert({
+        //   where: {
+        //     storeId: shopData.id,
+        //   },
+        //   update: {},
+        //   create: {
+        //     ...DEFAULT_QUOTE_LOOP_SETTINGS,
+        //     storeId: shopData.id,
+        //   },
+        // });
+        // await setAppMetafield(admin, "quote_loop", quoteLoopWidget);
 
         // Video Stack Widget data set in the database for the first time and update if already exists
-        const videoStackWidget = await prisma.videoStackSettings.upsert({
-          where: {
-            storeId: shopData.id,
-          },
-          update: {},
-          create: {
-            ...DEFAULT_VIDEO_STACK_SETTINGS,
-            storeId: shopData.id,
-          },
-        });
+        // const videoStackWidget = await prisma.videoStackSettings.upsert({
+        //   where: {
+        //     storeId: shopData.id,
+        //   },
+        //   update: {},
+        //   create: {
+        //     ...DEFAULT_VIDEO_STACK_SETTINGS,
+        //     storeId: shopData.id,
+        //   },
+        // });
 
-        await setAppMetafield(admin, "video_stack", videoStackWidget);
+        // await setAppMetafield(admin, "video_stack", videoStackWidget);
 
-        const reviewHubWidgetData = await prisma.reviewHubWidget.upsert({
-          where: {
-            storeId: shopData.id,
-          },
-          update: {},
-          create: {
-            ...DEFAULT_REVIEW_HUB_DB_DATA,
-            storeId: shopData.id,
-          },
-        });
+        // const reviewHubWidgetData = await prisma.reviewHubWidget.upsert({
+        //   where: {
+        //     storeId: shopData.id,
+        //   },
+        //   update: {},
+        //   create: {
+        //     ...DEFAULT_REVIEW_HUB_DB_DATA,
+        //     storeId: shopData.id,
+        //   },
+        // });
 
-        await setAppMetafield(admin, "review_hub", reviewHubWidgetData);
+        // await setAppMetafield(admin, "review_hub", reviewHubWidgetData);
 
-        const trustBarWidget = await prisma.trustBarWidget.upsert({
-          where: {
-            storeId: shopData.id,
-          },
-          update: {},
-          create: {
-            ...DEFAULT_TRUST_BAR_SETTINGS,
-            storeId: shopData.id,
-          },
-        });
+        // const trustBarWidget = await prisma.trustBarWidget.upsert({
+        //   where: {
+        //     storeId: shopData.id,
+        //   },
+        //   update: {},
+        //   create: {
+        //     ...DEFAULT_TRUST_BAR_SETTINGS,
+        //     storeId: shopData.id,
+        //   },
+        // });
 
-        await setAppMetafield(admin, "trust_bar", trustBarWidget);
+        // await setAppMetafield(admin, "trust_bar", trustBarWidget);
       } catch (error) {
         console.error("afterAuth shop fetch failed:", error);
       }

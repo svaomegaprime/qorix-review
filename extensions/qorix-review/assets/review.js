@@ -41,34 +41,35 @@ class ReviewX {
     this.customerEmail = "";
     this.loading = false;
     this.dataPostLoading = false;
+    this.loadingText = "";
 
-    this.reviews = [
-      {
-        id: 1,
-        rating: 4,
-        reviewerName: "Abdur Razzak",
-        avatar: "https://i.ibb.co.com/7PwsYSL/raju.jpg",
-        createdAt: null,
-        productTitle: "Hydrating Eye Cream",
-        body: "Good results, noticed a difference in about a week. Fast shipping too.",
-        attachments: [
-          {
-            type: "IMAGE",
-            url: "https://images.unsplash.com/photo-1556228578-8c89e6adf883?w=200",
-          },
-          {
-            type: "IMAGE",
-            url: "https://images.unsplash.com/photo-1608248543803-ba4f8c70ae0b?w=200",
-          },
-          {
-            type: "VIDEO",
-            url: "https://www.w3schools.com/html/mov_bbb.mp4",
-          },
-        ],
-        isVerified: true,
-      },
-    ];
-
+    // this.reviews = [
+    //   {
+    //     id: 1,
+    //     rating: 4,
+    //     reviewerName: "Abdur Razzak",
+    //     avatar: "https://i.ibb.co.com/7PwsYSL/raju.jpg",
+    //     createdAt: null,
+    //     productTitle: "Hydrating Eye Cream",
+    //     body: "Good results, noticed a difference in about a week. Fast shipping too.",
+    //     attachments: [
+    //       {
+    //         type: "IMAGE",
+    //         url: "https://images.unsplash.com/photo-1556228578-8c89e6adf883?w=200",
+    //       },
+    //       {
+    //         type: "IMAGE",
+    //         url: "https://images.unsplash.com/photo-1608248543803-ba4f8c70ae0b?w=200",
+    //       },
+    //       {
+    //         type: "VIDEO",
+    //         url: "https://www.w3schools.com/html/mov_bbb.mp4",
+    //       },
+    //     ],
+    //     isVerified: true,
+    //   },
+    // ];
+    this.reviews = [];
     this.currentPage = 1;
     this.limit = 10;
     this.baseLimit = 10;
@@ -84,6 +85,8 @@ class ReviewX {
     this.$refs = this.$refs || {};
     this.attachments = [];
     this.showFirst = "";
+    this.showRatingBarWithoutRating = true;
+    this.showMediaWithoutRating = true;
   }
 
   reinitSwipers() {
@@ -123,6 +126,12 @@ class ReviewX {
     this.customerEmail =
       el.dataset.customerEmail || el.getAttribute("customerEmail") || "";
     this.showFirst = el.dataset.showFirst || el.getAttribute("showFirst") || "";
+    this.showRatingBarWithoutRating =
+      el.dataset.showRatingBarWithoutRating !== "false";
+    this.showMediaWithoutRating = el.dataset.showMediaWithoutRating !== "false";
+    this.filterMinStar = el.dataset.filterMinStars || "ALL";
+    this.showName = el.dataset.showName !== "false";
+    this.showEmail = el.dataset.showEmail !== "false";
   }
 
   isAllowedMediaFile(file) {
@@ -172,7 +181,7 @@ class ReviewX {
       const customerEmail = this.customerEmail || "";
 
       const response = await fetch(
-        `/apps/qorix-review/review?productId=${encodeURIComponent(productId)}&sort=${encodeURIComponent(defaultSort)}&page=${this.currentPage}&limit=${this.limit}&isOpen=${openFromEmail}&orderId=${orderId}&customerEmail=${encodeURIComponent(customerEmail)}`,
+        `/apps/qorix-review/review?productId=${encodeURIComponent(productId)}&sort=${encodeURIComponent(defaultSort)}&page=${this.currentPage}&limit=${this.limit}&isOpen=${openFromEmail}&orderId=${orderId}&customerEmail=${encodeURIComponent(customerEmail)}&filterMinStar=${encodeURIComponent(this.filterMinStar)}`,
         {
           method: "GET",
         },
@@ -359,9 +368,13 @@ class ReviewX {
     const openFromEmail = window.location.search.includes("isOpen=true");
     const orderId = new URLSearchParams(window.location.search).get("orderId");
 
+    const isNameValid = !this.showName || this.form.name.trim();
+    const isEmailValid = !this.showEmail || this.form.email.trim();
+
     if (
       !this.starSelected ||
-      !this.form.name.trim() ||
+      !isNameValid ||
+      !isEmailValid ||
       !this.form.review.trim()
     ) {
       this.isError = true;
@@ -373,6 +386,62 @@ class ReviewX {
     this.isError = false;
     this.errorMessage = "";
     this.dataPostLoading = true;
+
+    const hasFiles = this.uploadedFiles && this.uploadedFiles.length > 0;
+
+    // Create a promise that resolves only when the animation completes
+    const animationPromise = new Promise((resolve) => {
+      if (!hasFiles) {
+        this.loadingText = "Creating review...";
+        resolve();
+        return;
+      }
+
+      // Calculate total file size in MB
+      const totalSizeInBytes = this.uploadedFiles.reduce(
+        (sum, item) => sum + (item.file?.size || 0),
+        0,
+      );
+      const totalSizeInMB = totalSizeInBytes / (1024 * 1024);
+
+      // Estimate upload time: Minimum 1.5s, assuming ~3MB/sec upload speed
+      const estimatedDurationMs = Math.max(1500, (totalSizeInMB / 3) * 1000);
+      const intervalMs = 500;
+      const totalSteps = estimatedDurationMs / intervalMs;
+      const baseIncrement = 100 / totalSteps;
+
+      let progress = 0;
+      this.loadingText = `Uploading your attachments... ${progress}%`;
+
+      const progressInterval = setInterval(() => {
+        if (!this.dataPostLoading) {
+          clearInterval(progressInterval);
+          resolve();
+          return;
+        }
+
+        // Increment randomly around the baseIncrement (between 80% and 120% of base)
+        const currentIncrement = baseIncrement * (0.8 + Math.random() * 0.4);
+        progress += currentIncrement;
+
+        if (progress >= 100) {
+          progress = 100;
+          this.loadingText = `Uploading your attachments... ${Math.round(progress)}%`;
+          clearInterval(progressInterval);
+
+          setTimeout(() => {
+            if (this.dataPostLoading) this.loadingText = "Completed!";
+            setTimeout(() => {
+              if (this.dataPostLoading) this.loadingText = "Creating review...";
+              setTimeout(resolve, 500); // Small buffer before UI switches to success
+            }, 1000);
+          }, 500);
+        } else {
+          this.loadingText = `Uploading your attachments... ${Math.round(progress)}%`;
+        }
+      }, 800);
+    });
+
     console.log(
       this.form.name,
       this.form.email,
@@ -404,13 +473,16 @@ class ReviewX {
 
       console.log("Submitting...", formData);
 
-      const response = await fetch(
+      const fetchPromise = fetch(
         `/apps/qorix-review/review?isOpen=${openFromEmail}&orderId=${orderId}`,
         {
           method: "POST",
           body: formData,
         },
       );
+
+      // Wait for BOTH the network request AND the animation to finish
+      const [response] = await Promise.all([fetchPromise, animationPromise]);
 
       const result = await response.json();
 
@@ -425,12 +497,30 @@ class ReviewX {
       this.isError = false;
       this.errorMessage = "";
 
+      // Add new review to the top of the list
       this.reviews = [this.withHelpfulState(result.data), ...this.reviews];
       this.totalReviews++;
+
+      // Update average rating
       const newRating =
         (this.averageRating * (this.totalReviews - 1) + this.starSelected) /
         this.totalReviews;
       this.averageRating = Number(newRating.toFixed(1));
+
+      // Update star count distribution
+      if (this.starSelected >= 1 && this.starSelected <= 5) {
+        this.starCount[this.starSelected] =
+          (this.starCount[this.starSelected] || 0) + 1;
+      }
+
+      // Update global attachments gallery
+      if (
+        result.data &&
+        result.data.attachments &&
+        result.data.attachments.length > 0
+      ) {
+        this.attachments = [...result.data.attachments, ...this.attachments];
+      }
 
       if (this.$nextTick) {
         this.$nextTick(() => {
@@ -590,7 +680,11 @@ class ReviewX {
 
     Array.from(files).forEach((file) => {
       if (!this.isAllowedMediaFile(file)) {
-        alert(file.name + " is not an allowed file type.");
+        if (this.allowPhotoUpload && this.allowVideoUpload)
+          alert("Only images and videos are allowed");
+        else if (this.allowPhotoUpload) alert("Only images are allowed");
+        else if (this.allowVideoUpload) alert("Only videos are allowed");
+
         return;
       }
 

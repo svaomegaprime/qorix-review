@@ -33,7 +33,7 @@
   line-height: 1;
 }
 
-.quickreview-summary__stars {
+.quickreview-summary__stars > div.qr-stars {
   display: flex;
   gap: 3px;
 }

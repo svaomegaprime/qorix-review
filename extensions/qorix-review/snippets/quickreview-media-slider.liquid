@@ -1,5 +1,13 @@
 {{ 'quickreview-media-slider.css' | asset_url | stylesheet_tag }}
 
+<div x-show="reviews.length > 0 ? true : showMediaWithoutRating" class="quickreview-media">
+  <div class="quickreview-media__header">
+    <span class="quickreview-media__title">Reviews with media</span>
+    <p class="quickreview-media__see-all" @click="showAllMedia = true">See all media</p>
+  </div>
+
+  <div class="quickreview-media__slider-wrap">
+    <div class="quickreview-media__nav-prev" data-quickreview-nav-prev x-show="attachments?.length">
 <div class="qorix-qr-media-container">
   <div class="qorix-qr-media-header">
     <span class="qorix-qr-media-title">Reviews with media</span>
@@ -47,10 +55,33 @@
             </div>
           </template>
         </template>
-        <div x-show="attachments?.length == 0"></div>
+        <div x-show="attachments?.length < 1 && !loading">
+          <div style="height: 128px;min-width: 126px; display:flex; gap: 10px;">
+            <img
+              style="min-width:126px; border: 1px solid #00000009;"
+              src="{{'placeholder-images-image_large.png' | asset_url}}"
+              width="100px"
+              height="128px"
+            >
+            <img
+              style="min-width:126px; border: 1px solid #00000009;"
+              src="{{'placeholder-images-image_large.png' | asset_url}}"
+              width="100px"
+              height="128px"
+            >
+            <img
+              style="min-width:126px; border: 1px solid #00000009;"
+              src="{{'placeholder-images-image_large.png' | asset_url}}"
+              width="100px"
+              height="128px"
+            >
+          </div>
+        </div>
+        {% render 'skeleton', type: 'media' %}
       </div>
     </div>
 
+    <div class="quickreview-media__nav-next" data-quickreview-nav-next x-show="attachments?.length">
     <div class="qorix-qr-media-nav-next" data-quickreview-nav-next>
       <svg width="6" height="10" viewBox="0 0 6 10" fill="none" xmlns="http://www.w3.org/2000/svg">
         <path fill-rule="evenodd" clip-rule="evenodd" d="M0.219533 9.27953C0.0790825 9.13891 0.000193119 8.94828 0.000193119 8.74953C0.000193119 8.55078 0.0790825 8.36016 0.219533 8.21953L3.68953 4.74953L0.219533 1.27953C0.149932 1.20993 0.0947226 1.1273 0.057055 1.03637C0.0193874 0.945429 7.33361e-10 0.847963 0 0.749533C-7.33361e-10 0.651103 0.0193874 0.553637 0.057055 0.462699C0.0947226 0.371762 0.149932 0.289134 0.219533 0.219533C0.289134 0.149933 0.371762 0.0947223 0.462699 0.0570548C0.553637 0.0193872 0.651103 -7.3336e-10 0.749533 0C0.847963 7.33362e-10 0.945429 0.0193872 1.03637 0.0570548C1.1273 0.0947223 1.20993 0.149933 1.27953 0.219533L5.27953 4.21953C5.41998 4.36016 5.49887 4.55078 5.49887 4.74953C5.49887 4.94828 5.41998 5.13891 5.27953 5.27953L1.27953 9.27953C1.13891 9.41998 0.948284 9.49887 0.749533 9.49887C0.550783 9.49887 0.360158 9.41998 0.219533 9.27953Z" fill="#4A4A4A"/>
@@ -58,4 +89,5 @@
     </div>
   </div>
 </div>
+
 {% render 'show-all-media-modal' %}

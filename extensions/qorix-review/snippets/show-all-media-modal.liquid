@@ -19,19 +19,17 @@
       <div class="quickreview-media-modal__grid" data-quickreview-media-modal-grid>
         <template x-if="attachments?.length">
           <template x-for="attachment in attachments" :key="attachment.id">
-            <template x-if="attachment.type === 'IMAGE'">
-              <div class="quickreview-media-modal__item" @click="openLightbox(attachment); showAllMedia = false">
+            <div class="quickreview-media-modal__item" @click="openLightbox(attachment); showAllMedia = false">
+              <template x-if="attachment.type === 'IMAGE'">
                 <img
                   :src="attachment.url"
                   alt="Review media"
                   width=""
                   height=""
                 >
-              </div>
-            </template>
+              </template>
 
-            <template x-if="attachment.type === 'VIDEO'">
-              <div class="quickreview-media-modal__item" style="position: relative;" @click="openLightbox(attachment); showAllMedia = false">
+              <template x-if="attachment.type === 'VIDEO'">
                 <video
                   class="qorix-qr-media-img"
                   :src="attachment.url + '#t=0.001'"
@@ -39,13 +37,8 @@
                   muted
                   playsinline
                 ></video>
-                <div class="qorix-video-play-badge">
-                  <svg width="12" height="14" viewBox="0 0 12 14" fill="none" xmlns="http://www.w3.org/2000/svg">
-                    <path d="M3 2.5L10.5 7L3 11.5V2.5Z" fill="#1A1A1A"/>
-                  </svg>
-                </div>
-              </div>
-            </template>
+              </template>
+            </div>
           </template>
         </template>
       </div>

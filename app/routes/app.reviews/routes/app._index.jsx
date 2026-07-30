@@ -195,10 +195,15 @@ export async function action({ request }) {
         const formData = await request.formData();
         const reviewId = formData.get("reviewId");
         if (reviewId) {
-          await deleteReviewWithAttachments({
+          const reviewData = await deleteReviewWithAttachments({
             reviewId: String(reviewId),
             storeId: storeData.id,
           });
+          await updateProductReviewDefineMetafields(
+            admin,
+            reviewData.productId,
+            storeData.id,
+          );
         }
 
         const search = formData.get("search") || "";
