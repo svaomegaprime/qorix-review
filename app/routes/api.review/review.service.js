@@ -391,6 +391,7 @@ async function getReview(request, session, admin) {
     const sort = url.searchParams.get("sort") || "ALL";
     const page = Number(url.searchParams.get("page")) || 1;
     const limit = Number(url.searchParams.get("limit")) || 10;
+    const filterMinStar = url.searchParams.get("filterMinStar") || "ALL";
     const customerEmail = String(
       url.searchParams.get("customerEmail") || "",
     ).trim();
@@ -442,7 +443,7 @@ async function getReview(request, session, admin) {
       }
     }
     // ── Redis cache-aside ──────────────────────────────────────────
-    const cacheKey = `reviews:${id}:${productId || "all"}:${page}:${limit}:${sort}`;
+    const cacheKey = `reviews:${id}:${productId || "all"}:${page}:${limit}:${sort}:${filterMinStar}`;
     const cached = await getCache(cacheKey);
 
     if (cached) {
@@ -517,6 +518,27 @@ async function getReview(request, session, admin) {
       skip: (page - 1) * limit,
       take: limit,
     };
+
+    // Min star filter logic
+    switch (filterMinStar) {
+      case "STAR_1":
+        query.where.rating = { gte: 1 };
+        break;
+      case "STAR_2":
+        query.where.rating = { gte: 2 };
+        break;
+      case "STAR_3":
+        query.where.rating = { gte: 3 };
+        break;
+      case "STAR_4":
+        query.where.rating = { gte: 4 };
+        break;
+      case "STAR_5":
+        query.where.rating = { gte: 5 };
+        break;
+      default:
+        break;
+    }
 
     // Sorting logic
     switch (sort) {

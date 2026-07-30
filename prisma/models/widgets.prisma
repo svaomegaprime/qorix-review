@@ -30,44 +30,54 @@ model TrustBarWidget {
 }
 
 model QuickReviewWidget {
-  id                           String   @id @default(uuid()) @db.Uuid
-  storeId                      String   @unique
-  isShowNameField              Boolean  @default(true)
-  isShowEmailField             Boolean  @default(true)
-  isPhotoUpload                Boolean  @default(true)
-  isVideoUpload                Boolean  @default(true)
-  formTitle                    String   @default("How was your experience?")
-  formSubtitle                 String   @default("Your feedback helps others")
-  submitButtonText             String   @default("Submit review")
-  successMessageTitle          String   @default("Review submitted!")
-  successButtonText            String   @default("Continue Shopping")
-  successMessage               String   @default("Thank you for your review. It has been submitted successfully.")
-  starColor                    String?  @default("#f59e0b")
-  buttonBackgroundColor        String?  @default("#1D9E75")
-  buttonTextColor              String?  @default("#fff")
-  verifiedBadgeColor           String?  @default("#1D9E75")
-  barFileColor                 String?  @default("#34C759")
-  borderRadius                 String   @default("15px")
-  isShowReviewerName           Boolean  @default(true)
-  isShowMediaThumbnails        Boolean  @default(true)
-  isShowProductName            Boolean  @default(true)
-  isShowVerifiedBadge          Boolean  @default(true)
-  isShowReviewDate             Boolean  @default(true)
-  isShowStarRatingOnCard       Boolean  @default(true)
-  isShowHelpfulButton          Boolean  @default(true)
-  isShowStarDistribution       Boolean  @default(true)
-  isShowMediaStrip             Boolean  @default(true)
-  isShowReviewCount            Boolean  @default(true)
-  isShowRatingBarWithoutRating Boolean  @default(true)
-  isShowMediaWithoutRating     Boolean  @default(true)
-  writeReviewButtonText        String   @default("Write a review")
-  showHelfullButton            Boolean  @default(true)
-  filterAndSorting             String   @default("FILTER_AND_SORT")
-  reviewPerPage                Int      @default(10)
-  defaultSort                  String   @default("MOST_RECENT")
-  createdAt                    DateTime @default(now())
-  updatedAt                    DateTime @updatedAt
-  store                        Store    @relation(fields: [storeId], references: [storeGID], onDelete: Cascade)
+  id                           String         @id @default(uuid()) @db.Uuid
+  storeId                      String         @unique
+  isShowNameField              Boolean        @default(true)
+  isShowEmailField             Boolean        @default(true)
+  isPhotoUpload                Boolean        @default(true)
+  isVideoUpload                Boolean        @default(true)
+  formTitle                    String         @default("How was your experience?")
+  formSubtitle                 String         @default("Your feedback helps others")
+  submitButtonText             String         @default("Submit review")
+  successMessageTitle          String         @default("Review submitted!")
+  successButtonText            String         @default("Continue Shopping")
+  successMessage               String         @default("Thank you for your review. It has been submitted successfully.")
+  starColor                    String?        @default("#f59e0b")
+  buttonBackgroundColor        String?        @default("#1D9E75")
+  buttonTextColor              String?        @default("#fff")
+  verifiedBadgeColor           String?        @default("#1D9E75")
+  barFileColor                 String?        @default("#34C759")
+  borderRadius                 String         @default("15px")
+  isShowReviewerName           Boolean        @default(true)
+  isShowMediaThumbnails        Boolean        @default(true)
+  isShowProductName            Boolean        @default(true)
+  isShowVerifiedBadge          Boolean        @default(true)
+  isShowReviewDate             Boolean        @default(true)
+  isShowStarRatingOnCard       Boolean        @default(true)
+  isShowHelpfulButton          Boolean        @default(true)
+  isShowStarDistribution       Boolean        @default(true)
+  isShowMediaStrip             Boolean        @default(true)
+  isShowReviewCount            Boolean        @default(true)
+  isShowRatingBarWithoutRating Boolean        @default(true)
+  isShowMediaWithoutRating     Boolean        @default(true)
+  writeReviewButtonText        String         @default("Write a review")
+  showHelfullButton            Boolean        @default(true)
+  filterAndSorting             String         @default("FILTER_AND_SORT")
+  reviewPerPage                Int            @default(10)
+  defaultSort                  String         @default("MOST_RECENT")
+  filterMinStar                FilterMinStars @default(ALL)
+  createdAt                    DateTime       @default(now())
+  updatedAt                    DateTime       @updatedAt
+  store                        Store          @relation(fields: [storeId], references: [storeGID], onDelete: Cascade)
+}
+
+enum FilterMinStars {
+  ALL
+  STAR_1
+  STAR_2
+  STAR_3
+  STAR_4
+  STAR_5
 }
 
 model QuoteLoopWidget {

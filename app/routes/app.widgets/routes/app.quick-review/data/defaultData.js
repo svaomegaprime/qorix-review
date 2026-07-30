@@ -37,6 +37,7 @@ const DEFAULT_QUICK_REVIEW_STATE = {
   reviewPerPage: 10,
   defaultSort: "MOST_RECENT",
   filterAndSorting: "FILTER_AND_SORT",
+  filterMinStar: "ALL",
 };
 
 export const DEFAULT_DB_FORMATED_DATA = {
@@ -79,4 +80,5 @@ export const DEFAULT_DB_FORMATED_DATA = {
   reviewPerPage: Number(DEFAULT_QUICK_REVIEW_STATE.reviewPerPage),
   defaultSort: DEFAULT_QUICK_REVIEW_STATE.defaultSort,
   filterAndSorting: DEFAULT_QUICK_REVIEW_STATE.filterAndSorting,
+  filterMinStar: DEFAULT_QUICK_REVIEW_STATE.filterMinStar,
 };

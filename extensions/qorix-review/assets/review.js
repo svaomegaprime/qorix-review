@@ -126,8 +126,10 @@ class ReviewX {
     this.customerEmail =
       el.dataset.customerEmail || el.getAttribute("customerEmail") || "";
     this.showFirst = el.dataset.showFirst || el.getAttribute("showFirst") || "";
-    this.showRatingBarWithoutRating = el.dataset.showRatingBarWithoutRating !== "false";
+    this.showRatingBarWithoutRating =
+      el.dataset.showRatingBarWithoutRating !== "false";
     this.showMediaWithoutRating = el.dataset.showMediaWithoutRating !== "false";
+    this.filterMinStar = el.dataset.filterMinStars || "ALL";
   }
 
   isAllowedMediaFile(file) {
@@ -177,7 +179,7 @@ class ReviewX {
       const customerEmail = this.customerEmail || "";
 
       const response = await fetch(
-        `/apps/qorix-review/review?productId=${encodeURIComponent(productId)}&sort=${encodeURIComponent(defaultSort)}&page=${this.currentPage}&limit=${this.limit}&isOpen=${openFromEmail}&orderId=${orderId}&customerEmail=${encodeURIComponent(customerEmail)}`,
+        `/apps/qorix-review/review?productId=${encodeURIComponent(productId)}&sort=${encodeURIComponent(defaultSort)}&page=${this.currentPage}&limit=${this.limit}&isOpen=${openFromEmail}&orderId=${orderId}&customerEmail=${encodeURIComponent(customerEmail)}&filterMinStar=${encodeURIComponent(this.filterMinStar)}`,
         {
           method: "GET",
         },
