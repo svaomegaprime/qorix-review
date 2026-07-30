@@ -1,4 +1,4 @@
-:root {
+[data-section="qorix-quoteloop-widget"] {
   /* Colors */
   --qr-color-border: #eaeaea;
   --qr-color-text-dark: #1f2937;
@@ -22,11 +22,11 @@
   width: 100%;
 }
 
-.qr-quoteloop {
+[data-section="qorix-quoteloop-widget"] {
   padding: 12px 8px;
 }
 
-.qr-quote-swiper {
+[data-section="qorix-quoteloop-widget"] .qr-quote-swiper {
   width: 100%;
   overflow: hidden;
   padding: 30px 0 70px 16px;
@@ -34,11 +34,11 @@
   position: relative;
 }
 
-.qr-quote-swiper .swiper-wrapper {
+[data-section="qorix-quoteloop-widget"] .qr-quote-swiper .swiper-wrapper {
   align-items: stretch;
 }
 
-.qr-quote-swiper .swiper-slide {
+[data-section="qorix-quoteloop-widget"] .qr-quote-swiper .swiper-slide {
   height: auto;
   width: 84%;
   display: flex;
@@ -48,12 +48,13 @@
   transform: scale(0.94);
 }
 
-.qr-quote-swiper .swiper-slide-active {
+[data-section="qorix-quoteloop-widget"] .qr-quote-swiper .swiper-slide-active {
   opacity: 1;
   transform: scale(1.02);
   z-index: 2;
 }
-span.qr-review-avatar {
+
+[data-section="qorix-quoteloop-widget"] span.qr-review-avatar {
   width: 50px;
   height: 50px;
   border-radius: 50%;
@@ -66,7 +67,7 @@ span.qr-review-avatar {
   color: black;
 }
 
-.qr-review-card {
+[data-section="qorix-quoteloop-widget"] .qr-review-card {
   border: 1px solid var(--qr-color-border);
   border-radius: var(--qr-radius);
   padding: var(--qr-card-padding);
@@ -79,7 +80,7 @@ span.qr-review-avatar {
   flex-direction: column;
 }
 
-.qr-card-content {
+[data-section="qorix-quoteloop-widget"] .qr-card-content {
   display: flex;
   flex-direction: column;
   align-items: center;
@@ -87,14 +88,14 @@ span.qr-review-avatar {
   margin-bottom: 50px;
 }
 
-.qr-quote-icon {
+[data-section="qorix-quoteloop-widget"] .qr-quote-icon {
   position: static;
   display: flex;
   justify-content: center;
   margin-bottom: 50px;
 }
 
-.qr-review-text {
+[data-section="qorix-quoteloop-widget"] .qr-review-text {
   text-align: center;
   font-size: 18px;
   line-height: 1.5;
@@ -103,18 +104,18 @@ span.qr-review-avatar {
   margin: 0 0 20px;
 }
 
-.qr-review-stars {
+[data-section="qorix-quoteloop-widget"] .qr-review-stars {
   display: flex;
   gap: 5px;
   color: var(--qr-color-star);
   margin-bottom: 16px;
 }
 
-.qr-star--filled {
+[data-section="qorix-quoteloop-widget"] .qr-star--filled {
   color: var(--qr-color-star);
 }
 
-.qr-review-footer {
+[data-section="qorix-quoteloop-widget"] .qr-review-footer {
   display: flex;
   align-items: center;
   gap: 12px;
@@ -123,19 +124,19 @@ span.qr-review-avatar {
   margin-top: auto;
 }
 
-.qr-reviewer-avatar {
+[data-section="qorix-quoteloop-widget"] .qr-reviewer-avatar {
   border-radius: 50%;
   object-fit: cover;
   height: 56px;
   width: 56px;
 }
 
-.qr-reviewer-info {
+[data-section="qorix-quoteloop-widget"] .qr-reviewer-info {
   display: flex;
   flex-direction: column;
 }
 
-.qr-reviewer-name {
+[data-section="qorix-quoteloop-widget"] .qr-reviewer-name {
   display: flex;
   align-items: center;
   gap: 6px;
@@ -144,31 +145,42 @@ span.qr-review-avatar {
   margin-bottom: 8px;
 }
 
-.qr-reviewer-product {
+[data-section="qorix-quoteloop-widget"] .qr-reviewer-product {
   font-size: 16px;
   font-weight: 400;
   color: var(--qr-color-text-gray);
 }
 
 /* Pagination */
-.qr-quote-swiper .swiper-pagination {
+[data-section="qorix-quoteloop-widget"] .qr-quote-swiper .swiper-pagination {
   bottom: 20px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
 }
 
-.qr-quote-swiper .swiper-pagination-bullet {
-  width: 8px;
-  height: 8px;
-  background: var(--qr-color-pagination);
+[data-section="qorix-quoteloop-widget"] .qr-quote-swiper .swiper-pagination-bullet {
+  width: 10px;
+  height: 10px;
+  background: var(--active-dot-color, var(--qr-color-pagination, #34c759));
+  opacity: 0.25;
+  transition: all 0.3s ease;
+  border-radius: 50%;
+  display: inline-block;
+  margin: 0 4px !important;
+}
+
+[data-section="qorix-quoteloop-widget"] .qr-quote-swiper .swiper-pagination-bullet-active {
+  width: 28px;
+  height: 10px;
+  border-radius: 99px;
   opacity: 1;
-}
-
-.qr-quote-swiper .swiper-pagination-bullet-active {
-  background: var(--qr-color-pagination-active);
+  background: var(--active-dot-color, var(--qr-color-pagination-active, #34c759));
 }
 
 /* Navigation arrows — MOBILE: bottom corners */
-.qr-quote-swiper .swiper-button-prev,
-.qr-quote-swiper .swiper-button-next {
+[data-section="qorix-quoteloop-widget"] .qr-quote-swiper .swiper-button-prev,
+[data-section="qorix-quoteloop-widget"] .qr-quote-swiper .swiper-button-next {
   top: auto;
   bottom: 6px;
   transform: none;
@@ -182,22 +194,22 @@ span.qr-review-avatar {
   color: var(--qr-color-text-dark);
 }
 
-.qr-quote-swiper .swiper-button-prev {
+[data-section="qorix-quoteloop-widget"] .qr-quote-swiper .swiper-button-prev {
   left: 16px;
 }
 
-.qr-quote-swiper .swiper-button-next {
+[data-section="qorix-quoteloop-widget"] .qr-quote-swiper .swiper-button-next {
   right: 16px;
 }
 
-.swiper-button-prev svg,
-.swiper-button-next svg {
+[data-section="qorix-quoteloop-widget"] .swiper-button-prev svg,
+[data-section="qorix-quoteloop-widget"] .swiper-button-next svg {
   height: 9.5px;
   width: 5.5px;
 }
 
-.qr-quote-swiper .swiper-button-prev::after,
-.qr-quote-swiper .swiper-button-next::after {
+[data-section="qorix-quoteloop-widget"] .qr-quote-swiper .swiper-button-prev::after,
+[data-section="qorix-quoteloop-widget"] .qr-quote-swiper .swiper-button-next::after {
   font-size: 12px;
   font-weight: 700;
 }
@@ -205,34 +217,34 @@ span.qr-review-avatar {
 /* ===================== Tablet (768px – 1023px) → 2 cards ===================== */
 
 @media (min-width: 768px) {
-  .qr-quote-swiper {
+  [data-section="qorix-quoteloop-widget"] .qr-quote-swiper {
     padding: 40px 24px 50px;
   }
 
-  .qr-quote-swiper .swiper-slide {
+  [data-section="qorix-quoteloop-widget"] .qr-quote-swiper .swiper-slide {
     width: auto;
     justify-content: center;
     opacity: 0.55;
     transform: scale(0.92);
   }
 
-  .qr-quote-swiper .swiper-slide-active {
+  [data-section="qorix-quoteloop-widget"] .qr-quote-swiper .swiper-slide-active {
     opacity: 1;
     transform: scale(1.05);
     z-index: 5;
   }
 
-  .qr-review-text {
+  [data-section="qorix-quoteloop-widget"] .qr-review-text {
     font-size: 22px;
   }
 
-  .qr-quote-swiper .swiper-pagination {
+  [data-section="qorix-quoteloop-widget"] .qr-quote-swiper .swiper-pagination {
     bottom: 0;
   }
 
   /* Arrows: reset back to reference-style side positioning */
-  .qr-quote-swiper .swiper-button-prev,
-  .qr-quote-swiper .swiper-button-next {
+  [data-section="qorix-quoteloop-widget"] .qr-quote-swiper .swiper-button-prev,
+  [data-section="qorix-quoteloop-widget"] .qr-quote-swiper .swiper-button-next {
     position: absolute;
     top: 50%;
     bottom: auto;
@@ -241,22 +253,22 @@ span.qr-review-avatar {
     height: 44px;
   }
 
-  .qr-quote-swiper .swiper-button-prev {
+  [data-section="qorix-quoteloop-widget"] .qr-quote-swiper .swiper-button-prev {
     left: 10px;
   }
 
-  .qr-quote-swiper .swiper-button-next {
+  [data-section="qorix-quoteloop-widget"] .qr-quote-swiper .swiper-button-next {
     right: 10px;
   }
 
-  .swiper-button-prev svg,
-  .swiper-button-next svg {
+  [data-section="qorix-quoteloop-widget"] .swiper-button-prev svg,
+  [data-section="qorix-quoteloop-widget"] .swiper-button-next svg {
     height: 9.5px;
     width: 5.5px;
   }
 
-  .qr-quote-swiper .swiper-button-prev::after,
-  .qr-quote-swiper .swiper-button-next::after {
+  [data-section="qorix-quoteloop-widget"] .qr-quote-swiper .swiper-button-prev::after,
+  [data-section="qorix-quoteloop-widget"] .qr-quote-swiper .swiper-button-next::after {
     font-size: 14px;
   }
 }
@@ -264,7 +276,7 @@ span.qr-review-avatar {
 /* ===================== Laptop (1024px – 1199px) → 3 cards ===================== */
 
 @media (min-width: 1024px) {
-  .qr-review-text {
+  [data-section="qorix-quoteloop-widget"] .qr-review-text {
     font-size: 24px;
   }
 }
@@ -272,9 +284,89 @@ span.qr-review-avatar {
 /* ===================== Desktop (1200px+) → ===================== */
 
 @media (min-width: 1200px) {
-  .qr-quote-swiper {
+  [data-section="qorix-quoteloop-widget"] .qr-quote-swiper {
     max-width: var(--qr-desktop-max-width);
     margin: 0 auto;
     padding: 40px 24px 50px;
   }
 }
+
+/* ===================== Mobile (450px and below) Card Design ===================== */
+
+@media (max-width: 450px) {
+  [data-section="qorix-quoteloop-widget"] .qr-quote-swiper {
+    padding: 20px 0 65px 0;
+  }
+
+  [data-section="qorix-quoteloop-widget"] .qr-review-card {
+    border: 1px solid #eaeaea;
+    border-radius: 20px;
+    padding: 24px 20px 20px 20px;
+    background-color: var(--card-bg, #ffffff);
+    box-shadow: 0 2px 12px rgba(0, 0, 0, 0.02);
+  }
+
+  [data-section="qorix-quoteloop-widget"] .qr-card-content {
+    margin-top: 4px;
+    margin-bottom: 20px;
+    align-items: center;
+    text-align: center;
+  }
+
+  [data-section="qorix-quoteloop-widget"] .qr-quote-icon {
+    margin-bottom: 20px;
+    justify-content: center;
+  }
+
+  [data-section="qorix-quoteloop-widget"] .qr-quote-icon svg {
+    width: 46px;
+    height: auto;
+  }
+
+  [data-section="qorix-quoteloop-widget"] .qr-review-text,
+  [data-section="qorix-quoteloop-widget"] .qr-review-text p {
+    text-align: center;
+    font-size: 16px !important;
+    line-height: 1.5;
+    color: var(--qr-color-text-dark, #1f2937);
+    margin: 0 0 16px 0;
+  }
+
+  [data-section="qorix-quoteloop-widget"] .qr-review-stars {
+    justify-content: center;
+    gap: 4px;
+    margin-bottom: 0;
+  }
+
+  [data-section="qorix-quoteloop-widget"] .qr-review-footer {
+    border-top: 1px solid #f0f0f0;
+    padding-top: 16px;
+    margin-top: auto;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+  }
+
+  [data-section="qorix-quoteloop-widget"] .qr-reviewer-avatar,
+  [data-section="qorix-quoteloop-widget"] span.qr-review-avatar {
+    width: 48px;
+    height: 48px;
+    min-width: 48px;
+    border-radius: 50%;
+  }
+
+  [data-section="qorix-quoteloop-widget"] .qr-reviewer-name {
+    font-size: 15px;
+    font-weight: 500;
+    margin-bottom: 4px;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+  }
+
+  [data-section="qorix-quoteloop-widget"] .qr-reviewer-product {
+    font-size: 14px;
+    font-weight: 400;
+    color: var(--qr-color-text-gray, #6b7280);
+  }
+}

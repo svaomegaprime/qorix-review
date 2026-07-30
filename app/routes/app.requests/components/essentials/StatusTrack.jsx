@@ -72,8 +72,10 @@ export default function StatusTrack({ status }) {
             backgroundColor: isFailed ? COLORS.failed : COLORS.completed,
           }}
         />
-        <s-grid
-          gridTemplateColumns="130px 120px 120px 140px 100px"
+ {/* gridTemplateColumns="@container (inline-size > 900px) 346px 1fr, 1fr" */}
+        <s-query-container>
+          <s-grid
+          gridTemplateColumns="@container (inline-size > 600px) 130px 120px 120px 140px 100px, 1fr 1fr"
           gap="base"
           alignItems="center"
           justifyContent="start"
@@ -164,6 +166,7 @@ export default function StatusTrack({ status }) {
             </div>
           )} */}
         </s-grid>
+        </s-query-container>
       </div>
     </>
   );

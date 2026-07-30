@@ -21,6 +21,23 @@ export default function SettingsRoot() {
 
   return (
     <>
+    <style>
+      {
+        `
+        .review_requsts_top_bar{
+          position: sticky;
+          top: 40px;
+        }
+
+        @media (max-width: 620px) {
+          .review_requsts_top_bar {
+            position: relative;
+            top: 0;
+          }
+        }
+        `
+      }
+    </style>
       <div
         style={{
           maxWidth: "1200px",
@@ -35,11 +52,8 @@ export default function SettingsRoot() {
             alignItems="start"
           >
             {/* Start---- Settings Menu */}
-            <div
-              style={{
-                position: "sticky",
-                top: "40px",
-              }}
+            <div className ="review_requsts_top_bar"
+              
             >
               <s-section>
                 <s-heading>Request reviews</s-heading>

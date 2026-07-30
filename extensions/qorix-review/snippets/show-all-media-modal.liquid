@@ -24,7 +24,6 @@
                 <img
                   :src="attachment.url"
                   alt="Review media"
-                  loading="lazy"
                   width=""
                   height=""
                 >
@@ -32,9 +31,11 @@
 
               <template x-if="attachment.type === 'VIDEO'">
                 <video
-                  class="quickreview-media__img"
-                  :src="attachment.url"
+                  class="qorix-qr-media-img"
+                  :src="attachment.url + '#t=0.001'"
                   preload="metadata"
+                  muted
+                  playsinline
                 ></video>
               </template>
             </div>
