@@ -70,9 +70,7 @@
   data-section="qorix-quick-review-widget"
   customerId="{{ customer.id }}"
   customerEmail="{{ customer.email }}"
-  {% comment %} xx="{{ product.metafields.reviews.rating }} - {{ product.metafields.reviews.rating_count.value }}" {% endcomment %}
   id="quick-review"
-  {% comment %} x-data="quickReviewWidget()" {% endcomment %}
   x-data="ReviewWidget()"
   x-init="initUploadSettings($el); productInit($el.dataset.product,$el.dataset.sort,$el.dataset.limit)"
   data-customer-id="{{ customer.id }}"
@@ -101,15 +99,12 @@
       block: block,
       quick_review_metafield: quick_review_metafield
     %}
-
     {% if show_bar %}
       {% render 'quickreview-rating-bar', product: product, block: block %}
     {% endif %}
-
     {% if show_media %}
       {% render 'quickreview-media-slider', product: product, block: block %}
     {% endif %}
-
     {% render 'single-step-form',
       quick_review_metafield: quick_review_metafield,
       allow_photo: allow_photo,
@@ -118,32 +113,15 @@
     %}
   </div>
   {% render 'lightbox' %}
-
   {% render 'quickreview-reviews', quick_review_metafield: quick_review_metafield %}
 </div>
 <script src="{{ 'swiper-bundle.min.js' | asset_url }}" defer></script>
 <script src="{{ 'quickreview.js' | asset_url }}" defer></script>
-{% comment %} <script src="{{ 'review.js' | asset_url }}" defer></script> {% endcomment %}
-{% comment %} <script src="{{ 'alpine.js' | asset_url }}" defer></script> {% endcomment %}
-
 {% schema %}
 {
   "name": "Quick Review",
   "target": "section",
-  "settings": [
-    {
-      "type": "checkbox",
-      "id": "show_rating_bar",
-      "label": "Show rating breakdown bar",
-      "default": true
-    },
-    {
-      "type": "checkbox",
-      "id": "show_media_slider",
-      "label": "Show reviews with media",
-      "default": true
-    }
-  ],
+  "settings": [],
   "enabled_on": {
     "templates": ["product"]
   }

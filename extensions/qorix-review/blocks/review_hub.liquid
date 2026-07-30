@@ -16,7 +16,7 @@
     --filter-chip-color: {{ review_hub_metafield.filterChipColor | default: '#F2F2F2' }};
   }
 </style>
-{% comment %} {% render 'custom-css', css: review_hub_metafield.advanceCss %} {% endcomment %}
+
 <div
   class="qr-review-hub"
   data-section="qorix-review-hub"
@@ -58,9 +58,6 @@
   </div>
   {% render 'lightbox' %}
 </div>
-
-{% comment %} <script src="{{ 'review.js' | asset_url }}" defer></script> {% endcomment %}
-{% comment %} <script src="{{ 'alpine.js' | asset_url }}" defer></script> {% endcomment %}
 
 {% schema %}
 {

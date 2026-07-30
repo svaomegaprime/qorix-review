@@ -16,64 +16,6 @@
     --badge-color: {{ video_stack_metafield.badgeColor | default: '#34C759' }};
     --overlay-tint: {{ video_stack_metafield.overlayTintColor | default: '#1A1A1A' }};
   }
-  [data-section="qorix-review-video-stack-widget"] .qorix-review-video-stack-dot {
-    width: 10px !important;
-    height: 10px !important;
-    border: 0 !important;
-    border-radius: 50% !important;
-    background-color: var(--active-dot-color, #34C759) !important;
-    opacity: 0.25 !important;
-    cursor: pointer !important;
-    padding: 0 !important;
-    margin: 0 4px !important;
-    display: inline-block !important;
-    transition: all 0.3s ease !important;
-  }
-  [data-section="qorix-review-video-stack-widget"] .qorix-review-video-stack-dot.active {
-    width: 28px !important;
-    height: 10px !important;
-    border-radius: 99px !important;
-    opacity: 1 !important;
-    background-color: var(--active-dot-color, #34C759) !important;
-  }
-  [data-section="qorix-review-video-stack-widget"] .qorix-review-video-stack-card {
-    position: relative !important;
-    overflow: hidden !important;
-    transform-style: preserve-3d !important;
-  }
-  [data-section="qorix-review-video-stack-widget"] .qorix-review-video-stack-bg {
-    position: absolute !important;
-    top: 0 !important;
-    left: 0 !important;
-    width: 100% !important;
-    height: 100% !important;
-    object-fit: cover !important;
-    z-index: 1 !important;
-    transform: translateZ(0) !important;
-  }
-  [data-section="qorix-review-video-stack-widget"] .qorix-review-video-stack-info {
-    position: absolute !important;
-    bottom: 0 !important;
-    left: 0 !important;
-    right: 0 !important;
-    width: 100% !important;
-    box-sizing: border-box !important;
-    padding: 107px 16px 20px 16px !important;
-    display: flex !important;
-    flex-direction: column !important;
-    gap: 8px !important;
-    z-index: 999 !important;
-    transform: translateZ(20px) !important;
-    background-image: linear-gradient(
-      180deg,
-      rgba(0, 0, 0, 0) 30%,
-      {{ video_stack_metafield.overlayTintColor | default: '#1A1A1A' }}
-    ) !important;
-  }
-  [data-section="qorix-review-video-stack-widget"] .qorix-review-video-stack-topbar {
-    z-index: 3 !important;
-    transform: translateZ(20px) !important;
-  }
 </style>
 
 <section
@@ -81,9 +23,7 @@
   data-section="qorix-review-video-stack-widget"
   customerId="{{ customer.id }}"
   customerEmail="{{ customer.email }}"
-  {% comment %} xx="{{ product.metafields.reviews.rating }} - {{ product.metafields.reviews.rating_count.value }}" {% endcomment %}
   id="video-stack-widget"
-  {% comment %} x-data="quickReviewWidget()" {% endcomment %}
   x-data="ReviewWidget()"
   x-init="initUploadSettings($el); productInit($el.dataset.product,$el.dataset.sort,$el.dataset.limit)"
   data-customer-id="{{ customer.id }}"
@@ -158,11 +98,8 @@
     {% endif %}
   </div>
 </section>
-
 <script src="{{ 'swiper-bundle.min.js' | asset_url }}" defer></script>
 <script src="{{ 'video-stack-widget.js' | asset_url }}" defer></script>
-{% comment %} <script src="{{ 'review.js' | asset_url }}" defer></script> {% endcomment %}
-{% comment %} <script src="{{ 'alpine.js' | asset_url }}" defer></script> {% endcomment %}
 {% schema %}
 {
   "name": "Qorix Video Stack",
