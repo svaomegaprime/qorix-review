@@ -130,6 +130,8 @@ class ReviewX {
       el.dataset.showRatingBarWithoutRating !== "false";
     this.showMediaWithoutRating = el.dataset.showMediaWithoutRating !== "false";
     this.filterMinStar = el.dataset.filterMinStars || "ALL";
+    this.showName = el.dataset.showName !== "false";
+    this.showEmail = el.dataset.showEmail !== "false";
   }
 
   isAllowedMediaFile(file) {
@@ -366,9 +368,13 @@ class ReviewX {
     const openFromEmail = window.location.search.includes("isOpen=true");
     const orderId = new URLSearchParams(window.location.search).get("orderId");
 
+    const isNameValid = !this.showName || this.form.name.trim();
+    const isEmailValid = !this.showEmail || this.form.email.trim();
+
     if (
       !this.starSelected ||
-      !this.form.name.trim() ||
+      !isNameValid ||
+      !isEmailValid ||
       !this.form.review.trim()
     ) {
       this.isError = true;
@@ -674,7 +680,11 @@ class ReviewX {
 
     Array.from(files).forEach((file) => {
       if (!this.isAllowedMediaFile(file)) {
-        alert(file.name + " is not an allowed file type.");
+        if (this.allowPhotoUpload && this.allowVideoUpload)
+          alert("Only images and videos are allowed");
+        else if (this.allowPhotoUpload) alert("Only images are allowed");
+        else if (this.allowVideoUpload) alert("Only videos are allowed");
+
         return;
       }
 
