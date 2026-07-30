@@ -74,20 +74,21 @@ const STYLES = `
 }
 
 section.qorix-review-reel-real-review-section {
-  margin-top: 70px;
+  margin-top: var(---stack-mobile_margin_top);
   padding:var(---stack-mobile_padding, 0px 40px);
 
 }
 
   .qorix-review-reel-secound_container {
-    width: var(---preview_mobile_width, auto);
+    width: var(---preview_mobile_width, 100%);
     margin: 0 auto;
+  
    
 }
 
 .qorix-review-reel-header{
 
-padding-left:var(---preview_mobile_review_header, 70px);
+padding:20px 20px 0px 20px;
 
 
 }
@@ -95,7 +96,7 @@ padding-left:var(---preview_mobile_review_header, 70px);
 .qorix-review-reel-main_container{
   background-color: #ddd;
   padding: 40px;
-  height : 700px;
+  height : 650px;
   overflow: scroll;
   }
 
@@ -120,7 +121,7 @@ padding-left:var(---preview_mobile_review_header, 70px);
 /* ── Track (replaces Swiper internals) ── */
 [data-section="qorix-review-reel-widget"] .qorix-review-reel-track-wrapper {
   overflow: hidden;
-  padding-bottom: 48px;
+  padding-bottom: 20px;
   user-select: none;
   touch-action: pan-y;
 }
@@ -170,13 +171,55 @@ padding-left:var(---preview_mobile_review_header, 70px);
 [data-section="qorix-review-reel-widget"] .qorix-review-reel-swiper-button-next { right: -28px; }
 [data-section="qorix-review-reel-widget"] .qorix-review-reel-swiper-button-prev { left: -28px; }
 
-/* ── Pagination dots ── */
+/* ── Controls & Pagination ── */
+[data-section="qorix-review-reel-widget"] .qorix-review-reel-controls {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+}
+
 [data-section="qorix-review-reel-widget"] .qorix-review-reel-swiper-pagination {
   display: flex;
   justify-content: center;
   align-items: center;
   gap: 6px;
   margin-top: 24px;
+}
+
+/* Mobile Active Device Override */
+[data-section="qorix-review-reel-widget"].qorix-review-reel-mobile .qorix-review-reel-swiper-wrapper {
+  padding-bottom: 0px;
+}
+
+[data-section="qorix-review-reel-widget"].qorix-review-reel-mobile .qorix-review-reel-controls {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 16px;
+  margin-top: 16px;
+  padding-bottom : 30px;
+  width: 100%;
+}
+
+[data-section="qorix-review-reel-widget"].qorix-review-reel-mobile .qorix-review-reel-swiper-button-next,
+[data-section="qorix-review-reel-widget"].qorix-review-reel-mobile .qorix-review-reel-swiper-button-prev {
+  position: static;
+  transform: none;
+  top: auto;
+  left: auto;
+  right: auto;
+  width: 36px;
+  height: 36px;
+  flex-shrink: 0;
+}
+
+[data-section="qorix-review-reel-widget"].qorix-review-reel-mobile .qorix-review-reel-swiper-pagination {
+  position: static;
+  margin-top: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
 }
 
 [data-section="qorix-review-reel-widget"] .qorix-review-reel-pagination-bullet {
@@ -327,6 +370,12 @@ padding-left:var(---preview_mobile_review_header, 70px);
     width: var(---stack-mobile_width, 50%);
     margin: 0 auto;
 }
+    .qorix-review-reel-main_container{
+
+  height : 600px;
+
+  }
+
 }
 
 @media (max-width: 1030px) {
@@ -334,6 +383,15 @@ padding-left:var(---preview_mobile_review_header, 70px);
     padding: 60px 24px;
     gap: 40px;
   }
+  
+  section.qorix-review-reel-real-review-section {
+  margin-top: 10px;
+  
+
+}
+  .qorix-review-reel-controls {
+    padding-bottom: 30px;
+}
 
     .qorix-review-reel-secound_container {
     width: var(---stack-mobile_width_1024_device, 50%);
@@ -350,8 +408,38 @@ padding-left:var(---preview_mobile_review_header, 70px);
   }
 
     
-  [data-section="qorix-review-reel-widget"] .qorix-review-reel-swiper-button-next { right: -6px; }
-  [data-section="qorix-review-reel-widget"] .qorix-review-reel-swiper-button-prev { left:  -6px; }
+  [data-section="qorix-review-reel-widget"] .qorix-review-reel-swiper-wrapper {
+    padding-bottom: 0px;
+  }
+
+  [data-section="qorix-review-reel-widget"] .qorix-review-reel-controls {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 16px;
+    margin-top: 16px;
+    width: 100%;
+  }
+
+  [data-section="qorix-review-reel-widget"] .qorix-review-reel-swiper-button-next,
+  [data-section="qorix-review-reel-widget"] .qorix-review-reel-swiper-button-prev {
+    position: static;
+    transform: none;
+    top: auto;
+    left: auto;
+    right: auto;
+    width: 36px;
+    height: 36px;
+    flex-shrink: 0;
+  }
+
+  [data-section="qorix-review-reel-widget"] .qorix-review-reel-swiper-pagination {
+    position: static;
+    margin-top: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
 }
 
 @media (max-width: 900px){
@@ -374,7 +462,7 @@ padding-left:var(---preview_mobile_review_header, 70px);
   }
 
 .qorix-review-reel-main_container{
-  height : 500px;
+  height : 450px;
   padding: 12px;
   }
 
@@ -453,7 +541,7 @@ function ChevronLeftSvg() {
 // ─── ReviewCard ───────────────────────────────────────────────────────────────
 function ReviewCard({ review, settings }) {
   const [videoActive, setVideoActive] = useState(false);
-const { showReviewerName, showVerifiedBadge, showProductName, showReviewDate,showReviewImage,startColor } = settings || {};
+  const { showReviewerName, showVerifiedBadge, showProductName, showReviewDate, showReviewImage, startColor } = settings || {};
   function handlePlay(e) {
     e.stopPropagation();
     setVideoActive(true);
@@ -461,7 +549,7 @@ const { showReviewerName, showVerifiedBadge, showProductName, showReviewDate,sho
 
   return (
     <div className="qorix-review-reel-review-card">
-        
+
       <div className="qorix-review-reel-review-card-image" data-media-type={review.mediaType}>
         {videoActive ? (
           <video
@@ -496,19 +584,19 @@ const { showReviewerName, showVerifiedBadge, showProductName, showReviewDate,sho
           <h3 className="qorix-review-reel-review-quote">"{review.quote}"</h3>
         </div>
         <div className="qorix-review-reel-review-user">
-           {showReviewImage && <img className="qorix-review-reel-user-avatar" src={review.avatar} alt={review.name} />}
+          {showReviewImage && <img className="qorix-review-reel-user-avatar" src={review.avatar} alt={review.name} />}
           <div className="qorix-review-reel-user-info">
             <p className="qorix-review-reel-user-name">
-                {showReviewerName && review.name}
+              {showReviewerName && review.name}
               {/* {review.name} */}
 
-             {showVerifiedBadge &&<svg width="16" height="16" viewBox="0 0 24 24" style={{marginLeft:6,verticalAlign:"middle",flexShrink:0}}>
+              {showVerifiedBadge && <svg width="16" height="16" viewBox="0 0 24 24" style={{ marginLeft: 6, verticalAlign: "middle", flexShrink: 0 }}>
                 <circle cx="12" cy="12" r="12" fill={startColor} />
                 <path d="M10 15.17l-3.59-3.59L5 13l5 5 9-9-1.41-1.42z" fill="#fff" />
-              </svg> } 
-              
+              </svg>}
+
             </p>
-            {showReviewDate && <p className="qorix-review-reel-review-date">{review.date}</p>}  
+            {showReviewDate && <p className="qorix-review-reel-review-date">{review.date}</p>}
           </div>
         </div>
       </div>
@@ -517,7 +605,7 @@ const { showReviewerName, showVerifiedBadge, showProductName, showReviewDate,sho
 }
 
 // ─── Main component ───────────────────────────────────────────────────────────
-export default function ReviewReelWidget({ settings,activeDevice }) {
+export default function ReviewReelWidget({ settings, activeDevice }) {
   const config = {
     ...CAROUSEL_CONFIG,
     ...settings,
@@ -529,7 +617,7 @@ export default function ReviewReelWidget({ settings,activeDevice }) {
 
 
   const slidesPerView = useSlideCount(activeDevice === "mobile" ? 1 : config.cardsVisible);
- const { showNavigationDots,showArrowControls } = settings || {};
+  const { showNavigationDots, showArrowControls } = settings || {};
   const slides = useMemo(() => REVIEWS, []);
 
   const extSlides = useMemo(() => {
@@ -761,108 +849,112 @@ export default function ReviewReelWidget({ settings,activeDevice }) {
   return (
     <>
       <style>{STYLES}</style>
-      <div className="qorix-review-reel-main_container"   
-       style={{
-        position: "relative",
+      <div className="qorix-review-reel-main_container"
+        style={{
+          position: "relative",
           "--activedotted_color": settings?.activeDotColor || "#008923",
           "--card_background": settings?.cardBackgorud || "#fff",
           "--card_text_color": settings?.cardTextColor || "var(---color-text-primary)",
-     
-          "---preview_mobile_width": activeDevice === "mobile" ? "35%" : "auto",
-            "---preview_mobile_review_header": activeDevice === "mobile" ? "20px" : "70px",
-            "---stack-mobile_padding": activeDevice === "mobile" ? "0px 40px" : "0px",
-               "---stack-mobile_width_1024_device": activeDevice === "mobile" ? "90%" : "70%px",
+
+          "---preview_mobile_width": activeDevice === "mobile" ? "375px" : "100%",
+          "---preview_mobile_review_header": activeDevice === "mobile" ? "20px" : "70px",
+          "---stack-mobile_padding": activeDevice === "mobile" ? "0px 10px 0px 10px" : "0px",
+          "---stack-mobile_width_1024_device": activeDevice === "mobile" ? "90%" : "100%",
+          "---stack-mobile_width": activeDevice === "mobile" ? "40%" : "100%",
+          "---stack-mobile_margin_top": activeDevice === "mobile" ? "40px" : "60px",
         }}
-      
-      
+
+
       >
         {!imagesReady && (
           <div className="qr-review-reel-loader">
             <div className="qr-review-reel-spinner" />
           </div>
         )}
-      <div className="qorix-review-reel-secound_container" style={{ opacity: imagesReady ? 1 : 0, transition: "opacity 0.4s ease", backgroundColor: "#fff" }}>
+        <div className="qorix-review-reel-secound_container" style={{ opacity: imagesReady ? 1 : 0, transition: "opacity 0.4s ease", backgroundColor: "#fff" }}>
 
 
-       <br></br>
-       <br></br>
           <br></br>
-      <div className="qorix-review-reel-header"><ReaviewHeader settings={settings} /> 
- </div>
-
-   
-      <section
-        data-section="qorix-review-reel-widget"
-        className="qorix-review-reel-real-review-section"
-      >
-        <div className="qorix-review-reel-swiper-wrapper">
-          
-          {/* ── Slide track ── */}
-          <div
-            ref={wrapperRef}
-            className="qorix-review-reel-track-wrapper"
-            onTouchStart={handleTouchStart}
-            onTouchMove={handleTouchMove}
-            onTouchEnd={handleTouchEnd}
-            onClick={handleClickGuard}
-            onMouseEnter={() => { isHoveringRef.current = true; clearInterval(autoplayRef.current); }}
-            onMouseLeave={() => { isHoveringRef.current = false; setAutoplayKey((k) => k + 1); }}
-          >
-            <div
-              ref={trackRef}
-              className="qorix-review-reel-track"
-              onTransitionEnd={handleTransitionEnd}
-            >
-              {extSlides.map((review, i) => (
-                <div
-                  key={`${review.id}-${i}`}
-                  className="qorix-review-reel-slide"
-                  style={{ width: slideWidth || "auto" }}
-                >
-                  <ReviewCard review={review}  settings={settings}/>
-                </div>
-              ))}
-            </div>
+          <br></br>
+          <br></br>
+          <div className="qorix-review-reel-header"><ReaviewHeader settings={settings} />
           </div>
 
-          {/* ── Pagination dots ── */}
-          {showNavigationDots && slides.length > 0 && (
-            <div className="qorix-review-reel-swiper-pagination">
-              {slides.map((_, i) => (
-                <button
-                  key={i}
-                  className={`qorix-review-reel-pagination-bullet${i === realIndex ? " active" : ""}`}
-                  aria-label={`Go to slide ${i + 1}`}
-                  onClick={() => goToSlide(i)}
-                />
-              ))}
-            </div>
-          )}
 
-          {/* ── Arrow buttons ── */}
-          {showArrowControls && (
-            <>
-              <button
-                className="qorix-review-reel-swiper-button-next"
-                aria-label="Next slide"
-                onClick={handleUserNext}
+          <section
+            data-section="qorix-review-reel-widget"
+            className={`qorix-review-reel-real-review-section ${activeDevice === "mobile" ? "qorix-review-reel-mobile" : ""}`}
+          >
+            <div className="qorix-review-reel-swiper-wrapper">
+
+              {/* ── Slide track ── */}
+              <div
+                ref={wrapperRef}
+                className="qorix-review-reel-track-wrapper"
+                onTouchStart={handleTouchStart}
+                onTouchMove={handleTouchMove}
+                onTouchEnd={handleTouchEnd}
+                onClick={handleClickGuard}
+                onMouseEnter={() => { isHoveringRef.current = true; clearInterval(autoplayRef.current); }}
+                onMouseLeave={() => { isHoveringRef.current = false; setAutoplayKey((k) => k + 1); }}
               >
-                <ChevronRightSvg />
-              </button>
-              <button
-                className="qorix-review-reel-swiper-button-prev"
-                aria-label="Previous slide"
-                onClick={handleUserPrev}
-              >
-                <ChevronLeftSvg />
-              </button>
-            </>
-          )}
+                <div
+                  ref={trackRef}
+                  className="qorix-review-reel-track"
+                  onTransitionEnd={handleTransitionEnd}
+                >
+                  {extSlides.map((review, i) => (
+                    <div
+                      key={`${review.id}-${i}`}
+                      className="qorix-review-reel-slide"
+                      style={{ width: slideWidth || "auto" }}
+                    >
+                      <ReviewCard review={review} settings={settings} />
+                    </div>
+                  ))}
+                </div>
+              </div>
+
+              {/* ── Controls (Pagination & Arrows) ── */}
+              <div className="qorix-review-reel-controls">
+                {showArrowControls && (
+                  <button
+                    className="qorix-review-reel-swiper-button-prev"
+                    aria-label="Previous slide"
+                    onClick={handleUserPrev}
+                  >
+                    <ChevronLeftSvg />
+                  </button>
+                )}
+
+                {showNavigationDots && slides.length > 0 && (
+                  <div className="qorix-review-reel-swiper-pagination">
+                    {slides.map((_, i) => (
+                      <button
+                        key={i}
+                        className={`qorix-review-reel-pagination-bullet${i === realIndex ? " active" : ""}`}
+                        aria-label={`Go to slide ${i + 1}`}
+                        onClick={() => goToSlide(i)}
+                      />
+                    ))}
+                  </div>
+                )}
+
+                {showArrowControls && (
+                  <button
+                    className="qorix-review-reel-swiper-button-next"
+                    aria-label="Next slide"
+                    onClick={handleUserNext}
+                  >
+                    <ChevronRightSvg />
+                  </button>
+                )}
+              </div>
+
+            </div>
+          </section>
 
         </div>
-      </section>
-
-      </div>
       </div>
     </>
   );
