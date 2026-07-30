@@ -486,6 +486,7 @@ async function getReview(request, session, admin) {
     // Base where — unfiltered, used for ratingCounts and allAttachments
     const baseWhere = {
       storeId: id,
+      status: "PUBLISHED",
       ...(productId ? { productId } : {}),
     };
 

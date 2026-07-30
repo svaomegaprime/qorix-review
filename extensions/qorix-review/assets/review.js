@@ -43,33 +43,33 @@ class ReviewX {
     this.dataPostLoading = false;
     this.loadingText = "";
 
-    this.reviews = [
-      {
-        id: 1,
-        rating: 4,
-        reviewerName: "Abdur Razzak",
-        avatar: "https://i.ibb.co.com/7PwsYSL/raju.jpg",
-        createdAt: null,
-        productTitle: "Hydrating Eye Cream",
-        body: "Good results, noticed a difference in about a week. Fast shipping too.",
-        attachments: [
-          {
-            type: "IMAGE",
-            url: "https://images.unsplash.com/photo-1556228578-8c89e6adf883?w=200",
-          },
-          {
-            type: "IMAGE",
-            url: "https://images.unsplash.com/photo-1608248543803-ba4f8c70ae0b?w=200",
-          },
-          {
-            type: "VIDEO",
-            url: "https://www.w3schools.com/html/mov_bbb.mp4",
-          },
-        ],
-        isVerified: true,
-      },
-    ];
-
+    // this.reviews = [
+    //   {
+    //     id: 1,
+    //     rating: 4,
+    //     reviewerName: "Abdur Razzak",
+    //     avatar: "https://i.ibb.co.com/7PwsYSL/raju.jpg",
+    //     createdAt: null,
+    //     productTitle: "Hydrating Eye Cream",
+    //     body: "Good results, noticed a difference in about a week. Fast shipping too.",
+    //     attachments: [
+    //       {
+    //         type: "IMAGE",
+    //         url: "https://images.unsplash.com/photo-1556228578-8c89e6adf883?w=200",
+    //       },
+    //       {
+    //         type: "IMAGE",
+    //         url: "https://images.unsplash.com/photo-1608248543803-ba4f8c70ae0b?w=200",
+    //       },
+    //       {
+    //         type: "VIDEO",
+    //         url: "https://www.w3schools.com/html/mov_bbb.mp4",
+    //       },
+    //     ],
+    //     isVerified: true,
+    //   },
+    // ];
+    this.reviews = [];
     this.currentPage = 1;
     this.limit = 10;
     this.baseLimit = 10;
@@ -85,6 +85,8 @@ class ReviewX {
     this.$refs = this.$refs || {};
     this.attachments = [];
     this.showFirst = "";
+    this.showRatingBarWithoutRating = true;
+    this.showMediaWithoutRating = true;
   }
 
   reinitSwipers() {
@@ -124,6 +126,8 @@ class ReviewX {
     this.customerEmail =
       el.dataset.customerEmail || el.getAttribute("customerEmail") || "";
     this.showFirst = el.dataset.showFirst || el.getAttribute("showFirst") || "";
+    this.showRatingBarWithoutRating = el.dataset.showRatingBarWithoutRating !== "false";
+    this.showMediaWithoutRating = el.dataset.showMediaWithoutRating !== "false";
   }
 
   isAllowedMediaFile(file) {
@@ -488,7 +492,7 @@ class ReviewX {
       // Add new review to the top of the list
       this.reviews = [this.withHelpfulState(result.data), ...this.reviews];
       this.totalReviews++;
-      
+
       // Update average rating
       const newRating =
         (this.averageRating * (this.totalReviews - 1) + this.starSelected) /
@@ -497,11 +501,16 @@ class ReviewX {
 
       // Update star count distribution
       if (this.starSelected >= 1 && this.starSelected <= 5) {
-        this.starCount[this.starSelected] = (this.starCount[this.starSelected] || 0) + 1;
+        this.starCount[this.starSelected] =
+          (this.starCount[this.starSelected] || 0) + 1;
       }
 
       // Update global attachments gallery
-      if (result.data && result.data.attachments && result.data.attachments.length > 0) {
+      if (
+        result.data &&
+        result.data.attachments &&
+        result.data.attachments.length > 0
+      ) {
         this.attachments = [...result.data.attachments, ...this.attachments];
       }
 

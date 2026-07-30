@@ -50,6 +50,8 @@ const DEFAULT_QUICK_REVIEW_STATE = {
   isShowStarDistribution: true,
   isShowMediaStrip: true,
   isShowReviewCount: true,
+  isShowRatingBarWithoutRating: true,
+  isShowMediaWithoutRating: true,
   writeReviewButtonText: "Write a review",
   showHelfullButton: true,
   defaultSort: "MOST_RECENT",
@@ -128,6 +130,10 @@ const buildQuickReviewState = (data) => {
       data.isShowMediaStrip ?? DEFAULT_QUICK_REVIEW_STATE.isShowMediaStrip,
     isShowReviewCount:
       data.isShowReviewCount ?? DEFAULT_QUICK_REVIEW_STATE.isShowReviewCount,
+    isShowRatingBarWithoutRating:
+      data.isShowRatingBarWithoutRating ?? DEFAULT_QUICK_REVIEW_STATE.isShowRatingBarWithoutRating,
+    isShowMediaWithoutRating:
+      data.isShowMediaWithoutRating ?? DEFAULT_QUICK_REVIEW_STATE.isShowMediaWithoutRating,
     writeReviewButtonText:
       data.writeReviewButtonText ?? DEFAULT_QUICK_REVIEW_STATE.writeReviewButtonText
     ,
@@ -272,6 +278,8 @@ export default function Index(VALUES = {}) {
     isShowReviewDate: quickReview.showReviewDate,
     isShowStarRatingOnCard: quickReview.showStarRatingOnCard,
     isShowHelpfulButton: quickReview.showHelpfulButton,
+    isShowRatingBarWithoutRating: quickReview.isShowRatingBarWithoutRating,
+    isShowMediaWithoutRating: quickReview.isShowMediaWithoutRating,
     writeReviewButtonText: quickReview.writeReviewButtonText,
     reviewPerPage: Number(quickReview.reviewPerPage),
     defaultSort: quickReview.defaultSort,
@@ -836,6 +844,16 @@ export default function Index(VALUES = {}) {
                             label="Show helpful button"
                             checked={quickReview.showHelpfulButton || undefined}
                             onchange={handleSwitch("showHelpfulButton")}
+                          />
+                          <s-switch
+                            label="Show rating bar without rating"
+                            checked={quickReview.isShowRatingBarWithoutRating || undefined}
+                            onchange={handleSwitch("isShowRatingBarWithoutRating")}
+                          />
+                          <s-switch
+                            label="Show media without rating"
+                            checked={quickReview.isShowMediaWithoutRating || undefined}
+                            onchange={handleSwitch("isShowMediaWithoutRating")}
                           />
 
 

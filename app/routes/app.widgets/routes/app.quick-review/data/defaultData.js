@@ -30,6 +30,8 @@ const DEFAULT_QUICK_REVIEW_STATE = {
   isShowStarDistribution: true,
   isShowMediaStrip: true,
   isShowReviewCount: true,
+  isShowRatingBarWithoutRating: true,
+  isShowMediaWithoutRating: true,
   writeReviewButtonText: "Write a review",
   showHelfullButton: true,
   reviewPerPage: 10,
@@ -50,6 +52,8 @@ export const DEFAULT_DB_FORMATED_DATA = {
   isShowStarDistribution: DEFAULT_QUICK_REVIEW_STATE.isShowStarDistribution,
   isShowMediaStrip: DEFAULT_QUICK_REVIEW_STATE.isShowMediaStrip,
   isShowReviewCount: DEFAULT_QUICK_REVIEW_STATE.isShowReviewCount,
+  isShowRatingBarWithoutRating: DEFAULT_QUICK_REVIEW_STATE.isShowRatingBarWithoutRating,
+  isShowMediaWithoutRating: DEFAULT_QUICK_REVIEW_STATE.isShowMediaWithoutRating,
   showHelfullButton: DEFAULT_QUICK_REVIEW_STATE.showHelfullButton,
   // ---success-----
   successMessageTitle: DEFAULT_QUICK_REVIEW_STATE.successMessageTitle,

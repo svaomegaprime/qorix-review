@@ -1,6 +1,6 @@
 {{ 'quickreview-media-slider.css' | asset_url | stylesheet_tag }}
 
-<div class="quickreview-media">
+<div x-show="reviews.length > 0 ? true : showMediaWithoutRating" class="quickreview-media">
   <div class="quickreview-media__header">
     <span class="quickreview-media__title">Reviews with media</span>
     <p class="quickreview-media__see-all" @click="showAllMedia = true">See all media</p>
