@@ -9,9 +9,9 @@ const DEFAULT_ACTIVE_ITEM = "item1";
 export default function SetupGuide({ shop = "", apiKey = "", isAppEnabled = false, isQuickReviewInstalled = false, isEmailConfigured = false }) {
     const [isActivated, setIsActivated] = useState(DEFAULT_ACTIVE_ITEM);
     const [verifyingStep, setVerifyingStep] = useState(null);
-    const [wasVerifying, setWasVerifying] = useState(false);
+    const [showToastForStep, setShowToastForStep] = useState(null);
     const revalidator = useRevalidator();
-    const isVerifying = revalidator.state === "loading";
+    const isVerifying = revalidator.state === "loading" || verifyingStep !== null;
 
     useEffect(() => {
         if (typeof window !== "undefined") {
@@ -48,27 +48,29 @@ export default function SetupGuide({ shop = "", apiKey = "", isAppEnabled = fals
     const handleVerifyInstallation = (step) => {
         setVerifyingStep(step);
         revalidator.revalidate();
+        
+        setTimeout(() => {
+            setVerifyingStep(null);
+            setShowToastForStep(step);
+        }, 1000);
     };
 
     useEffect(() => {
-        if (isVerifying) {
-            setWasVerifying(true);
-        } else if (!isVerifying && wasVerifying && verifyingStep !== null) {
+        if (showToastForStep !== null) {
             if (typeof shopify !== "undefined" && shopify.toast) {
-                if (verifyingStep === 1 && !isAppEnabled) {
+                if (showToastForStep === 1 && !isAppEnabled) {
                     shopify.toast.show("Please enable app embed first", { isError: true });
-                } else if (verifyingStep === 2 && (!isAppEnabled || !isQuickReviewInstalled)) {
+                } else if (showToastForStep === 2 && (!isAppEnabled || !isQuickReviewInstalled)) {
                     shopify.toast.show(!isAppEnabled ? "Please enable app embed first" : "Please install Quick Review widget from the Widgets page", { isError: true });
-                } else if (verifyingStep === 3 && !isEmailConfigured) {
+                } else if (showToastForStep === 3 && !isEmailConfigured) {
                     shopify.toast.show("Please fill up your email settings (SMTP User, Password, Port, Host)", { isError: true });
                 } else {
                     shopify.toast.show("Verified successfully! 🎉");
                 }
             }
-            setVerifyingStep(null);
-            setWasVerifying(false);
+            setShowToastForStep(null);
         }
-    }, [isVerifying, wasVerifying, verifyingStep, isAppEnabled, isQuickReviewInstalled, isEmailConfigured]);
+    }, [showToastForStep, isAppEnabled, isQuickReviewInstalled, isEmailConfigured]);
 
     const isStep2Done = isAppEnabled && isQuickReviewInstalled;
     const isStep3Done = isEmailConfigured;
