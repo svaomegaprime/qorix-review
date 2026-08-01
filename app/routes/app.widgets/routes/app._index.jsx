@@ -1,12 +1,13 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import Text from "../../../components/essentials/elements/Text";
 import Loader from "../../../components/essentials/Loader";
 import TabButton from "../../../components/essentials/TabButton";
 import CustomSection from "../../../components/essentials/CustomSection";
 import WidgetItem from "../components/WidgetItem";
-import { useLoaderData, useNavigation } from "react-router";
+import { useLoaderData, useNavigation, useRevalidator } from "react-router";
 import { getWidgetsInstalledStatus } from "../../../services/appEmbed.server.js";
 import { requireAdminContext } from "../../../services/adminContext.server.js";
+
 
 export async function loader({ request }) {
     try {
@@ -99,6 +100,19 @@ const WIDGETS = [
 
 export default function Widegets() {
     const { shop = "", apiKey = "", installedWidgetIds = [] } = useLoaderData() || {};
+    const revalidator = useRevalidator();
+
+    useEffect(() => {
+        const handleFocus = () => {
+            if (revalidator.state === "idle") {
+                revalidator.revalidate();
+            }
+        };
+        window.addEventListener("focus", handleFocus);
+        return () => {
+            window.removeEventListener("focus", handleFocus);
+        };
+    }, [revalidator]);
 
     // Start----Default CSR loading state checking for navigation
     const navigation = useNavigation();

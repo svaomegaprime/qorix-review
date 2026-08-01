@@ -8,12 +8,12 @@ import {
 } from "../../../utils/themeEditorLinks";
 
 const WIDGET_BLOCK_MAP = {
-    quick_review: { isEmbed: true, handle: "app_embed", template: "product" },
-    trust_bar: { isEmbed: false, handle: "trust_bar", template: "product" },
-    review_reel: { isEmbed: false, handle: "qorix-review-reel-widget", template: "product" },
-    video_stack: { isEmbed: false, handle: "video-stack-widget", template: "product" },
-    quote_loop: { isEmbed: false, handle: "quoteloop", template: "product" },
-    review_hub: { isEmbed: false, handle: "review_hub", template: "product" },
+    quick_review: { isEmbed: false, handle: "quick_review", template: "index", target: "newAppsSection" },
+    trust_bar: { isEmbed: false, handle: "trust_bar", template: "product", target: "mainSection" },
+    review_reel: { isEmbed: false, handle: "qorix-review-reel-widget", template: "index", target: "newAppsSection" },
+    video_stack: { isEmbed: false, handle: "video-stack-widget", template: "index", target: "newAppsSection" },
+    quote_loop: { isEmbed: false, handle: "quoteloop", template: "index", target: "newAppsSection" },
+    review_hub: { isEmbed: false, handle: "review_hub", template: "index", target: "newAppsSection" },
 };
 
 export default function WidgetItem({
@@ -32,7 +32,7 @@ export default function WidgetItem({
         },
     });
 
-    const config = WIDGET_BLOCK_MAP[widget?.id] || { isEmbed: false, handle: widget?.id, template: "product" };
+    const config = WIDGET_BLOCK_MAP[widget?.id] || { isEmbed: false, handle: widget?.id, template: "index", target: "newAppsSection" };
     const embedUrl = config.isEmbed
         ? getAppEmbedDeepLink({ shop, apiKey, embedHandle: config.handle })
         : getAppBlockDeepLink({
@@ -40,7 +40,7 @@ export default function WidgetItem({
             apiKey,
             blockHandle: config.handle,
             template: config.template,
-            target: "newAppsSection",
+            target: config.target || "newAppsSection",
         });
 
     const isInstalled = status === "INSTALLED";
