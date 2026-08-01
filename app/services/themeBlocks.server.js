@@ -142,7 +142,7 @@ export async function getInstalledWidgets(admin) {
     }
 
     const WIDGET_MAPPINGS = [
-      { id: "quick_review", handles: ["quick_review", "quick-review", "app_embed"] },
+      { id: "quick_review", handles: ["quick_review", "quick-review"] },
       { id: "trust_bar", handles: ["trust_bar", "trust-bar"] },
       { id: "review_reel", handles: ["qorix-review-reel-widget", "review_reel", "review-reel"] },
       { id: "video_stack", handles: ["video-stack-widget", "video_stack", "video-stack"] },
