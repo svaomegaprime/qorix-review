@@ -19,7 +19,7 @@ import {
 } from "./routes/app.settings/data/defaultData";
 
 import { DEFAULT_QUOTE_LOOP_SETTINGS } from "./routes/app.widgets/routes/app.quote-loop/data/quoteReviewDefault";
-import { DEFAULT_VIDEO_STACK_SETTINGS } from "./routes/app.widgets/routes/app.video-stack/data/videoStackDefaultData";
+import { DEFAULT_VALUES_VIDEO_STACK } from "./routes/app.widgets/routes/app.video-stack/data/videoStackDefaultData";
 import { DEFAULT_VALUES_REVIEW_REEL } from "./routes/app.widgets/routes/app.review-reel/component/data/reviewRealDefaultData";
 import { DEFAULT_DB_FORMATED_DATA } from "./routes/app.widgets/routes/app.quick-review/data/defaultData";
 import { setAppMetafield } from "./utils/appMetafields.server";
@@ -200,7 +200,7 @@ const shopify = shopifyApp({
               },
               update: {},
               create: {
-                ...DEFAULT_VIDEO_STACK_SETTINGS,
+                ...DEFAULT_VALUES_VIDEO_STACK,
                 storeId: shopData.id,
               },
             },
@@ -287,7 +287,7 @@ const shopify = shopifyApp({
         //   },
         //   update: {},
         //   create: {
-        //     ...DEFAULT_VIDEO_STACK_SETTINGS,
+        //     ...DEFAULT_VALUES_VIDEO_STACK,
         //     storeId: shopData.id,
         //   },
         // });
