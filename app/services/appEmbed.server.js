@@ -1,5 +1,5 @@
 /**
- * Server-side service to check whether an App Embed block is enabled on the published main theme.
+ * Server-side service to check whether an App Embed block or App Blocks are enabled on the published main theme.
  */
 
 /**
@@ -43,11 +43,11 @@ export async function getMainThemeId(admin) {
 }
 
 /**
- * Safely parses theme settings_data.json string.
+ * Safely parses theme settings/template JSON string.
  * Tries direct JSON parsing first to preserve URLs with "https://", 
  * falling back to comment-stripping if needed.
  * 
- * @param {string} jsonString - Raw settings_data.json string
+ * @param {string} jsonString - Raw JSON string
  * @returns {Object|null} Parsed JSON object or null
  */
 function parseThemeSettings(jsonString) {
@@ -149,14 +149,11 @@ function findEmbedBlock(settings, appHandle = "app_embed") {
   if (!settings) return null;
 
   const allBlocks = findAllBlocks(settings);
-  console.log(`[AppEmbed Check] Total blocks found in theme settings: ${allBlocks.length}`);
 
-  // Filter blocks specifically for qorix-review app
   const matchingBlocks = allBlocks.filter((block) => {
     if (!block || typeof block?.type !== "string") return false;
     const typeLower = block.type.toLowerCase();
     
-    // Ignore old/other apps like qorix-popup
     if (typeLower.includes("qorix-popup") || typeLower.includes("qorix_popup")) {
       return false;
     }
@@ -172,13 +169,9 @@ function findEmbedBlock(settings, appHandle = "app_embed") {
   });
 
   if (matchingBlocks.length === 0) {
-    console.log("[AppEmbed Check] Could not find any block with type matching qorix-review.");
     return null;
   }
 
-  console.log("[AppEmbed Check] Matching blocks for qorix-review:", JSON.stringify(matchingBlocks));
-
-  // If ANY matching block is enabled (!disabled), return ENABLED!
   const enabledBlock = matchingBlocks.find((b) => b.disabled !== true);
   return enabledBlock ? "ENABLED" : "DISABLED";
 }
@@ -191,21 +184,67 @@ function findEmbedBlock(settings, appHandle = "app_embed") {
  * @returns {Promise<boolean>} True if enabled, false otherwise
  */
 export async function checkAppEmbedEnabled(admin, appHandle = "app_embed") {
-  if (!admin) {
-    console.log("[AppEmbed Check] No admin context provided");
+  if (!admin) return false;
+  try {
+    const themeId = await getMainThemeId(admin);
+    if (!themeId) return false;
+
+    const settings = await getThemeSettings(admin, themeId);
+    if (!settings) return false;
+
+    const status = findEmbedBlock(settings, appHandle);
+    return status === "ENABLED";
+  } catch (error) {
+    console.error("[AppEmbed Service] Error checking app embed:", error);
     return false;
   }
+}
 
-  const themeId = await getMainThemeId(admin);
-  console.log("[AppEmbed Check] Main Theme ID:", themeId);
-  if (!themeId) return false;
+/**
+ * Checks which of all 6 widgets are currently installed/enabled in the merchant's live theme.
+ * 
+ * @param {Object} admin - Shopify Admin API context
+ * @returns {Promise<string[]>} Array of installed widget IDs
+ */
+export async function getWidgetsInstalledStatus(admin) {
+  if (!admin) return [];
+  try {
+    const themeId = await getMainThemeId(admin);
+    if (!themeId) return [];
 
-  const settings = await getThemeSettings(admin, themeId);
-  console.log("[AppEmbed Check] Loaded theme settings_data.json:", !!settings);
-  if (!settings) return false;
+    const settings = await getThemeSettings(admin, themeId);
+    if (!settings) return [];
 
-  const status = findEmbedBlock(settings, appHandle);
-  console.log(`[AppEmbed Check] Final Result for '${appHandle}':`, status);
+    const allBlocks = findAllBlocks(settings);
+    const installedWidgetIds = [];
 
-  return status === "ENABLED";
+    const WIDGET_MAPPINGS = [
+      { id: "quick_review", handles: ["app_embed", "app-embed", "quick_review"] },
+      { id: "trust_bar", handles: ["trust_bar", "trust-bar"] },
+      { id: "review_reel", handles: ["qorix-review-reel-widget", "review_reel", "review-reel"] },
+      { id: "video_stack", handles: ["video-stack-widget", "video_stack", "video-stack"] },
+      { id: "quote_loop", handles: ["quoteloop", "quote_loop", "quote-loop"] },
+      { id: "review_hub", handles: ["review_hub", "review-hub"] },
+    ];
+
+    for (const item of WIDGET_MAPPINGS) {
+      const foundBlock = allBlocks.find((block) => {
+        if (!block || typeof block?.type !== "string") return false;
+        const typeLower = block.type.toLowerCase();
+        if (typeLower.includes("qorix-popup") || typeLower.includes("qorix_popup")) {
+          return false;
+        }
+        return item.handles.some((handle) => typeLower.includes(handle.toLowerCase()));
+      });
+
+      if (foundBlock && foundBlock.disabled !== true) {
+        installedWidgetIds.push(item.id);
+      }
+    }
+
+    return installedWidgetIds;
+  } catch (error) {
+    console.error("[AppEmbed Service] Error getting widgets status:", error);
+    return [];
+  }
 }

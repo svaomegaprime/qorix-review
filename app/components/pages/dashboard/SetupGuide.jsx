@@ -19,16 +19,14 @@ export default function SetupGuide({ handleUpdate, shop = "", apiKey = "", isApp
         setIsActivated(item);
     };
 
-    const handleEnableAppEmbedClick = () => {
-        const url = getAppEmbedDeepLink({ shop, apiKey, embedHandle: "app_embed" });
-        openThemeEditor(url);
-    };
+
 
     const handleVerifyInstallation = () => {
         revalidator.revalidate();
     };
 
     const completedSteps = (isAppEnabled ? 1 : 0) + (step2Completed ? 1 : 0) + (step3Completed ? 1 : 0);
+    const embedUrl = getAppEmbedDeepLink({ shop, apiKey, embedHandle: "app_embed" });
     
     return (
         <s-section>
@@ -46,7 +44,8 @@ export default function SetupGuide({ handleUpdate, shop = "", apiKey = "", isApp
                         <s-button
                             variant={isAppEnabled ? "secondary" : "primary"}
                             icon="external"
-                            onClick={handleEnableAppEmbedClick}
+                            href={embedUrl}
+                            target="_blank"
                         >
                             {isAppEnabled ? "App Embed Enabled 🟢" : "Enable app embed"}
                         </s-button>
