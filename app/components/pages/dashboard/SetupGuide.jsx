@@ -50,7 +50,7 @@ export default function SetupGuide({ shop = "", apiKey = "", isAppEnabled = fals
     const handleToggleStep2 = () => {
         if (!isAppEnabled) {
             if (typeof shopify !== "undefined" && shopify.toast) {
-                shopify.toast.show("Please enable App Embed first", { isError: true });
+                shopify.toast.show("Please enable app embed first", { isError: true });
             }
             return;
         }
@@ -135,8 +135,8 @@ export default function SetupGuide({ shop = "", apiKey = "", isAppEnabled = fals
                 {/* Step 1 - Enable app embed - End */}
                 {/* Step 2 - Customize widget - Start */}
                 <SetupGuideItem
-                    title="Customize the review widget"
-                    description="Match the widget to your store's look"
+                    title="Enable Quick Review widget"
+                    description="Install the Quick Review widget from the widgets page to display reviews on your products."
                     isActivated={isActivated === "item2"}
                     onToggle={() => handleToggle("item2")}
                     isCompleted={isStep2Done}
