@@ -32,30 +32,40 @@ export default function SetupGuide({ shop = "", apiKey = "", isAppEnabled = fals
     };
 
     const handleToggleStep2 = () => {
-        const nextState = !step2Completed;
-        setStep2Completed(nextState);
-        if (typeof window !== "undefined") {
-            localStorage.setItem("qorix_setup_step2", String(nextState));
+        if (!isAppEnabled) {
+            if (typeof shopify !== "undefined" && shopify.toast) {
+                shopify.toast.show("Please enable App Embed", { isError: true });
+            }
+            return;
         }
-        if (nextState) {
-            setIsActivated("item3");
+
+        if (step2Completed) return;
+
+        setStep2Completed(true);
+        if (typeof window !== "undefined") {
+            localStorage.setItem("qorix_setup_step2", "true");
+        }
+        setIsActivated("item3");
+        if (typeof shopify !== "undefined" && shopify.toast) {
+            shopify.toast.show("Widget customization completed successfully! 🎉");
         }
     };
 
     const handleToggleStep3 = () => {
-        if (!isEmailConfigured && !step3Completed) {
+        if (step3Completed) return;
+
+        if (!isEmailConfigured) {
             if (typeof shopify !== "undefined" && shopify.toast) {
                 shopify.toast.show("Please fill up your email settings (SMTP User, Password, Port, Host)", { isError: true });
             }
             return;
         }
 
-        const nextState = !step3Completed;
-        setStep3Completed(nextState);
+        setStep3Completed(true);
         if (typeof window !== "undefined") {
-            localStorage.setItem("qorix_setup_step3", String(nextState));
+            localStorage.setItem("qorix_setup_step3", "true");
         }
-        if (nextState && typeof shopify !== "undefined" && shopify.toast) {
+        if (typeof shopify !== "undefined" && shopify.toast) {
             shopify.toast.show("Email settings completed successfully! 🎉");
         }
     };
@@ -64,8 +74,9 @@ export default function SetupGuide({ shop = "", apiKey = "", isAppEnabled = fals
         revalidator.revalidate();
     };
 
+    const isStep2Done = isAppEnabled && step2Completed;
     const isStep3Done = isEmailConfigured || step3Completed;
-    const completedSteps = (isAppEnabled ? 1 : 0) + (step2Completed ? 1 : 0) + (isStep3Done ? 1 : 0);
+    const completedSteps = (isAppEnabled ? 1 : 0) + (isStep2Done ? 1 : 0) + (isStep3Done ? 1 : 0);
     const embedUrl = getAppEmbedDeepLink({ shop, apiKey, embedHandle: "app_embed" });
 
     return (
@@ -105,12 +116,12 @@ export default function SetupGuide({ shop = "", apiKey = "", isAppEnabled = fals
                     description="Match the widget to your store's look"
                     isActivated={isActivated === "item2"}
                     onToggle={() => handleToggle("item2")}
-                    isCompleted={step2Completed}
+                    isCompleted={isStep2Done}
                 >
                     <s-grid gridTemplateColumns='auto auto' gap='small' justifyContent='start'>
                         <s-button variant='primary' icon='external' href="/app/widgets">Go to widget settings</s-button>
                         <s-button variant='secondary' onClick={handleToggleStep2}>
-                            {step2Completed ? "Completed ✓" : "Mark as done"}
+                            {isStep2Done ? "Completed ✓" : "Mark as done"}
                         </s-button>
                     </s-grid>
                 </SetupGuideItem>
