@@ -1,32 +1,21 @@
 model TrustBarWidget {
-  id        String   @id @default(uuid()) @db.Uuid
-  storeId   String   @unique
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
-
-  // Colors
-  starColor          String @default("#F59E0B")
-  textColor          String @default("#1A1A1A")
-  verifiedBadgeColor String @default("#088728")
-
-  // Typography
-  fontSize   Int    @default(16)
-  starSize   Int    @default(16)
-  fontWeight String @default("MEDIUM")
-
-  // Contents
-  showAverageRating Boolean @default(true)
-  showReviewCount   Boolean @default(true)
-  showVerifiedBadge Boolean @default(true)
-  reviewSource      String  @default("DEMO_REVIEW_SOURCE")
-
-  // Visibility
-  hideIfNoReviews Boolean @default(true)
-
-  // Custom CSS
-  advanceCss String @default("")
-
-  store Store @relation(fields: [storeId], references: [storeGID], onDelete: Cascade)
+  id                 String   @id @default(uuid()) @db.Uuid
+  storeId            String   @unique
+  createdAt          DateTime @default(now())
+  updatedAt          DateTime @updatedAt
+  starColor          String   @default("#F59E0B")
+  textColor          String   @default("#1A1A1A")
+  verifiedBadgeColor String   @default("#088728")
+  fontSize           Int      @default(16)
+  starSize           Int      @default(16)
+  fontWeight         String   @default("MEDIUM")
+  showAverageRating  Boolean  @default(true)
+  showReviewCount    Boolean  @default(true)
+  showVerifiedBadge  Boolean  @default(true)
+  reviewSource       String   @default("DEMO_REVIEW_SOURCE")
+  hideIfNoReviews    Boolean  @default(true)
+  advanceCss         String   @default("")
+  store              Store    @relation(fields: [storeId], references: [storeGID], onDelete: Cascade)
 }
 
 model QuickReviewWidget {
@@ -69,15 +58,6 @@ model QuickReviewWidget {
   createdAt                    DateTime       @default(now())
   updatedAt                    DateTime       @updatedAt
   store                        Store          @relation(fields: [storeId], references: [storeGID], onDelete: Cascade)
-}
-
-enum FilterMinStars {
-  ALL
-  STAR_1
-  STAR_2
-  STAR_3
-  STAR_4
-  STAR_5
 }
 
 model QuoteLoopWidget {
@@ -177,45 +157,43 @@ model ReviewReelSettings {
 }
 
 model ReviewHubWidget {
-  id String @id @default(uuid()) @db.Uuid
+  id                     String         @id @default(uuid()) @db.Uuid
+  storeId                String         @unique
+  showHeader             Boolean        @default(true)
+  headerStyle            String         @default("center")
+  eyebrowLabel           String         @default("CUSTOMER REVIEWS")
+  heading                String         @default("Reviews from people")
+  subheading             String         @default("Watch and hear what our customers have to say.")
+  reviewStats            String         @default("Show review count & verified badge")
+  showStarDistribution   Boolean        @default(true)
+  showReviewerName       Boolean        @default(true)
+  showReviewTimer        Boolean        @default(true)
+  showVerifiedBadge      Boolean        @default(true)
+  showMediaAsset         Boolean        @default(true)
+  showShareOption        Boolean        @default(true)
+  showAppreciationOption Boolean        @default(true)
+  layout                 String         @default("3")
+  filterSorting          String         @default("FILTER_AND_SORTING")
+  filterMinStar          FilterMinStars @default(ALL)
+  reviewsPerPage         Int            @default(9)
+  starColor              String         @default("#34C759")
+  textColor              String         @default("#1A1A1A")
+  verifiedBadgeColor     String         @default("#1D9E75")
+  cardBackgroundColor    String         @default("#FFFFFF")
+  borderColor            String         @default("#F0F0F0")
+  filterChipColor        String         @default("#108848")
+  filterChipStarColor    String         @default("#FFFFFF")
+  advanceCss             String         @default("")
+  createdAt              DateTime       @default(now())
+  updatedAt              DateTime       @updatedAt
+  store                  Store          @relation(fields: [storeId], references: [storeGID], onDelete: Cascade)
+}
 
-  storeId String @unique
-  store   Store  @relation(fields: [storeId], references: [storeGID], onDelete: Cascade)
-
-  // Header option
-  showHeader   Boolean @default(true)
-  headerStyle  String  @default("center")
-  eyebrowLabel String  @default("CUSTOMER REVIEWS")
-  heading      String  @default("Reviews from people")
-  subheading   String  @default("Watch and hear what our customers have to say.")
-  reviewStats  String  @default("Show review count & verified badge")
-
-  // Display elements
-  showStarDistribution   Boolean @default(true)
-  showReviewerName       Boolean @default(true)
-  showReviewTimer        Boolean @default(true)
-  showVerifiedBadge      Boolean @default(true)
-  showMediaAsset         Boolean @default(true)
-  showShareOption        Boolean @default(true)
-  showAppreciationOption Boolean @default(true)
-
-  // Carousel behavior
-  layout         String @default("3")
-  filterSorting  String @default("FILTER_AND_SORTING")
-  reviewsPerPage Int    @default(9)
-
-  // Colors
-  starColor           String @default("#34C759")
-  textColor           String @default("#1A1A1A")
-  verifiedBadgeColor  String @default("#1D9E75")
-  cardBackgroundColor String @default("#FFFFFF")
-  borderColor         String @default("#F0F0F0")
-  filterChipColor     String @default("#108848")
-  filterChipStarColor String @default("#FFFFFF")
-
-  // Advanced CSS
-  advanceCss String @default("")
-
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
+enum FilterMinStars {
+  ALL
+  STAR_1
+  STAR_2
+  STAR_3
+  STAR_4
+  STAR_5
 }

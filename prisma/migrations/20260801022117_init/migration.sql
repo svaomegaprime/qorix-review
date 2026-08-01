@@ -5,6 +5,9 @@ CREATE TYPE "ReviewCheckStatus" AS ENUM ('SENT', 'OPENED', 'PENDING', 'REVIEWED'
 CREATE TYPE "RequestType" AS ENUM ('AUTOMATIC', 'MANUAL', 'REMINDER');
 
 -- CreateEnum
+CREATE TYPE "FilterMinStars" AS ENUM ('ALL', 'STAR_1', 'STAR_2', 'STAR_3', 'STAR_4', 'STAR_5');
+
+-- CreateEnum
 CREATE TYPE "PlanType" AS ENUM ('FREE', 'BASIC', 'PRO');
 
 -- CreateEnum
@@ -303,11 +306,14 @@ CREATE TABLE "QuickReviewWidget" (
     "isShowStarDistribution" BOOLEAN NOT NULL DEFAULT true,
     "isShowMediaStrip" BOOLEAN NOT NULL DEFAULT true,
     "isShowReviewCount" BOOLEAN NOT NULL DEFAULT true,
+    "isShowRatingBarWithoutRating" BOOLEAN NOT NULL DEFAULT true,
+    "isShowMediaWithoutRating" BOOLEAN NOT NULL DEFAULT true,
     "writeReviewButtonText" TEXT NOT NULL DEFAULT 'Write a review',
     "showHelfullButton" BOOLEAN NOT NULL DEFAULT true,
     "filterAndSorting" TEXT NOT NULL DEFAULT 'FILTER_AND_SORT',
     "reviewPerPage" INTEGER NOT NULL DEFAULT 10,
     "defaultSort" TEXT NOT NULL DEFAULT 'MOST_RECENT',
+    "filterMinStar" "FilterMinStars" NOT NULL DEFAULT 'ALL',
     "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
     "updatedAt" TIMESTAMP(3) NOT NULL,
 
