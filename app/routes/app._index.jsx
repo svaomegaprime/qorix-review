@@ -212,7 +212,12 @@ export default function Index() {
           {/* <s-button variant="secondary" icon="plus">
             Request reviews
           </s-button> */}
-          <s-button variant="primary" icon="store">
+          <s-button
+            variant="primary"
+            icon="store"
+            href={shop ? `https://${shop}` : undefined}
+            target="_blank"
+          >
             View store
           </s-button>
         </s-grid>
