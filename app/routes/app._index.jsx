@@ -17,8 +17,7 @@ import {
 import { sendEmail } from "../utils/sendEmail";
 import { buildReplyEmailData } from "../services/emailPayload.server.js";
 
-import { checkAppEmbedEnabled } from "../services/appEmbed.server.js";
-
+import { checkAppEmbedEnabled, getWidgetsInstalledStatus } from "../services/appEmbed.server.js";
 export async function loader({ request }) {
   try {
     const { admin, session, storeData } = await requireAdminContext(request);
@@ -39,6 +38,8 @@ export async function loader({ request }) {
     });
 
     const isAppEnabled = await checkAppEmbedEnabled(admin);
+    const installedWidgets = await getWidgetsInstalledStatus(admin);
+    const isQuickReviewInstalled = installedWidgets.includes("quick_review");
 
     const storeSettings = await prisma.storeSettings.findFirst({
       where: { storeId: storeData.id },
@@ -60,6 +61,7 @@ export async function loader({ request }) {
       // eslint-disable-next-line no-undef
       apiKey: process.env.SHOPIFY_API_KEY || "1fd61c4448a3e740e2e1b9bc99b9db0d",
       isAppEnabled,
+      isQuickReviewInstalled,
       isEmailConfigured,
     };
   } catch (error) {
@@ -170,7 +172,7 @@ export async function action({ request }) {
 
 export default function Index() {
   const fetcher = useFetcher();
-  const { reviews, pendingOrders, shop = "", apiKey = "", isAppEnabled = false, isEmailConfigured = false } = useLoaderData();
+  const { reviews, pendingOrders, shop = "", apiKey = "", isAppEnabled = false, isQuickReviewInstalled = false, isEmailConfigured = false } = useLoaderData();
   // Start----Default CSR loading state checking for navigation
   const navigation = useNavigation();
   if (navigation.state === "loading") {
@@ -237,7 +239,7 @@ export default function Index() {
         </s-grid>
       </s-stack>
 
-      <SetupGuide shop={shop} apiKey={apiKey} isAppEnabled={isAppEnabled} isEmailConfigured={isEmailConfigured} />
+      <SetupGuide shop={shop} apiKey={apiKey} isAppEnabled={isAppEnabled} isQuickReviewInstalled={isQuickReviewInstalled} isEmailConfigured={isEmailConfigured} />
       <AppEmbedStatus shop={shop} apiKey={apiKey} isAppEnabled={isAppEnabled} />
       <Analytics reviews={reviews} pendingOrders={pendingOrders} />
       <ReviewBreakdown

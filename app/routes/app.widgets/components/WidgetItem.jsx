@@ -8,7 +8,7 @@ import {
 } from "../../../utils/themeEditorLinks";
 
 const WIDGET_BLOCK_MAP = {
-    quick_review: { isEmbed: true, handle: "app_embed", template: "product", target: "newAppsSection" },
+    quick_review: { isEmbed: false, handle: "quick_review", template: "product", target: "newAppsSection" },
     trust_bar: { isEmbed: false, handle: "trust_bar", template: "product", target: "mainSection" },
     review_reel: { isEmbed: false, handle: "qorix-review-reel-widget", template: "index", target: "newAppsSection" },
     video_stack: { isEmbed: false, handle: "video-stack-widget", template: "index", target: "newAppsSection" },

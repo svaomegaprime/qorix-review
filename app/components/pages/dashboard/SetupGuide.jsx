@@ -6,7 +6,7 @@ import { getAppEmbedDeepLink } from "../../../utils/themeEditorLinks";
 
 const DEFAULT_ACTIVE_ITEM = "item1";
 
-export default function SetupGuide({ shop = "", apiKey = "", isAppEnabled = false, isEmailConfigured = false }) {
+export default function SetupGuide({ shop = "", apiKey = "", isAppEnabled = false, isQuickReviewInstalled = false, isEmailConfigured = false }) {
     const [isActivated, setIsActivated] = useState(DEFAULT_ACTIVE_ITEM);
     const [step2Completed, setStep2Completed] = useState(false);
     const [step3Completed, setStep3Completed] = useState(false);
@@ -27,6 +27,22 @@ export default function SetupGuide({ shop = "", apiKey = "", isAppEnabled = fals
         }
     }, [isAppEnabled]);
 
+    useEffect(() => {
+        const handleVisibilityChange = () => {
+            if (document.visibilityState === "visible" && revalidator.state === "idle") {
+                revalidator.revalidate();
+            }
+        };
+
+        document.addEventListener("visibilitychange", handleVisibilityChange);
+        window.addEventListener("focus", handleVisibilityChange);
+
+        return () => {
+            document.removeEventListener("visibilitychange", handleVisibilityChange);
+            window.removeEventListener("focus", handleVisibilityChange);
+        };
+    }, [revalidator]);
+
     const handleToggle = (item) => {
         setIsActivated(item);
     };
@@ -34,7 +50,14 @@ export default function SetupGuide({ shop = "", apiKey = "", isAppEnabled = fals
     const handleToggleStep2 = () => {
         if (!isAppEnabled) {
             if (typeof shopify !== "undefined" && shopify.toast) {
-                shopify.toast.show("Please enable App Embed", { isError: true });
+                shopify.toast.show("Please enable App Embed first", { isError: true });
+            }
+            return;
+        }
+
+        if (!isQuickReviewInstalled) {
+            if (typeof shopify !== "undefined" && shopify.toast) {
+                shopify.toast.show("Please install Quick Review widget from the Widgets page first", { isError: true });
             }
             return;
         }
@@ -74,7 +97,7 @@ export default function SetupGuide({ shop = "", apiKey = "", isAppEnabled = fals
         revalidator.revalidate();
     };
 
-    const isStep2Done = isAppEnabled && step2Completed;
+    const isStep2Done = isAppEnabled && isQuickReviewInstalled && step2Completed;
     const isStep3Done = isEmailConfigured || step3Completed;
     const completedSteps = (isAppEnabled ? 1 : 0) + (isStep2Done ? 1 : 0) + (isStep3Done ? 1 : 0);
     const embedUrl = getAppEmbedDeepLink({ shop, apiKey, embedHandle: "app_embed" });
