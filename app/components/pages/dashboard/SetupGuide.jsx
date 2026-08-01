@@ -67,7 +67,7 @@ export default function SetupGuide({ shop = "", apiKey = "", isAppEnabled = fals
     const isStep3Done = isEmailConfigured || step3Completed;
     const completedSteps = (isAppEnabled ? 1 : 0) + (step2Completed ? 1 : 0) + (isStep3Done ? 1 : 0);
     const embedUrl = getAppEmbedDeepLink({ shop, apiKey, embedHandle: "app_embed" });
-    
+
     return (
         <s-section>
             <s-stack gap="base">
@@ -117,21 +117,21 @@ export default function SetupGuide({ shop = "", apiKey = "", isAppEnabled = fals
                 {/* Step 2 - Customize widget - End */}
                 {/* Step 3 - Add store logo and check email styling - Start */}
                 <SetupGuideItem
-                    title="Add store logo and check email styling"
-                    description="Upload your store logo and preview how your review request emails will look to customers."
+                    title="Configure email settings"
+                    description="Set up your email settings to send review request emails to customers."
                     isActivated={isActivated === "item3"}
                     onToggle={() => handleToggle("item3")}
                     isCompleted={isStep3Done}
                 >
                     <s-grid gridTemplateColumns='auto auto' gap='small' justifyContent='start'>
-                        <s-button variant='primary' icon='external' href="/app/settings">Go to settings</s-button>
+                        <s-button variant='primary' icon='external' href="/app/settings/email-settings">Go to settings</s-button>
                         <s-button variant='secondary' onClick={handleToggleStep3}>
                             {isStep3Done ? "Completed ✓" : "Mark as done"}
                         </s-button>
                     </s-grid>
                 </SetupGuideItem>
                 {/* Step 3 - Add store logo and check email styling - End */}
-                </s-stack>
+            </s-stack>
         </s-section>
     );
 }
