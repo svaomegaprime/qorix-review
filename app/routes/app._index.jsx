@@ -40,6 +40,19 @@ export async function loader({ request }) {
 
     const isAppEnabled = await checkAppEmbedEnabled(admin);
 
+    const storeSettings = await prisma.storeSettings.findFirst({
+      where: { storeId: storeData.id },
+      include: { emailSettings: true },
+    });
+
+    const emailSettings = storeSettings?.emailSettings;
+    const isEmailConfigured = Boolean(
+      String(emailSettings?.smtpUser || "").trim() &&
+      String(emailSettings?.smtpPassword || "").trim() &&
+      emailSettings?.smtpPort &&
+      String(emailSettings?.smtpHost || "").trim()
+    );
+
     return {
       reviews: reviews,
       pendingOrders,
@@ -47,6 +60,7 @@ export async function loader({ request }) {
       // eslint-disable-next-line no-undef
       apiKey: process.env.SHOPIFY_API_KEY || "1fd61c4448a3e740e2e1b9bc99b9db0d",
       isAppEnabled,
+      isEmailConfigured,
     };
   } catch (error) {
     return adminErrorResponse(error);
@@ -156,7 +170,7 @@ export async function action({ request }) {
 
 export default function Index() {
   const fetcher = useFetcher();
-  const { reviews, pendingOrders, shop = "", apiKey = "", isAppEnabled = false } = useLoaderData();
+  const { reviews, pendingOrders, shop = "", apiKey = "", isAppEnabled = false, isEmailConfigured = false } = useLoaderData();
   // Start----Default CSR loading state checking for navigation
   const navigation = useNavigation();
   if (navigation.state === "loading") {
@@ -223,7 +237,7 @@ export default function Index() {
         </s-grid>
       </s-stack>
 
-      <SetupGuide shop={shop} apiKey={apiKey} isAppEnabled={isAppEnabled} />
+      <SetupGuide shop={shop} apiKey={apiKey} isAppEnabled={isAppEnabled} isEmailConfigured={isEmailConfigured} />
       <AppEmbedStatus shop={shop} apiKey={apiKey} isAppEnabled={isAppEnabled} />
       <Analytics reviews={reviews} pendingOrders={pendingOrders} />
       <ReviewBreakdown
