@@ -17,9 +17,11 @@ import {
 import { sendEmail } from "../utils/sendEmail";
 import { buildReplyEmailData } from "../services/emailPayload.server.js";
 
+import { checkAppEmbedEnabled } from "../services/appEmbed.server.js";
+
 export async function loader({ request }) {
   try {
-    const { storeData } = await requireAdminContext(request);
+    const { admin, session, storeData } = await requireAdminContext(request);
     const reviews = await prisma.review.findMany({
       where: {
         storeId: storeData.id,
@@ -36,9 +38,15 @@ export async function loader({ request }) {
       },
     });
 
+    const isAppEnabled = await checkAppEmbedEnabled(admin);
+
     return {
       reviews: reviews,
       pendingOrders,
+      shop: session?.shop || "",
+      // eslint-disable-next-line no-undef
+      apiKey: process.env.SHOPIFY_API_KEY || "1fd61c4448a3e740e2e1b9bc99b9db0d",
+      isAppEnabled,
     };
   } catch (error) {
     return adminErrorResponse(error);
@@ -148,7 +156,7 @@ export async function action({ request }) {
 
 export default function Index() {
   const fetcher = useFetcher();
-  const { reviews, pendingOrders } = useLoaderData();
+  const { reviews, pendingOrders, shop = "", apiKey = "", isAppEnabled = false } = useLoaderData();
   // Start----Default CSR loading state checking for navigation
   const navigation = useNavigation();
   if (navigation.state === "loading") {
@@ -210,14 +218,15 @@ export default function Index() {
         </s-grid>
       </s-stack>
 
-      <SetupGuide />
-      <AppEmbedStatus isAppEnabled={false} />
+      <SetupGuide shop={shop} apiKey={apiKey} isAppEnabled={isAppEnabled} />
+      <AppEmbedStatus shop={shop} apiKey={apiKey} isAppEnabled={isAppEnabled} />
       <Analytics reviews={reviews} pendingOrders={pendingOrders} />
       <ReviewBreakdown
         reviews={reviews}
         handleStatusUpdate={handleStatusUpdate}
         handleReviewDelete={handleReviewDelete}
         handleReviewReply={handleReviewReply}
+        isAppEnabled={isAppEnabled}
       />
       <s-stack paddingBlockStart="base">
         <FAQ />

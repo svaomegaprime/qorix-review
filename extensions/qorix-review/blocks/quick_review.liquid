@@ -43,6 +43,7 @@
     {% comment %}  {% endcomment %}
 
   }
+  [data-qorix-widget] { display: none !important; }
 </style>
 
 {{ 'swiper-bundle.min.css' | asset_url | stylesheet_tag }}
@@ -66,6 +67,7 @@
 {% endif %}
 
 <div
+  data-qorix-widget
   class="qorix-quick-review-widget"
   data-section="qorix-quick-review-widget"
   customerId="{{ customer.id }}"

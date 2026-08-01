@@ -16,9 +16,11 @@
     --badge-color: {{ video_stack_metafield.badgeColor | default: '#34C759' }};
     --overlay-tint: {{ video_stack_metafield.overlayTintColor | default: '#1A1A1A' }};
   }
+  [data-qorix-widget] { display: none !important; }
 </style>
 
 <section
+  data-qorix-widget
   class="qorix-review-video-stack-section"
   data-section="qorix-review-video-stack-widget"
   customerId="{{ customer.id }}"

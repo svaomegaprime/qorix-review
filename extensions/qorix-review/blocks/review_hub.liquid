@@ -15,9 +15,11 @@
     --filter-chio-star-color: {{ review_hub_metafield.filterChipStarColor | default: '#34C759' }};
     --filter-chip-color: {{ review_hub_metafield.filterChipColor | default: '#F2F2F2' }};
   }
+  [data-qorix-widget] { display: none !important; }
 </style>
 
 <div
+  data-qorix-widget
   class="qr-review-hub"
   data-section="qorix-review-hub"
   style="--qr-grid-columns: {{ grid_columns }}; --qr-section-max-width: 100%;"
