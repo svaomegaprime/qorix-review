@@ -1,23 +1,21 @@
-import { useState, useEffect } from "react";
+/* eslint-disable react/prop-types */
+/* eslint-disable no-unused-vars */
+import { useState } from "react";
 import ProgressiveBar from "./elements/ProgressiveBar";
 import SetupGuideItem from "./elements/SetupGuideItem";
 
-const DEFAULT_ACTIVE_ITEM = "item1"; // This must be a string and should match the item name in SetupGuideItem onToggle callback
-const DEFAULT_COMPLETED_STEPS = 0; // This must be a number and between 0 to total steps
-const DEFAULT_VERIFYING_ITEM = ""; // This must be a string and should match the item name in SetupGuideItem onClick callback
+const DEFAULT_ACTIVE_ITEM = "item1";
+const DEFAULT_COMPLETED_STEPS = 0;
+const DEFAULT_VERIFYING_ITEM = "";
 
 export default function SetupGuide({ handleUpdate }) {
-    // State to manage which item is currently activated
     const [isActivated, setIsActivated] = useState(DEFAULT_ACTIVE_ITEM);
-    // State to manage how many steps are completed
     const [completedSteps, setCompletedSteps] = useState(DEFAULT_COMPLETED_STEPS);
-    // State to manage which item is currently verifying
     const [isVerifying, setIsVerifying] = useState(DEFAULT_VERIFYING_ITEM);
 
-    // Function to handle item activation
     const handleToggle = (item) => {
         setIsActivated(item);
-    }
+    };
     
     return (
         <s-section>

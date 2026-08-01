@@ -1,3 +1,4 @@
+/* eslint-disable react/prop-types */
 export default function AppEmbedStatus({ isAppEnabled }) {
     return (
         <s-section>
@@ -14,5 +15,5 @@ export default function AppEmbedStatus({ isAppEnabled }) {
                 </s-stack>
             </s-stack>
         </s-section>
-    )
+    );
 }

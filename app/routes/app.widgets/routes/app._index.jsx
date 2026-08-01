@@ -20,20 +20,20 @@ const TAB_CONFIG = [
         label: "Product page"
     },
     {
-        key: "standalone-page",
-        label: "Standalone page"
-    },
-    {
-        key: "floating",
-        label: "Floating"
-    },
-    {
         key: "review-form",
         label: "Review form"
     }
 ];
 
 const WIDGETS = [
+    {
+        id: "quick_review",
+        name: "QuickReview",
+        description: "A pre-installed, one-click widget that lets customers write a review instantly — no account required. Increases review collection by 40%+.",
+        previewUrl: "/widgets/quick-review.png",
+        editUrl: "/app/widgets/quick-review",
+        types: ["floating", "review-form"]
+    },
     {
         id: "trust_bar",
         name: "TrustBar",
@@ -74,14 +74,7 @@ const WIDGETS = [
         editUrl: "/app/widgets/review-hub",
         types: ["product-page", "standalone-page"]
     },
-    {
-        id: "quick_review",
-        name: "QuickReview",
-        description: "A pre-installed, one-click widget that lets customers write a review instantly — no account required. Increases review collection by 40%+.",
-        previewUrl: "/widgets/quick-review.png",
-        editUrl: "/app/widgets/quick-review",
-        types: ["floating", "review-form"]
-    }
+
 ];
 
 const INSTALLED_WIDGETS = [
@@ -108,7 +101,7 @@ export default function Widegets() {
         setActiveTab(tab);
         if (tab === "all") {
             setFilteredWidgets(WIDGETS);
-        } else if(tab === "installed") {
+        } else if (tab === "installed") {
             const filtered = WIDGETS.filter((widget) => INSTALLED_WIDGETS.includes(widget.id));
             setFilteredWidgets(filtered);
         } else {
@@ -130,7 +123,7 @@ export default function Widegets() {
                 </s-stack>
                 {/* <s-button icon="settings">Request reviews</s-button> */}
 
-            {/* ----------if need to add test-data (live) and real-data (live) functionality then uncomment the below code ---------- */}
+                {/* ----------if need to add test-data (live) and real-data (live) functionality then uncomment the below code ---------- */}
                 {/* <s-select>
                     <s-option>test-data (live)</s-option>
                     <s-option>real-data (live)</s-option>

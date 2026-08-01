@@ -9,9 +9,11 @@
   [data-section="qorix-quoteloop-widget"] {
     --active-dot-color: {{ quote_loop_metafield.activeDotColor | default: quote_loop_metafield.starColor | default: '#34C759' }};
   }
+  [data-qorix-widget] { display: none !important; }
 </style>
 
 <div
+  data-qorix-widget
   class="qr-quoteloop"
   data-section="qorix-quoteloop-widget"
   customerId="{{ customer.id }}"

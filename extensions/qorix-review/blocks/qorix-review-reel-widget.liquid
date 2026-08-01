@@ -16,9 +16,11 @@
     --autoplay-enabled: {% if review_reel_metafield.showAutoPlay != false and review_reel_metafield.showAutoPlay != 'false' %}true{% else %}false{% endif %};
     --autoplay-speed: {{ review_reel_metafield.autoplaySpeed | default: 4 | times: 1000 }};
   }
+  [data-qorix-widget] { display: none !important; }
 </style>
 
 <section
+  data-qorix-widget
   customerId="{{ customer.id }}"
   customerEmail="{{ customer.email }}"
   id="quick-review"

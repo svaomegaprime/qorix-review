@@ -1,5 +1,8 @@
+<style>[data-qorix-widget] { display: none !important; }</style>
 {{ 'trust-bar.css' | asset_url | stylesheet_tag }}
 <div
+  data-qorix-widget
+  class="qorix-inline-widget"
   x-data="
     TrustBar({
       productId: {{ product.id | json }},
