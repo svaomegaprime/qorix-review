@@ -8,24 +8,22 @@ const DEFAULT_ACTIVE_ITEM = "item1";
 
 export default function SetupGuide({ shop = "", apiKey = "", isAppEnabled = false, isQuickReviewInstalled = false, isEmailConfigured = false }) {
     const [isActivated, setIsActivated] = useState(DEFAULT_ACTIVE_ITEM);
-    const [step2Completed, setStep2Completed] = useState(false);
-    const [step3Completed, setStep3Completed] = useState(false);
+    const [verifyingStep, setVerifyingStep] = useState(null);
+    const [wasVerifying, setWasVerifying] = useState(false);
     const revalidator = useRevalidator();
     const isVerifying = revalidator.state === "loading";
 
     useEffect(() => {
         if (typeof window !== "undefined") {
-            const savedStep2 = localStorage.getItem("qorix_setup_step2") === "true";
-            const savedStep3 = localStorage.getItem("qorix_setup_step3") === "true";
-            setStep2Completed(savedStep2);
-            setStep3Completed(savedStep3);
-            if (isAppEnabled && !savedStep2) {
+            if (!isAppEnabled) {
+                setIsActivated("item1");
+            } else if (!isQuickReviewInstalled) {
                 setIsActivated("item2");
-            } else if (isAppEnabled && savedStep2 && !savedStep3) {
+            } else if (!isEmailConfigured) {
                 setIsActivated("item3");
             }
         }
-    }, [isAppEnabled]);
+    }, [isAppEnabled, isQuickReviewInstalled, isEmailConfigured]);
 
     useEffect(() => {
         const handleVisibilityChange = () => {
@@ -47,58 +45,33 @@ export default function SetupGuide({ shop = "", apiKey = "", isAppEnabled = fals
         setIsActivated(item);
     };
 
-    const handleToggleStep2 = () => {
-        if (!isAppEnabled) {
-            if (typeof shopify !== "undefined" && shopify.toast) {
-                shopify.toast.show("Please enable app embed first", { isError: true });
-            }
-            return;
-        }
-
-        if (!isQuickReviewInstalled) {
-            if (typeof shopify !== "undefined" && shopify.toast) {
-                shopify.toast.show("Please install Quick Review widget from the Widgets page first", { isError: true });
-            }
-            return;
-        }
-
-        if (step2Completed) return;
-
-        setStep2Completed(true);
-        if (typeof window !== "undefined") {
-            localStorage.setItem("qorix_setup_step2", "true");
-        }
-        setIsActivated("item3");
-        if (typeof shopify !== "undefined" && shopify.toast) {
-            shopify.toast.show("Widget customization completed successfully! 🎉");
-        }
-    };
-
-    const handleToggleStep3 = () => {
-        if (step3Completed) return;
-
-        if (!isEmailConfigured) {
-            if (typeof shopify !== "undefined" && shopify.toast) {
-                shopify.toast.show("Please fill up your email settings (SMTP User, Password, Port, Host)", { isError: true });
-            }
-            return;
-        }
-
-        setStep3Completed(true);
-        if (typeof window !== "undefined") {
-            localStorage.setItem("qorix_setup_step3", "true");
-        }
-        if (typeof shopify !== "undefined" && shopify.toast) {
-            shopify.toast.show("Email settings completed successfully! 🎉");
-        }
-    };
-
-    const handleVerifyInstallation = () => {
+    const handleVerifyInstallation = (step) => {
+        setVerifyingStep(step);
         revalidator.revalidate();
     };
 
-    const isStep2Done = isAppEnabled && isQuickReviewInstalled && step2Completed;
-    const isStep3Done = isEmailConfigured || step3Completed;
+    useEffect(() => {
+        if (isVerifying) {
+            setWasVerifying(true);
+        } else if (!isVerifying && wasVerifying && verifyingStep !== null) {
+            if (typeof shopify !== "undefined" && shopify.toast) {
+                if (verifyingStep === 1 && !isAppEnabled) {
+                    shopify.toast.show("Please enable app embed first", { isError: true });
+                } else if (verifyingStep === 2 && (!isAppEnabled || !isQuickReviewInstalled)) {
+                    shopify.toast.show(!isAppEnabled ? "Please enable app embed first" : "Please install Quick Review widget from the Widgets page", { isError: true });
+                } else if (verifyingStep === 3 && !isEmailConfigured) {
+                    shopify.toast.show("Please fill up your email settings (SMTP User, Password, Port, Host)", { isError: true });
+                } else {
+                    shopify.toast.show("Verified successfully! 🎉");
+                }
+            }
+            setVerifyingStep(null);
+            setWasVerifying(false);
+        }
+    }, [isVerifying, wasVerifying, verifyingStep, isAppEnabled, isQuickReviewInstalled, isEmailConfigured]);
+
+    const isStep2Done = isAppEnabled && isQuickReviewInstalled;
+    const isStep3Done = isEmailConfigured;
     const completedSteps = (isAppEnabled ? 1 : 0) + (isStep2Done ? 1 : 0) + (isStep3Done ? 1 : 0);
     const embedUrl = getAppEmbedDeepLink({ shop, apiKey, embedHandle: "app_embed" });
 
@@ -126,7 +99,7 @@ export default function SetupGuide({ shop = "", apiKey = "", isAppEnabled = fals
                         <s-button
                             variant="secondary"
                             loading={isVerifying}
-                            onClick={handleVerifyInstallation}
+                            onClick={() => handleVerifyInstallation(1)}
                         >
                             {isAppEnabled ? "Verified ✓" : "Verify Installation"}
                         </s-button>
@@ -143,8 +116,12 @@ export default function SetupGuide({ shop = "", apiKey = "", isAppEnabled = fals
                 >
                     <s-grid gridTemplateColumns='auto auto' gap='small' justifyContent='start'>
                         <s-button variant='primary' icon='external' href="/app/widgets">Go to widget settings</s-button>
-                        <s-button variant='secondary' onClick={handleToggleStep2}>
-                            {isStep2Done ? "Completed ✓" : "Mark as done"}
+                        <s-button
+                            variant="secondary"
+                            loading={isVerifying}
+                            onClick={() => handleVerifyInstallation(2)}
+                        >
+                            {isStep2Done ? "Verified ✓" : "Verify Setup"}
                         </s-button>
                     </s-grid>
                 </SetupGuideItem>
@@ -159,8 +136,12 @@ export default function SetupGuide({ shop = "", apiKey = "", isAppEnabled = fals
                 >
                     <s-grid gridTemplateColumns='auto auto' gap='small' justifyContent='start'>
                         <s-button variant='primary' icon='external' href="/app/settings/email-settings">Go to settings</s-button>
-                        <s-button variant='secondary' onClick={handleToggleStep3}>
-                            {isStep3Done ? "Completed ✓" : "Mark as done"}
+                        <s-button
+                            variant="secondary"
+                            loading={isVerifying}
+                            onClick={() => handleVerifyInstallation(3)}
+                        >
+                            {isStep3Done ? "Verified ✓" : "Verify Setup"}
                         </s-button>
                     </s-grid>
                 </SetupGuideItem>
