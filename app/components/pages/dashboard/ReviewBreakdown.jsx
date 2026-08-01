@@ -10,6 +10,7 @@ export default function ReviewBreakdown({
   handleStatusUpdate,
   handleReviewDelete,
   handleReviewReply,
+  isAppEnabled = false,
 }) {
   const totalReviews = reviews.length;
   const averageRating =
@@ -157,7 +158,9 @@ export default function ReviewBreakdown({
                     gap="small"
                   >
                     <s-heading>Widgets</s-heading>
-                    <s-badge tone="warning">Embed disbled</s-badge>
+                    <s-badge tone={isAppEnabled ? "success" : "warning"}>
+                      {isAppEnabled ? "Embed enabled" : "Embed disabled"}
+                    </s-badge>
                   </s-grid>
                 </CustomSection>
                 <CustomSection>

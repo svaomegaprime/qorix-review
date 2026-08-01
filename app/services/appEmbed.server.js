@@ -1,25 +1,41 @@
+/**
+ * Server-side service to check whether an App Embed block is enabled on the published main theme.
+ */
 
+/**
+ * Retrieves the MAIN (active/published) theme ID from Shopify Admin GraphQL API.
+ * 
+ * @param {Object} admin - Shopify Admin API context
+ * @returns {Promise<string|null>} Main theme ID GID or null
+ */
 export async function getMainThemeId(admin) {
   if (!admin) return null;
   try {
     const response = await admin.graphql(`
       #graphql
-      query GetMainThemeId {
-        themes(first: 1, roles: [MAIN]) {
-          edges {
-            node {
-              id
-            }
+      query GetThemes {
+        themes(first: 10) {
+          nodes {
+            id
+            role
           }
         }
       }
     `);
 
     const json = await response.json();
-    return json?.data?.themes?.edges?.[0]?.node?.id || null;
+    const nodes = json?.data?.themes?.nodes || [];
+    if (nodes.length === 0) return null;
+
+    const mainTheme =
+      nodes.find((t) => String(t.role).toUpperCase() === "MAIN") || nodes[0];
+    return mainTheme?.id || null;
   } catch (error) {
     const msg = error?.message || String(error);
-    if (!msg.includes("Access denied for themes field") && !msg.includes("read_themes")) {
+    if (
+      !msg.includes("Access denied for themes field") &&
+      !msg.includes("read_themes")
+    ) {
       console.error("[AppEmbed Service] Failed to get main theme ID:", msg);
     }
     return null;
@@ -27,14 +43,28 @@ export async function getMainThemeId(admin) {
 }
 
 /**
- * Removes comments and control characters from JSON string before parsing.
+ * Safely parses theme settings_data.json string.
+ * Tries direct JSON parsing first to preserve URLs with "https://", 
+ * falling back to comment-stripping if needed.
  * 
- * @param {string} jsonString - Raw file content
- * @returns {string} Sanitized JSON string
+ * @param {string} jsonString - Raw settings_data.json string
+ * @returns {Object|null} Parsed JSON object or null
  */
-function cleanJsonString(jsonString) {
-  if (!jsonString) return "{}";
-  return jsonString.replace(/\/\*[\s\S]*?\*\/|(^|[^:\\])\/\/.*$/gm, "$1");
+function parseThemeSettings(jsonString) {
+  if (!jsonString) return null;
+  try {
+    return JSON.parse(jsonString);
+  } catch {
+    try {
+      const sanitized = jsonString
+        .replace(/\/\*[\s\S]*?\*\//g, "")
+        .replace(/[\u0000-\u001F\u007F-\u009F]/g, "");
+      return JSON.parse(sanitized);
+    } catch (err) {
+      console.error("[AppEmbed Service] Settings JSON parse error:", err?.message);
+      return null;
+    }
+  }
 }
 
 /**
@@ -68,14 +98,17 @@ async function getThemeSettings(admin, themeId) {
     );
 
     const json = await response.json();
-    const rawContent = json?.data?.theme?.files?.edges?.[0]?.node?.body?.content;
+    const rawContent =
+      json?.data?.theme?.files?.edges?.[0]?.node?.body?.content;
     if (!rawContent) return null;
 
-    const cleanJson = cleanJsonString(rawContent);
-    return JSON.parse(cleanJson);
+    return parseThemeSettings(rawContent);
   } catch (error) {
     const msg = error?.message || String(error);
-    if (!msg.includes("Access denied for themes field") && !msg.includes("read_themes")) {
+    if (
+      !msg.includes("Access denied for themes field") &&
+      !msg.includes("read_themes")
+    ) {
       console.error("[AppEmbed Service] Failed to fetch theme settings:", msg);
     }
     return null;
@@ -116,18 +149,38 @@ function findEmbedBlock(settings, appHandle = "app_embed") {
   if (!settings) return null;
 
   const allBlocks = findAllBlocks(settings);
-  const embedBlock = allBlocks.find((block) => {
+  console.log(`[AppEmbed Check] Total blocks found in theme settings: ${allBlocks.length}`);
+
+  // Filter blocks specifically for qorix-review app
+  const matchingBlocks = allBlocks.filter((block) => {
     if (!block || typeof block?.type !== "string") return false;
     const typeLower = block.type.toLowerCase();
+    
+    // Ignore old/other apps like qorix-popup
+    if (typeLower.includes("qorix-popup") || typeLower.includes("qorix_popup")) {
+      return false;
+    }
+
     return (
+      typeLower.includes("qorix-review") ||
+      typeLower.includes("qorix_review") ||
       typeLower.includes(`blocks/${appHandle}`) ||
-      typeLower.includes(appHandle) ||
-      typeLower.includes("qorix")
+      typeLower.includes(appHandle.toLowerCase()) ||
+      typeLower.includes("app_embed") ||
+      typeLower.includes("app-embed")
     );
   });
 
-  if (!embedBlock) return null;
-  return embedBlock.disabled ? "DISABLED" : "ENABLED";
+  if (matchingBlocks.length === 0) {
+    console.log("[AppEmbed Check] Could not find any block with type matching qorix-review.");
+    return null;
+  }
+
+  console.log("[AppEmbed Check] Matching blocks for qorix-review:", JSON.stringify(matchingBlocks));
+
+  // If ANY matching block is enabled (!disabled), return ENABLED!
+  const enabledBlock = matchingBlocks.find((b) => b.disabled !== true);
+  return enabledBlock ? "ENABLED" : "DISABLED";
 }
 
 /**
@@ -138,14 +191,21 @@ function findEmbedBlock(settings, appHandle = "app_embed") {
  * @returns {Promise<boolean>} True if enabled, false otherwise
  */
 export async function checkAppEmbedEnabled(admin, appHandle = "app_embed") {
-  if (!admin) return false;
+  if (!admin) {
+    console.log("[AppEmbed Check] No admin context provided");
+    return false;
+  }
 
   const themeId = await getMainThemeId(admin);
+  console.log("[AppEmbed Check] Main Theme ID:", themeId);
   if (!themeId) return false;
 
   const settings = await getThemeSettings(admin, themeId);
+  console.log("[AppEmbed Check] Loaded theme settings_data.json:", !!settings);
   if (!settings) return false;
 
   const status = findEmbedBlock(settings, appHandle);
+  console.log(`[AppEmbed Check] Final Result for '${appHandle}':`, status);
+
   return status === "ENABLED";
 }

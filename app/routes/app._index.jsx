@@ -226,6 +226,7 @@ export default function Index() {
         handleStatusUpdate={handleStatusUpdate}
         handleReviewDelete={handleReviewDelete}
         handleReviewReply={handleReviewReply}
+        isAppEnabled={isAppEnabled}
       />
       <s-stack paddingBlockStart="base">
         <FAQ />
