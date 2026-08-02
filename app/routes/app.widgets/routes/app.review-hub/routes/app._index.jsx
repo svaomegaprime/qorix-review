@@ -50,6 +50,7 @@ function dbRowToSettings(row) {
 
     layout: row.layout,
     filterSorting: row.filterSorting,
+    filterMinStar: row.filterMinStar,
     reviewsPerPage: row.reviewsPerPage,
 
     colors: {
@@ -85,6 +86,7 @@ function settingsToDbFields(settings) {
 
     layout: settings.layout,
     filterSorting: settings.filterSorting,
+    filterMinStar: settings.filterMinStar,
     reviewsPerPage: settings.reviewsPerPage,
 
     starColor: settings.colors?.STAR_COLOR ?? DEFAULT_COLOR_VALUES.STAR_COLOR,
@@ -553,6 +555,27 @@ export default function Index() {
                       <s-option value="15">15 reviews</s-option>
                       <s-option value="18">18 reviews</s-option>
                       <s-option value="24">24 reviews</s-option>
+                    </s-select>
+                  </s-stack>
+
+                  <s-stack
+                    border="base"
+                    paddingInlineStart="small"
+                    borderRadius="base"
+                    padding="small"
+                  >
+                    <s-select
+                      label="Filter min stars"
+                      value={settings.filterMinStar}
+                      details="This option isn't shown in the preview. It will take effect on your live review widget once customers submit reviews."
+                      onChange={(e) =>
+                        handleSettingChange("filterMinStar", e.target.value)
+                      }
+                    >
+                      <s-option value="ALL">Show all ratings</s-option>
+                      <s-option value="STAR_3">3 star and above</s-option>
+                      <s-option value="STAR_4">4 star and above</s-option>
+                      <s-option value="STAR_5">5 star only</s-option>
                     </s-select>
                   </s-stack>
                 </s-stack>
