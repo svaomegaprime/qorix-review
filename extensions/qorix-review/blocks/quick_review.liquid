@@ -43,7 +43,6 @@
     {% comment %}  {% endcomment %}
 
   }
-  [data-qorix-widget] { display: none !important; }
 </style>
 
 {{ 'swiper-bundle.min.css' | asset_url | stylesheet_tag }}
@@ -117,6 +116,8 @@
   {% render 'lightbox' %}
   {% render 'quickreview-reviews', quick_review_metafield: quick_review_metafield %}
 </div>
+<script src="{{ 'alpine.js' | asset_url }}" defer></script>
+<script src="{{ 'review.js' | asset_url }}" defer></script>
 <script src="{{ 'swiper-bundle.min.js' | asset_url }}" defer></script>
 <script src="{{ 'quickreview.js' | asset_url }}" defer></script>
 {% schema %}
