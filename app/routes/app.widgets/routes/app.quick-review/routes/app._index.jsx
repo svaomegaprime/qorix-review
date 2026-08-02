@@ -814,7 +814,7 @@ export default function Index(VALUES = {}) {
                             )}
                           />
                           <s-switch
-                            label="Show media without media"
+                            label="Show media bar without media"
                             checked={
                               quickReview.isShowMediaWithoutRating || undefined
                             }
