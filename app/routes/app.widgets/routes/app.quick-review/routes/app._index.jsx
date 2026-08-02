@@ -60,7 +60,7 @@ const DEFAULT_QUICK_REVIEW_STATE = {
   writeReviewButtonText: "Write a review",
   showHelfullButton: true,
   defaultSort: "MOST_RECENT",
-  filterAndSorting: "FILTER_AND_SORT",
+  filterAndSorting: "FILTER_AND_SORTING",
   filterMinStar: "ALL",
 };
 
