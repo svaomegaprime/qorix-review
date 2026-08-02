@@ -166,7 +166,10 @@
 
       <button class="submit-btn" type="submit" :disabled="dataPostLoading">
         <span x-show="!dataPostLoading">{{ quick_review_metafield.submitButtonText }}</span>
-        <span x-show="dataPostLoading" class="qr-loader" aria-hidden="true"></span>
+        <div :style="dataPostLoading ? 'display: flex; align-items: center; justify-content: center; gap: 8px;' : 'display: none;'">
+          <span class="qr-loader" aria-hidden="true"></span>
+          <span x-text="loadingText"></span>
+        </div>
       </button>
 
       <div class="modal-footer-note">
@@ -179,7 +182,6 @@
     </form>
     {% comment %} End:: form  {% endcomment %}
     {% comment %} Start:: success message  {% endcomment %}
-
     <div
       id="success-view"
       :style="
@@ -207,7 +209,6 @@
     </div>
     {% comment %} End:: success message  {% endcomment %}
     {% comment %} Start:: Error message  {% endcomment %}
-
     <div
       id="error-view"
       :style="

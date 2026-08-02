@@ -4,7 +4,28 @@ import Loader from "../../../components/essentials/Loader";
 import TabButton from "../../../components/essentials/TabButton";
 import CustomSection from "../../../components/essentials/CustomSection";
 import WidgetItem from "../components/WidgetItem";
-import { useNavigation } from "react-router";
+import { useLoaderData, useNavigation } from "react-router";
+import { getWidgetsInstalledStatus } from "../../../services/appEmbed.server.js";
+import { requireAdminContext } from "../../../services/adminContext.server.js";
+
+export async function loader({ request }) {
+    try {
+        const { admin, session } = await requireAdminContext(request);
+        const installedWidgetIds = await getWidgetsInstalledStatus(admin);
+        return {
+            shop: session?.shop || "",
+            // eslint-disable-next-line no-undef
+            apiKey: process.env.SHOPIFY_API_KEY || "1fd61c4448a3e740e2e1b9bc99b9db0d",
+            installedWidgetIds,
+        };
+    } catch {
+        return {
+            shop: "",
+            apiKey: "1fd61c4448a3e740e2e1b9bc99b9db0d",
+            installedWidgetIds: [],
+        };
+    }
+}
 
 const TAB_CONFIG = [
     {
@@ -20,20 +41,20 @@ const TAB_CONFIG = [
         label: "Product page"
     },
     {
-        key: "standalone-page",
-        label: "Standalone page"
-    },
-    {
-        key: "floating",
-        label: "Floating"
-    },
-    {
         key: "review-form",
         label: "Review form"
     }
 ];
 
 const WIDGETS = [
+    {
+        id: "quick_review",
+        name: "QuickReview",
+        description: "A pre-installed, one-click widget that lets customers write a review instantly — no account required. Increases review collection by 40%+.",
+        previewUrl: "/widgets/quick-review.png",
+        editUrl: "/app/widgets/quick-review",
+        types: ["floating", "review-form"]
+    },
     {
         id: "trust_bar",
         name: "TrustBar",
@@ -74,22 +95,11 @@ const WIDGETS = [
         editUrl: "/app/widgets/review-hub",
         types: ["product-page", "standalone-page"]
     },
-    {
-        id: "quick_review",
-        name: "QuickReview",
-        description: "A pre-installed, one-click widget that lets customers write a review instantly — no account required. Increases review collection by 40%+.",
-        previewUrl: "/widgets/quick-review.png",
-        editUrl: "/app/widgets/quick-review",
-        types: ["floating", "review-form"]
-    }
-];
-
-const INSTALLED_WIDGETS = [
-    "trust_bar",
-    "review_reel"
 ];
 
 export default function Widegets() {
+    const { shop = "", apiKey = "", installedWidgetIds = [] } = useLoaderData() || {};
+
     // Start----Default CSR loading state checking for navigation
     const navigation = useNavigation();
     const loading = navigation.state === "loading";
@@ -97,30 +107,28 @@ export default function Widegets() {
 
     // Start----State for active tab
     const [activeTab, setActiveTab] = useState("all");
-    // End----State for active tab
-
-    // Start----State for filtered widgets
-    const [filteredWidgets, setFilteredWidgets] = useState(WIDGETS);
-    // End----State for filtered widgets
 
     // Start----Tab click handler
     const handleTabClick = (tab) => {
         setActiveTab(tab);
-        if (tab === "all") {
-            setFilteredWidgets(WIDGETS);
-        } else if(tab === "installed") {
-            const filtered = WIDGETS.filter((widget) => INSTALLED_WIDGETS.includes(widget.id));
-            setFilteredWidgets(filtered);
+    };
+
+    const getFilteredWidgets = () => {
+        if (activeTab === "all") {
+            return WIDGETS;
+        } else if (activeTab === "installed") {
+            return WIDGETS.filter((widget) => installedWidgetIds.includes(widget.id));
         } else {
-            const filtered = WIDGETS.filter((widget) => widget.types.includes(tab));
-            setFilteredWidgets(filtered);
+            return WIDGETS.filter((widget) => widget.types.includes(activeTab));
         }
     };
-    // End----Tab click handler
+
+    const filteredWidgets = getFilteredWidgets();
 
     if (loading) {
-        return <Loader />; // Show loader while navigating to this page or when loader is fetching data
+        return <Loader />;
     }
+
     return (
         <s-page>
             {/* Start----Page Header */}
@@ -128,11 +136,6 @@ export default function Widegets() {
                 <s-stack direction="inline" alignItems="center" gap="small">
                     <Text as="h2">Widgets</Text>
                 </s-stack>
-                {/* <s-button icon="settings">Request reviews</s-button> */}
-                <s-select>
-                    <s-option>test-data (live)</s-option>
-                    <s-option>real-data (live)</s-option>
-                </s-select>
             </s-grid>
             {/* End----Page Header */}
 
@@ -147,11 +150,6 @@ export default function Widegets() {
                                 onClick={() => handleTabClick(tab.key)}
                             >
                                 {tab.label}
-                                {/* <s-badge tone={tab.tone} color="strong">
-                                    {tab.statuses
-                                        ? requests.filter((request) => tab.statuses.includes(request.status)).length
-                                        : requests.length}
-                                </s-badge> */}
                             </TabButton>
                         ))}
                     </s-grid>
@@ -164,13 +162,22 @@ export default function Widegets() {
                 <CustomSection background="#F0F0F0" border="none" boxShadow="none">
                     <s-query-container>
                         <s-grid gridTemplateColumns="@container (inline-size > 600px) 'repeat(3, 1fr)', 1fr" gap="large-200 base">
-                            {filteredWidgets.map((widget, index) => (
-                                <WidgetItem key={index} widget={widget} status={INSTALLED_WIDGETS.includes(widget.id) ? "INSTALLED" : "NOT_INSTALLED"} />
-                            ))}
+                            {filteredWidgets.map((widget, index) => {
+                                const isInstalled = installedWidgetIds.includes(widget.id);
+                                return (
+                                    <WidgetItem
+                                        key={index}
+                                        widget={widget}
+                                        status={isInstalled ? "INSTALLED" : "NOT_INSTALLED"}
+                                        shop={shop}
+                                        apiKey={apiKey}
+                                    />
+                                );
+                            })}
                         </s-grid>
                     </s-query-container>
                 </CustomSection>
             </s-section>
         </s-page>
-    )
+    );
 }

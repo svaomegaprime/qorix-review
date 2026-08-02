@@ -37,12 +37,13 @@ model Store {
   order              Order[]
   quickReviewWidget  QuickReviewWidget?
   quoteLoopWidget    QuoteLoopWidget?
-  reviewHubWidget    ReviewHubWidget?
-  videoStackSettings VideoStackSettings?
   reviews            Review[]
+  reviewHubWidget    ReviewHubWidget?
+  reviewReelSettings ReviewReelSettings?
   storeSettings      StoreSettings?
   subscription       Subscription?
   trustBarWidgets    TrustBarWidget?
+  videoStackSettings VideoStackSettings?
 }
 
 model Subscription {

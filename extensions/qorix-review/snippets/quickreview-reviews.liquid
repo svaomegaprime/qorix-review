@@ -4,7 +4,7 @@
   class="quickreview-reviews"
   data-product-id="{{ product.id }}"
   id="quickreview-reviews-{{ block.id }}"
-  {{ block.shopify_attributes }}
+  x-show="loading ? true : reviews?.length > 0"
 >
   <div class="quickreview-reviews__header">
     <div class="quickreview-reviews__titles">
@@ -56,14 +56,6 @@
                 x-text="option.label"
               ></li>
             </template>
-            {% comment %}
-              <li value="MOST_RECENT" class="is-active">Most recent</li>
-              <li value="HIGHEST_RATING">Highest rating</li>
-              <li value="LOWEST_RATING">Lowest rating</li>
-              <li value="ONLY_PICTURES">Only pictures</li>
-              <li value="ONLY_VIDEO">Only Videos</li>
-              <li value="MOST_HELPFUL">Most Helpful</li>
-            {% endcomment %}
           </ul>
         </div>
       {% endif %}

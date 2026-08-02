@@ -8,12 +8,8 @@
       >
     {% endif %}
   </div>
-  <div class="quickreview-summary__stars" data-quickreview-stars aria-label="Rating">
-    <template x-for="i in averageRating" :key="i">
-      <span class="quickreview-star" :data-star-index="i">
-        {%- render 'icon', name: 'rating-star' -%}
-      </span>
-    </template>
+  <div class="quickreview-summary__stars">
+    {% render 'stars', from: 'rating_summary', starColor: quick_review_metafield.starColor %}
   </div>
   <button
     type="button"

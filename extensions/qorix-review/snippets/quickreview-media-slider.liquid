@@ -1,53 +1,84 @@
 {{ 'quickreview-media-slider.css' | asset_url | stylesheet_tag }}
 
-<div class="quickreview-media">
-  <div class="quickreview-media__header">
-    <span class="quickreview-media__title">Reviews with media</span>
-    <p class="quickreview-media__see-all" @click="showAllMedia = true">See all media</p>
+<div x-show="reviews.length > 0 ? true : showMediaWithoutRating" class="qorix-qr-media-container">
+  <div class="qorix-qr-media-header">
+    <span class="qorix-qr-media-title">Reviews with media</span>
+    <p class="qorix-qr-media-see-all" @click="showAllMedia = true">See all media</p>
   </div>
 
-  <div class="quickreview-media__slider-wrap">
-    <div class="quickreview-media__nav-prev" data-quickreview-nav-prev>
+  <div class="qorix-qr-media-slider-wrap">
+    <div class="qorix-qr-media-nav-prev" data-quickreview-nav-prev x-show="attachments?.length">
       <svg width="6" height="10" viewBox="0 0 6 10" fill="none" xmlns="http://www.w3.org/2000/svg">
         <path fill-rule="evenodd" clip-rule="evenodd" d="M5.27851 9.27953C5.41896 9.13891 5.49785 8.94828 5.49785 8.74953C5.49785 8.55078 5.41896 8.36016 5.27851 8.21953L1.80851 4.74953L5.27851 1.27953C5.34811 1.20993 5.40332 1.1273 5.44099 1.03637C5.47866 0.945429 5.49805 0.847963 5.49805 0.749533C5.49805 0.651103 5.47866 0.553637 5.44099 0.462699C5.40332 0.371762 5.34811 0.289134 5.27851 0.219533C5.20891 0.149933 5.12629 0.0947223 5.03535 0.0570548C4.94441 0.0193872 4.84694 -7.3336e-10 4.74851 0C4.65008 7.33362e-10 4.55262 0.0193872 4.46168 0.0570548C4.37074 0.0947223 4.28811 0.149933 4.21851 0.219533L0.218514 4.21953C0.0780635 4.36016 -0.000826359 4.55078 -0.000826359 4.74953C-0.000826359 4.94828 0.0780635 5.13891 0.218514 5.27953L4.21851 9.27953C4.35914 9.41998 4.54976 9.49887 4.74851 9.49887C4.94726 9.49887 5.13789 9.41998 5.27851 9.27953Z" fill="#4A4A4A"/>
       </svg>
     </div>
 
-    <div class="quickreview-media__slider swiper" data-quickreview-swiper>
+    <div class="qorix-qr-media-slider swiper" data-quickreview-swiper>
       <div class="swiper-wrapper">
         <template x-if="attachments?.length">
           <template x-for="attachment in attachments" :key="attachment.id">
-            <div class="swiper-slide quickreview-media__slide" @click="openLightbox(attachment)">
+            <div class="swiper-slide qorix-qr-media-slide" @click="openLightbox(attachment)">
               <template x-if="attachment.type === 'IMAGE'">
                 <img
-                  class="quickreview-media__img"
+                  class="qorix-qr-media-img"
                   :src="attachment.url"
                   alt="Review media"
-                  loading="lazy"
                   width=""
                   height=""
                 >
               </template>
 
               <template x-if="attachment.type === 'VIDEO'">
-                <video
-                  class="quickreview-media__img"
-                  :src="attachment.url"
-                  preload="metadata"
-                ></video>
+                <div style="position: relative; width: 100%; height: 100%;">
+                  <video
+                    class="qorix-qr-media-img"
+                    :src="attachment.url + '#t=0.001'"
+                    preload="metadata"
+                    muted
+                    playsinline
+                  ></video>
+                  <div class="qorix-video-play-badge">
+                    <svg width="12" height="14" viewBox="0 0 12 14" fill="none" xmlns="http://www.w3.org/2000/svg">
+                      <path d="M3 2.5L10.5 7L3 11.5V2.5Z" fill="#1A1A1A"/>
+                    </svg>
+                  </div>
+                </div>
               </template>
             </div>
           </template>
         </template>
-        <div x-show="attachments?.length == 0"></div>
+        <div x-show="attachments?.length < 1 && !loading">
+          <div style="height: 128px;min-width: 126px; display:flex; gap: 10px;">
+            <img
+              style="min-width:126px; border: 1px solid #00000009;"
+              src="{{'placeholder-images-image_large.png' | asset_url}}"
+              width="100px"
+              height="128px"
+            >
+            <img
+              style="min-width:126px; border: 1px solid #00000009;"
+              src="{{'placeholder-images-image_large.png' | asset_url}}"
+              width="100px"
+              height="128px"
+            >
+            <img
+              style="min-width:126px; border: 1px solid #00000009;"
+              src="{{'placeholder-images-image_large.png' | asset_url}}"
+              width="100px"
+              height="128px"
+            >
+          </div>
+        </div>
+        {% render 'skeleton', type: 'media' %}
       </div>
     </div>
 
-    <div class="quickreview-media__nav-next" data-quickreview-nav-next>
+    <div class="qorix-qr-media-nav-next" data-quickreview-nav-next x-show="attachments?.length">
       <svg width="6" height="10" viewBox="0 0 6 10" fill="none" xmlns="http://www.w3.org/2000/svg">
         <path fill-rule="evenodd" clip-rule="evenodd" d="M0.219533 9.27953C0.0790825 9.13891 0.000193119 8.94828 0.000193119 8.74953C0.000193119 8.55078 0.0790825 8.36016 0.219533 8.21953L3.68953 4.74953L0.219533 1.27953C0.149932 1.20993 0.0947226 1.1273 0.057055 1.03637C0.0193874 0.945429 7.33361e-10 0.847963 0 0.749533C-7.33361e-10 0.651103 0.0193874 0.553637 0.057055 0.462699C0.0947226 0.371762 0.149932 0.289134 0.219533 0.219533C0.289134 0.149933 0.371762 0.0947223 0.462699 0.0570548C0.553637 0.0193872 0.651103 -7.3336e-10 0.749533 0C0.847963 7.33362e-10 0.945429 0.0193872 1.03637 0.0570548C1.1273 0.0947223 1.20993 0.149933 1.27953 0.219533L5.27953 4.21953C5.41998 4.36016 5.49887 4.55078 5.49887 4.74953C5.49887 4.94828 5.41998 5.13891 5.27953 5.27953L1.27953 9.27953C1.13891 9.41998 0.948284 9.49887 0.749533 9.49887C0.550783 9.49887 0.360158 9.41998 0.219533 9.27953Z" fill="#4A4A4A"/>
       </svg>
     </div>
   </div>
 </div>
+
 {% render 'show-all-media-modal' %}

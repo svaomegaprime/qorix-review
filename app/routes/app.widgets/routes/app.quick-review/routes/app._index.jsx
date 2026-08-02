@@ -50,10 +50,13 @@ const DEFAULT_QUICK_REVIEW_STATE = {
   isShowStarDistribution: true,
   isShowMediaStrip: true,
   isShowReviewCount: true,
+  isShowRatingBarWithoutRating: true,
+  isShowMediaWithoutRating: true,
   writeReviewButtonText: "Write a review",
   showHelfullButton: true,
   defaultSort: "MOST_RECENT",
   filterAndSorting: "FILTER_AND_SORT",
+  filterMinStar: "ALL",
 };
 
 const parseBorderRadius = (value) => {
@@ -128,13 +131,19 @@ const buildQuickReviewState = (data) => {
       data.isShowMediaStrip ?? DEFAULT_QUICK_REVIEW_STATE.isShowMediaStrip,
     isShowReviewCount:
       data.isShowReviewCount ?? DEFAULT_QUICK_REVIEW_STATE.isShowReviewCount,
+    isShowRatingBarWithoutRating:
+      data.isShowRatingBarWithoutRating ?? DEFAULT_QUICK_REVIEW_STATE.isShowRatingBarWithoutRating,
+    isShowMediaWithoutRating:
+      data.isShowMediaWithoutRating ?? DEFAULT_QUICK_REVIEW_STATE.isShowMediaWithoutRating,
     writeReviewButtonText:
       data.writeReviewButtonText ?? DEFAULT_QUICK_REVIEW_STATE.writeReviewButtonText
     ,
     showHelfullButton:
       data.showHelfullButton ?? DEFAULT_QUICK_REVIEW_STATE.showHelfullButton,
     filterAndSorting:
-      data.filterAndSorting ?? DEFAULT_QUICK_REVIEW_STATE.filterAndSorting
+      data.filterAndSorting ?? DEFAULT_QUICK_REVIEW_STATE.filterAndSorting,
+    filterMinStar:
+      data.filterMinStar ?? DEFAULT_QUICK_REVIEW_STATE.filterMinStar
   };
 };
 
@@ -272,10 +281,13 @@ export default function Index(VALUES = {}) {
     isShowReviewDate: quickReview.showReviewDate,
     isShowStarRatingOnCard: quickReview.showStarRatingOnCard,
     isShowHelpfulButton: quickReview.showHelpfulButton,
+    isShowRatingBarWithoutRating: quickReview.isShowRatingBarWithoutRating,
+    isShowMediaWithoutRating: quickReview.isShowMediaWithoutRating,
     writeReviewButtonText: quickReview.writeReviewButtonText,
     reviewPerPage: Number(quickReview.reviewPerPage),
     defaultSort: quickReview.defaultSort,
     filterAndSorting: quickReview.filterAndSorting,
+    filterMinStar: quickReview.filterMinStar,
   };
   const fetcher = useFetcher();
   useAdminFetcherToast(fetcher);
@@ -837,6 +849,16 @@ export default function Index(VALUES = {}) {
                             checked={quickReview.showHelpfulButton || undefined}
                             onchange={handleSwitch("showHelpfulButton")}
                           />
+                          <s-switch
+                            label="Show rating bar without rating"
+                            checked={quickReview.isShowRatingBarWithoutRating || undefined}
+                            onchange={handleSwitch("isShowRatingBarWithoutRating")}
+                          />
+                          <s-switch
+                            label="Show media without rating"
+                            checked={quickReview.isShowMediaWithoutRating || undefined}
+                            onchange={handleSwitch("isShowMediaWithoutRating")}
+                          />
 
 
                           <s-stack border="base" borderRadius="base" padding="small">
@@ -919,6 +941,26 @@ export default function Index(VALUES = {}) {
                               <s-option value="SORTING_ONLY">Sorting only</s-option>
                               <s-option value="NONE">None</s-option>
 
+                            </s-select>
+                          </s-stack>
+
+                          <s-stack border="base" borderRadius="base" padding="small">
+                            <s-select
+                              label="Filter min stars"
+                              value={quickReview.filterMinStar}
+                              onchange={(e) =>
+                                setQuickReview((prev) => ({
+                                  ...prev,
+                                  filterMinStar: e.target.value,
+                                }))
+                              }
+                            >
+                              <s-option value="ALL">Show all ratings</s-option>
+                              <s-option value="STAR_1">1 star and above</s-option>
+                              <s-option value="STAR_2">2 star and above</s-option>
+                              <s-option value="STAR_3">3 star and above</s-option>
+                              <s-option value="STAR_4">4 star and above</s-option>
+                              <s-option value="STAR_5">5 star only</s-option>
                             </s-select>
                           </s-stack>
 

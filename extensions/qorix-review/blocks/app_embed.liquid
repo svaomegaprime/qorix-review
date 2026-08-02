@@ -17,13 +17,26 @@
 {{ 'trust-bar.css' | asset_url | stylesheet_tag }}
 {% render 'custom-css', css: trust_bar_metafield.advanceCss %}
 
+<script>
+  window.__QORIX_APP_EMBED_ENABLED__ = true;
+  document.documentElement.classList.add('qorix-embed-active');
+</script>
+<style>
+  html.qorix-embed-active [data-qorix-widget] {
+    display: block !important;
+  }
+  html.qorix-embed-active [data-qorix-widget].qorix-inline-widget {
+    display: inline-flex !important;
+  }
+</style>
+
 <script src="{{ 'trust-bar.js' | asset_url }}" defer></script>
 <script src="{{ 'review.js' | asset_url }}" defer></script>
 <script src="{{ 'alpine.js' | asset_url }}" defer></script>
 
 {% schema %}
 {
-  "name": "Qorix review",
+  "name": "Qorix Product Reviews",
   "target": "body"
 }
 {% endschema %}

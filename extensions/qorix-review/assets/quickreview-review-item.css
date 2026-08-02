@@ -47,6 +47,15 @@
   background: var(--qr-color-avatar-bg);
   color: var(--qr-color-avatar-icon);
   flex-shrink: 0;
+  overflow: hidden;
+}
+
+.quickreview-review__avatar img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  border-radius: 50%;
+  display: block;
 }
 
 .quickreview-review__meta {
@@ -102,19 +111,46 @@
 }
 
 .quickreview-review__media-item {
-  width: 64px;
-  height: 64px;
-  border-radius: 8px;
+  width: 80px;
+  height: 80px;
+  border-radius: 10px;
   overflow: hidden;
   background: var(--qr-color-avatar-bg);
   flex-shrink: 0;
   cursor: pointer;
+  position: relative;
 }
 
 .quickreview-review__media-img {
   width: 100%;
   height: 100%;
   object-fit: cover;
+  display: block;
+}
+
+/* ------- Video Play Badge Overlay ------- */
+.qorix-video-play-badge {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  width: 28px;
+  height: 28px;
+  border-radius: 50%;
+  background: rgba(255, 255, 255, 0.92);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  pointer-events: none;
+  z-index: 2;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.25);
+  transition: transform 0.2s ease, background 0.2s ease;
+}
+
+.qorix-video-play-badge svg {
+  width: 10px;
+  height: 12px;
+  margin-left: 2px;
   display: block;
 }
 
@@ -210,7 +246,7 @@
   }
 
   .quickreview-review__media-item {
-    width: 56px;
-    height: 56px;
+    width: 68px;
+    height: 68px;
   }
 }

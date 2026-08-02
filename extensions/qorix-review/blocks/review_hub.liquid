@@ -6,19 +6,22 @@
 {% endif %}
 
 <style>
-  :root{
-    --star-color:{{ review_hub_metafield.starColor }} ;
-    --text-color: {{ review_hub_metafield.textColor }};
-    --verified-badge-color:{{ review_hub_metafield.verifiedBadgeColor }};
-    --card-background-color: {{ review_hub_metafield.cardBackgroundColor }};
-    --border-color: {{ review_hub_metafield.borderColor }};
-    --filter-chio-star-color: {{ review_hub_metafield.filterChipStarColor }};
-    --filter-chip-color: {{ review_hub_metafield.filterChipColor }};
+  [data-section="qorix-review-hub"], .qr-review-hub {
+    --star-color: {{ review_hub_metafield.starColor | default: '#34C759' }};
+    --text-color: {{ review_hub_metafield.textColor | default: '#1A1A1A' }};
+    --verified-badge-color: {{ review_hub_metafield.verifiedBadgeColor | default: '#34C759' }};
+    --card-background-color: {{ review_hub_metafield.cardBackgroundColor | default: '#FFFFFF' }};
+    --border-color: {{ review_hub_metafield.borderColor | default: '#E5E7EB' }};
+    --filter-chio-star-color: {{ review_hub_metafield.filterChipStarColor | default: '#34C759' }};
+    --filter-chip-color: {{ review_hub_metafield.filterChipColor | default: '#F2F2F2' }};
   }
+  [data-qorix-widget] { display: none !important; }
 </style>
-{% comment %} {% render 'custom-css', css: review_hub_metafield.advanceCss %} {% endcomment %}
+
 <div
+  data-qorix-widget
   class="qr-review-hub"
+  data-section="qorix-review-hub"
   style="--qr-grid-columns: {{ grid_columns }}; --qr-section-max-width: 100%;"
   customerId="{{ customer.id }}"
   customerEmail="{{ customer.email }}"
@@ -57,9 +60,6 @@
   </div>
   {% render 'lightbox' %}
 </div>
-
-{% comment %} <script src="{{ 'review.js' | asset_url }}" defer></script> {% endcomment %}
-{% comment %} <script src="{{ 'alpine.js' | asset_url }}" defer></script> {% endcomment %}
 
 {% schema %}
 {

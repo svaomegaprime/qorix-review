@@ -200,3 +200,18 @@
       background-position: 600px 0;
     }
   }
+
+  /* Media Skeleton */
+  .qr-skeleton-media-wrapper {
+    display: flex;
+    gap: 10px;
+    width: 100%;
+    overflow: hidden;
+  }
+
+  .qr-skeleton-media-box {
+    width: 126px;
+    height: 128px;
+    border-radius: 8px;
+    flex-shrink: 0;
+  }

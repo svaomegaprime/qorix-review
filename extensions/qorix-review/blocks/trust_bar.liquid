@@ -1,7 +1,17 @@
+<style>[data-qorix-widget] { display: none !important; }</style>
 {{ 'trust-bar.css' | asset_url | stylesheet_tag }}
-
-<div x-data="TrustBar({{ product.id | json }})" x-html="trustBarWidget"></div>
-
+<div
+  data-qorix-widget
+  class="qorix-inline-widget"
+  x-data="
+    TrustBar({
+      productId: {{ product.id | json }},
+      averageRating: {{ product.metafields.reviews.rating.value | default: 0 }},
+      totalReviews: {{ product.metafields.reviews.rating_count.value | default: 0 }}
+    })
+  "
+  x-html="trustBarWidget"
+></div>
 {% schema %}
 {
   "name": "Trust bar Widget",

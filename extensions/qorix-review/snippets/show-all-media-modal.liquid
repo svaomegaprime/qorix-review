@@ -19,27 +19,26 @@
       <div class="quickreview-media-modal__grid" data-quickreview-media-modal-grid>
         <template x-if="attachments?.length">
           <template x-for="attachment in attachments" :key="attachment.id">
-            <template x-if="attachment.type === 'IMAGE'">
-              <div class="quickreview-media-modal__item" @click="openLightbox(attachment); showAllMedia = false">
+            <div class="quickreview-media-modal__item" @click="openLightbox(attachment); showAllMedia = false">
+              <template x-if="attachment.type === 'IMAGE'">
                 <img
                   :src="attachment.url"
                   alt="Review media"
-                  loading="lazy"
                   width=""
                   height=""
                 >
-              </div>
-            </template>
+              </template>
 
-            <template x-if="attachment.type === 'VIDEO'">
-              <div class="quickreview-media-modal__item" @click="openLightbox(attachment); showAllMedia = false">
+              <template x-if="attachment.type === 'VIDEO'">
                 <video
-                  class="quickreview-media__img"
-                  :src="attachment.url"
+                  class="qorix-qr-media-img"
+                  :src="attachment.url + '#t=0.001'"
                   preload="metadata"
+                  muted
+                  playsinline
                 ></video>
-              </div>
-            </template>
+              </template>
+            </div>
           </template>
         </template>
       </div>

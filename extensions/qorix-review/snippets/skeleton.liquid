@@ -58,3 +58,10 @@
     {% endfor %}
   </div>
 {% endif %}
+{% if type == 'media' %}
+  <div class="qr-skeleton-media-wrapper" x-show="loading">
+    {% for i in (1..6) %}
+      <div class="qr-skeleton-media-box qr-shimmer"></div>
+    {% endfor %}
+  </div>
+{% endif %}
