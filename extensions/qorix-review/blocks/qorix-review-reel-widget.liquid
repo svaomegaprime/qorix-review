@@ -35,6 +35,7 @@
   data-section="qorix-review-reel-widget"
   class="qorix-review-reel-real-review-section"
   data-show-first="ONLY_IMAGE_VIDEO"
+  data-filter-min-stars="{{ review_reel_metafield.fiteringMinStart }}"
 >
   {% if review_reel_metafield.showHeader != false and review_reel_metafield.showHeader != 'false' %}
     {% assign header_position = review_reel_metafield.headerStyle | default: 'center' %}

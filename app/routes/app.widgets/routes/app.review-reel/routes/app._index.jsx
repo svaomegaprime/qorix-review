@@ -84,7 +84,7 @@ export async function loader({ request }) {
     const { id: shop } = await getStoreData(admin);
 
     const row = await prisma.reviewReelSettings.findUnique({
-      where: { shop },
+      where: { storeId: shop },
     });
 
     return dbRowToSettings(row); // row null hole DEFAULT_VALUES_REVIEW_REEL return kore
@@ -107,10 +107,14 @@ export async function action({ request }) {
 
     // shop ekhane unique key — thakle update, na thakle notun row create hobe
     const res = await prisma.reviewReelSettings.upsert({
-      where: { shop },
+      where: { storeId: shop },
       update: dbFields,
       create: {
-        shop,
+        store: {
+          connect: {
+            storeGID: shop,
+          },
+        },
         ...dbFields,
       },
     });
@@ -544,16 +548,16 @@ export default function Index() {
                         handleSettingChange("fiteringMinStart", e.target.value)
                       }
                     >
-                      <s-option value="Show all ratings">
+                      <s-option value="ALL">
                         Show all ratings
                       </s-option>
-                      <s-option value="3 star and above">
+                      <s-option value="STAR_3">
                         3 star and above
                       </s-option>
-                      <s-option value="4 star and above">
+                      <s-option value="STAR_4">
                         4 star and above
                       </s-option>
-                      <s-option value="5 star only">5 star only</s-option>
+                      <s-option value="STAR_5">5 star only</s-option>
                     </s-select>
                   </s-stack>
                 </s-stack>
