@@ -70,7 +70,7 @@ model QuoteLoopWidget {
   cardBackgroundColor     String   @default("#FFFFFF")
   eyebrowLabel            String   @default("CUSTOMER REVIEWS")
   filterSorting           String   @default("Filter & sorting both")
-  fiteringMinStart        String   @default("3 star and above")
+  fiteringMinStart        FilterMinStars @default(ALL)
   headerStyle             String   @default("center")
   heading                 String   @default("Reviews from people")
   quoteFontSize           Int      @default(24)
@@ -127,33 +127,33 @@ model VideoStackSettings {
 }
 
 model ReviewReelSettings {
-  id                 String   @id @default(uuid()) @db.Uuid
-  storeId            String   @unique
-  createdAt          DateTime @default(now())
-  updatedAt          DateTime @updatedAt
-  showHeader         Boolean  @default(true)
-  headerStyle        String   @default("center")
-  eyebrowLabel       String   @default("CUSTOMER REVIEWS")
-  heading            String   @default("Real reviews from real people")
-  subheading         String   @default("Watch and hear what our customers have to say.")
-  reviewStats        String   @default("Show review count & verified badge")
-  showReviewerName   Boolean  @default(true)
-  showReviewImage    Boolean  @default(true)
-  showVerifiedBadge  Boolean  @default(true)
-  showProductName    Boolean  @default(true)
-  showReviewDate     Boolean  @default(true)
-  showAutoPlay       Boolean  @default(true)
-  showNavigationDots Boolean  @default(true)
-  showArrowControls  Boolean  @default(true)
-  autoplaySpeed      Int      @default(4)
-  cardsVisible       Int      @default(3)
-  fiteringMinStart   String   @default("3 star and above")
-  startColor         String   @default("#34C759")
-  activeDotColor     String   @default("#34C759")
-  cardBackgorud      String   @default("#FFF")
-  cardTextColor      String   @default("#000")
-  advanceCss         String   @default("")
-  store              Store    @relation(fields: [storeId], references: [storeGID], onDelete: Cascade)
+  id                 String         @id @default(uuid()) @db.Uuid
+  storeId            String         @unique
+  createdAt          DateTime       @default(now())
+  updatedAt          DateTime       @updatedAt
+  showHeader         Boolean        @default(true)
+  headerStyle        String         @default("center")
+  eyebrowLabel       String         @default("CUSTOMER REVIEWS")
+  heading            String         @default("Real reviews from real people")
+  subheading         String         @default("Watch and hear what our customers have to say.")
+  reviewStats        String         @default("Show review count & verified badge")
+  showReviewerName   Boolean        @default(true)
+  showReviewImage    Boolean        @default(true)
+  showVerifiedBadge  Boolean        @default(true)
+  showProductName    Boolean        @default(true)
+  showReviewDate     Boolean        @default(true)
+  showAutoPlay       Boolean        @default(true)
+  showNavigationDots Boolean        @default(true)
+  showArrowControls  Boolean        @default(true)
+  autoplaySpeed      Int            @default(4)
+  cardsVisible       Int            @default(3)
+  fiteringMinStart   FilterMinStars @default(ALL)
+  startColor         String         @default("#34C759")
+  activeDotColor     String         @default("#34C759")
+  cardBackgorud      String         @default("#FFF")
+  cardTextColor      String         @default("#000")
+  advanceCss         String         @default("")
+  store              Store          @relation(fields: [storeId], references: [storeGID], onDelete: Cascade)
 }
 
 model ReviewHubWidget {

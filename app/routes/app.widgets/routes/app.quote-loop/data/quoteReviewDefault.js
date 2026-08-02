@@ -30,7 +30,7 @@ export const DEFAULT_QUOTE_LOOP_SETTINGS = {
   cardBackgroundColor: "#FFFFFF",
   eyebrowLabel: "CUSTOMER REVIEWS",
   filterSorting: "Filter & sorting both",
-  fiteringMinStart: "3 star and above",
+  fiteringMinStart: "ALL",
   headerStyle: "center",
   heading: "Reviews from people",
   quoteFontSize: 24,

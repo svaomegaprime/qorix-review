@@ -27,6 +27,7 @@
   data-sort="{{ quote_loop_metafield.defaultSort }}"
   data-limit="{{ quote_loop_metafield.reviewPerPage }}"
   data-page-type="{{ template.name }}"
+  data-filter-min-stars="{{ quote_loop_metafield.fiteringMinStart }}"
 >
   {% if quote_loop_metafield.showHeader != blank %}
     {% render 'heading',
