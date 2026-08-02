@@ -441,6 +441,7 @@ CREATE TABLE "ReviewHubWidget" (
     "showAppreciationOption" BOOLEAN NOT NULL DEFAULT true,
     "layout" TEXT NOT NULL DEFAULT '3',
     "filterSorting" TEXT NOT NULL DEFAULT 'FILTER_AND_SORTING',
+    "filterMinStar" "FilterMinStars" NOT NULL DEFAULT 'ALL',
     "reviewsPerPage" INTEGER NOT NULL DEFAULT 9,
     "starColor" TEXT NOT NULL DEFAULT '#34C759',
     "textColor" TEXT NOT NULL DEFAULT '#1A1A1A',
