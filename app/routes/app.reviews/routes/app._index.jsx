@@ -16,6 +16,8 @@ import {
 import { sendEmail } from "../../../utils/sendEmail";
 import { buildReplyEmailData } from "../../../services/emailPayload.server.js";
 import { usePagination } from "../../../hooks/usePagination.js";
+import { updateProductReviewDefineMetafields } from "../../../utils/updateProductReviewDefineMetafields";
+import { authenticate } from "../../../shopify.server";
 const REVIEWS_PER_PAGE = 8;
 const EXPORT_PREVIEW_LIMIT = 5;
 
@@ -137,6 +139,7 @@ async function getFilteredReviews(storeId, search, rating, productId) {
 
 export async function action({ request }) {
   try {
+    const { admin, session } = await authenticate.admin(request);
     const { storeData } = await requireAdminContext(request);
     const method = request.method.toUpperCase();
 
@@ -492,31 +495,7 @@ export default function Reviews() {
 
   return (
     <>
-      {/* <s-modal id="import-reviews-modal" heading="Import Reviews" open>
-        <s-stack>
-          <s-drop-zone
-            label="Upload reviews CSV file"
-            accessibilityLabel="Upload reviews CSV file"
-            accept=".csv,.xlsx"
-            onInput="console.log('onInput', event.currentTarget?.value)"
-            onChange="console.log('onChange', event.currentTarget?.value)"
-            onDropRejected="console.log('onDropRejected', event.currentTarget?.value)"
-          ></s-drop-zone>
-        </s-stack>
-
-        <s-button slot="secondary-actions" commandFor="modal" command="--hide">
-          Close
-        </s-button>
-        <s-button
-          slot="primary-action"
-          variant="primary"
-          commandFor="modal"
-          command="--hide"
-        >
-          Save
-        </s-button>
-      </s-modal> */}
-      <s-modal id="export-reviews-modal" heading="Export Reviews">
+      {/* <s-modal id="export-reviews-modal" heading="Export Reviews">
         <s-stack gap="base">
           <s-text>
             Download all reviews as a CSV file. Previewing the first{" "}
@@ -607,7 +586,7 @@ export default function Reviews() {
         >
           Download
         </s-button>
-      </s-modal>
+      </s-modal> */}
       <s-page>
         {/* Start----Page Header */}
         <s-grid
@@ -641,10 +620,7 @@ export default function Reviews() {
             >
               Import
             </s-button> */}
-            <s-button
-              icon="upload"
-              onClick={() => shopify.modal.show("export-reviews-modal")}
-            >
+            <s-button icon="upload" onClick={() => handleExportReview()}>
               Export
             </s-button>
           </s-grid>
