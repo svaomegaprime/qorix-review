@@ -711,7 +711,7 @@ export default function Reviews() {
             <s-grid gridTemplateColumns="242px 109px 120px" gap="base">
               {/* Start----Search field */}
               <s-search-field
-                placeholder="Search reviews,"
+                placeholder="Search by name or product"
                 value={searchQuery}
                 onInput={(e) => handleSearchChange(e.currentTarget.value)}
               />
