@@ -25,9 +25,9 @@ export default function PostReviewEmail({ emailSettings, onChange }) {
                 label="Enable review confirmation email"
                 details="Let customers know their review was received"
               />
-              <s-button variant="secondary" icon="eye-check-mark">
+              {/* <s-button variant="secondary" icon="eye-check-mark">
                 Preview
-              </s-button>
+              </s-button> */}
             </s-grid>
             <s-divider />
             <s-heading>Email subject line</s-heading>

@@ -160,7 +160,12 @@ export default function EmailSettings() {
           <Text>Email settings</Text>
           <s-text>Manage what customers see in every email from Qorix</s-text>
         </s-box>
-        <s-button icon="business-entity" inline="fill" variant="secondary">
+        <s-button
+          href="/app/settings/branding"
+          icon="business-entity"
+          inline="fill"
+          variant="secondary"
+        >
           Preview email
         </s-button>
       </s-stack>
