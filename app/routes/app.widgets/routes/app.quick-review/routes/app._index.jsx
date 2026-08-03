@@ -969,10 +969,6 @@ export default function Index(VALUES = {}) {
                                 Only videos
                               </s-option>
 
-                              <s-option value="VIDEOS_FIRST">
-                                Videos first
-                              </s-option>
-
                               <s-option value="MOST_HELPFUL">
                                 Most helpful
                               </s-option>
