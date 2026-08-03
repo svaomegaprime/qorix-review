@@ -58,6 +58,11 @@
     {% endif %}
     <p class="quickreview-review__body" x-text="review.body"></p>
 
+    <div class="quickreview-review__reply" x-show="review?.reply?.body">
+      <h6>Reply</h6>
+      <p x-text="review?.reply?.body"></p>
+    </div>
+
     {% if quick_review_metafield.isShowMediaThumbnails %}
       <div class="quickreview-review__media" x-show="review.attachments.length > 0">
         <template x-for="attachment in review.attachments" :key="attachment.id">
@@ -108,11 +113,6 @@
           </svg>
           Helpful (<span data-quickreview-review-helpful-count x-text="review.helpfulTotal || 0">0</span>)
         </button>
-        {% comment %}
-          <div class="quickreview-review__report-divider">
-            <button type="button" class="quickreview-review__report" data-quickreview-review-report>Report</button>
-            </div>
-        {% endcomment %}
       </div>
     {% endif %}
   </div>
