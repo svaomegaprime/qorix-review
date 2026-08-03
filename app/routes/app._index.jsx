@@ -16,6 +16,7 @@ import {
 } from "../services/reviews.server.js";
 import { sendEmail } from "../utils/sendEmail";
 import { buildReplyEmailData } from "../services/emailPayload.server.js";
+import { useAdminFetcherToast } from "../utils/useAdminFetcherToast";
 
 import { checkAppEmbedEnabled, getWidgetsInstalledStatus } from "../services/appEmbed.server.js";
 export async function loader({ request }) {
@@ -86,6 +87,14 @@ export async function action({ request }) {
             status: String(status),
             storeId: storeData.id,
           });
+          
+          let message = "Review status updated successfully";
+          if (status === "ARCHIVE") {
+            message = "Review unpublished successfully";
+          } else if (status === "PUBLISHED") {
+            message = "Review published successfully";
+          }
+          return { ok: true, message };
         }
         break;
       }
@@ -97,6 +106,7 @@ export async function action({ request }) {
             reviewId: String(reviewId),
             storeId: storeData.id,
           });
+          return { ok: true, message: "Review deleted successfully" };
         }
         break;
       }
@@ -172,6 +182,7 @@ export async function action({ request }) {
 
 export default function Index() {
   const fetcher = useFetcher();
+  useAdminFetcherToast(fetcher);
   const { reviews, pendingOrders, shop = "", apiKey = "", isAppEnabled = false, isQuickReviewInstalled = false, isEmailConfigured = false } = useLoaderData();
   // Start----Default CSR loading state checking for navigation
   const navigation = useNavigation();

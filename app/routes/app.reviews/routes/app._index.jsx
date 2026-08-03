@@ -192,7 +192,15 @@ export async function action({ request }) {
           rating,
           productId,
         );
-        return { reviews };
+        
+        let message = "Review status updated successfully";
+        if (status === "ARCHIVE") {
+          message = "Review unpublished successfully";
+        } else if (status === "PUBLISHED") {
+          message = "Review published successfully";
+        }
+
+        return { reviews, ok: true, message };
       }
       case "DELETE": {
         const formData = await request.formData();
@@ -218,7 +226,7 @@ export async function action({ request }) {
           rating,
           productId,
         );
-        return { reviews };
+        return { reviews, ok: true, message: "Review deleted successfully" };
       }
 
       // Reply review
