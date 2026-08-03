@@ -13,6 +13,9 @@
     --qrtb-text-weight: {% if trust_bar_metafield.fontWeight == 'LIGHT' %} 400 {% elsif  trust_bar_metafield.fontWeight == 'MEDIUM' %} 500 {% elsif  trust_bar_metafield.fontWeight == 'BOLD' %} 900 {% endif %} ;
     --qrtb-no-review-hide:  {% if trust_bar_metafield.hideIfNoReviews %} none {% else %} inline-flex {% endif %};
   }
+  div:empty{
+     display:grid !important;
+  }
 </style>
 {{ 'trust-bar.css' | asset_url | stylesheet_tag }}
 {% render 'custom-css', css: trust_bar_metafield.advanceCss %}
@@ -33,7 +36,6 @@
 <script src="{{ 'trust-bar.js' | asset_url }}" defer></script>
 <script src="{{ 'review.js' | asset_url }}" defer></script>
 <script src="{{ 'alpine.js' | asset_url }}" defer></script>
-
 
 {% schema %}
 {

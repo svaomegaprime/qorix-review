@@ -3,18 +3,20 @@
   <div class="quickreview-media-modal__overlay" data-quickreview-media-modal-close></div>
 
   <div class="quickreview-media-modal__box">
-    <button
-      type="button"
-      class="quickreview-media-modal__close"
-      data-quickreview-media-modal-close
-      aria-label="Close"
-      @click="showAllMedia = false"
-    >
-      <svg width="12" height="12" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-        <path d="M5 5L19 19M19 5L5 19" stroke="#4A4A4A" stroke-width="2.2" stroke-linecap="round"/>
-      </svg>
-    </button>
-
+    <div class="quickreview-media-modal__header">
+      <p>Review With media</p>
+      <button
+        type="button"
+        class="quickreview-media-modal__close"
+        data-quickreview-media-modal-close
+        aria-label="Close"
+        @click="showAllMedia = false"
+      >
+        <svg width="12" height="12" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+          <path d="M5 5L19 19M19 5L5 19" stroke="#4A4A4A" stroke-width="2.2" stroke-linecap="round"/>
+        </svg>
+      </button>
+    </div>
     <div class="quickreview-media-modal__body">
       <div class="quickreview-media-modal__grid" data-quickreview-media-modal-grid>
         <template x-if="attachments?.length">
