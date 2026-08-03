@@ -13,7 +13,7 @@ class ReviewX {
     ];
 
     this.activeFilter = "ALL";
-    this.activeSort = "MOST_RECENT";
+    this.activeSort = "ALL";
     this.filtersOpen = false;
     this.sortOpen = false;
     this.modalOpen = false;
@@ -155,6 +155,7 @@ class ReviewX {
       this.limit = Number(limit) || 10;
       this.baseLimit = this.limit;
       this.sort = defaultSort;
+      this.activeSort = defaultSort;
 
       if (!productJson) {
         console.warn("No product JSON found");

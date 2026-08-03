@@ -53,7 +53,7 @@ model QuickReviewWidget {
   showHelfullButton            Boolean        @default(true)
   filterAndSorting             String         @default("FILTER_AND_SORT")
   reviewPerPage                Int            @default(10)
-  defaultSort                  String         @default("MOST_RECENT")
+  defaultSort                  String         @default("ALL")
   filterMinStar                FilterMinStars @default(ALL)
   createdAt                    DateTime       @default(now())
   updatedAt                    DateTime       @updatedAt

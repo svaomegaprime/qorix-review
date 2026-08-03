@@ -59,7 +59,7 @@ const DEFAULT_QUICK_REVIEW_STATE = {
   isShowMediaWithoutRating: true,
   writeReviewButtonText: "Write a review",
   showHelfullButton: true,
-  defaultSort: "MOST_RECENT",
+  defaultSort: "ALL",
   filterAndSorting: "FILTER_AND_SORTING",
   filterMinStar: "ALL",
 };
@@ -949,8 +949,9 @@ export default function Index(VALUES = {}) {
                                 }))
                               }
                             >
+                              <s-option value="ALL">All (default)</s-option>
                               <s-option value="MOST_RECENT">
-                                Most recent (default)
+                                Most recent
                               </s-option>
 
                               <s-option value="HIGHEST_RATING">

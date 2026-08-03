@@ -49,7 +49,7 @@
           <ul class="quickreview-reviews__sort-menu" x-show="sortOpen">
             <template x-for="option in sortOptions" :key="option.value">
               <li
-                value="ALL"
+                value="option.value"
                 class=""
                 @click="setSort(option.value)"
                 :class="{ 'is-active': option.value === activeSort }"
