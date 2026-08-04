@@ -26,45 +26,56 @@ export async function getOrdersWithStatus(orders, storeId) {
       reviewCheckStatus: true,
       requestType: true,
       lineItems: true,
+      reviews: true,
     },
   });
 
-  // Create lookup map keyed by "email-orderId"
+  // Orders are already scoped by storeId, so orderId is the stable join key.
   const orderMap = new Map(
     ordersDb.map((order) => [
-      `${order.userEmail}-${order.orderId}`,
+      order.orderId,
       {
         reviewCheckStatus: order.reviewCheckStatus,
         requestType: order.requestType,
         // Map relational lineItems to virtual productsJson for backward compatibility
         productsJson: order.lineItems || [],
+        reviews: order.reviews,
       },
     ]),
   );
 
   // Merge reviewCheckStatus, requestType, and per-product isReviewed into Shopify orders
   return orders.map((order) => {
-    const key = `${order.email}-${order.orderId}`;
-    const dbData = orderMap.get(key);
+    const dbData = orderMap.get(order.orderId);
 
     // Build productId → dbProduct map, normalising IDs to numeric strings
     const dbProductMap = new Map(
       (dbData?.productsJson ?? []).map((p) => [extractNumericId(p.productId), p]),
     );
+    const reviewedProductIds = new Set(
+      (dbData?.reviews ?? []).map((review) => extractNumericId(review.productId)),
+    );
 
     const mergedProducts = (order.products ?? []).map((product) => {
-      const dbProduct = dbProductMap.get(extractNumericId(product.productId));
+      const productId = extractNumericId(product.productId);
+      const dbProduct = dbProductMap.get(productId);
       return {
         ...product,
-        isReviewed: dbProduct?.isReviewed ?? false,
+        isReviewed: dbProduct?.isReviewed === true || reviewedProductIds.has(productId),
       };
     });
+    const allProductsReviewed =
+      mergedProducts.length > 0 &&
+      mergedProducts.every((product) => product.isReviewed === true);
 
     return {
       ...order,
       products: mergedProducts,
-      reviewCheckStatus: dbData?.reviewCheckStatus ?? "PENDING",
+      reviewCheckStatus: allProductsReviewed
+        ? "REVIEWED"
+        : (dbData?.reviewCheckStatus ?? "PENDING"),
       requestType: dbData?.requestType ?? "AUTOMATIC",
+      reviews: dbData?.reviews ?? [],
     };
   });
 }
