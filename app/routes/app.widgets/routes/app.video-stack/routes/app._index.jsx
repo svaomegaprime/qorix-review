@@ -557,16 +557,16 @@ export default function Index() {
                         handleSettingChange("fiteringMinStart", e.target.value)
                       }
                     >
-                      <s-option value="Show all ratings">
+                      <s-option value="ALL">
                         Show all ratings
                       </s-option>
-                      <s-option value="3 star and above">
+                      <s-option value="STAR_3">
                         3 star and above
                       </s-option>
-                      <s-option value="4 star and above">
+                      <s-option value="STAR_4">
                         4 star and above
                       </s-option>
-                      <s-option value="5 star only">5 star only</s-option>
+                      <s-option value="STAR_5">5 star only</s-option>
                     </s-select>
                     <br></br>
                   </s-stack>

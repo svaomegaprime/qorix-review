@@ -38,7 +38,7 @@ export const DEFAULT_VALUES_VIDEO_STACK = {
   showNavigationDots: true,
   showArrowControls: true,
   thumbnailsShown: 5,
-  fiteringMinStart: "3 star and above",
+  fiteringMinStart: "ALL",
 
   // color piker
   startColor: DEFAULT_COLOR_VALUES.STAR_COLOR,

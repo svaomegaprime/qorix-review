@@ -26,9 +26,9 @@ export default function BrandingEmailPreview({
           justifyContent="space-between"
         >
           <Text>Email settings</Text>
-          <s-button icon="business-entity" inline="fill" variant="secondary">
+          {/* <s-button icon="business-entity" inline="fill" variant="secondary">
             Refresh preview
-          </s-button>
+          </s-button> */}
         </s-stack>
         <s-text>Manage what customers see in every email from Qorix</s-text>
       </s-box>

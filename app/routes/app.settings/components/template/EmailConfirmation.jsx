@@ -54,7 +54,7 @@ export default function EmailConfirmation({ postRequestEmail, brandSettings }) {
               --email-bg : ${brandSettings.emailBackgroundColor};
               --email-body-text-color: ${brandSettings.emailBodyTextColor};
               --email-border-color: ${brandSettings.emailAccentBorderColor};
-            }          
+            }
             /* Mother selector: everything for this email lives under .email-confirmation */
             .email-confirmation {
                 max-width: 500px;
@@ -65,15 +65,20 @@ export default function EmailConfirmation({ postRequestEmail, brandSettings }) {
                 padding: 20px;
                 box-sizing: border-box;
             }
-            
+
             .email-confirmation .qr-header {
+                width: 110px;
                 display: flex;
                 align-items: center;
                 justify-content: var(--store-logo-position);
                 gap: 10px;
                 margin-bottom: 18px;
             }
-            
+
+            .email-confirmation .qr-header img {
+                width: 100%;
+            }
+
             .email-confirmation .qr-logo-mark {
                 width: 30px;
                 height: 30px;
@@ -87,51 +92,51 @@ export default function EmailConfirmation({ postRequestEmail, brandSettings }) {
                 justify-content: center;
                 flex-shrink: 0;
             }
-            
+
             .email-confirmation .qr-brand {
                 line-height: 1.05;
             }
-            
+
             .email-confirmation .qr-brand-name {
                 font-size: 19px;
                 font-weight: 700;
                 color: #1a1a1a;
                 letter-spacing: 0.2px;
             }
-            
+
             .email-confirmation .qr-brand-sub {
                 font-size: 10px;
                 font-weight: 600;
                 color: #9a9a9a;
                 letter-spacing: 2.5px;
             }
-            
+
             .email-confirmation .qr-tagline {
                 font-size: 14px;
                 color: var(--email-body-text-color);
                 margin: 0 0 18px;
             }
-            
+
             .email-confirmation .qr-divider {
                 border: none;
                 border-top: 1px solid #e9e9e9;
                 margin: 0 0 24px;
             }
-            
+
             .email-confirmation .qr-greeting {
                 font-size: 15px;
                 font-weight: 700;
                 color: #1a1a1a;
                 margin: 0 0 12px;
             }
-            
+
             .email-confirmation .qr-message {
                 font-size: 14.5px;
                 line-height: 1.55;
                 color: var(--email-body-text-color);
                 margin: 0 0 24px;
             }
-            
+
             .email-confirmation .qr-product-card {
                 display: flex;
                 align-items: center;
@@ -141,7 +146,7 @@ export default function EmailConfirmation({ postRequestEmail, brandSettings }) {
                 padding: 14px;
                 margin-bottom: 28px;
             }
-            
+
             .email-confirmation .qr-product-avatar {
                 width: 56px;
                 height: 56px;
@@ -152,37 +157,37 @@ export default function EmailConfirmation({ postRequestEmail, brandSettings }) {
                 align-items: center;
                 justify-content: center;
             }
-            
+
             .email-confirmation .qr-product-avatar svg {
                 width: 26px;
                 height: 26px;
                 color: #b8b8b8;
             }
-            
+
             .email-confirmation .qr-product-info {
                 display: flex;
                 flex-direction: column;
                 gap: 4px;
             }
-            
+
             .email-confirmation .qr-rating {
                 font-size: 16px;
                 color: #f5a623;
                 letter-spacing: 2px;
                 line-height: 1;
             }
-            
+
             .email-confirmation .qr-product-name {
                 font-size: 14.5px;
                 font-weight: 700;
                 color: var(--email-heading-color);
             }
-            
+
             .email-confirmation .qr-product-date {
                 font-size: 13px;
                 color: #9a9a9a;
             }
-            
+
             .email-confirmation .qr-cta {
                 display: flex;
                 align-items: center;
@@ -201,33 +206,33 @@ export default function EmailConfirmation({ postRequestEmail, brandSettings }) {
                 margin-bottom: 30px;
                 cursor: pointer;
             }
-            
+
             .email-confirmation .qr-cta-arrow {
                 font-size: 16px;
                 line-height: 1;
             }
-            
+
             .email-confirmation .qr-footer {
                 text-align: center;
             }
-            
+
             .email-confirmation .qr-footer-meta {
                 font-size: 12.5px;
                 color: rgb(from var(--email-body-text-color) r g b / 70%);
                 margin: 0 0 6px;
             }
-            
+
             .email-confirmation .qr-footer-meta a {
                 color: rgb(from var(--email-body-text-color) r g b / 70%);
                 text-decoration: underline;
             }
-            
+
             .email-confirmation .qr-footer-powered {
                 font-size: 13px;
                 color: rgb(from var(--email-body-text-color) r g b / 50%);
                 margin: 0;
             }
-            
+
             .email-confirmation .qr-footer-powered .qr-brand-highlight {
                 color: var(--email-button-bg-color);
                 font-weight: 700;

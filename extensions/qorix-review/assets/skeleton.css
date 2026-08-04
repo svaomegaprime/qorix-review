@@ -1,7 +1,8 @@
   .qr-skeleton-wrapper {
     display: flex;
     flex-direction: column;
-    gap: 32px; /* Spacing between multiple skeleton reviews */
+    gap: 32px;
+    /* Spacing between multiple skeleton reviews */
     width: 100%;
     margin-top: 40px;
   }
@@ -196,6 +197,7 @@
     0% {
       background-position: -600px 0;
     }
+
     100% {
       background-position: 600px 0;
     }

@@ -37,7 +37,7 @@ export const DEFAULT_VALUES_REVIEW_REEL = {
   showArrowControls: true,
   autoplaySpeed: 4,
   cardsVisible: 3,
-  fiteringMinStart: "3 star and above",
+  fiteringMinStart: "ALL",
 
   // color piker
   startColor: DEFAULT_COLOR_VALUES.BADGE_COLOR,

@@ -12,8 +12,8 @@ import SaveBar from "../../../components/essentials/SaveBar";
 import { useSaveBarForm } from "../../../hooks/useSaveBarForm.js";
 import { requireAdminContext } from "../../../services/adminContext.server.js";
 
-const DELIVERY_DAY_OPTIONS = [5, 7, 15];
-const REMINDER_DAY_OPTIONS = [5, 7, 10, 15];
+const DELIVERY_DAY_OPTIONS = [0, 5, 7, 15];
+const REMINDER_DAY_OPTIONS = [0, 5, 7, 10, 15];
 const MINIMUM_ORDER_VALUE_OPTIONS = [0, 100, 500, 1000];
 
 function getCustomFieldState(scheduling) {
@@ -190,15 +190,16 @@ export default function Settings() {
                     <s-number-field
                       inputMode="numeric"
                       step={1}
-                      min={0}
+                      min={1}
                       label="Custom days"
                       defaultValue={requestScheduling.sendRequestAfterDelivery}
-                      onInput={(e) =>
+                      onInput={(e) => {
+                        const val = Number(e.target.value);
                         setRequestScheduling((pre) => ({
                           ...pre,
-                          sendRequestAfterDelivery: Number(e.target.value),
-                        }))
-                      }
+                          sendRequestAfterDelivery: val < 1 ? 0 : val,
+                        }));
+                      }}
                     />
                   )}
                 </s-stack>
@@ -261,15 +262,16 @@ export default function Settings() {
                     <s-number-field
                       inputMode="numeric"
                       step={1}
-                      min={0}
+                      min={1}
                       label="Custom days"
                       defaultValue={requestScheduling.reminderRequestDelay}
-                      onInput={(e) =>
+                      onInput={(e) => {
+                        const val = Number(e.target.value);
                         setRequestScheduling((pre) => ({
                           ...pre,
-                          reminderRequestDelay: Number(e.target.value),
-                        }))
-                      }
+                          reminderRequestDelay: val < 1 ? 0 : val,
+                        }));
+                      }}
                     />
                   )}
                 </s-stack>

@@ -1,6 +1,6 @@
 {{ 'quickreview-media-slider.css' | asset_url | stylesheet_tag }}
 
-<div x-show="reviews.length > 0 ? true : showMediaWithoutRating" class="qorix-qr-media-container">
+<div x-show="attachments.length > 0 ? true : showMediaWithoutRating" class="qorix-qr-media-container">
   <div class="qorix-qr-media-header">
     <span class="qorix-qr-media-title">Reviews with media</span>
     <p class="qorix-qr-media-see-all" @click="showAllMedia = true">See all media</p>

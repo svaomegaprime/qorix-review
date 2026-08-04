@@ -2,11 +2,6 @@ import { connection } from "./redis.js";
 
 const DEFAULT_TTL = 300; // 5 minutes
 
-/**
- * Read a cached JSON value.
- * @param {string} key
- * @returns {Promise<any | null>}
- */
 export async function getCache(key) {
   try {
     const raw = await connection.get(key);
@@ -18,12 +13,6 @@ export async function getCache(key) {
   }
 }
 
-/**
- * Write a JSON value with an expiry.
- * @param {string} key
- * @param {any} data
- * @param {number} [ttl=DEFAULT_TTL] seconds
- */
 export async function setCache(key, data, ttl = DEFAULT_TTL) {
   try {
     await connection.set(key, JSON.stringify(data), "EX", ttl);
@@ -32,13 +21,6 @@ export async function setCache(key, data, ttl = DEFAULT_TTL) {
   }
 }
 
-/**
- * Invalidate all review cache entries for a store + optional product.
- * Uses SCAN (not KEYS) so it's safe in production.
- *
- * @param {string} storeId
- * @param {string} [productId] — if omitted, clears ALL review cache for the store
- */
 export async function invalidateReviewCache(storeId, productId) {
   const pattern = productId
     ? `reviews:${storeId}:${productId}:*`

@@ -35,6 +35,7 @@
   data-limit="{{ review_hub_metafield.reviewsPerPage }}"
   data-page-type="{{ template.name }}"
   data-show-first="IMAGE_VIDEO"
+  data-filter-min-stars="{{ review_hub_metafield.filterMinStar }}"
 >
   {% if review_hub_metafield.showHeader %}
     {% render 'heading',

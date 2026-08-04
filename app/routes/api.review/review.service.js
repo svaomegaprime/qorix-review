@@ -497,6 +497,7 @@ async function getReview(request, session, admin) {
         ...baseWhere,
       },
       include: {
+        reply: true,
         attachments: true,
         helpfulCount: {
           where: customerEmail

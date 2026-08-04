@@ -97,7 +97,8 @@ function settingsToDbFields(settings) {
     starColor: settings.colors?.STAR_COLOR ?? DEFAULT_COLOR_VALUES.STAR_COLOR,
     textColor: settings.colors?.TEXT_COLOR ?? DEFAULT_COLOR_VALUES.TEXT_COLOR,
     quoteMarkColor:
-      settings.colors?.QUOTE_MARK_COLOR ?? DEFAULT_COLOR_VALUES.QUOTE_MARK_COLOR,
+      settings.colors?.QUOTE_MARK_COLOR ??
+      DEFAULT_COLOR_VALUES.QUOTE_MARK_COLOR,
     cardBackgroundColor:
       settings.colors?.Card_Background_Color ??
       DEFAULT_COLOR_VALUES.Card_Background_Color,
@@ -150,10 +151,7 @@ export async function action({ request }) {
       },
     });
 
-
     const metaObjectdata = await setAppMetafield(admin, "quote_loop", res);
-
-
 
     return {
       ok: true,
@@ -463,10 +461,7 @@ export default function Index(VALUES = {}) {
                       label="Show product Name"
                       checked={settings.showProductName}
                       onChange={(e) =>
-                        handleSettingChange(
-                          "showProductName",
-                          e.target.checked,
-                        )
+                        handleSettingChange("showProductName", e.target.checked)
                       }
                     ></s-switch>
                   </s-stack>
@@ -536,22 +531,19 @@ export default function Index(VALUES = {}) {
                       label="Filter min stars"
                       value={settings.fiteringMinStart}
                       onChange={(e) =>
-                        handleSettingChange(
-                          "fiteringMinStart",
-                          e.target.value,
-                        )
+                        handleSettingChange("fiteringMinStart", e.target.value)
                       }
                     >
-                      <s-option value="Show all ratings">
+                      <s-option value="ALL">
                         Show all ratings
                       </s-option>
-                      <s-option value="3 star and above">
+                      <s-option value="STAR_3">
                         3 star and above
                       </s-option>
-                      <s-option value="4 star and above">
+                      <s-option value="STAR_4">
                         4 star and above
                       </s-option>
-                      <s-option value="5 star only">5 star only</s-option>
+                      <s-option value="STAR_5">5 star only</s-option>
                     </s-select>
                   </s-stack>
                 </s-stack>
