@@ -59,9 +59,9 @@ export default function SetupGuide({ shop = "", apiKey = "", isAppEnabled = fals
         if (showToastForStep !== null) {
             if (typeof shopify !== "undefined" && shopify.toast) {
                 if (showToastForStep === 1 && !isAppEnabled) {
-                    shopify.toast.show("Please enable app embed first", { isError: true });
+                    shopify.toast.show("Enable app embed in your live theme", { isError: true });
                 } else if (showToastForStep === 2 && (!isAppEnabled || !isQuickReviewInstalled)) {
-                    shopify.toast.show(!isAppEnabled ? "Please enable app embed first" : "Please install Quick Review widget from the Widgets page", { isError: true });
+                    shopify.toast.show(!isAppEnabled ? "Enable app embed in your live theme first" : "Please install quick review widget from the widgets page", { isError: true });
                 } else if (showToastForStep === 3 && !isEmailConfigured) {
                     shopify.toast.show("Please fill up your email settings (SMTP User, Password, Port, Host)", { isError: true });
                 } else {
