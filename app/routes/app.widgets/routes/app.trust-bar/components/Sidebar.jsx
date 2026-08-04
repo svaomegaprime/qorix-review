@@ -15,6 +15,7 @@ export default function Sidebar ({
     handleResetToDefaults,
     customCss,
     handleCssChange,
+    isInstalled,
 }) {
     const { typography, colors, contents, visibility } = VALUES;
 
@@ -35,7 +36,11 @@ export default function Sidebar ({
                 <s-box>
                     <s-stack direction="inline" alignItems="center" gap="small">
                         <Text as="h3">TrustBar</Text>
-                        <s-badge tone="success">Installed</s-badge>
+                        {isInstalled ? (
+                            <s-badge tone="success">Installed</s-badge>
+                        ) : (
+                            <s-badge tone="caution">Not installed</s-badge>
+                        )}
                     </s-stack>
                     <s-paragraph color="subdued">
                         Shows average rating + review count.
@@ -105,6 +110,7 @@ Sidebar.propTypes = {
     handleHideAppWindow: PropTypes.func.isRequired,
     handleChange: PropTypes.func.isRequired,
     handleResetToDefaults: PropTypes.func.isRequired,
-    customCss: PropTypes.string.isRequired,
-    handleCssChange: PropTypes.func.isRequired,
+    customCss: PropTypes.string,
+    handleCssChange: PropTypes.func,
+    isInstalled: PropTypes.bool
 }

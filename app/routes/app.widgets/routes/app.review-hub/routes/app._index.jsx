@@ -16,6 +16,7 @@ import {
   DEFAULT_COLOR_VALUES,
   DEFAULT_REVIEW_HUB_DATA,
 } from "../data/defaultData";
+import { getWidgetsInstalledStatus } from "../../../../../services/appEmbed.server";
 import { authenticate } from "../../../../../shopify.server";
 import prisma from "../../../../../db.server";
 import { getStoreData } from "../../../../../utils/getStoreData";
@@ -121,7 +122,11 @@ export async function loader({ request }) {
       },
     });
 
-    return dbRowToSettings(res);
+    const settings = dbRowToSettings(res);
+    const installedWidgetIds = await getWidgetsInstalledStatus(admin);
+    settings.isInstalled = installedWidgetIds.includes("review_hub");
+
+    return settings;
   } catch (error) {
     return adminErrorResponse(error);
   }
@@ -365,7 +370,11 @@ export default function Index() {
               <s-box>
                 <s-stack direction="inline" alignItems="center" gap="small">
                   <Text as="h3">ReviewHub</Text>
-                  <s-badge tone="caution">Not installed</s-badge>
+                  {loaderData?.isInstalled ? (
+                    <s-badge tone="success">Installed</s-badge>
+                  ) : (
+                    <s-badge tone="caution">Not installed</s-badge>
+                  )}
                 </s-stack>
                 <s-paragraph color="subdued">
                   Shows average rating + review count.

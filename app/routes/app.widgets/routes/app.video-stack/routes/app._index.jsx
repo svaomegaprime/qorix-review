@@ -24,6 +24,7 @@ import {
   COLOR_PICKERS_ELEMENTS,
   DEFAULT_VALUES_VIDEO_STACK,
 } from "../data/videoStackDefaultData";
+import { getWidgetsInstalledStatus } from "../../../../../services/appEmbed.server";
 
 // Shudhu eituku list-e thaka key gulai DB column, eta ekbar likhe rakle
 // mapper function 2ta ekhane sync thakbe.
@@ -81,7 +82,11 @@ export async function loader({ request }) {
       where: { storeId: shop },
     });
 
-    return dbRowToSettings(row); // row null hole DEFAULT_VALUES_VIDEO_STACK return kore
+    const settings = dbRowToSettings(row);
+    const installedWidgetIds = await getWidgetsInstalledStatus(admin);
+    settings.isInstalled = installedWidgetIds.includes("video_stack");
+
+    return settings;
   } catch (error) {
     console.error("[LOADER] ERROR:", error);
     return adminErrorResponse(error);
@@ -327,7 +332,11 @@ export default function Index() {
               <s-box>
                 <s-stack direction="inline" alignItems="center" gap="small">
                   <Text as="h3">VidoeStack</Text>
-                  <s-badge tone="caution">Not installed</s-badge>
+                  {loaderData?.isInstalled ? (
+                    <s-badge tone="success">Installed</s-badge>
+                  ) : (
+                    <s-badge tone="caution">Not installed</s-badge>
+                  )}
                 </s-stack>
                 <s-paragraph color="subdued">
                   Showcase your videos in a beautiful slide show

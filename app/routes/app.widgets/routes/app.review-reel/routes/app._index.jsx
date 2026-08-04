@@ -27,6 +27,7 @@ import {
   COLOR_PICKERS_ELEMENTS,
   DEFAULT_VALUES_REVIEW_REEL,
 } from "../component/data/reviewRealDefaultData";
+import { getWidgetsInstalledStatus } from "../../../../../services/appEmbed.server";
 
 // Shudhu eituku list-e thaka key gulai DB column, eta ekbar likhe rakle
 // mapper function 2ta ekhane sync thakbe.
@@ -87,7 +88,11 @@ export async function loader({ request }) {
       where: { storeId: shop },
     });
 
-    return dbRowToSettings(row); // row null hole DEFAULT_VALUES_REVIEW_REEL return kore
+    const settings = dbRowToSettings(row);
+    const installedWidgetIds = await getWidgetsInstalledStatus(admin);
+    settings.isInstalled = installedWidgetIds.includes("review_reel");
+
+    return settings;
   } catch (error) {
     console.error("[LOADER] ERROR:", error);
     return adminErrorResponse(error);
@@ -341,7 +346,11 @@ export default function Index() {
               <s-box>
                 <s-stack direction="inline" alignItems="center" gap="small">
                   <Text as="h3">ReviewReel</Text>
-                  <s-badge tone="success">Installed</s-badge>
+                  {loaderData?.isInstalled ? (
+                    <s-badge tone="success">Installed</s-badge>
+                  ) : (
+                    <s-badge tone="caution">Not installed</s-badge>
+                  )}
                 </s-stack>
                 <s-paragraph color="subdued">
                   Show your reviews in a slider with videos and images

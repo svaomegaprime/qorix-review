@@ -21,6 +21,7 @@ import { setAppMetafield } from "../../../../../utils/appMetafields.server";
 import { adminErrorResponse } from "../../../../../utils/adminError.server";
 import { useAdminFetcherToast } from "../../../../../utils/useAdminFetcherToast";
 import ActiveToggleHeader from "../../../../../routes/app.widgets/components/elements/ActiveToggleHeader";
+import { getWidgetsInstalledStatus } from "../../../../../services/appEmbed.server";
 
 const DEFAULT_COLOR_VALUES = {
   STAR_COLOR: "#f59e0b",
@@ -169,7 +170,10 @@ export async function loader({ request }) {
       },
     });
 
-    return res;
+    const installedWidgetIds = await getWidgetsInstalledStatus(admin);
+    const isInstalled = installedWidgetIds.includes("quick_review");
+
+    return { ...res, isInstalled };
   } catch (error) {
     return adminErrorResponse(error);
   }
@@ -212,6 +216,7 @@ export async function action({ request }) {
 
 export default function Index(VALUES = {}) {
   const loaderData = useLoaderData();
+  const isInstalled = loaderData?.isInstalled;
   const actionData = useActionData();
 
   console.log("[Quick Review::Action Data]: ", actionData);
@@ -480,7 +485,11 @@ export default function Index(VALUES = {}) {
               <s-box>
                 <s-stack direction="inline" alignItems="center" gap="small">
                   <Text as="h3">QuickReview</Text>
-                  <s-badge tone="caution">Not installed</s-badge>
+                  {isInstalled ? (
+                    <s-badge tone="success">Installed</s-badge>
+                  ) : (
+                    <s-badge tone="caution">Not installed</s-badge>
+                  )}
                 </s-stack>
                 <s-paragraph color="subdued">
                   Show a quick review form on your product page.

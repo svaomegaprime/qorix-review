@@ -23,6 +23,7 @@ import {
   DEFAULT_COLOR_VALUES,
   createDefaultSettings,
 } from "../data/quoteReviewDefault";
+import { getWidgetsInstalledStatus } from "../../../../../services/appEmbed.server";
 
 const cloneSettings = (settings) => JSON.parse(JSON.stringify(settings));
 
@@ -120,7 +121,11 @@ export async function loader({ request }) {
       },
     });
 
-    return dbRowToSettings(res);
+    const settings = dbRowToSettings(res);
+    const installedWidgetIds = await getWidgetsInstalledStatus(admin);
+    settings.isInstalled = installedWidgetIds.includes("quote_loop");
+
+    return settings;
   } catch (error) {
     console.error("[LOADER] ERROR:", error);
     return adminErrorResponse(error);
@@ -354,7 +359,11 @@ export default function Index(VALUES = {}) {
               <s-box>
                 <s-stack direction="inline" alignItems="center" gap="small">
                   <Text as="h3">QuoteLoop</Text>
-                  <s-badge tone="caution">Not installed</s-badge>
+                  {loaderData?.isInstalled ? (
+                    <s-badge tone="success">Installed</s-badge>
+                  ) : (
+                    <s-badge tone="caution">Not installed</s-badge>
+                  )}
                 </s-stack>
                 <s-paragraph color="subdued">
                   Show quotes on your storefront

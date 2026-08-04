@@ -13,6 +13,7 @@ import { setAppMetafield } from "../../../../../utils/appMetafields.server"
 import { adminErrorResponse } from "../../../../../utils/adminError.server"
 import { useAdminFetcherToast } from "../../../../../utils/useAdminFetcherToast"
 import { DEFAULT_TRUST_BAR_SETTINGS } from "../data/trastbarDefaultValue.js"
+import { getWidgetsInstalledStatus } from "../../../../../services/appEmbed.server";
 
 // Helper function to convert DB row to settings format
 const dbRowToSettings = (data) => {
@@ -143,7 +144,11 @@ export async function loader({ request }) {
             },
         });
 
-        return dbRowToSettings(res);
+        const settings = dbRowToSettings(res);
+        const installedWidgetIds = await getWidgetsInstalledStatus(admin);
+        settings.isInstalled = installedWidgetIds.includes("trust_bar");
+
+        return settings;
     } catch (error) {
         console.error("[LOADER] ERROR:", error);
         return adminErrorResponse(error);
@@ -378,6 +383,7 @@ export default function Index() {
                         handleResetToDefaults={handleResetToDefaults}
                         customCss={customCss}
                         handleCssChange={handleCssChange}
+                        isInstalled={loaderData?.isInstalled}
                     />
                     {/* End----Sidebar */}
 
