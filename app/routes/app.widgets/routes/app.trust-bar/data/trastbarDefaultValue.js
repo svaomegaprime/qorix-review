@@ -13,6 +13,7 @@ export const DEFAULT_TRUST_BAR_SETTINGS = {
     showAverageRating: true,
     showReviewCount: true,
     showVerifiedBadge: true,
+    showVerifiedIconOnly: false,
     reviewSource: "DEMO_REVIEW_SOURCE",
     
     // Visibility

@@ -81,7 +81,7 @@ export function renderTrustBar({ rating = "4.9", reviews = "(24 reviews)", stars
             {showVerifiedBadge && (
                 <span className="trust-preview__verified" style={textStyle}>
                     <VerifiedUser color={colors.VERIFIED_BADGE_COLOR} />
-                    <span>Verified reviews</span>
+                    {!contents.SHOW_VERIFIED_ICON_ONLY && <span>Verified reviews</span>}
                 </span>
             )}
         </div>

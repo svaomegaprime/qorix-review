@@ -101,6 +101,7 @@ Sidebar.propTypes = {
             SHOW_AVERAGE_RATING: PropTypes.bool.isRequired,
             SHOW_REVIEW_COUNT: PropTypes.bool.isRequired,
             SHOW_VERIFIED_BADGE: PropTypes.bool.isRequired,
+            SHOW_VERIFIED_ICON_ONLY: PropTypes.bool.isRequired,
             REVIEW_SOURCE: PropTypes.string.isRequired
         }).isRequired,
         visibility: PropTypes.shape({

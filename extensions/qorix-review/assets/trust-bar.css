@@ -101,4 +101,9 @@
    color: var(--qrtb-text-color);
    font-size: var(--qrtb-font-size);
    font-weight: var(--qrtb-text-weight);
+
+ }
+
+ .qorix-review-trust-bar-verified span {
+   display: var(--qrtb-show-verified-text, inline);
  }

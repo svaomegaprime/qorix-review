@@ -32,6 +32,7 @@ const dbRowToSettings = (data) => {
         showAverageRating: data.showAverageRating ?? DEFAULT_TRUST_BAR_SETTINGS.showAverageRating,
         showReviewCount: data.showReviewCount ?? DEFAULT_TRUST_BAR_SETTINGS.showReviewCount,
         showVerifiedBadge: data.showVerifiedBadge ?? DEFAULT_TRUST_BAR_SETTINGS.showVerifiedBadge,
+        showVerifiedIconOnly: data.showVerifiedIconOnly ?? DEFAULT_TRUST_BAR_SETTINGS.showVerifiedIconOnly,
         reviewSource: data.reviewSource ?? DEFAULT_TRUST_BAR_SETTINGS.reviewSource,
         hideIfNoReviews: data.hideIfNoReviews ?? DEFAULT_TRUST_BAR_SETTINGS.hideIfNoReviews,
         advanceCss: data.advanceCss ?? DEFAULT_TRUST_BAR_SETTINGS.advanceCss,
@@ -56,6 +57,7 @@ const settingsToGroupedValues = (settings) => ({
         SHOW_AVERAGE_RATING: settings.showAverageRating,
         SHOW_REVIEW_COUNT: settings.showReviewCount,
         SHOW_VERIFIED_BADGE: settings.showVerifiedBadge,
+        SHOW_VERIFIED_ICON_ONLY: settings.showVerifiedIconOnly,
         REVIEW_SOURCE: settings.reviewSource,
     },
     colors: {
@@ -83,6 +85,7 @@ const groupedFieldToFlatKey = {
         SHOW_AVERAGE_RATING: "showAverageRating",
         SHOW_REVIEW_COUNT: "showReviewCount",
         SHOW_VERIFIED_BADGE: "showVerifiedBadge",
+        SHOW_VERIFIED_ICON_ONLY: "showVerifiedIconOnly",
         REVIEW_SOURCE: "reviewSource",
     },
     colors: {
@@ -127,6 +130,7 @@ const settingsToDbFields = (settings) => {
         showAverageRating: Boolean(settings.showAverageRating ?? DEFAULT_TRUST_BAR_SETTINGS.showAverageRating),
         showReviewCount: Boolean(settings.showReviewCount ?? DEFAULT_TRUST_BAR_SETTINGS.showReviewCount),
         showVerifiedBadge: Boolean(settings.showVerifiedBadge ?? DEFAULT_TRUST_BAR_SETTINGS.showVerifiedBadge),
+        showVerifiedIconOnly: Boolean(settings.showVerifiedIconOnly ?? DEFAULT_TRUST_BAR_SETTINGS.showVerifiedIconOnly),
         reviewSource: String(settings.reviewSource ?? DEFAULT_TRUST_BAR_SETTINGS.reviewSource),
         hideIfNoReviews: Boolean(settings.hideIfNoReviews ?? DEFAULT_TRUST_BAR_SETTINGS.hideIfNoReviews),
         advanceCss: String(settings.advanceCss ?? DEFAULT_TRUST_BAR_SETTINGS.advanceCss),
