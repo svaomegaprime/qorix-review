@@ -299,7 +299,8 @@ export default function Settings() {
                   label="Skip refunded orders"
                   details="Don't send requests for orders that were fully refunded"
                 ></s-switch>
-                <s-switch
+                {/* cancelled order and check min order quantity */}
+                {/* <s-switch
                   defaultChecked={requestScheduling.isSkipCancelledOrder}
                   onChange={(e) =>
                     setRequestScheduling((pre) => ({
@@ -365,7 +366,7 @@ export default function Settings() {
                       </s-grid-item>
                     )}
                   </s-grid>
-                </CustomSection>
+                </CustomSection> */}
               </s-grid>
             </CustomSection>
           </CustomGridSection>

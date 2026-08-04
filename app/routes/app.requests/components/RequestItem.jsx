@@ -1,6 +1,11 @@
 import StatusTrack from "./essentials/StatusTrack";
-
-export default function RequestItem({ data, handleReminderEmailSend, handleRetryEmailSend }) {
+import starFilled from "../../../assets/images/star-filled.svg";
+import starEmpty from "../../../assets/images/star-empty.svg";
+export default function RequestItem({
+  data,
+  handleReminderEmailSend,
+  handleRetryEmailSend,
+}) {
   return (
     <>
       <s-modal
@@ -40,10 +45,10 @@ export default function RequestItem({ data, handleReminderEmailSend, handleRetry
                   <s-paragraph>
                     {data?.createdAt
                       ? new Date(data.createdAt).toLocaleDateString("en-US", {
-                        year: "numeric",
-                        month: "short",
-                        day: "numeric",
-                      })
+                          year: "numeric",
+                          month: "short",
+                          day: "numeric",
+                        })
                       : "-"}
                   </s-paragraph>
                 </div>
@@ -158,7 +163,32 @@ export default function RequestItem({ data, handleReminderEmailSend, handleRetry
             <s-avatar size="medium" borderRadius="full" src={data?.avatar} />
             <s-heading>{data?.fullName}</s-heading>
           </s-stack>
-          <s-text>{data?.timeAgo}</s-text>
+          <s-stack alignItems="end" gap="small">
+            <s-text>{data?.timeAgo}</s-text>
+            <s-grid gridTemplateColumns="repeat(5, 25px)">
+              {data?.reviews && data.reviews.length > 0 && (
+                // <s-stack direction="inline" gap="4px">
+                <>
+                  {Array.from({ length: 5 }).map((_, idx) => {
+                    const averageRating = Math.round(
+                      data.reviews.reduce(
+                        (acc, curr) => acc + (curr.rating || 0),
+                        0,
+                      ) / data.reviews.length,
+                    );
+                    return (
+                      <s-image
+                        key={idx}
+                        src={idx < averageRating ? starFilled : starEmpty}
+                        style={{ width: "16px", height: "16px" }}
+                      />
+                    );
+                  })}
+                </>
+                // </s-stack>
+              )}
+            </s-grid>
+          </s-stack>
         </s-stack>
         {/* End----Request header */}
         {/* Start----Request content */}
@@ -187,7 +217,10 @@ export default function RequestItem({ data, handleReminderEmailSend, handleRetry
         >
           {/* Start----Request status */}
           <s-stack direction="inline" gap="small" alignItems="center">
-            <Badges status={data?.reviewCheckStatus} />
+            <Badges
+              status={data?.reviewCheckStatus}
+              paymentStatus={data?.status}
+            />
             {data?.requestType && (
               <s-badge
                 tone={data?.requestType === "AUTOMATIC" ? "info" : "caution"}
@@ -222,13 +255,28 @@ export default function RequestItem({ data, handleReminderEmailSend, handleRetry
   );
 }
 
-export function ActionButtons({ status, reminded, data, handleReminderEmailSend, handleRetryEmailSend }) {
+export function ActionButtons({
+  status,
+  reminded,
+  data,
+  handleReminderEmailSend,
+  handleRetryEmailSend,
+}) {
   return (
     <>
       {status === "OPENED" && reminded && (
-        <s-button icon="notification" onClick={() => handleReminderEmailSend(data)} >Send reminder</s-button>
+        <s-button
+          icon="notification"
+          onClick={() => handleReminderEmailSend(data)}
+        >
+          Send reminder
+        </s-button>
       )}
-      {status === "FAILED" && <s-button icon="refresh" onClick={() => handleRetryEmailSend(data)}>Retry</s-button>}
+      {status === "FAILED" && (
+        <s-button icon="refresh" onClick={() => handleRetryEmailSend(data)}>
+          Retry
+        </s-button>
+      )}
       <s-button
         commandFor={`order-details-modal-${data?.orderId}`}
         command="--show"
@@ -240,7 +288,8 @@ export function ActionButtons({ status, reminded, data, handleReminderEmailSend,
   );
 }
 
-export function Badges({ status }) {
+export function Badges({ status, paymentStatus }) {
+  console.log(paymentStatus);
   let tone = "neutral";
   switch (status) {
     case "SENT":
@@ -261,6 +310,11 @@ export function Badges({ status }) {
   return (
     <>
       <s-badge tone={tone}>{status}</s-badge>
+      {paymentStatus && (
+        <s-badge tone={paymentStatus === "PAID" ? "success" : "critical"}>
+          {paymentStatus}
+        </s-badge>
+      )}
     </>
   );
 }
