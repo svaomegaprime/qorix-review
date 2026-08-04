@@ -173,7 +173,22 @@ export async function loader({ request }) {
     const installedWidgetIds = await getWidgetsInstalledStatus(admin);
     const isInstalled = installedWidgetIds.includes("quick_review");
 
-    return { ...res, isInstalled };
+    const response = await admin.graphql(
+      `#graphql
+      query {
+        products(first: 1) {
+          edges {
+            node {
+              handle
+            }
+          }
+        }
+      }`
+    );
+    const data = await response.json();
+    const productHandle = data.data?.products?.edges?.[0]?.node?.handle;
+
+    return { ...res, isInstalled, shop: session?.shop, productHandle };
   } catch (error) {
     return adminErrorResponse(error);
   }
@@ -1153,7 +1168,18 @@ export default function Index(VALUES = {}) {
                   </s-stack>
                   <s-button-group gap="base">
                     <s-button slot="secondary-actions">Need help?</s-button>
-                    <s-button variant="primary" slot="primary-action">
+                    <s-button
+                      variant="primary"
+                      slot="primary-action"
+                      onClick={() => {
+                        if (loaderData?.shop) {
+                          const url = loaderData.productHandle 
+                            ? `https://${loaderData.shop}/products/${loaderData.productHandle}` 
+                            : `https://${loaderData.shop}`;
+                          window.open(url, "_blank");
+                        }
+                      }}
+                    >
                       <div
                         style={{
                           display: "flex",

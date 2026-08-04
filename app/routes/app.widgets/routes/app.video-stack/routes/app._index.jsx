@@ -85,6 +85,7 @@ export async function loader({ request }) {
     const settings = dbRowToSettings(row);
     const installedWidgetIds = await getWidgetsInstalledStatus(admin);
     settings.isInstalled = installedWidgetIds.includes("video_stack");
+    settings.shop = session?.shop;
 
     return settings;
   } catch (error) {
@@ -682,7 +683,15 @@ export default function Index() {
 
                   <s-button-group gap="base">
                     <s-button slot="secondary-actions">Need help?</s-button>
-                    <s-button variant="primary" slot="primary-action">
+                    <s-button
+                      variant="primary"
+                      slot="primary-action"
+                      onClick={() => {
+                        if (loaderData?.shop) {
+                          window.open(`https://${loaderData.shop}`, "_blank");
+                        }
+                      }}
+                    >
                       <div
                         style={{
                           display: "flex",

@@ -135,7 +135,7 @@ const settingsToDbFields = (settings) => {
 
 export async function loader({ request }) {
     try {
-        const { admin } = await authenticate.admin(request);
+        const { admin, session } = await authenticate.admin(request);
         const { id } = await getStoreData(admin);
 
         const res = await prisma.trustBarWidget.findUnique({
@@ -147,6 +147,22 @@ export async function loader({ request }) {
         const settings = dbRowToSettings(res);
         const installedWidgetIds = await getWidgetsInstalledStatus(admin);
         settings.isInstalled = installedWidgetIds.includes("trust_bar");
+        settings.shop = session?.shop;
+
+        const response = await admin.graphql(
+            `#graphql
+            query {
+                products(first: 1) {
+                    edges {
+                        node {
+                            handle
+                        }
+                    }
+                }
+            }`
+        );
+        const data = await response.json();
+        settings.productHandle = data.data?.products?.edges?.[0]?.node?.handle;
 
         return settings;
     } catch (error) {
@@ -414,7 +430,14 @@ export default function Index() {
                                     </s-stack>
                                     <s-button-group gap="base">
                                         <s-button slot="secondary-actions">Need help?</s-button>
-                                        <s-button variant="primary" slot="primary-action">
+                                        <s-button variant="primary" slot="primary-action" onClick={() => {
+                                            if (loaderData?.shop) {
+                                                const url = loaderData.productHandle
+                                                    ? `https://${loaderData.shop}/products/${loaderData.productHandle}`
+                                                    : `https://${loaderData.shop}`;
+                                                window.open(url, "_blank");
+                                            }
+                                        }}>
                                             <div style={{
                                                 display: "flex",
                                                 alignItems: "center",
