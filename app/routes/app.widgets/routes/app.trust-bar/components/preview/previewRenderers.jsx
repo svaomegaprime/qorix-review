@@ -44,7 +44,8 @@ export function renderPlaceholder(className = "", style) {
 }
 
 export function renderRatingStars(stars, VALUES) {
-    const starSize = VALUES.typography.STAR_SIZE;
+    const starSize = VALUES.typography.STAR_SIZE || 16;
+    console.log("DEBUG renderRatingStars:", { typography: VALUES.typography, starSize });
     const starStyle = {
         display: "inline-flex",
         width: `${(starSize * 17) / 16}px`,

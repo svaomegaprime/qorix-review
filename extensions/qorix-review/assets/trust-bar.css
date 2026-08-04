@@ -33,7 +33,7 @@
  }
 
  .qorix-review-trust-bar-stars svg {
-   width: var(--qrtb-star-size, 17px);
+   width: calc(var(--qrtb-star-size, 16px) * 17 / 16);
    height: var(--qrtb-star-size, 16px);
  }
 
@@ -69,8 +69,8 @@
  }
 
  .qorix-review-trust-bar-verified svg {
-   width: 18px;
-   height: 17px;
+   width: var(--qrtb-font-size);
+   height: var(--qrtb-font-size);
    flex-shrink: 0;
    display: inline-block;
    vertical-align: middle;
