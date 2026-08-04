@@ -5,15 +5,17 @@
    --verified-green: var(--qrtb-verified-badge-color, #1E7D46);
 
    display: inline-flex;
+   flex-wrap: wrap;
    align-items: center;
    gap: 12px;
    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
 
  }
 
- .qorix-review-trust-bar.hide-trust-widget{
-  display: var(--qrtb-no-review-hide);
+ .qorix-review-trust-bar.hide-trust-widget {
+   display: var(--qrtb-no-review-hide);
  }
+
  .qorix-review-trust-bar * {
    box-sizing: border-box;
  }
@@ -36,7 +38,7 @@
  }
 
  .qorix-review-trust-bar-rating-text {
-  display: flex;
+   display: flex;
    font-size: var(--qrtb-font-size, 15px);
    font-weight: var(--qrtb-text-weight, 400);
    color: var(--qrtb-text-color);
@@ -53,7 +55,7 @@
  }
 
  .qorix-review-trust-bar-divider {
-  display: var(--qrtb-show-verified-badge);
+   display: var(--qrtb-show-verified-badge);
    width: 1px;
    height: 18px;
    background: var(--divider-color);
@@ -83,18 +85,20 @@
    vertical-align: middle;
  }
 
- .qrtb-show-average-rating{
-  display: var(--qrtb-show-average-rating);
-}
-.qrtb-show-review-count{
+ .qrtb-show-average-rating {
+   display: var(--qrtb-show-average-rating);
+ }
+
+ .qrtb-show-review-count {
    display: var(--qrtb-show-review-count);
  }
 
-.qorix-review-trust-bar-stars .fill-svg path{
-  fill: var(--qrtb-star-color);
-}
-.qorix-review-trust-bar-verified-label{
-  color: var(--qrtb-text-color);
-  font-size: var(--qrtb-font-size) ;
-  font-weight: var(--qrtb-text-weight);
-}
+ .qorix-review-trust-bar-stars .fill-svg path {
+   fill: var(--qrtb-star-color);
+ }
+
+ .qorix-review-trust-bar-verified-label {
+   color: var(--qrtb-text-color);
+   font-size: var(--qrtb-font-size);
+   font-weight: var(--qrtb-text-weight);
+ }
