@@ -274,7 +274,7 @@ export default function Branding() {
                       }
                     />
                     <s-divider />
-                    <s-text-field
+                    {/* <s-text-field
                       label="Store website URL (optional)"
                       placeholder="https://www.glowstore.com"
                       details="This link appears in the email footer."
@@ -286,7 +286,7 @@ export default function Branding() {
                           e.target.value,
                         )
                       }
-                    />
+                    /> */}
                     <s-divider />
                     <s-text-field
                       label="Store tagline (optional)"
