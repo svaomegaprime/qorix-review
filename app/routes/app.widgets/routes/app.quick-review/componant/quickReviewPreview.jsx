@@ -255,11 +255,11 @@ export default function ReviewList({
   } = quickReview;
 
   const showSorting =
-    filterAndSorting === "FILTER_AND_SORTING" ||
+    filterAndSorting === "FILTER_AND_SORT" ||
     filterAndSorting === "SORTING_ONLY";
 
   const showFiltering =
-    filterAndSorting === "FILTER_AND_SORTING" ||
+    filterAndSorting === "FILTER_AND_SORT" ||
     filterAndSorting === "FILTER_ONLY";
 
   const {

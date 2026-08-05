@@ -60,7 +60,7 @@ const DEFAULT_QUICK_REVIEW_STATE = {
   writeReviewButtonText: "Write a review",
   showHelfullButton: true,
   defaultSort: "ALL",
-  filterAndSorting: "FILTER_AND_SORTING",
+  filterAndSorting: "FILTER_AND_SORT",
   filterMinStar: "ALL",
 };
 
@@ -991,7 +991,7 @@ export default function Index(VALUES = {}) {
                                 }))
                               }
                             >
-                              <s-option value="FILTER_AND_SORTING">
+                              <s-option value="FILTER_AND_SORT">
                                 Filter & sorting both
                               </s-option>
                               <s-option value="FILTER_ONLY">
