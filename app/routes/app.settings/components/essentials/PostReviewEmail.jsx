@@ -46,7 +46,7 @@ export default function PostReviewEmail({ emailSettings, onChange }) {
               <s-badge tone="neutral">{"{{first_name}}"}</s-badge>{" "}
               <s-badge tone="neutral">{"{{store_name}}"}</s-badge>{" "}
               <s-badge tone="neutral">{"{{product_name}}"}</s-badge>{" "}
-              <s-badge tone="neutral">{"{{review_rating}}"}</s-badge>{" "}
+              {/* <s-badge tone="neutral">{"{{review_rating}}"}</s-badge>{" "} */}
             </s-stack>
           </s-grid>
         </CustomSection>

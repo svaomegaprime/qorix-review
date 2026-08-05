@@ -31,7 +31,7 @@ export default function RequestEmail({ emailSettings, onChange }) {
               <s-badge tone="neutral">{"{{first_name}}"}</s-badge>{" "}
               <s-badge tone="neutral">{"{{store_name}}"}</s-badge>{" "}
               <s-badge tone="neutral">{"{{product_name}}"}</s-badge>{" "}
-              <s-badge tone="neutral">{"{{review_rating}}"}</s-badge>{" "}
+              {/* <s-badge tone="neutral">{"{{review_rating}}"}</s-badge>{" "} */}
             </s-stack>
             <s-divider />
             <s-heading>CTA button text</s-heading>
@@ -68,7 +68,7 @@ export default function RequestEmail({ emailSettings, onChange }) {
               <s-badge tone="neutral">{"{{first_name}}"}</s-badge>{" "}
               <s-badge tone="neutral">{"{{store_name}}"}</s-badge>{" "}
               <s-badge tone="neutral">{"{{product_name}}"}</s-badge>{" "}
-              <s-badge tone="neutral">{"{{review_rating}}"}</s-badge>{" "}
+              {/* <s-badge tone="neutral">{"{{review_rating}}"}</s-badge>{" "} */}
             </s-stack>
             <s-divider />
 
@@ -105,7 +105,7 @@ export default function RequestEmail({ emailSettings, onChange }) {
               <s-badge tone="neutral">{"{{first_name}}"}</s-badge>{" "}
               <s-badge tone="neutral">{"{{store_name}}"}</s-badge>{" "}
               <s-badge tone="neutral">{"{{product_name}}"}</s-badge>{" "}
-              <s-badge tone="neutral">{"{{review_rating}}"}</s-badge>{" "}
+              {/* <s-badge tone="neutral">{"{{review_rating}}"}</s-badge>{" "} */}
             </s-stack>
             <s-divider />
 
