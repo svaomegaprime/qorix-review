@@ -28,7 +28,7 @@ class TrustBar {
               ${this.averageRating.toFixed(1)}
             </span>
             <span class="qrtb-show-review-count">
-              &nbsp(${this.totalReviews} reviews)
+              &nbsp(${this.totalReviews} <span class="product_card_text"> reviews </span>)
             </span>
           </span>
         </div>

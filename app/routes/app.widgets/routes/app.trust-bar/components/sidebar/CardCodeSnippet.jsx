@@ -6,7 +6,7 @@ import AdvancedCSS from "../../../../components/elements/AdvanceCSS";
 
 const SNIPPET_CODE = `<div
   data-qorix-widget
-  class="qorix-inline-widget"
+  class="qorix-inline-widget mobile-display-none"
   x-data="
     TrustBar({
       productId: {{ product.id | json }},

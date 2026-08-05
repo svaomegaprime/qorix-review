@@ -104,6 +104,14 @@
 
  }
 
+ .mobile-display-none .qorix-review-trust-bar-verified span {
+   display: none;
+ }
+
+ .mobile-display-none .product_card_text {
+   display: none;
+ }
+
  .qorix-review-trust-bar-verified span {
    display: var(--qrtb-show-verified-text, inline);
  }
