@@ -66,11 +66,11 @@ export default function PostReviewEmail({ emailSettings, onChange }) {
               label="Enable reply notification email"
               details="Let customers know when you reply to their review"
             ></s-switch>
-            <s-heading>Subject line</s-heading>
-            <s-text-field
+            {/* <s-heading>Subject line</s-heading> */}
+            {/* <s-text-field
               value={emailSettings.replyReviewEmailSubject}
               onInput={handleInputChange("replyReviewEmailSubject")}
-            />
+            /> */}
           </s-grid>
         </CustomSection>
       </CustomGridSection>
