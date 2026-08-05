@@ -104,7 +104,7 @@
 
  }
 
- .mobile-display-none .qorix-review-trust-bar-verified span {
+ .mobile-display-none .qorix-review-trust-bar-verified p {
    display: none;
  }
 
@@ -112,6 +112,6 @@
    display: none;
  }
 
- .qorix-review-trust-bar-verified span {
+ .qorix-review-trust-bar-verified p {
    display: var(--qrtb-show-verified-text, inline);
  }

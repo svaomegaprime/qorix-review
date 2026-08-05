@@ -13,14 +13,14 @@ class TrustBar {
         <div class="qorix-review-trust-bar-rating">
           <div class="qorix-review-trust-bar-stars">
             ${Array.from({ length: Math.floor(this.averageRating) })
-              .map(
-                () => `
+        .map(
+          () => `
                   <svg class="fill-svg" width="17" height="16" viewBox="0 0 17 16" fill="none" xmlns="http://www.w3.org/2000/svg">
                     <path d="M9.51964 0.855C8.97604 -0.285 7.35604 -0.285 6.81244 0.855L5.14444 4.3494L1.30564 4.8546C0.0552353 5.0202 -0.446365 6.561 0.469235 7.4298L3.27724 10.0962L2.57284 13.9026C2.34244 15.1434 3.65404 16.0962 4.76284 15.495L8.16604 13.647L11.5692 15.495C12.678 16.0962 13.9896 15.1434 13.7592 13.9026L13.0548 10.0962L15.8628 7.4298C16.7772 6.561 16.2768 5.0202 15.0264 4.8546L11.1864 4.3494L9.51964 0.855Z"/>
                   </svg>
                 `,
-              )
-              .join("")}
+        )
+        .join("")}
           </div>
 
           <span class="qorix-review-trust-bar-rating-text">
@@ -28,7 +28,7 @@ class TrustBar {
               ${this.averageRating.toFixed(1)}
             </span>
             <span class="qrtb-show-review-count">
-              &nbsp(${this.totalReviews} <span class="product_card_text"> reviews </span>)
+              &nbsp( ${this.totalReviews} <span class="product_card_text"> reviews </span>)
             </span>
           </span>
         </div>
@@ -43,9 +43,9 @@ class TrustBar {
             <path d="M12.3 12.6L13.5 13.8L15.8 11.2" stroke="white" stroke-width="1.2" stroke-linecap="round" stroke-linejoin="round"/>
           </svg>
 
-          <span class="qorix-review-trust-bar-verified-label">
+          <p class="qorix-review-trust-bar-verified-label">
             Verified reviews
-          </span>
+          </p>
         </div>
       </div>
     `;
