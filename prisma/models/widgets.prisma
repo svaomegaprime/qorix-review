@@ -13,7 +13,7 @@ model TrustBarWidget {
   showReviewCount    Boolean  @default(true)
   showVerifiedBadge  Boolean  @default(true)
   reviewSource       String   @default("DEMO_REVIEW_SOURCE")
-  hideIfNoReviews    Boolean  @default(true)
+  hideIfNoReviews    Boolean  @default(false)
   advanceCss         String   @default("")
   showVerifiedIconOnly Boolean @default(false)
   store              Store    @relation(fields: [storeId], references: [storeGID], onDelete: Cascade)
