@@ -321,7 +321,7 @@ const CAROUSEL_CSS = `
 
 .qrx-dot--active {
   width: 24px;
-  background: #34C759;
+  background: var(--qrx-active-dot, #34C759);
 }
 
 
@@ -543,7 +543,7 @@ export default function ReviewCarousel({ reviews = REVIEWS, settings, activeDevi
           <ReaviewHeader settings={settings} startColor={settings.colors?.STAR_COLOR || settings.starColor}
             badgeColor={settings.colors?.QUOTE_MARK_COLOR || settings.quoteMarkColor} />
 
-          <div className="qrx-track-container">
+          <div className="qrx-track-container" style={{ "--qrx-active-dot": settings?.colors?.ACTIVE_DOT_COLOR || "#34C759" }}>
             {/* card viewport hides outgoing slides */}
             <div className="qrx-viewport">
               {reviews.map((review, index) => {

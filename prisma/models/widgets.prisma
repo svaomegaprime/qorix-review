@@ -76,6 +76,7 @@ model QuoteLoopWidget {
   heading                 String         @default("Reviews from people")
   quoteFontSize           Int            @default(24)
   quoteMarkColor          String         @default("#1D9E75")
+  activeDotColor          String         @default("#34C759")
   reviewStats             String         @default("Show review count & verified badge")
   showAppreciationOption  Boolean        @default(true)
   showArrowControls       Boolean        @default(true)

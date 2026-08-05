@@ -64,6 +64,7 @@ function dbRowToSettings(row) {
       TEXT_COLOR: row.textColor,
       QUOTE_MARK_COLOR: row.quoteMarkColor,
       Card_Background_Color: row.cardBackgroundColor,
+      ACTIVE_DOT_COLOR: row.activeDotColor,
     },
 
     quoteFontSize: row.quoteFontSize,
@@ -103,6 +104,9 @@ function settingsToDbFields(settings) {
     cardBackgroundColor:
       settings.colors?.Card_Background_Color ??
       DEFAULT_COLOR_VALUES.Card_Background_Color,
+    activeDotColor:
+      settings.colors?.ACTIVE_DOT_COLOR ??
+      DEFAULT_COLOR_VALUES.ACTIVE_DOT_COLOR,
 
     quoteFontSize: settings.quoteFontSize,
     textLength: settings.textLength,
@@ -574,7 +578,7 @@ export default function Index(VALUES = {}) {
                       key={picker.key}
                       data={picker}
                       defaultColor={
-                        VALUES[picker.key] ?? settings?.colors[picker.key]
+                        VALUES[picker.key] ?? settings?.colors?.[picker.key]
                       }
                       onChange={(value) =>
                         handleChangeColors({ [picker.key]: value })
