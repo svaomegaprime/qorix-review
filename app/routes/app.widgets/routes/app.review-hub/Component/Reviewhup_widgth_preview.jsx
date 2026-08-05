@@ -12,7 +12,7 @@ export default function ReviewHubWidget({ settings, activeDevice }) {
   // filterSorting: "Filter & sorting both",
   // reviewsPerPage: "9 reviews",
   // reviewStats: "Show review count & verified badge",
-
+console.log("settings",settings)
   const {
     showStarDistribution,
     showReviewerName,
@@ -521,7 +521,8 @@ display: block;
       `}</style>
       <div className="qr-reviews-container">
         <section className="qr-reviews-section">
-          <ReaviewHeader activeDevice={activeDevice} settings={settings} />
+          <ReaviewHeader activeDevice={activeDevice} settings={settings}      startColor={settings.colors.STAR_COLOR}
+                  badgeColor={settings.colors.VERIFIED_BADGE_COLOR}/>
           {/* -----------Filtering and Sorting----------- */}
           <div className="tb-container">
             {filterSorting !== "None" && (

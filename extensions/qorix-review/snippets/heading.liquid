@@ -12,7 +12,7 @@
   <div class="qr-rating-summary">
     {% if reviewStats == 'Show review count & verified badge' or reviewStats == 'Show review count only' %}
       <div class="qr-rating-stars">
-        {% render 'stars', from: 'heading' %}
+        {% render 'stars', from: 'heading' starColor:starColor %}
       </div>
 
       <span class="qr-rating-score" x-text="averageRating">{{ display_rating }}</span>

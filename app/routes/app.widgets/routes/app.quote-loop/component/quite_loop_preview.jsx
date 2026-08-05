@@ -540,7 +540,8 @@ export default function ReviewCarousel({ reviews = REVIEWS, settings, activeDevi
           data-section="qorix-review-quoteloop-widget"
           className={`qrx-section${activeDevice === "mobile" ? " qrx-section--mobile" : ""}`}
         >
-          <ReaviewHeader settings={settings} />
+          <ReaviewHeader settings={settings} startColor={settings.colors?.STAR_COLOR || settings.starColor}
+            badgeColor={settings.colors?.QUOTE_MARK_COLOR || settings.quoteMarkColor} />
 
           <div className="qrx-track-container">
             {/* card viewport hides outgoing slides */}

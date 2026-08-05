@@ -373,6 +373,8 @@ export default function Index() {
                 <Header
                   handleSettingChange={handleSettingChange}
                   settings={settings}
+              
+                
                 />
                 <br></br>
                 <s-stack

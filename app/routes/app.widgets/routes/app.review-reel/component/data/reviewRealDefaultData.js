@@ -2,7 +2,7 @@
 export const COLOR_PICKERS_ELEMENTS = [
   { key: "CARD_BACKGROUND", label: "Card background" },
   { key: "CARD_TEXT_COLOR", label: "Card text color" },
-  { key: "BADGE_COLOR", label: "Badge color" },
+  { key: "BADGE_COLOR", label: "Badge & Star color" },
   { key: "ACTIVE_DOT_COLOR", label: "Active dot" },
 ];
 

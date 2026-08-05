@@ -913,7 +913,8 @@ export default function ReviewReelWidget({ settings, activeDevice }) {
           <br></br>
           <br></br>
           <br></br>
-          <div className="qorix-review-reel-header"><ReaviewHeader settings={settings} />
+          <div className="qorix-review-reel-header"><ReaviewHeader settings={settings}      startColor={settings.startColor}
+                  badgeColor={settings.startColor}/>
           </div>
 
 
