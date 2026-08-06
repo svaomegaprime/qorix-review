@@ -99,6 +99,7 @@ async function postReview(request, session, admin) {
       productId: formData.get("productId") || null,
       productHandle: formData.get("productHandle") || null,
       productTitle: formData.get("productTitle") || null,
+      productImage: formData.get("productImage") || null,
     };
 
     let orderTarget = null;
@@ -717,5 +718,3 @@ export const reviewService = {
   postReview,
   getReview,
 };
-
-
