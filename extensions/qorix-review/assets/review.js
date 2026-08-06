@@ -180,13 +180,21 @@ class ReviewX {
         "orderId",
       );
       const customerEmail = this.customerEmail || "";
+      const params = new URLSearchParams({
+        productId,
+        sort: defaultSort,
+        page: String(this.currentPage),
+        limit: String(this.limit),
+        isOpen: String(openFromEmail),
+        customerEmail,
+        filterMinStar: this.filterMinStar,
+      });
 
-      const response = await fetch(
-        `/apps/qorix-review/review?productId=${encodeURIComponent(productId)}&sort=${encodeURIComponent(defaultSort)}&page=${this.currentPage}&limit=${this.limit}&isOpen=${openFromEmail}&orderId=${orderId}&customerEmail=${encodeURIComponent(customerEmail)}&filterMinStar=${encodeURIComponent(this.filterMinStar)}`,
-        {
-          method: "GET",
-        },
-      );
+      if (orderId) params.set("orderId", orderId);
+
+      const response = await fetch(`/apps/qorix-review/review?${params}`, {
+        method: "GET",
+      });
 
       const result = await response.json();
 
@@ -474,8 +482,13 @@ class ReviewX {
 
       console.log("Submitting...", formData);
 
+      const params = new URLSearchParams({
+        isOpen: String(openFromEmail),
+      });
+      if (orderId) params.set("orderId", orderId);
+
       const fetchPromise = fetch(
-        `/apps/qorix-review/review?isOpen=${openFromEmail}&orderId=${orderId}`,
+        `/apps/qorix-review/review?${params}`,
         {
           method: "POST",
           body: formData,

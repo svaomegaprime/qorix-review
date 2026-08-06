@@ -4,7 +4,7 @@ export const DEFAULT_REQUEST_SCHEDULING = {
   isReminderRequest: true,
   reminderRequestDelay: 5,
   isSkipRefundedOrder: true,
-  isSkipCancelledOrder: true,
+  isSkipCancelledOrder: false,
   minimumOrderValue: 0,
 };
 

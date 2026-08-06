@@ -29,6 +29,7 @@ export async function loader({ request }) {
       },
       include: {
         brandingSettings: true,
+        emailSettings: true,
       },
     });
 
@@ -94,14 +95,17 @@ export async function action({ request }) {
 }
 
 export default function Branding() {
-  const data = useRouteLoaderData("routes/app.settings");
+  // const data = useRouteLoaderData("routes/app.settings");
   const { storeSettings } = useLoaderData();
   const fetcher = useFetcher();
   useAdminFetcherToast(fetcher);
+  const data = storeSettings.emailSettings;
+  console.log("routes/app.settings", data);
 
   const [brandSettings, setBrandSettings] = useState(
     storeSettings.brandingSettings ?? DEFAULT_BRANDING,
   );
+
   const [isUploading, setIsUploading] = useState(false);
   const [uploadError, setUploadError] = useState(null);
 
@@ -274,7 +278,7 @@ export default function Branding() {
                       }
                     />
                     <s-divider />
-                    <s-text-field
+                    {/* <s-text-field
                       label="Store website URL (optional)"
                       placeholder="https://www.glowstore.com"
                       details="This link appears in the email footer."
@@ -286,7 +290,7 @@ export default function Branding() {
                           e.target.value,
                         )
                       }
-                    />
+                    /> */}
                     <s-divider />
                     <s-text-field
                       label="Store tagline (optional)"
@@ -516,9 +520,10 @@ export default function Branding() {
             <CustomSection background="#fff">
               <BrandingEmailPreview
                 brandSettings={brandSettings}
-                outgoingRequestEmail={data.outgoingRequestEmail}
-                postRequestEmail={data.postRequestEmail}
-                smtpSetup={data.smtpSetup}
+
+                outgoingRequestEmail={data}
+                postRequestEmail={data}
+                smtpSetup={data}
               />
             </CustomSection>
           </CustomSection>

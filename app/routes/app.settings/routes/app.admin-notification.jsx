@@ -98,8 +98,7 @@ export default function AdminNotification() {
   const [formResetKey, setFormResetKey] = useState(0);
   const { handleSave, handleDiscard } = useSaveBarForm({
     value: adminNotification,
-    initialValue:
-      storeSettings.adminNotification ?? DEFAULT_ADMIN_NOTIFICATION,
+    initialValue: storeSettings.adminNotification ?? DEFAULT_ADMIN_NOTIFICATION,
     fetcher,
     onSave: (value) =>
       fetcher.submit(value, { method: "POST", encType: "application/json" }),
@@ -205,7 +204,7 @@ export default function AdminNotification() {
                     )
                   }
                   label="Review needs moderation"
-                  details="Notify when a review is held for your approval"
+                  details="Notify when a review is hold for your approval"
                 />
                 <s-switch
                   defaultChecked={adminNotification.isLowStarReviewNotify}

@@ -6,12 +6,15 @@ const countByStatus = (requests, statuses) =>
   requests.filter((request) => statuses.includes(request.reviewCheckStatus))
     .length;
 
+const REQUESTED_STATUSES = ["SENT", "OPENED", "REVIEWED"];
+
 const formatRate = (value, total) => {
   if (total === 0) {
     return "0%";
   }
 
-  return `${Math.round((value / total) * 100)}%`;
+  const safeValue = Math.min(value, total);
+  return `${Math.round((safeValue / total) * 100)}%`;
 };
 
 const getTrendMeta = (value) => {
@@ -36,17 +39,11 @@ const getTrendMeta = (value) => {
 };
 
 export default function Analytics({ data = [] }) {
-  //   const totalRequests = data.length;
-  const totalRequests = data.filter(
-    (item) => item.reviewCheckStatus === "SENT",
-  ).length;
-  const totalRequestsSent = data.filter(
-    (item) => item.reviewCheckStatus === "SENT",
-  ).length;
+  const totalRequestsSent = countByStatus(data, REQUESTED_STATUSES);
   const openedRequests = countByStatus(data, ["OPENED", "REVIEWED"]);
   const reviewedRequests = countByStatus(data, ["REVIEWED"]);
   const failedRequests = countByStatus(data, ["FAILED"]);
-  const totalTrend = getTrendMeta(totalRequests);
+  const totalTrend = getTrendMeta(totalRequestsSent);
   const openedTrend = getTrendMeta(openedRequests);
   const reviewedTrend = getTrendMeta(reviewedRequests);
   const failedTrend = getTrendMeta(failedRequests > 0 ? -failedRequests : 0);
@@ -71,7 +68,7 @@ export default function Analytics({ data = [] }) {
           {/* Total open rate start */}
           <s-section>
             <s-heading>Open rate</s-heading>
-            <Text as="h2">{formatRate(openedRequests, totalRequests)}</Text>
+            <Text as="h2">{formatRate(openedRequests, totalRequestsSent)}</Text>
             <CustomText as="p" color={openedTrend.color}>
               {openedTrend.arrow} {openedRequests} opened
             </CustomText>
@@ -81,7 +78,7 @@ export default function Analytics({ data = [] }) {
           {/* Total conversion rate start */}
           <s-section>
             <s-heading>Conversion</s-heading>
-            <Text as="h2">{formatRate(reviewedRequests, totalRequests)}</Text>
+            <Text as="h2">{formatRate(reviewedRequests, totalRequestsSent)}</Text>
             <CustomText as="p" color={reviewedTrend.color}>
               {reviewedTrend.arrow} {reviewedRequests} reviewed
             </CustomText>

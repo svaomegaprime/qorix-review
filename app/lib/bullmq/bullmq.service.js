@@ -2,10 +2,7 @@ import { sendEmail } from "../../utils/sendEmail";
 import prisma from "../../db.server";
 import { setAppMetafield } from "../../utils/appMetafields.server";
 import { unauthenticated } from "../../shopify.server";
-import {
-  markOrderProductReviewed,
-  syncReviewedOrderFromShopify,
-} from "../../services/orders.server.js";
+import { markOrderProductReviewed } from "../../services/orders.server.js";
 import { updateProductReviewDefineMetafields } from "../../utils/updateProductReviewDefineMetafields";
 
 async function sendQueuedEmail(jobData) {
@@ -16,12 +13,11 @@ async function sendQueuedEmail(jobData) {
     console.log("email sent successfully");
 
     if (payload?.storeId && payload?.orderId) {
-      await prisma.order.update({
+      await prisma.order.updateMany({
         where: {
-          storeId_orderId: {
-            storeId: payload.storeId,
-            orderId: payload.orderId,
-          },
+          storeId: payload.storeId,
+          orderId: payload.orderId,
+          reviewCheckStatus: { not: "REVIEWED" },
         },
         data: {
           reviewCheckStatus: "SENT",
@@ -33,12 +29,11 @@ async function sendQueuedEmail(jobData) {
   } catch (error) {
     console.log(error);
     if (payload?.storeId && payload?.orderId) {
-      await prisma.order.update({
+      await prisma.order.updateMany({
         where: {
-          storeId_orderId: {
-            storeId: payload.storeId,
-            orderId: payload.orderId,
-          },
+          storeId: payload.storeId,
+          orderId: payload.orderId,
+          reviewCheckStatus: { not: "REVIEWED" },
         },
         data: {
           reviewCheckStatus: "FAILED",
@@ -120,51 +115,29 @@ async function postReviewOrderMetafieldSync(jobData) {
     storeId,
     productId,
     reviewerEmail,
+    reviewId,
     orderId,
-    isOpen,
   } = jobData;
 
   try {
     const { admin } = await unauthenticated.admin(shop);
 
     // 1. Mark the order line-item as reviewed (pure DB)
-    let existingOrderUpdated = false;
     if (orderId) {
       try {
-        existingOrderUpdated = await markOrderProductReviewed({
+        await markOrderProductReviewed({
           storeId,
           orderId,
           reviewerEmail: String(reviewerEmail),
           productId: String(productId),
+          reviewId,
         });
       } catch (err) {
         console.error("[WORKER::markOrderProductReviewed]", err);
       }
     }
 
-    // 2. Sync order from Shopify if needed
-    if (!isOpen && !existingOrderUpdated) {
-      try {
-        const session = await prisma.session.findFirst({
-          where: { shop },
-        });
-        if (session?.shop && session?.accessToken) {
-          await syncReviewedOrderFromShopify({
-            session,
-            admin,
-            storeId,
-            reviewerEmail: String(reviewerEmail),
-            productId: String(productId),
-          });
-        } else {
-          console.warn("[WORKER] No offline session found for", shop);
-        }
-      } catch (err) {
-        console.error("[WORKER::syncReviewedOrderFromShopify]", err);
-      }
-    }
-
-    // 3. Update product metafields (rating + rating_count)
+    // 2. Update product metafields (rating + rating_count)
     try {
       await updateProductReviewDefineMetafields(admin, productId, storeId);
     } catch (err) {

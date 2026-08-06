@@ -113,7 +113,7 @@ export default function EmailReply({ outgoingRequestEmail, brandSettings }) {
             margin: 0 auto;
             background: var(--email-bg);
             border: 1px solid var(--email-border-color);
-            border-radius: 20px;
+            border-radius: 14px;
             padding: 20px;
             box-sizing: border-box;
         }

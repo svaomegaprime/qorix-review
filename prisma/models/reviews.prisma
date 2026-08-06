@@ -16,12 +16,15 @@ model Review {
   isVerified    Boolean        @default(false)
   createdAt     DateTime       @default(now())
   updatedAt     DateTime       @updatedAt
+  orderRecordId String?        @db.Uuid
   attachments   Attachment[]
   helpfulCount  HelpfulCount[]
   reply         Reply?
   store         Store          @relation(fields: [storeId], references: [storeGID], onDelete: Cascade)
+  order         Order?         @relation(fields: [orderRecordId], references: [id], onDelete: SetNull)
 
-  @@unique([storeId, productId, reviewerEmail])
+  @@index([storeId, productId, reviewerEmail])
+  @@index([orderRecordId])
   @@index([storeId])
   @@index([productId])
   @@index([rating])

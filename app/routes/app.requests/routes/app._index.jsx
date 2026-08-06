@@ -16,6 +16,8 @@ import { addJobInQueue, reviewQueue } from "../../../lib/bullmq/bullmq.queue";
 import { adminErrorResponse } from "../../../utils/adminError.server";
 import { useAdminFetcherToast } from "../../../utils/useAdminFetcherToast";
 import { enrichOrderProducts } from "../../../services/productEnrichment.server.js";
+import { getReviewedProductIdsForOrder } from "../../../services/orders.server.js";
+import { normalizeShopifyId } from "../../../utils/shopifyGid.js";
 import { usePagination } from "../../../hooks/usePagination.js";
 import {
   buildReminderEmailData,
@@ -124,7 +126,10 @@ async function bulkUpsertOrders(orderRows) {
       "fulfillmentStatus" = EXCLUDED."fulfillmentStatus",
       "paymentStatus" = EXCLUDED."paymentStatus",
       "userEmail" = EXCLUDED."userEmail",
-      "reviewCheckStatus" = EXCLUDED."reviewCheckStatus",
+      "reviewCheckStatus" = CASE
+        WHEN "Order"."reviewCheckStatus" = 'REVIEWED' THEN "Order"."reviewCheckStatus"
+        ELSE EXCLUDED."reviewCheckStatus"
+      END,
       "requestType" = EXCLUDED."requestType",
       "totalPrice" = EXCLUDED."totalPrice",
       "currency" = EXCLUDED."currency",
@@ -223,7 +228,7 @@ async function bulkUpsertOrders(orderRows) {
         "handle" = EXCLUDED."handle",
         "url" = EXCLUDED."url",
         "image" = EXCLUDED."image",
-        "isReviewed" = EXCLUDED."isReviewed",
+        "isReviewed" = "OrderLineItem"."isReviewed" OR EXCLUDED."isReviewed",
         "updatedAt" = NOW()
     `);
   }
@@ -289,27 +294,17 @@ export async function action({ request }) {
           formattedOrder.products = enrichedOrder.products;
           // End:: Enrich products
 
-          // Start:: Check existing reviews for this store + email
-          const existReview = await prisma.review.findMany({
-            where: {
-              storeId: id,
-              productId: {
-                in: formattedOrder.products.map((item) =>
-                  String(item.productId),
-                ),
-              },
-              reviewerEmail: formattedOrder.email,
-            },
-            select: { productId: true },
+          // Start:: Check reviews linked to this exact order
+          const reviewedProductIds = await getReviewedProductIdsForOrder({
+            storeId: id,
+            orderId: formattedOrder.orderId,
           });
-
-          const reviewedProductIds = new Set(
-            existReview.map((r) => String(r.productId)),
-          );
 
           formattedOrder.products = formattedOrder.products.map((item) => ({
             ...item,
-            isReviewed: reviewedProductIds.has(String(item.productId)),
+            isReviewed: reviewedProductIds.has(
+              normalizeShopifyId(item.productId),
+            ),
           }));
 
           const allReviewed =
