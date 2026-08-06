@@ -177,6 +177,7 @@ overflow: auto;
           color:${TEXT_COLOR};
           line-height: 1.45;
           font-weight: 400;
+            word-break: break-all;
         }
 
         /* Gallery/Images Grid Layout */
