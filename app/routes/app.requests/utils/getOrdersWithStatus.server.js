@@ -50,10 +50,15 @@ export async function getOrdersWithStatus(orders, storeId) {
 
     // Build productId → dbProduct map, normalising IDs to numeric strings
     const dbProductMap = new Map(
-      (dbData?.productsJson ?? []).map((p) => [extractNumericId(p.productId), p]),
+      (dbData?.productsJson ?? []).map((p) => [
+        extractNumericId(p.productId),
+        p,
+      ]),
     );
     const reviewedProductIds = new Set(
-      (dbData?.reviews ?? []).map((review) => extractNumericId(review.productId)),
+      (dbData?.reviews ?? []).map((review) =>
+        extractNumericId(review.productId),
+      ),
     );
 
     const mergedProducts = (order.products ?? []).map((product) => {
@@ -61,7 +66,8 @@ export async function getOrdersWithStatus(orders, storeId) {
       const dbProduct = dbProductMap.get(productId);
       return {
         ...product,
-        isReviewed: dbProduct?.isReviewed === true || reviewedProductIds.has(productId),
+        isReviewed:
+          dbProduct?.isReviewed === true || reviewedProductIds.has(productId),
       };
     });
     const allProductsReviewed =
@@ -74,9 +80,8 @@ export async function getOrdersWithStatus(orders, storeId) {
       reviewCheckStatus: allProductsReviewed
         ? "REVIEWED"
         : (dbData?.reviewCheckStatus ?? "PENDING"),
-      requestType: dbData?.requestType ?? "AUTOMATIC",
+      requestType: dbData?.requestType ?? "",
       reviews: dbData?.reviews ?? [],
     };
   });
 }
-
