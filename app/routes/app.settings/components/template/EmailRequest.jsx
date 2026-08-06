@@ -119,12 +119,12 @@ export default function EmailRequest({ outgoingRequestEmail, brandSettings }) {
         .email-request .qr-product-name {
             font-size: 14.5px;
             font-weight: 700;
-            color: var(--email-heading-color);
+            color: var(--email-body-text-color);
         }
 
         .email-request .qr-product-date {
             font-size: 13px;
-            color: #9a9a9a;
+            color: var(--email-body-text-color);
         }
 
         .email-request .qr-cta {

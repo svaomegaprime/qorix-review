@@ -185,7 +185,7 @@ export default function EmailConfirmation({ postRequestEmail, brandSettings }) {
 
             .email-confirmation .qr-product-date {
                 font-size: 13px;
-                color: #9a9a9a;
+                color: var(--email-body-text-color);
             }
 
             .email-confirmation .qr-cta {
