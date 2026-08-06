@@ -22,7 +22,6 @@ export default function EmailConfirmation({ postRequestEmail, brandSettings }) {
 
         <div class="qr-product-card">
           <div class="qr-product-info">
-            <div class="qr-rating">&#9733;&#9733;&#9733;&#9733;&#9733;</div>
             <div class="qr-product-name">Hydrating eye cream</div>
             <div class="qr-product-date">Submitted Mar 21, 2026</div>
           </div>
