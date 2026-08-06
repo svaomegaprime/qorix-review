@@ -4,7 +4,18 @@ import Text from "../../../../../../components/essentials/elements/Text";
 import ArrowUpRight from "../icons/ArroUpRight";
 import AdvancedCSS from "../../../../components/elements/AdvanceCSS";
 
-const SNIPPET_CODE = `<div x-data="TrustBar({{ product.id | json }})" x-html="trustBarWidget"></div>`;
+const SNIPPET_CODE = `<div
+  data-qorix-widget
+  class="qorix-inline-widget mobile-display-none"
+  x-data="
+    TrustBar({
+      productId: {{ product.id | json }},
+      averageRating: {{ product.metafields.reviews.rating.value | default: 0 }},
+      totalReviews: {{ product.metafields.reviews.rating_count.value | default: 0 }}
+    })
+  "
+  x-html="trustBarWidget"
+></div>`;
 
 export default function CardCodeSnippet({ customCss, handleCssChange }) {
   const [copied, setCopied] = useState(false);
@@ -32,7 +43,9 @@ export default function CardCodeSnippet({ customCss, handleCssChange }) {
             borderColor="#b3b3b3"
             padding="small"
           >
-            <s-paragraph>{SNIPPET_CODE}</s-paragraph>
+            <code style={{ display: 'block', whiteSpace: 'pre-wrap', wordBreak: 'break-word', fontSize: '13px', lineHeight: '1.4' }}>
+              {SNIPPET_CODE}
+            </code>
             <s-stack alignItems="end">
               <s-button
                 icon={copied ? "clipboard-check" : "clipboard"}

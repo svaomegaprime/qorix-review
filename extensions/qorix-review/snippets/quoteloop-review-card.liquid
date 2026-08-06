@@ -37,22 +37,23 @@
       </div>
 
       <div class="qr-review-footer">
-        <img
-          x-show="review.reviewerImage"
-          src="{{ avatar | asset_url }}"
-          class="qr-reviewer-avatar"
-          alt="{{ name }}"
-          width="56"
-          height="56"
-        >
+        {% if showMediaAsset %}
+          <img
+            x-show="review.reviewerImage"
+             src="{{ avatar | asset_url }}"
+            class="qr-reviewer-avatar"
+            alt="{{ name }}"
+            width="56"
+            height="56"
+          >
 
-        <span
-          x-show="!review.reviewerImage"
-          class="qr-review-avatar"
-          x-show="true"
+          <span
+            x-show="!review.reviewerImage"
+            class="qr-review-avatar" x-show="true"
           x-text="review.reviewerName[0].toUpperCase()"
-          style="font-size: 18px;"
-        ></span>
+            style="font-size: 18px;"
+          ></span>
+        {% endif %}
 
         <div class="qr-reviewer-info">
           {% if showReviewerName != false and showReviewerName != 'false' %}

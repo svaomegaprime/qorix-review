@@ -23,7 +23,7 @@
 }
 
 .qr-heading-label {
-    color: var(--qr-color-primary);
+    /* color: var(--qr-color-primary); */
     font-size: 16px;
     font-weight: 500;
     letter-spacing: 1px;

@@ -501,7 +501,7 @@ const VISIBLE_COUNT_OPTIONS = [3, 5, 7];
 // ─── SVG helpers ──────────────────────────────────────────────────────────────
 function OrangeStars(startColor) {
 
-console.log("startColor", startColor?.startColor);
+  console.log("startColor", startColor?.startColor);
   const path =
     "M9.51964 0.855C8.97604-.285 7.35604-.285 6.81244.855L5.14444 4.3494 1.30564 4.8546C.0552353 5.0202-.446365 6.561.469235 7.4298L3.27724 10.0962 2.57284 13.9026C2.34244 15.1434 3.65404 16.0962 4.76284 15.495L8.16604 13.647 11.5692 15.495C12.678 16.0962 13.9896 15.1434 13.7592 13.9026L13.0548 10.0962 15.8628 7.4298C16.7772 6.561 16.2768 5.0202 15.0264 4.8546L11.1864 4.3494Z";
   return (
@@ -614,6 +614,8 @@ function ReviewCard({ slide, displayElements }) {
     overlayTintColor,
     badgeColor,
   } = displayElements;
+
+  console.log("this is a bange color", badgeColor)
   const [isPlaying, setIsPlaying] = useState(false);
   const videoRef = useRef(null);
 
@@ -653,7 +655,7 @@ function ReviewCard({ slide, displayElements }) {
         onPlay={() => setIsPlaying(true)}
         onPause={() => setIsPlaying(false)}
       />
-      <div style={{ backgroundImage:  ` linear-gradient(180deg, rgba(0, 0, 0, 0) 30%, ${overlayTintColor})`}} className="qorix-review-video-stack-overlay" />
+      <div style={{ backgroundImage: ` linear-gradient(180deg, rgba(0, 0, 0, 0) 30%, ${overlayTintColor})` }} className="qorix-review-video-stack-overlay" />
 
       <div className="qorix-review-video-stack-topbar">
         {showVideoDuration && (
@@ -733,7 +735,7 @@ export default function ReviewVideoStack({ settings, activeDevice }) {
 
     // ── NEW: predefined visible-count value ashbe settings theke ──
     // jodi settings e na thake, default 5 use hobe
-   
+
   } = settings;
 
   // Local fallback state — jodi UI theke direct select korte chao (optional)
@@ -821,7 +823,8 @@ export default function ReviewVideoStack({ settings, activeDevice }) {
       >
         <section className="qorix-review-video-stack-section">
           <div className="qorix-review-video-stack-heading" >
-            <WidthHeader settings={settings} activeDevice={activeDevice} />
+            <WidthHeader settings={settings} activeDevice={activeDevice} startColor={settings.startColor}
+              badgeColor={settings.badgeColor} />
           </div>
 
           {/* ── Optional: visible-count selector UI (3 / 5 / 7) ──
@@ -862,7 +865,7 @@ export default function ReviewVideoStack({ settings, activeDevice }) {
                           startColor,
                           overlayTintColor,
                           badgeColor,
-                         
+
                         }}
                       />
                     </div>

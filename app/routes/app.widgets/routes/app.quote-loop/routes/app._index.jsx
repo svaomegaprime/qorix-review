@@ -23,6 +23,7 @@ import {
   DEFAULT_COLOR_VALUES,
   createDefaultSettings,
 } from "../data/quoteReviewDefault";
+import { getWidgetsInstalledStatus } from "../../../../../services/appEmbed.server";
 
 const cloneSettings = (settings) => JSON.parse(JSON.stringify(settings));
 
@@ -63,6 +64,7 @@ function dbRowToSettings(row) {
       TEXT_COLOR: row.textColor,
       QUOTE_MARK_COLOR: row.quoteMarkColor,
       Card_Background_Color: row.cardBackgroundColor,
+      ACTIVE_DOT_COLOR: row.activeDotColor,
     },
 
     quoteFontSize: row.quoteFontSize,
@@ -102,6 +104,9 @@ function settingsToDbFields(settings) {
     cardBackgroundColor:
       settings.colors?.Card_Background_Color ??
       DEFAULT_COLOR_VALUES.Card_Background_Color,
+    activeDotColor:
+      settings.colors?.ACTIVE_DOT_COLOR ??
+      DEFAULT_COLOR_VALUES.ACTIVE_DOT_COLOR,
 
     quoteFontSize: settings.quoteFontSize,
     textLength: settings.textLength,
@@ -111,7 +116,7 @@ function settingsToDbFields(settings) {
 
 export async function loader({ request }) {
   try {
-    const { admin } = await authenticate.admin(request);
+    const { admin, session } = await authenticate.admin(request);
     const { id } = await getStoreData(admin);
 
     const res = await prisma.quoteLoopWidget.findUnique({
@@ -120,7 +125,12 @@ export async function loader({ request }) {
       },
     });
 
-    return dbRowToSettings(res);
+    const settings = dbRowToSettings(res);
+    const installedWidgetIds = await getWidgetsInstalledStatus(admin);
+    settings.isInstalled = installedWidgetIds.includes("quote_loop");
+    settings.shop = session?.shop;
+
+    return settings;
   } catch (error) {
     console.error("[LOADER] ERROR:", error);
     return adminErrorResponse(error);
@@ -354,7 +364,11 @@ export default function Index(VALUES = {}) {
               <s-box>
                 <s-stack direction="inline" alignItems="center" gap="small">
                   <Text as="h3">QuoteLoop</Text>
-                  <s-badge tone="caution">Not installed</s-badge>
+                  {loaderData?.isInstalled ? (
+                    <s-badge tone="success">Installed</s-badge>
+                  ) : (
+                    <s-badge tone="caution">Not installed</s-badge>
+                  )}
                 </s-stack>
                 <s-paragraph color="subdued">
                   Show quotes on your storefront
@@ -564,7 +578,7 @@ export default function Index(VALUES = {}) {
                       key={picker.key}
                       data={picker}
                       defaultColor={
-                        VALUES[picker.key] ?? settings?.colors[picker.key]
+                        VALUES[picker.key] ?? settings?.colors?.[picker.key]
                       }
                       onChange={(value) =>
                         handleChangeColors({ [picker.key]: value })
@@ -711,7 +725,15 @@ export default function Index(VALUES = {}) {
                   </s-stack>
                   <s-button-group gap="base">
                     <s-button slot="secondary-actions">Need help?</s-button>
-                    <s-button variant="primary" slot="primary-action">
+                    <s-button
+                      variant="primary"
+                      slot="primary-action"
+                      onClick={() => {
+                        if (loaderData?.shop) {
+                          window.open(`https://${loaderData.shop}`, "_blank");
+                        }
+                      }}
+                    >
                       <div
                         style={{
                           display: "flex",

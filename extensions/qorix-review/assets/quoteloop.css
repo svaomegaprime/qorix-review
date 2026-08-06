@@ -102,6 +102,7 @@
   font-weight: 400;
   color: var(--qr-color-text-dark);
   margin: 0 0 20px;
+  word-break: break-all;
 }
 
 [data-section="qorix-quoteloop-widget"] .qr-review-stars {
@@ -369,4 +370,4 @@
     font-weight: 400;
     color: var(--qr-color-text-gray, #6b7280);
   }
-}
+}

@@ -12,7 +12,7 @@
   <div class="qr-rating-summary">
     {% if reviewStats == 'Show review count & verified badge' or reviewStats == 'Show review count only' %}
       <div class="qr-rating-stars">
-        {% render 'stars', from: 'heading', starColor: starColor %}
+        {% render 'stars', from: 'heading' starColor:starColor %}
       </div>
 
       <span class="qr-rating-score" x-text="averageRating">{{ display_rating }}</span>
@@ -24,7 +24,7 @@
 
     {% if reviewStats == 'Show review count & verified badge' or reviewStats == 'Show verified badge only' %}
       <span class="qr-verified-badge">
-        {% render 'icon', name: 'verified' %}
+        {% render 'icon', name: 'verified', badgeColor:badgeColor %}
         Verified reviews
       </span>
     {% endif -%}

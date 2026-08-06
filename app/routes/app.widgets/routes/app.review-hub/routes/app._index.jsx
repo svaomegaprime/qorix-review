@@ -16,6 +16,7 @@ import {
   DEFAULT_COLOR_VALUES,
   DEFAULT_REVIEW_HUB_DATA,
 } from "../data/defaultData";
+import { getWidgetsInstalledStatus } from "../../../../../services/appEmbed.server";
 import { authenticate } from "../../../../../shopify.server";
 import prisma from "../../../../../db.server";
 import { getStoreData } from "../../../../../utils/getStoreData";
@@ -112,7 +113,7 @@ function settingsToDbFields(settings) {
 
 export async function loader({ request }) {
   try {
-    const { admin } = await authenticate.admin(request);
+    const { admin, session } = await authenticate.admin(request);
     const { id } = await getStoreData(admin);
 
     const res = await prisma.reviewHubWidget.findUnique({
@@ -121,7 +122,12 @@ export async function loader({ request }) {
       },
     });
 
-    return dbRowToSettings(res);
+    const settings = dbRowToSettings(res);
+    const installedWidgetIds = await getWidgetsInstalledStatus(admin);
+    settings.isInstalled = installedWidgetIds.includes("review_hub");
+    settings.shop = session?.shop;
+
+    return settings;
   } catch (error) {
     return adminErrorResponse(error);
   }
@@ -365,7 +371,11 @@ export default function Index() {
               <s-box>
                 <s-stack direction="inline" alignItems="center" gap="small">
                   <Text as="h3">ReviewHub</Text>
-                  <s-badge tone="caution">Not installed</s-badge>
+                  {loaderData?.isInstalled ? (
+                    <s-badge tone="success">Installed</s-badge>
+                  ) : (
+                    <s-badge tone="caution">Not installed</s-badge>
+                  )}
                 </s-stack>
                 <s-paragraph color="subdued">
                   Shows average rating + review count.
@@ -687,7 +697,15 @@ export default function Index() {
                   <s-stack alignItems="center">
                     <s-button-group gap="base">
                       <s-button slot="secondary-actions">Need help?</s-button>
-                      <s-button variant="primary" slot="primary-action">
+                      <s-button
+                        variant="primary"
+                        slot="primary-action"
+                        onClick={() => {
+                          if (loaderData?.shop) {
+                            window.open(`https://${loaderData.shop}`, "_blank");
+                          }
+                        }}
+                      >
                         <div
                           style={{
                             display: "flex",

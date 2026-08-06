@@ -88,6 +88,7 @@
   font-weight: 400;
   color: var(--qr-color-text-dark);
   margin: 0 0 20px;
+    word-break: break-all;
 }
 
 .qr-review-stars {

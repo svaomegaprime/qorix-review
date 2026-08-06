@@ -4,6 +4,7 @@
     --qrtb-show-average-rating: {% if trust_bar_metafield.showAverageRating %} block {% else %} none {% endif %};
     --qrtb-show-review-count:  {% if trust_bar_metafield.showReviewCount %} block {% else %} none {% endif %};
     --qrtb-show-verified-badge:  {% if trust_bar_metafield.showVerifiedBadge %} flex {% else %} none {% endif %};
+    --qrtb-show-verified-text:  {% if trust_bar_metafield.showVerifiedIconOnly %} none {% else %} inline {% endif %};
 
     --qrtb-star-color: {{ trust_bar_metafield.starColor }};
     --qrtb-text-color: {{ trust_bar_metafield.textColor }};

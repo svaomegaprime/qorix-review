@@ -21,6 +21,7 @@ import { setAppMetafield } from "../../../../../utils/appMetafields.server";
 import { adminErrorResponse } from "../../../../../utils/adminError.server";
 import { useAdminFetcherToast } from "../../../../../utils/useAdminFetcherToast";
 import ActiveToggleHeader from "../../../../../routes/app.widgets/components/elements/ActiveToggleHeader";
+import { getWidgetsInstalledStatus } from "../../../../../services/appEmbed.server";
 
 const DEFAULT_COLOR_VALUES = {
   STAR_COLOR: "#f59e0b",
@@ -169,7 +170,25 @@ export async function loader({ request }) {
       },
     });
 
-    return res;
+    const installedWidgetIds = await getWidgetsInstalledStatus(admin);
+    const isInstalled = installedWidgetIds.includes("quick_review");
+
+    const response = await admin.graphql(
+      `#graphql
+      query {
+        products(first: 1) {
+          edges {
+            node {
+              handle
+            }
+          }
+        }
+      }`
+    );
+    const data = await response.json();
+    const productHandle = data.data?.products?.edges?.[0]?.node?.handle;
+
+    return { ...res, isInstalled, shop: session?.shop, productHandle };
   } catch (error) {
     return adminErrorResponse(error);
   }
@@ -212,6 +231,7 @@ export async function action({ request }) {
 
 export default function Index(VALUES = {}) {
   const loaderData = useLoaderData();
+  const isInstalled = loaderData?.isInstalled;
   const actionData = useActionData();
 
   console.log("[Quick Review::Action Data]: ", actionData);
@@ -480,7 +500,11 @@ export default function Index(VALUES = {}) {
               <s-box>
                 <s-stack direction="inline" alignItems="center" gap="small">
                   <Text as="h3">QuickReview</Text>
-                  <s-badge tone="caution">Not installed</s-badge>
+                  {isInstalled ? (
+                    <s-badge tone="success">Installed</s-badge>
+                  ) : (
+                    <s-badge tone="caution">Not installed</s-badge>
+                  )}
                 </s-stack>
                 <s-paragraph color="subdued">
                   Show a quick review form on your product page.
@@ -1144,7 +1168,18 @@ export default function Index(VALUES = {}) {
                   </s-stack>
                   <s-button-group gap="base">
                     <s-button slot="secondary-actions">Need help?</s-button>
-                    <s-button variant="primary" slot="primary-action">
+                    <s-button
+                      variant="primary"
+                      slot="primary-action"
+                      onClick={() => {
+                        if (loaderData?.shop) {
+                          const url = loaderData.productHandle 
+                            ? `https://${loaderData.shop}/products/${loaderData.productHandle}` 
+                            : `https://${loaderData.shop}`;
+                          window.open(url, "_blank");
+                        }
+                      }}
+                    >
                       <div
                         style={{
                           display: "flex",

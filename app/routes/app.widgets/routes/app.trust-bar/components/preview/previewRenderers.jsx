@@ -44,7 +44,8 @@ export function renderPlaceholder(className = "", style) {
 }
 
 export function renderRatingStars(stars, VALUES) {
-    const starSize = VALUES.typography.STAR_SIZE;
+    const starSize = VALUES.typography.STAR_SIZE || 16;
+    console.log("DEBUG renderRatingStars:", { typography: VALUES.typography, starSize });
     const starStyle = {
         display: "inline-flex",
         width: `${(starSize * 17) / 16}px`,
@@ -63,8 +64,10 @@ export function renderRatingStars(stars, VALUES) {
 }
 
 export function renderTrustBar({ rating = "4.9", reviews = "(24 reviews)", stars, VALUES }) {
-    const { contents, colors, visibility } = VALUES;
+    const { contents, colors, visibility ,typography} = VALUES;
     const ratingText = getRatingText({ rating, reviews, VALUES });
+
+    console.log('VALUES', VALUES)
     const showVerifiedBadge = contents.SHOW_VERIFIED_BADGE;
     const showDivider = ratingText !== "" && showVerifiedBadge;
     const textStyle = getTextStyle(VALUES);
@@ -80,8 +83,8 @@ export function renderTrustBar({ rating = "4.9", reviews = "(24 reviews)", stars
             {showDivider && <span className="trust-preview__divider" />}
             {showVerifiedBadge && (
                 <span className="trust-preview__verified" style={textStyle}>
-                    <VerifiedUser color={colors.VERIFIED_BADGE_COLOR} />
-                    <span>Verified reviews</span>
+                    <VerifiedUser color={colors.VERIFIED_BADGE_COLOR} width={typography.FONT_SIZE}/>
+                    {!contents.SHOW_VERIFIED_ICON_ONLY && <span>Verified reviews</span>}
                 </span>
             )}
         </div>
@@ -89,7 +92,7 @@ export function renderTrustBar({ rating = "4.9", reviews = "(24 reviews)", stars
 }
 
 export function renderProductCard(card, index, VALUES) {
-    const { contents, colors, visibility } = VALUES;
+    const { contents, colors, visibility,typography } = VALUES;
     const ratingText = getRatingText({ rating: card.rating, reviews: card.reviews, VALUES });
     const textStyle = getTextStyle(VALUES);
 
@@ -103,7 +106,7 @@ export function renderProductCard(card, index, VALUES) {
             <div className="trust-preview__card-rating">
                 {renderRatingStars(card.stars, VALUES)}
                 {ratingText !== "" && <span className="trust-preview__card-rating-text" style={textStyle}>{ratingText}</span>}
-                {contents.SHOW_VERIFIED_BADGE && <VerifiedUser color={colors.VERIFIED_BADGE_COLOR} />}
+                {contents.SHOW_VERIFIED_BADGE && <VerifiedUser color={colors.VERIFIED_BADGE_COLOR} width={typography.FONT_SIZE} />}
             </div>
             {renderPlaceholder("trust-preview__card-line trust-preview__card-line--wide")}
             {renderPlaceholder("trust-preview__card-line", { width: card.lineWidth })}

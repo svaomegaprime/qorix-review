@@ -13,6 +13,7 @@ import { setAppMetafield } from "../../../../../utils/appMetafields.server"
 import { adminErrorResponse } from "../../../../../utils/adminError.server"
 import { useAdminFetcherToast } from "../../../../../utils/useAdminFetcherToast"
 import { DEFAULT_TRUST_BAR_SETTINGS } from "../data/trastbarDefaultValue.js"
+import { getWidgetsInstalledStatus } from "../../../../../services/appEmbed.server";
 
 // Helper function to convert DB row to settings format
 const dbRowToSettings = (data) => {
@@ -31,6 +32,7 @@ const dbRowToSettings = (data) => {
         showAverageRating: data.showAverageRating ?? DEFAULT_TRUST_BAR_SETTINGS.showAverageRating,
         showReviewCount: data.showReviewCount ?? DEFAULT_TRUST_BAR_SETTINGS.showReviewCount,
         showVerifiedBadge: data.showVerifiedBadge ?? DEFAULT_TRUST_BAR_SETTINGS.showVerifiedBadge,
+        showVerifiedIconOnly: data.showVerifiedIconOnly ?? DEFAULT_TRUST_BAR_SETTINGS.showVerifiedIconOnly,
         reviewSource: data.reviewSource ?? DEFAULT_TRUST_BAR_SETTINGS.reviewSource,
         hideIfNoReviews: data.hideIfNoReviews ?? DEFAULT_TRUST_BAR_SETTINGS.hideIfNoReviews,
         advanceCss: data.advanceCss ?? DEFAULT_TRUST_BAR_SETTINGS.advanceCss,
@@ -55,6 +57,7 @@ const settingsToGroupedValues = (settings) => ({
         SHOW_AVERAGE_RATING: settings.showAverageRating,
         SHOW_REVIEW_COUNT: settings.showReviewCount,
         SHOW_VERIFIED_BADGE: settings.showVerifiedBadge,
+        SHOW_VERIFIED_ICON_ONLY: settings.showVerifiedIconOnly,
         REVIEW_SOURCE: settings.reviewSource,
     },
     colors: {
@@ -82,6 +85,7 @@ const groupedFieldToFlatKey = {
         SHOW_AVERAGE_RATING: "showAverageRating",
         SHOW_REVIEW_COUNT: "showReviewCount",
         SHOW_VERIFIED_BADGE: "showVerifiedBadge",
+        SHOW_VERIFIED_ICON_ONLY: "showVerifiedIconOnly",
         REVIEW_SOURCE: "reviewSource",
     },
     colors: {
@@ -126,6 +130,7 @@ const settingsToDbFields = (settings) => {
         showAverageRating: Boolean(settings.showAverageRating ?? DEFAULT_TRUST_BAR_SETTINGS.showAverageRating),
         showReviewCount: Boolean(settings.showReviewCount ?? DEFAULT_TRUST_BAR_SETTINGS.showReviewCount),
         showVerifiedBadge: Boolean(settings.showVerifiedBadge ?? DEFAULT_TRUST_BAR_SETTINGS.showVerifiedBadge),
+        showVerifiedIconOnly: Boolean(settings.showVerifiedIconOnly ?? DEFAULT_TRUST_BAR_SETTINGS.showVerifiedIconOnly),
         reviewSource: String(settings.reviewSource ?? DEFAULT_TRUST_BAR_SETTINGS.reviewSource),
         hideIfNoReviews: Boolean(settings.hideIfNoReviews ?? DEFAULT_TRUST_BAR_SETTINGS.hideIfNoReviews),
         advanceCss: String(settings.advanceCss ?? DEFAULT_TRUST_BAR_SETTINGS.advanceCss),
@@ -134,7 +139,7 @@ const settingsToDbFields = (settings) => {
 
 export async function loader({ request }) {
     try {
-        const { admin } = await authenticate.admin(request);
+        const { admin, session } = await authenticate.admin(request);
         const { id } = await getStoreData(admin);
 
         const res = await prisma.trustBarWidget.findUnique({
@@ -143,7 +148,27 @@ export async function loader({ request }) {
             },
         });
 
-        return dbRowToSettings(res);
+        const settings = dbRowToSettings(res);
+        const installedWidgetIds = await getWidgetsInstalledStatus(admin);
+        settings.isInstalled = installedWidgetIds.includes("trust_bar");
+        settings.shop = session?.shop;
+
+        const response = await admin.graphql(
+            `#graphql
+            query {
+                products(first: 1) {
+                    edges {
+                        node {
+                            handle
+                        }
+                    }
+                }
+            }`
+        );
+        const data = await response.json();
+        settings.productHandle = data.data?.products?.edges?.[0]?.node?.handle;
+
+        return settings;
     } catch (error) {
         console.error("[LOADER] ERROR:", error);
         return adminErrorResponse(error);
@@ -378,6 +403,7 @@ export default function Index() {
                         handleResetToDefaults={handleResetToDefaults}
                         customCss={customCss}
                         handleCssChange={handleCssChange}
+                        isInstalled={loaderData?.isInstalled}
                     />
                     {/* End----Sidebar */}
 
@@ -408,7 +434,14 @@ export default function Index() {
                                     </s-stack>
                                     <s-button-group gap="base">
                                         <s-button slot="secondary-actions">Need help?</s-button>
-                                        <s-button variant="primary" slot="primary-action">
+                                        <s-button variant="primary" slot="primary-action" onClick={() => {
+                                            if (loaderData?.shop) {
+                                                const url = loaderData.productHandle
+                                                    ? `https://${loaderData.shop}/products/${loaderData.productHandle}`
+                                                    : `https://${loaderData.shop}`;
+                                                window.open(url, "_blank");
+                                            }
+                                        }}>
                                             <div style={{
                                                 display: "flex",
                                                 alignItems: "center",

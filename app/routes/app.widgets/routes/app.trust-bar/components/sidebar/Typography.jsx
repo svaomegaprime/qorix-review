@@ -46,7 +46,7 @@ export default function Typography({
                     <Range
                         label="Font size"
                         defaultValue={VALUES["FONT_SIZE"]}
-                        max={50}
+                        max={22}
                         onChange={(e) => handleChangeTypography({"FONT_SIZE": Number(e.target.value)})}
                     />
                 </CustomSection>
@@ -54,7 +54,7 @@ export default function Typography({
                     <Range
                         label="Star size"
                         defaultValue={VALUES["STAR_SIZE"]}
-                        max={50}
+                        max={22}
                         onChange={(e) => handleChangeTypography({"STAR_SIZE": Number(e.target.value)})}
                     />
                 </CustomSection>
