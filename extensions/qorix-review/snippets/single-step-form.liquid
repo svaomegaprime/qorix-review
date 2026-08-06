@@ -1,11 +1,12 @@
 {% comment %} Start:: Review form and success {% endcomment %}
 {{ 'single-step-form.css' | asset_url | stylesheet_tag }}
-<div
-  class="modal-overlay"
-  id="modal-overlay"
-  :class="{ open: modalOpen }"
-  @click="overlayClick($event)"
->
+<template x-teleport="body">
+  <div
+    class="modal-overlay"
+    id="modal-overlay"
+    :class="{ open: modalOpen }"
+    @click="overlayClick($event)"
+  >
   <div
     class="modal-box"
     id="modal-box"
@@ -243,5 +244,6 @@
     </div>
     {% comment %} End:: Error message  {% endcomment %}
   </div>
-</div>
+  </div>
+</template>
 {% comment %} End:: Review form and success {% endcomment %}
