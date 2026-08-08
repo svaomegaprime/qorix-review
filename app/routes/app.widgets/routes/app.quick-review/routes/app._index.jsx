@@ -12,6 +12,8 @@ import {
   useNavigation,
 } from "react-router";
 import ColorPicker from "../../../components/elements/ColorPicker";
+import AdvanceCSS from "../../../components/elements/AdvanceCSS";
+import ResetToDefaults from "../../../components/elements/ResetToDefaults";
 import QuickReviewComponent from "../componant/quickReviewPreview";
 import TabButton from "../../../../../components/essentials/TabButton";
 import { authenticate } from "../../../../../shopify.server";
@@ -63,6 +65,7 @@ const DEFAULT_QUICK_REVIEW_STATE = {
   defaultSort: "ALL",
   filterAndSorting: "FILTER_AND_SORT",
   filterMinStar: "ALL",
+  advanceCss: "",
 };
 
 const parseBorderRadius = (value) => {
@@ -154,6 +157,7 @@ const buildQuickReviewState = (data) => {
       data.filterAndSorting ?? DEFAULT_QUICK_REVIEW_STATE.filterAndSorting,
     filterMinStar:
       data.filterMinStar ?? DEFAULT_QUICK_REVIEW_STATE.filterMinStar,
+    advanceCss: data.advanceCss ?? DEFAULT_QUICK_REVIEW_STATE.advanceCss,
   };
 };
 
@@ -270,9 +274,19 @@ export default function Index(VALUES = {}) {
   // End----Default CSR loading state checking for navigation
   const [activeDevice, setActiveDevice] = useState("desktop");
   const [activeToggleManu, setActiveToggleManu] = useState(false);
+  const [resetKey, setResetKey] = useState(0);
   const [quickReview, setQuickReview] = useState(() =>
     buildQuickReviewState(loaderData),
   );
+
+  const customCss = quickReview.advanceCss || "";
+  const handleCssChange = (value) => {
+    setQuickReview((prev) => ({ ...prev, advanceCss: value }));
+  };
+  const handleResetToDefaults = () => {
+    setQuickReview(cloneQuickReviewState(DEFAULT_QUICK_REVIEW_STATE));
+    setResetKey((prev) => prev + 1);
+  };
 
   const postData = {
     // -------- form ----------
@@ -315,6 +329,7 @@ export default function Index(VALUES = {}) {
     defaultSort: quickReview.defaultSort,
     filterAndSorting: quickReview.filterAndSorting,
     filterMinStar: quickReview.filterMinStar,
+    advanceCss: quickReview.advanceCss,
   };
   const fetcher = useFetcher();
   useAdminFetcherToast(fetcher);
@@ -1075,7 +1090,7 @@ export default function Index(VALUES = {}) {
                   <s-heading>Colors</s-heading>
                   {COLOR_PICKERS_ELEMENTS.map((picker) => (
                     <ColorPicker
-                      key={picker.key}
+                      key={`${picker.key}-${resetKey}`}
                       data={picker}
                       defaultColor={
                         VALUES[picker.key] ??
@@ -1087,6 +1102,14 @@ export default function Index(VALUES = {}) {
                     />
                   ))}
                 </s-stack>
+
+                {/* -------------Custom CSS---------------- */}
+
+                <div style={{ padding: "" }}>
+                  <AdvanceCSS css={customCss} setCss={handleCssChange} />
+                </div>
+  
+                <ResetToDefaults handleResetToDefaults={handleResetToDefaults} />
 
                 {/* -------------Layout picker---------------- */}
               </div>

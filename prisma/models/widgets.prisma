@@ -56,6 +56,7 @@ model QuickReviewWidget {
   reviewPerPage                Int              @default(10)
   defaultSort                  String           @default("ALL")
   filterMinStar                FilterMinStars   @default(ALL)
+  advanceCss                   String           @default("")
   createdAt                    DateTime         @default(now())
   updatedAt                    DateTime         @updatedAt
   store                        Store            @relation(fields: [storeId], references: [storeGID], onDelete: Cascade)
