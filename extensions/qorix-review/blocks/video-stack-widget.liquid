@@ -46,7 +46,7 @@
         position: video_stack_metafield.headerStyle,
         reviewStats: video_stack_metafield.reviewStats,
         starColor: video_stack_metafield.startColor,
-        badgeColor:video_stack_metafield.badgeColor
+        badgeColor: video_stack_metafield.badgeColor
       %}
     </div>
   {% endif %}
@@ -72,7 +72,7 @@
       or video_stack_metafield.showArrowControls != false
       and video_stack_metafield.showArrowControls != 'false'
     %}
-      <div class="qorix-review-video-stack-controls">
+      <div class="qorix-review-video-stack-controls" x-show="filteredReviews().length > 0">
         {% if video_stack_metafield.showArrowControls != false and video_stack_metafield.showArrowControls != 'false' %}
           <button class="qorix-review-video-stack-nav qorix-review-video-stack-nav-prev" aria-label="Previous slide">
             <svg width="20" height="20" viewBox="0 0 20 20" fill="none">

@@ -2,7 +2,7 @@
 {% assign verified_badge_color = verifiedBageColor | default: verifiedBadgeColor | default: '#088728' %}
 
 {% assign max_len = textLength | plus: 0 %}
-
+{% render 'skeleton', type: 'card' %}
 <template x-for="review in filteredReviews()" :key="review.id">
   <div class="swiper-slide" x-show="!loading">
     <div
@@ -40,7 +40,7 @@
         {% if showMediaAsset %}
           <img
             x-show="review.reviewerImage"
-             src="{{ avatar | asset_url }}"
+            src="{{ avatar | asset_url }}"
             class="qr-reviewer-avatar"
             alt="{{ name }}"
             width="56"
@@ -49,8 +49,9 @@
 
           <span
             x-show="!review.reviewerImage"
-            class="qr-review-avatar" x-show="true"
-          x-text="review.reviewerName[0].toUpperCase()"
+            class="qr-review-avatar"
+            x-show="true"
+            x-text="review.reviewerName[0].toUpperCase()"
             style="font-size: 18px;"
           ></span>
         {% endif %}
@@ -88,8 +89,8 @@
   </div>
 </template>
 <p
-  x-show="filteredReviews().length === 0"
-  style="color: #888; font-size: 14px; padding: 20px 0"
+  x-show="filteredReviews().length === 0 && !loading"
+  style="color: #888; font-size: 16px; padding: 20px 0"
 >
-  No reviews found.
+  No reviews found
 </p>

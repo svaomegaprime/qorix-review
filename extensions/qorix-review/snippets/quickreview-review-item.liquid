@@ -117,9 +117,10 @@
     {% endif %}
   </div>
 </template>
-<p
-  x-show="filteredReviews().length === 0"
-  style="color: #888; font-size: 14px; padding: 20px 0"
+<div
+  x-show="filteredReviews().length === 0 && !loading"
+  style="padding-bottom:20px; color: #666;  margin-top: 20px;"
 >
-  No reviews found.
-</p>
+  {% comment %} <p style="font-size: 16px; margin: 0; font-weight: 500; color: #303030;">No reviews found</p> {% endcomment %}
+  <p>No reviews found</p>
+</div>

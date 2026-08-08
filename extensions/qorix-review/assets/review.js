@@ -387,8 +387,7 @@ class ReviewX {
       !this.form.review.trim()
     ) {
       this.isError = true;
-      this.errorMessage =
-        "Please fill in all required fields and select a star rating.";
+      this.errorMessage = "Please provide all required information.";
       return;
     }
 
@@ -471,6 +470,7 @@ class ReviewX {
       formData.append("productId", product.id ?? "");
       formData.append("productHandle", product.handle ?? "");
       formData.append("productTitle", product.title ?? "");
+      formData.append("productImage", product.images[0] ?? "");
 
       formData.append("source", "PRODUCT_PAGE");
       formData.append("submittedAt", new Date().toISOString());
@@ -487,13 +487,10 @@ class ReviewX {
       });
       if (orderId) params.set("orderId", orderId);
 
-      const fetchPromise = fetch(
-        `/apps/qorix-review/review?${params}`,
-        {
-          method: "POST",
-          body: formData,
-        },
-      );
+      const fetchPromise = fetch(`/apps/qorix-review/review?${params}`, {
+        method: "POST",
+        body: formData,
+      });
 
       // Wait for BOTH the network request AND the animation to finish
       const [response] = await Promise.all([fetchPromise, animationPromise]);

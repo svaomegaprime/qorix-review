@@ -99,6 +99,7 @@ async function postReview(request, session, admin) {
       productId: formData.get("productId") || null,
       productHandle: formData.get("productHandle") || null,
       productTitle: formData.get("productTitle") || null,
+      productImage: formData.get("productImage") || null,
     };
 
     let orderTarget = null;
@@ -166,7 +167,7 @@ async function postReview(request, session, admin) {
         return sendResponse(null, {
           ok: false,
           status: 409,
-          message: "This email has already reviewed this product",
+          message: "You have already reviewed this product.",
           data: {},
         });
       }
@@ -625,6 +626,11 @@ async function getReview(request, session, admin) {
         break;
 
       case "MOST_HELPFUL":
+        query.where.helpfulCount = {
+          some: {
+            isHelpful: true,
+          },
+        };
         query.orderBy = {
           helpfulCount: {
             _count: "desc",
@@ -688,6 +694,15 @@ async function getReview(request, session, admin) {
       }
     }
 
+    // Zero-out star keys below the filterMinStar threshold
+    const minStarMap = { STAR_1: 1, STAR_2: 2, STAR_3: 3, STAR_4: 4, STAR_5: 5 };
+    const minStar = minStarMap[filterMinStar];
+    if (minStar) {
+      for (let s = 1; s < minStar; s++) {
+        ratingCounts[s] = 0;
+      }
+    }
+
     const responseData = {
       reviews: res,
       totalReviews: info._count._all,
@@ -717,5 +732,3 @@ export const reviewService = {
   postReview,
   getReview,
 };
-
-

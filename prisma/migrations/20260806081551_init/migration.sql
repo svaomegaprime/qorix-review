@@ -8,6 +8,9 @@ CREATE TYPE "RequestType" AS ENUM ('AUTOMATIC', 'MANUAL', 'REMINDER');
 CREATE TYPE "FilterMinStars" AS ENUM ('ALL', 'STAR_1', 'STAR_2', 'STAR_3', 'STAR_4', 'STAR_5');
 
 -- CreateEnum
+CREATE TYPE "FilterAndSorting" AS ENUM ('SORTING_ONLY', 'FILTER_ONLY', 'FILTER_AND_SORT', 'NONE');
+
+-- CreateEnum
 CREATE TYPE "PlanType" AS ENUM ('FREE', 'BASIC', 'PRO');
 
 -- CreateEnum
@@ -83,6 +86,7 @@ CREATE TABLE "Review" (
     "isVerified" BOOLEAN NOT NULL DEFAULT false,
     "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
     "updatedAt" TIMESTAMP(3) NOT NULL,
+    "orderRecordId" UUID,
 
     CONSTRAINT "Review_pkey" PRIMARY KEY ("id")
 );
@@ -270,8 +274,9 @@ CREATE TABLE "TrustBarWidget" (
     "showReviewCount" BOOLEAN NOT NULL DEFAULT true,
     "showVerifiedBadge" BOOLEAN NOT NULL DEFAULT true,
     "reviewSource" TEXT NOT NULL DEFAULT 'DEMO_REVIEW_SOURCE',
-    "hideIfNoReviews" BOOLEAN NOT NULL DEFAULT true,
+    "hideIfNoReviews" BOOLEAN NOT NULL DEFAULT false,
     "advanceCss" TEXT NOT NULL DEFAULT '',
+    "showVerifiedIconOnly" BOOLEAN NOT NULL DEFAULT false,
 
     CONSTRAINT "TrustBarWidget_pkey" PRIMARY KEY ("id")
 );
@@ -310,7 +315,7 @@ CREATE TABLE "QuickReviewWidget" (
     "isShowMediaWithoutRating" BOOLEAN NOT NULL DEFAULT true,
     "writeReviewButtonText" TEXT NOT NULL DEFAULT 'Write a review',
     "showHelfullButton" BOOLEAN NOT NULL DEFAULT true,
-    "filterAndSorting" TEXT NOT NULL DEFAULT 'FILTER_AND_SORT',
+    "filterAndSorting" "FilterAndSorting" NOT NULL DEFAULT 'FILTER_AND_SORT',
     "reviewPerPage" INTEGER NOT NULL DEFAULT 10,
     "defaultSort" TEXT NOT NULL DEFAULT 'ALL',
     "filterMinStar" "FilterMinStars" NOT NULL DEFAULT 'ALL',
@@ -336,6 +341,7 @@ CREATE TABLE "QuoteLoopWidget" (
     "heading" TEXT NOT NULL DEFAULT 'Reviews from people',
     "quoteFontSize" INTEGER NOT NULL DEFAULT 24,
     "quoteMarkColor" TEXT NOT NULL DEFAULT '#1D9E75',
+    "activeDotColor" TEXT NOT NULL DEFAULT '#34C759',
     "reviewStats" TEXT NOT NULL DEFAULT 'Show review count & verified badge',
     "showAppreciationOption" BOOLEAN NOT NULL DEFAULT true,
     "showArrowControls" BOOLEAN NOT NULL DEFAULT true,
@@ -516,6 +522,12 @@ CREATE UNIQUE INDEX "Order_storeId_orderId_key" ON "Order"("storeId", "orderId")
 CREATE UNIQUE INDEX "OrderLineItem_orderId_productId_key" ON "OrderLineItem"("orderId", "productId");
 
 -- CreateIndex
+CREATE INDEX "Review_storeId_productId_reviewerEmail_idx" ON "Review"("storeId", "productId", "reviewerEmail");
+
+-- CreateIndex
+CREATE INDEX "Review_orderRecordId_idx" ON "Review"("orderRecordId");
+
+-- CreateIndex
 CREATE INDEX "Review_storeId_idx" ON "Review"("storeId");
 
 -- CreateIndex
@@ -532,9 +544,6 @@ CREATE INDEX "Review_reviewerEmail_idx" ON "Review"("reviewerEmail");
 
 -- CreateIndex
 CREATE INDEX "Review_createdAt_idx" ON "Review"("createdAt");
-
--- CreateIndex
-CREATE UNIQUE INDEX "Review_storeId_productId_reviewerEmail_key" ON "Review"("storeId", "productId", "reviewerEmail");
 
 -- CreateIndex
 CREATE UNIQUE INDEX "HelpfulCount_reviewId_customerEmail_key" ON "HelpfulCount"("reviewId", "customerEmail");
@@ -598,6 +607,9 @@ ALTER TABLE "OrderLineItem" ADD CONSTRAINT "OrderLineItem_orderId_fkey" FOREIGN 
 
 -- AddForeignKey
 ALTER TABLE "Review" ADD CONSTRAINT "Review_storeId_fkey" FOREIGN KEY ("storeId") REFERENCES "Store"("storeGID") ON DELETE CASCADE ON UPDATE CASCADE;
+
+-- AddForeignKey
+ALTER TABLE "Review" ADD CONSTRAINT "Review_orderRecordId_fkey" FOREIGN KEY ("orderRecordId") REFERENCES "Order"("id") ON DELETE SET NULL ON UPDATE CASCADE;
 
 -- AddForeignKey
 ALTER TABLE "HelpfulCount" ADD CONSTRAINT "HelpfulCount_reviewId_fkey" FOREIGN KEY ("reviewId") REFERENCES "Review"("id") ON DELETE CASCADE ON UPDATE CASCADE;
