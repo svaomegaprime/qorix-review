@@ -167,7 +167,7 @@ async function postReview(request, session, admin) {
         return sendResponse(null, {
           ok: false,
           status: 409,
-          message: "This email has already reviewed this product",
+          message: "You have already reviewed this product.",
           data: {},
         });
       }
@@ -626,6 +626,11 @@ async function getReview(request, session, admin) {
         break;
 
       case "MOST_HELPFUL":
+        query.where.helpfulCount = {
+          some: {
+            isHelpful: true,
+          },
+        };
         query.orderBy = {
           helpfulCount: {
             _count: "desc",
