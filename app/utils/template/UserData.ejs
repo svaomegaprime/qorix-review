@@ -1,0 +1,383 @@
+<%
+const {
+  storeName = "",
+  storeLogo = "",
+  logoUrl = "",
+  logo = "",
+  storeTagline = "",
+  tagline = "",
+  reviews = [],
+  customer = {},
+  buttonUrl = "#",
+  emailPrimaryButtonColor = "#108848",
+  emailButtonTextColor = "#ffffff",
+  emailBackgroundColor = "#ffffff",
+  emailOuterBgColor = "#eef0ee",
+  emailHeadingColor = "#303030",
+  emailBodyTextColor = "#0d0e0d",
+  emailAccentBorderColor = "#f0f0f0",
+  storeFooterText = "",
+  storeFooterLinkText = "",
+  isShowFooterBadge = true,
+  logoWidth = 140,
+} = locals;
+
+const effectiveLogo = storeLogo || logoUrl || logo || "";
+const effectiveStoreName = storeName || "Store";
+const effectiveTagline = storeTagline || tagline || "";
+
+function renderStars(rating) {
+  let html = "";
+  for (let i = 1; i <= 5; i++) {
+    if (i <= rating) {
+      html += '<svg style="margin-right: 2px;" width="16" height="16" viewBox="0 0 17 16" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M9.52 0.855C8.976-0.285 7.356-0.285 6.812 0.855L5.144 4.349L1.306 4.855C0.055 5.02-0.446 6.561 0.469 7.43L3.277 10.096L2.573 13.903C2.342 15.143 3.654 16.096 4.763 15.495L8.166 13.647L11.569 15.495C12.678 16.096 13.99 15.143 13.759 13.903L13.055 10.096L15.863 7.43C16.777 6.561 16.277 5.02 15.026 4.855L11.186 4.349L9.52 0.855Z" fill="#f5a623"/></svg>';
+    } else {
+      html += '<svg style="margin-right: 2px;" width="16" height="16" viewBox="0 0 14 14" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M7.933 0.713C7.48-0.238 6.13-0.238 5.677 0.713L4.287 3.625L1.088 4.046C0.046 4.184-0.372 5.468 0.391 6.192L2.731 8.414L2.144 11.586C1.952 12.62 3.045 13.414 3.969 12.913L6.805 11.373L9.641 12.913C10.565 13.414 11.658 12.62 11.466 11.586L10.879 8.414L13.219 6.192C13.981 5.468 13.564 4.184 12.522 4.046L9.322 3.625L7.933 0.713Z" fill="#B5B5B5"/></svg>';
+    }
+  }
+  return html;
+}
+
+function formatDate(isoString) {
+  if (!isoString) return "";
+  const d = new Date(isoString);
+  if (isNaN(d.getTime())) return "";
+  const months = ["Jan","Feb","Mar","Apr","May","Jun","Jul","Aug","Sep","Oct","Nov","Dec"];
+  return `${months[d.getMonth()]} ${d.getDate()}, ${d.getFullYear()}`;
+}
+%>
+
+<!DOCTYPE html>
+<html
+  lang="en"
+  xmlns:v="urn:schemas-microsoft-com:vml"
+  xmlns:o="urn:schemas-microsoft-com:office:office"
+>
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="x-apple-disable-message-reformatting" />
+    <title>Customer Data Request</title>
+  </head>
+
+  <body
+    style="
+      margin: 0;
+      padding: 0;
+      background: <%= emailOuterBgColor %>;
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+    "
+  >
+    <table
+      role="presentation"
+      width="100%"
+      cellpadding="0"
+      cellspacing="0"
+      border="0"
+      style="background: <%= emailOuterBgColor %>"
+    >
+      <tr>
+        <td align="center" style="padding: 48px 16px 64px">
+
+          <!-- Main Card -->
+          <table
+            role="presentation"
+            width="100%"
+            cellpadding="0"
+            cellspacing="0"
+            border="0"
+            style="
+              max-width: 580px;
+              width: 100%;
+              background: <%= emailBackgroundColor %>;
+              border-radius: 16px;
+              border: 1px solid #E2E8F0;
+              box-shadow: 0 2px 10px rgba(0, 0, 0, 0.06);
+            "
+          >
+            <tr>
+              <td style="padding: 28px 24px 24px">
+
+                <!-- Header -->
+                <table
+                  role="presentation"
+                  width="100%"
+                  cellpadding="0"
+                  cellspacing="0"
+                  border="0"
+                  style="border-bottom: 1px solid <%= emailAccentBorderColor %>"
+                >
+                  <tr>
+                    <td style="padding-bottom: 16px">
+                      <% if (effectiveLogo) { %>
+                        <img
+                          src="<%= effectiveLogo %>"
+                          alt="<%= effectiveStoreName %>"
+                          width="<%= logoWidth %>"
+                          style="
+                            max-height: 48px;
+                            max-width: <%= logoWidth %>px;
+                            object-fit: contain;
+                            display: block;
+                            border: 0;
+                          "
+                        />
+                      <% } else { %>
+                        <h1 style="margin: 0; font-size: 22px; font-weight: 700; color: <%= emailHeadingColor %>;">
+                          <%= effectiveStoreName %>
+                        </h1>
+                      <% } %>
+                    </td>
+                  </tr>
+                  <% if (effectiveTagline) { %>
+                    <tr>
+                      <td
+                        style="
+                          padding-bottom: 20px;
+                          font-size: 14px;
+                          color: #64748B;
+                        "
+                      >
+                        <%= effectiveTagline %>
+                      </td>
+                    </tr>
+                  <% } %>
+                </table>
+
+                <!-- Content -->
+                <table
+                  role="presentation"
+                  width="100%"
+                  cellpadding="0"
+                  cellspacing="0"
+                  border="0"
+                >
+                  <tr>
+                    <td
+                      style="
+                        padding-top: 24px;
+                        font-size: 15px;
+                        line-height: 1.5;
+                        color: <%= emailBodyTextColor %>;
+                      "
+                    >
+                      <p style="font-weight: 600; margin: 0 0 8px; font-size: 18px; color: <%= emailHeadingColor %>;">
+                        Customer Data Request
+                      </p>
+                      <p style="font-weight: 400; margin: 0 0 4px;">
+                        A customer has requested their personal data under applicable privacy regulations.
+                      </p>
+                      <p style="font-weight: 400; margin: 0; color: #64748B; font-size: 13px;">
+                        Customer Email: <strong style="color: <%= emailHeadingColor %>;"><%= customer.email || "N/A" %></strong>
+                        <% if (customer.id) { %>
+                          &nbsp;&middot;&nbsp; ID: <strong style="color: <%= emailHeadingColor %>;"><%= customer.id %></strong>
+                        <% } %>
+                      </p>
+                    </td>
+                  </tr>
+                </table>
+
+                <% if (reviews.length > 0) { %>
+                  <!-- Reviews Section -->
+                  <table
+                    role="presentation"
+                    width="100%"
+                    cellpadding="0"
+                    cellspacing="0"
+                    border="0"
+                    style="margin-top: 24px;"
+                  >
+                    <tr>
+                      <td style="font-size: 14px; font-weight: 600; color: <%= emailHeadingColor %>; padding-bottom: 12px; text-transform: uppercase; letter-spacing: 0.5px;">
+                        Reviews (<%= reviews.length %>)
+                      </td>
+                    </tr>
+                  </table>
+
+                  <% reviews.forEach(function(review, index) { %>
+                    <!-- Review Card -->
+                    <table
+                      role="presentation"
+                      width="100%"
+                      cellpadding="0"
+                      cellspacing="0"
+                      border="0"
+                      style="
+                        margin-bottom: 12px;
+                        border: 1px solid #E2E8F0;
+                        border-radius: 10px;
+                      "
+                    >
+                      <tr>
+                        <td style="padding: 16px;">
+
+                          <!-- Review Header: Name + Date -->
+                          <table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0">
+                            <tr>
+                              <td style="font-size: 14px; font-weight: 600; color: <%= emailHeadingColor %>;">
+                                <%= review.reviewerName || "Anonymous" %>
+                              </td>
+                              <td align="right" style="font-size: 12px; color: #94A3B8;">
+                                <%= formatDate(review.createdAt) %>
+                              </td>
+                            </tr>
+                          </table>
+
+                          <!-- Stars -->
+                          <div style="margin: 8px 0;">
+                            <%- renderStars(review.rating) %>
+                          </div>
+
+                          <% if (review.productTitle) { %>
+                            <div style="font-size: 13px; color: #64748B; margin-bottom: 6px;">
+                              Product: <strong><%= review.productTitle %></strong>
+                            </div>
+                          <% } %>
+
+                          <% if (review.body) { %>
+                            <div style="font-size: 14px; color: <%= emailBodyTextColor %>; line-height: 1.5;">
+                              <%= review.body %>
+                            </div>
+                          <% } %>
+
+                          <% if (review.status) { %>
+                            <div style="margin-top: 8px; font-size: 12px; color: #64748B;">
+                              Status: <strong><%= review.status %></strong>
+                            </div>
+                          <% } %>
+
+                          <% if (review.attachments && review.attachments.length > 0) { %>
+                            <div style="margin-top: 8px; font-size: 12px; color: #64748B;">
+                              Attachments: <%= review.attachments.length %> file<%= review.attachments.length > 1 ? "s" : "" %>
+                            </div>
+                          <% } %>
+
+                        </td>
+                      </tr>
+                    </table>
+                  <% }); %>
+
+                <% } else { %>
+                  <!-- No Reviews -->
+                  <table
+                    role="presentation"
+                    width="100%"
+                    cellpadding="0"
+                    cellspacing="0"
+                    border="0"
+                    style="
+                      margin-top: 20px;
+                      border: 1px solid #E2E8F0;
+                      border-radius: 10px;
+                    "
+                  >
+                    <tr>
+                      <td
+                        align="center"
+                        style="
+                          padding: 24px 16px;
+                          font-size: 14px;
+                          color: #94A3B8;
+                        "
+                      >
+                        No review data found for this customer.
+                      </td>
+                    </tr>
+                  </table>
+                <% } %>
+
+                <!-- CTA Button -->
+                <% if (buttonUrl && buttonUrl !== "#") { %>
+                  <table
+                    role="presentation"
+                    width="100%"
+                    cellpadding="0"
+                    cellspacing="0"
+                    border="0"
+                    style="margin-top: 24px"
+                  >
+                    <tr>
+                      <td
+                        align="center"
+                        bgcolor="<%= emailPrimaryButtonColor %>"
+                        style="border-radius: 10px"
+                      >
+                        <a
+                          href="<%= buttonUrl %>"
+                          style="
+                            display: block;
+                            padding: 12px;
+                            color: <%= emailButtonTextColor %>;
+                            text-decoration: none;
+                            font-size: 16px;
+                            line-height: 20px;
+                            font-weight: 500;
+                          "
+                        >
+                          Go to Store &rarr;
+                        </a>
+                      </td>
+                    </tr>
+                  </table>
+                <% } %>
+
+                <!-- Footer -->
+                <table
+                  role="presentation"
+                  width="100%"
+                  cellpadding="0"
+                  cellspacing="0"
+                  border="0"
+                  style="border-top: 1px solid <%= emailAccentBorderColor %>; margin-top: 32px"
+                >
+                  <% if (storeFooterText) { %>
+                    <tr>
+                      <td
+                        align="center"
+                        style="
+                          padding-top: 16px;
+                          font-size: 13px;
+                          color: #64748B;
+                          line-height: 1.4;
+                        "
+                      >
+                        <%= storeFooterText %>
+                        <% if (storeFooterLinkText && buttonUrl) { %>
+                          &nbsp;&middot;&nbsp;
+                          <a
+                            href="<%= buttonUrl %>"
+                            style="color: #64748B; text-decoration: underline"
+                          ><%= storeFooterLinkText %></a>
+                        <% } %>
+                      </td>
+                    </tr>
+                  <% } %>
+                  <% if (isShowFooterBadge) { %>
+                    <tr>
+                      <td
+                        align="center"
+                        style="
+                          padding-top: 16px;
+                          padding-bottom: 8px;
+                          font-weight: 500;
+                          font-size: 13px;
+                          line-height: 1.2;
+                          color: #94A3B8;
+                        "
+                      >
+                        Powered by <span style="color: <%= emailPrimaryButtonColor %>">Qorix</span>
+                      </td>
+                    </tr>
+                  <% } %>
+                </table>
+
+              </td>
+            </tr>
+          </table>
+          <!-- /Card -->
+
+        </td>
+      </tr>
+    </table>
+  </body>
+</html>
