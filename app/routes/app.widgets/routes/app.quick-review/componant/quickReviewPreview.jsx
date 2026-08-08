@@ -587,6 +587,7 @@ border:none;
 
 
       `}</style>
+      {quickReview?.advanceCss && <style>{quickReview.advanceCss}</style>}
 
       <div className="quick-review">
         <div className="rv-wrap">
