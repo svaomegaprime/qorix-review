@@ -694,6 +694,15 @@ async function getReview(request, session, admin) {
       }
     }
 
+    // Zero-out star keys below the filterMinStar threshold
+    const minStarMap = { STAR_1: 1, STAR_2: 2, STAR_3: 3, STAR_4: 4, STAR_5: 5 };
+    const minStar = minStarMap[filterMinStar];
+    if (minStar) {
+      for (let s = 1; s < minStar; s++) {
+        ratingCounts[s] = 0;
+      }
+    }
+
     const responseData = {
       reviews: res,
       totalReviews: info._count._all,
