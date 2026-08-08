@@ -387,8 +387,7 @@ class ReviewX {
       !this.form.review.trim()
     ) {
       this.isError = true;
-      this.errorMessage =
-        "Please fill in all required fields and select a star rating.";
+      this.errorMessage = "Please provide all required information.";
       return;
     }
 
