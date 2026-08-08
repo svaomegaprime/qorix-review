@@ -1,4 +1,8 @@
-<style>[data-qorix-widget] { display: none !important; }</style>
+<style>
+  [data-qorix-widget] {
+    display: none !important;
+  }
+</style>
 {% assign quick_review_metafield = app.metafields.qorix_review.quick_review.value %}
 {% liquid
   assign allow_photo = quick_review_metafield.isPhotoUpload
@@ -14,6 +18,7 @@
     assign media_accept = media_accept | append: 'video/mp4,video/quicktime'
   endif
 %}
+
 <style>
   :root{
     --star-color: {{ quick_review_metafield.starColor }};
@@ -42,13 +47,7 @@
     --qr-shadow-menu: 0 4px 20px rgba(0, 0, 0, 0.12);
   }
 </style>
-
-{% if quick_review_metafield.advanceCss != blank %}
-  <style>
-    {{ quick_review_metafield.advanceCss }}
-  </style>
-{% endif %}
-
+{% render 'custom-css', css: quick_review_metafield.advanceCss %}
 {{ 'swiper-bundle.min.css' | asset_url | stylesheet_tag }}
 {{ 'quickreview.css' | asset_url | stylesheet_tag }}
 
