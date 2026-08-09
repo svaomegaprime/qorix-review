@@ -75,6 +75,7 @@ class ReviewX {
     this.baseLimit = 10;
     this.totalPages = 1;
     this.totalReviews = 0;
+    this.filteredTotalReviews = 0;
     this.averageRating = 0;
     this.sort = "ALL";
     this.starCount = { 5: 0, 4: 0, 3: 0, 2: 0, 1: 0 };
@@ -235,8 +236,10 @@ class ReviewX {
         });
       this.currentPage = result.data?.currentPage ?? 1;
       this.totalPages = result.data?.totalPages ?? 1;
-      this.totalReviews = result.data?.totalReviews ?? 0;
-      this.averageRating = result.data?.averageRating.toFixed(1) ?? 0.0;
+      this.totalReviews = Number(result.data?.totalReviews) || 0;
+      this.filteredTotalReviews =
+        Number(result.data?.filteredTotalReviews) || 0;
+      this.averageRating = (Number(result.data?.averageRating) || 0).toFixed(1);
       this.starCount = result.data?.ratingCounts ?? {
         5: 0,
         4: 0,
@@ -572,7 +575,7 @@ class ReviewX {
   }
 
   hasMoreReviews() {
-    return this.reviews.length < this.totalReviews;
+    return this.reviews.length < this.filteredTotalReviews;
   }
 
   nextPage() {
