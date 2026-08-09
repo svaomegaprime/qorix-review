@@ -15,6 +15,7 @@ import {
 } from "../../../services/reviews.server.js";
 import { sendEmail } from "../../../utils/sendEmail";
 import { buildReplyEmailData } from "../../../services/emailPayload.server.js";
+import { invalidateReviewCache } from "../../../lib/redis/reviewCache.js";
 import { usePagination } from "../../../hooks/usePagination.js";
 import { updateProductReviewDefineMetafields } from "../../../utils/updateProductReviewDefineMetafields";
 import { authenticate } from "../../../shopify.server";
@@ -261,9 +262,25 @@ export async function action({ request }) {
         const body = formData.get("body");
 
         if (reviewId && body) {
-          const updatedReview = await prisma.review.update({
+          const review = await prisma.review.findFirst({
+            where: { id: reviewId, storeId: storeData.id },
+            select: { productId: true },
+          });
+
+          if (!review) {
+            return new Response(null, { status: 404 });
+          }
+
+          await prisma.reply.upsert({
+            where: { reviewId },
+            update: { body },
+            create: { reviewId, body },
+          });
+
+          await invalidateReviewCache(storeData.id, review.productId);
+
+          const updatedReview = await prisma.review.findUnique({
             where: { id: reviewId },
-            data: { reply: { create: { body } } },
             include: {
               reply: true,
             },
