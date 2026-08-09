@@ -1,20 +1,22 @@
 import { Text } from "@shopify/polaris";
-import starFilled from "../../assets/images/star-filled.svg"
-import starEmpty from "../../assets/images/star-empty.svg"
 import CustomText from "../essentials/elements/Text"
+import HalfStar from "../essentials/elements/HalfStar"
 
-export default function Analytics({ reviews = [], pendingOrders }) {
+export default function Analytics({ reviews, data, pendingOrders }) {
     const arrowUp = '↑';
     const arrowDown = '↓';
 
-    const totalReviews = reviews.length;
+    const reviewList = reviews ?? data ?? [];
+    const totalReviews = reviewList.length;
     const avgRating = totalReviews > 0
-        ? (reviews.reduce((sum, r) => sum + r.rating, 0) / totalReviews)
+        ? (reviewList.reduce((sum, r) => sum + (r.rating || 0), 0) / totalReviews)
         : 0;
-    const pendingReviews = reviews.filter(r => r.status === "PENDING").length;
+    const pendingReviews = reviewList.filter(r => r.status === "PENDING").length;
 
-    const roundedRating = Math.round(avgRating);
-    const stars = Array.from({ length: 5 }, (_, i) => i < roundedRating);
+    const stars = Array.from({ length: 5 }, (_, i) => {
+        const fillAmount = Math.max(0, Math.min(1, avgRating - i));
+        return fillAmount * 100;
+    });
 
     return (
         <s-stack paddingBlockEnd="base">
@@ -53,8 +55,8 @@ export default function Analytics({ reviews = [], pendingOrders }) {
                             </s-stack>
                             <Text as="h2">{avgRating.toFixed(1)}</Text>
                             <s-grid gridTemplateColumns="repeat(5, 20px)" alignItems="center">
-                                {stars.map((isFilled, idx) => (
-                                    <s-image key={idx} src={isFilled ? starFilled : starEmpty} inlineSize="fill" />
+                                {stars.map((fillPercentage, idx) => (
+                                    <HalfStar key={idx} width={fillPercentage} color="#FFB800" />
                                 ))}
                             </s-grid>
                         </s-section>
