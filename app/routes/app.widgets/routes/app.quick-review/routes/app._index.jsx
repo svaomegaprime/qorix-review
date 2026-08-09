@@ -864,16 +864,6 @@ export default function Index(VALUES = {}) {
                             }
                             onchange={handleSwitch("isShowMediaWithoutRating")}
                           />
-                          <s-switch
-                            label="Show review data without rating"
-                            checked={
-                              quickReview.isShowReviewDataWithoutRating ||
-                              undefined
-                            }
-                            onchange={handleSwitch(
-                              "isShowReviewDataWithoutRating",
-                            )}
-                          />
 
                           <s-stack
                             border="base"
@@ -946,6 +936,16 @@ export default function Index(VALUES = {}) {
                             label="Show helpful button"
                             checked={quickReview.showHelpfulButton || undefined}
                             onchange={handleSwitch("showHelpfulButton")}
+                          />
+                          <s-switch
+                            label="Show review data without rating"
+                            checked={
+                              quickReview.isShowReviewDataWithoutRating ||
+                              undefined
+                            }
+                            onchange={handleSwitch(
+                              "isShowReviewDataWithoutRating",
+                            )}
                           />
                           {/* <s-switch
                             label="Show rating bar without rating"
