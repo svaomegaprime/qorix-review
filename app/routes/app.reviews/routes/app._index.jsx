@@ -4,7 +4,7 @@ import CustomSection from "../../../components/essentials/CustomSection";
 import ReviewItem from "../../../components/essentials/ReviewItem";
 import Text from "../../../components/essentials/elements/Text";
 import { useLoaderData, useNavigation, useFetcher } from "react-router";
-import { useState, useRef } from "react";
+import { useState, useRef, useEffect } from "react";
 import prisma from "../../../db.server";
 import { requireAdminContext } from "../../../services/adminContext.server.js";
 import { adminErrorResponse } from "../../../utils/adminError.server";
@@ -192,7 +192,7 @@ export async function action({ request }) {
           rating,
           productId,
         );
-        
+
         let message = "Review status updated successfully";
         if (status === "ARCHIVE") {
           message = "Review unpublished successfully";
@@ -205,14 +205,34 @@ export async function action({ request }) {
       case "DELETE": {
         const formData = await request.formData();
         const reviewId = formData.get("reviewId");
-        if (reviewId) {
+        const rawReviewIds = formData.get("reviewIds");
+
+        let idsToDelete = [];
+        if (rawReviewIds) {
+          try {
+            idsToDelete = JSON.parse(String(rawReviewIds));
+          } catch {
+            idsToDelete = formData.getAll("reviewIds").map(String);
+          }
+        } else if (reviewId) {
+          idsToDelete = [String(reviewId)];
+        }
+
+        const productIdsToUpdate = new Set();
+        for (const id of idsToDelete) {
           const reviewData = await deleteReviewWithAttachments({
-            reviewId: String(reviewId),
+            reviewId: id,
             storeId: storeData.id,
           });
+          if (reviewData?.productId) {
+            productIdsToUpdate.add(reviewData.productId);
+          }
+        }
+
+        for (const prodId of productIdsToUpdate) {
           await updateProductReviewDefineMetafields(
             admin,
-            reviewData.productId,
+            prodId,
             storeData.id,
           );
         }
@@ -226,7 +246,12 @@ export async function action({ request }) {
           rating,
           productId,
         );
-        return { reviews, ok: true, message: "Review deleted successfully" };
+        const count = idsToDelete.length;
+        const message =
+          count > 1
+            ? `${count} reviews deleted successfully`
+            : "Review deleted successfully";
+        return { reviews, ok: true, message };
       }
 
       // Reply review
@@ -311,6 +336,7 @@ export default function Reviews() {
   const [selectedRating, setSelectedRating] = useState("all");
   const [selectedProduct, setSelectedProduct] = useState("all");
   const [sortOrder, setSortOrder] = useState("newest"); // "newest" or "oldest"
+  const [selectedReviewIds, setSelectedReviewIds] = useState([]);
   const searchTimeoutRef = useRef(null);
 
   const baseReviews = fetcher.data?.reviews ?? reviews;
@@ -472,17 +498,9 @@ export default function Reviews() {
   // End----Handle status toggle
 
   // Start----Handle review delete
-  const handleReviewDelete = (reviewId, attachments) => {
-    fetcher.submit(
-      {
-        reviewId,
-        search: searchQuery,
-        rating: selectedRating,
-        productId: selectedProduct,
-        attachments: attachments ? JSON.stringify(attachments) : "[]",
-      },
-      { method: "DELETE" },
-    );
+  const handleReviewDelete = (reviewId) => {
+    setSelectedReviewIds([reviewId]);
+    shopify.modal.show("delete-modal");
   };
   // End----Handle review delete
   // Start----Handle review reply
@@ -495,7 +513,36 @@ export default function Reviews() {
       { method: "PUT" },
     );
   };
-  // End----Handle review delete
+  // End----Handle review reply
+
+  // Start----Clear selection when action completes
+  useEffect(() => {
+    if (fetcher.state === "idle" && fetcher.data?.ok) {
+      setSelectedReviewIds([]);
+    }
+  }, [fetcher.state, fetcher.data]);
+
+  const handleSelectReview = (reviewId) => {
+    setSelectedReviewIds((prev) =>
+      prev.includes(reviewId)
+        ? prev.filter((id) => id !== reviewId)
+        : [...prev, reviewId],
+    );
+  };
+
+  const handleBulkDelete = () => {
+    if (selectedReviewIds.length === 0) return;
+    fetcher.submit(
+      {
+        reviewIds: JSON.stringify(selectedReviewIds),
+        search: searchQuery,
+        rating: selectedRating,
+        productId: selectedProduct,
+      },
+      { method: "DELETE" },
+    );
+  };
+  // End----Handle bulk review delete
 
   if (loading) {
     return <Loader />; // Show loader while navigating to this page or when loader is fetching data
@@ -593,8 +640,39 @@ export default function Reviews() {
           disabled={!exportRows.length}
         >
           Download
-        </s-button>
       </s-modal> */}
+      <s-modal
+        id="delete-modal"
+        heading={`Delete ${selectedReviewIds.length} ${selectedReviewIds.length === 1 ? "review" : "reviews"}?`}
+      >
+        <s-stack gap="base">
+          <s-text>
+            Are you sure you want to delete {selectedReviewIds.length}{" "}
+            {selectedReviewIds.length === 1 ? "review" : "reviews"}?
+          </s-text>
+          <s-text tone="caution">This action cannot be undone.</s-text>
+        </s-stack>
+
+        <s-button
+          slot="primary-action"
+          variant="primary"
+          tone="critical"
+          commandFor="delete-modal"
+          command="--hide"
+          onClick={handleBulkDelete}
+        >
+          Delete {selectedReviewIds.length === 1 ? "review" : "reviews"}
+        </s-button>
+        <s-button
+          slot="secondary-actions"
+          variant="secondary"
+          commandFor="delete-modal"
+          command="--hide"
+        >
+          Cancel
+        </s-button>
+      </s-modal>
+
       <s-page>
         {/* Start----Page Header */}
         <s-grid
@@ -751,15 +829,27 @@ export default function Reviews() {
               </s-select>
               {/* End----Filter options by product */}
             </s-grid>
-            {/* Start----Sort button */}
-            <s-press-button
-              pressed={sortOrder === "oldest"}
-              icon="select"
-              onClick={handleSortToggle}
-            >
-              {sortOrder === "newest" ? "Newest first" : "Oldest first"}
-            </s-press-button>
-            {/* End----Sort button */}
+            <s-stack direction="inline" gap="base">
+              {selectedReviewIds.length > 0 && (
+                <s-button
+                  icon="delete"
+                  tone="critical"
+                  commandFor="delete-modal"
+                  command="--show"
+                >
+                  Delete ({selectedReviewIds.length})
+                </s-button>
+              )}
+              {/* Start----Sort button */}
+              <s-press-button
+                pressed={sortOrder === "oldest"}
+                icon="select"
+                onClick={handleSortToggle}
+              >
+                {sortOrder === "newest" ? "Newest first" : "Oldest first"}
+              </s-press-button>
+              {/* End----Sort button */}
+            </s-stack>
           </s-grid>
           {/* End----Page main content header */}
 
@@ -774,7 +864,10 @@ export default function Reviews() {
                 paginatedReviews.map((review, index) => (
                   <div key={review.id}>
                     <s-grid gridTemplateColumns="auto 1fr" gap="base">
-                      <s-checkbox /> {/* Checkbox for selection of reviews */}
+                      <s-checkbox
+                        checked={selectedReviewIds.includes(review.id)}
+                        onChange={() => handleSelectReview(review.id)}
+                      />
                       <ReviewItem
                         data={review}
                         handleStatusUpdate={handleStatusUpdate}
