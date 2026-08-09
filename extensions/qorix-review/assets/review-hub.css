@@ -493,6 +493,7 @@ span.qr-review-avatar {
   border-radius: 10px;
   overflow: hidden;
   border: 1px solid #767676;
+  width: 28px;
 }
 
 .qr-review-actions {
