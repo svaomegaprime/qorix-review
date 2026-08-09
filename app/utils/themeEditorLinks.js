@@ -21,6 +21,17 @@ export function sanitizeShopDomain(shop) {
 }
 
 /**
+ * Get the modern Shopify Admin base URL
+ * @param {string} shop 
+ * @returns {string} Base URL (e.g. "https://admin.shopify.com/store/my-store")
+ */
+export function getAdminBaseUrl(shop) {
+  const cleanShop = sanitizeShopDomain(shop);
+  const shopName = cleanShop.replace(".myshopify.com", "");
+  return `https://admin.shopify.com/store/${shopName}`;
+}
+
+/**
  * Generates an App Block Deep Link URL for Shopify Theme Editor
  * 
  * @param {Object} params
@@ -38,11 +49,11 @@ export function getAppBlockDeepLink({
   template = "product",
   target = "newAppsSection",
 }) {
-  const cleanShop = sanitizeShopDomain(shop);
+  const baseUrl = getAdminBaseUrl(shop);
   const key = apiKey || DEFAULT_API_KEY;
 
-  if (!cleanShop || !blockHandle) return "#";
-  return `https://${cleanShop}/admin/themes/current/editor?template=${template}&addAppBlockId=${key}/${blockHandle}&target=${target}`;
+  if (!shop || !blockHandle) return "#";
+  return `${baseUrl}/themes/current/editor?template=${template}&addAppBlockId=${key}/${blockHandle}&target=${target}`;
 }
 
 /**
@@ -59,11 +70,11 @@ export function getAppEmbedDeepLink({
   apiKey,
   embedHandle = "app_embed",
 }) {
-  const cleanShop = sanitizeShopDomain(shop);
+  const baseUrl = getAdminBaseUrl(shop);
   const key = apiKey || DEFAULT_API_KEY;
 
-  if (!cleanShop) return "#";
-  return `https://${cleanShop}/admin/themes/current/editor?context=apps&activateAppId=${key}/${embedHandle}`;
+  if (!shop) return "#";
+  return `${baseUrl}/themes/current/editor?context=apps&activateAppId=${key}/${embedHandle}`;
 }
 
 /**
