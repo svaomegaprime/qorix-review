@@ -87,6 +87,7 @@ class ReviewX {
     this.showFirst = "";
     this.showRatingBarWithoutRating = true;
     this.showMediaWithoutRating = true;
+    this.showReviewBodyWithoutRating = true;
   }
 
   reinitSwipers() {
@@ -132,6 +133,8 @@ class ReviewX {
     this.filterMinStar = el.dataset.filterMinStars || "ALL";
     this.showName = el.dataset.showName !== "false";
     this.showEmail = el.dataset.showEmail !== "false";
+    this.showReviewBodyWithoutRating =
+      el.dataset.showReviewBodyWithoutRating !== "false";
   }
 
   isAllowedMediaFile(file) {

@@ -87,9 +87,11 @@
   data-page-type="{{ template.name }}"
   data-show-rating-bar-without-rating="{{ quick_review_metafield.isShowRatingBarWithoutRating }}"
   data-show-media-without-rating="{{ quick_review_metafield.isShowMediaWithoutRating }}"
+  data-show-review-data-without-rating="{{ quick_review_metafield.isShowReviewDataWithoutRating }}"
   data-filter-min-stars="{{ quick_review_metafield.filterMinStar }}"
   data-show-name="{{ quick_review_metafield.isShowNameField }}"
   data-show-email="{{ quick_review_metafield.isShowEmailField }}"
+  data-show-review-body-without-rating="{{ quick_review_metafield.isShowReviewDataWithoutRating }}"
 >
   <div
     class="quickreview-card {{ card_modifier }}"
@@ -117,6 +119,7 @@
     %}
   </div>
   {% render 'lightbox' %}
+
   {% render 'quickreview-reviews', quick_review_metafield: quick_review_metafield %}
 </div>
 {% comment %}
