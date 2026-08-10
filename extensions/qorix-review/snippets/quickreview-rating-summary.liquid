@@ -9,7 +9,9 @@
     {% endif %}
   </div>
   <div class="quickreview-summary__stars">
-    {% render 'stars', from: 'rating_summary', starColor: quick_review_metafield.starColor %}
+    <div class="qr-stars">
+    {% render 'half-star' %}
+    </div>
   </div>
   <button
     type="button"
