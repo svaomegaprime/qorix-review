@@ -319,6 +319,7 @@ CREATE TABLE "QuickReviewWidget" (
     "reviewPerPage" INTEGER NOT NULL DEFAULT 10,
     "defaultSort" TEXT NOT NULL DEFAULT 'ALL',
     "filterMinStar" "FilterMinStars" NOT NULL DEFAULT 'ALL',
+    "advanceCss" TEXT NOT NULL DEFAULT '',
     "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
     "updatedAt" TIMESTAMP(3) NOT NULL,
 

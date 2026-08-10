@@ -449,49 +449,47 @@ section.qorix-review-video-stack-section {
 
 const SLIDES = [
   {
-    poster:
-      "https://cdn.shopify.com/videos/c/o/v/1cec2fafeb4c41eba0105722322a51a2.mp4",
-    quote: "My skin has never felt better. Love it!",
-    name: "Ava R.",
+    poster: "https://s3.zenexcloud.com/nextvence/uploads/videos/pv1-2026-07-28-09:11:09-1785208269413.mp4",
+    quote: "Absolutely love this cream! My under-eye area feels smoother, softer, and well hydrated.",
+    name: "Abdur Razzak",
     duration: "0:28",
-    tag: "Hydrating serum",
+    tag: "Hydrating Eye Cream",
   },
   {
-    poster:
-      "https://cdn.shopify.com/videos/c/o/v/2e6a9e6873fc4c1f9bd5eccc81d2f32d.mp4",
-    quote: "My skin has never felt better. Love it!",
-    name: "Ava R.",
+    poster: "https://s3.zenexcloud.com/nextvence/uploads/videos/pv3-2026-07-28-09:11:16-1785208276075.mp4",
+    quote: "This serum gives my skin a fresh glow and makes my complexion look noticeably brighter.",
+    name: "Abir Rayhan",
     duration: "0:28",
+    tag: "Vitamin C Serum",
   },
   {
-    poster:
-      "https://cdn.shopify.com/videos/c/o/v/2e6a9e6873fc4c1f9bd5eccc81d2f32d.mp4",
-    quote: "My skin has never felt better. Love it!",
-    name: "Ava R.",
+    poster: "https://s3.zenexcloud.com/nextvence/uploads/videos/pv6-2026-07-28-09:13:47-1785208427458.mp4",
+    quote: "It removes dirt and makeup effectively without leaving my skin feeling dry or tight.",
+    name: "Osman Hasan",
     duration: "0:28",
+    tag: "Gentle Facial Cleanser",
   },
   {
-    poster:
-      "https://cdn.shopify.com/videos/c/o/v/1cec2fafeb4c41eba0105722322a51a2.mp4",
-    quote: "My skin has never felt better. Love it!",
-    name: "Ava R.",
+    poster: "https://s3.zenexcloud.com/nextvence/uploads/videos/pv8-2026-07-28-09:14:04-1785208444553.mp4",
+    quote: "My skin feels deeply moisturized, plump, and comfortable throughout the day.",
+    name: "Imran Khan",
     duration: "0:28",
-    tag: "Hydrating serum",
+    tag: "Face Moisturizer",
   },
   {
-    poster:
-      "https://cdn.shopify.com/videos/c/o/v/2e6a9e6873fc4c1f9bd5eccc81d2f32d.mp4",
-    quote: "My skin has never felt better. Love it!",
-    name: "Ava R.",
+    poster: "https://s3.zenexcloud.com/nextvence/uploads/videos/pv2-2026-07-28-09:11:13-1785208273276.mp4",
+    quote: "It has helped improve my skin texture and made my pores appear less noticeable.",
+    name: "Tanvir Ahmed",
     duration: "0:28",
+    tag: "Niacinamide Serum",
   },
   {
-    poster:
-      "https://cdn.shopify.com/videos/c/o/v/2e6a9e6873fc4c1f9bd5eccc81d2f32d.mp4",
-    quote: "My skin has never felt better. Love it!",
-    name: "Ava R.",
+    poster: "https://s3.zenexcloud.com/nextvence/uploads/videos/pv5-2026-07-28-09:11:23-1785208283514.mp4",
+    quote: "The lightweight formula feels cooling and instantly calms my dry, irritated skin.",
+    name: "Abdur Rahman",
     duration: "0:28",
-  },
+    tag: "Soothing Aloe Vera Gel",
+  }
 ];
 
 // ─── Predefined visible-count options ──────────────────────────────────────
