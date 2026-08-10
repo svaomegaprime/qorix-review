@@ -5,6 +5,26 @@
 .shopify-app-block[data-block-handle="quickreview"] {
   display: block;
   width: 100%;
+  max-width: 100%;
+  min-width: 0;
+  box-sizing: border-box;
+}
+
+.shopify-app-block:has(> [data-section="qorix-quick-review-widget"]) {
+  display: block;
+  width: 100%;
+  max-width: 100%;
+  min-width: 0;
+  box-sizing: border-box;
+}
+
+.qorix-quick-review-widget {
+  width: 100%;
+  max-width: 1600px;
+  min-width: 0;
+  margin: 0 auto;
+  padding: 12px 8px;
+  box-sizing: border-box;
 }
 /* assets/quickreview.css */
 
@@ -13,7 +33,10 @@
   align-items: center;
   column-gap: 60px;
   width: 100%;
+  max-width: 100%;
+  min-width: 0;
   padding: 40px 30px;
+  box-sizing: border-box;
   font-family: inherit;
   border: 1px solid var(--qr-color-border);
   border-radius: 12px;
@@ -21,12 +44,12 @@
 
 /* All 3 sections visible */
 .quickreview-card--full {
-  grid-template-columns: 198px 293px 1fr;
+  grid-template-columns: minmax(0, 198px) minmax(0, 293px) minmax(0, 1fr);
 }
 
 /* Only summary + bar (media off) → space-between look */
 .quickreview-card--no-media {
-  grid-template-columns: 198px 1fr;
+  grid-template-columns: minmax(0, 198px) minmax(0, 1fr);
 }
 .quickreview-card--no-media .quickreview-bar {
   justify-self: end;
@@ -34,19 +57,24 @@
 
 /* Only summary + media (bar off) → media takes remaining space */
 .quickreview-card--no-bar {
-  grid-template-columns: 198px 1fr;
+  grid-template-columns: minmax(0, 198px) minmax(0, 1fr);
 }
 
 /* Only summary visible */
 .quickreview-card--summary-only {
-  grid-template-columns: 198px 1fr;
+  grid-template-columns: minmax(0, 198px) minmax(0, 1fr);
+}
+
+.quickreview-card > * {
+  max-width: 100%;
+  min-width: 0;
 }
 
 
 /* ---------- Responsive ---------- */
 @media (max-width: 989px) {
   .quickreview-card {
-    grid-template-columns: 1fr 1fr;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
     row-gap: 20px;
   }
 
@@ -54,7 +82,7 @@
 
 @media (max-width: 749px) {
   .quickreview-card {
-    grid-template-columns: 1fr;
+    grid-template-columns: minmax(0, 1fr);
     row-gap: 16px;
   }
 

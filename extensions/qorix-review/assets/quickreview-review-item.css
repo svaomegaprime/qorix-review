@@ -103,7 +103,10 @@
 .quickreview-review__media {
   display: flex;
   gap: 12px;
+  max-width: 100%;
   margin-bottom: 30px;
+  overflow-x: auto;
+  overscroll-behavior-inline: contain;
 }
 
 .quickreview-review__media-item {

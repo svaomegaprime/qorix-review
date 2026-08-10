@@ -5,26 +5,33 @@ function initQuoteLoopSwiper() {
   const SwiperClass = typeof Swiper !== 'undefined' ? Swiper : window.Swiper;
 
   document.querySelectorAll('.qr-quote-swiper').forEach((slider) => {
-    if (slider.swiper) {
-      slider.swiper.destroy(true, true);
-    }
-
     const desktopSlides = parseInt(slider.dataset.desktopSlides, 10) || 5;
     const isAutoplay = slider.dataset.quoteLoopAutoplay === 'true' || slider.dataset.quoteLoopAutoplay === '1';
     const speed = parseInt(slider.dataset.quoteLoopSpeed, 10) || 450;
-    console.log('QuoteLoop Autoplay:', isAutoplay, 'Speed:', speed);
 
-    const slidesCount = slider.querySelectorAll('.swiper-slide:not(.swiper-slide-duplicate)').length;
-    const shouldLoop = slidesCount > 1;
+    const slidesCount = slider.querySelectorAll(':scope > .swiper-wrapper > .swiper-slide').length;
+    if (slidesCount === 0) return;
 
-    new SwiperClass(slider, {
+    if (slider.swiper) {
+      if (slider.swiper.qorixSlidesCount === slidesCount) {
+        slider.swiper.update();
+        return;
+      }
+      slider.swiper.destroy(true, true);
+    }
+
+    const shouldLoop = slidesCount > desktopSlides;
+
+    const swiper = new SwiperClass(slider, {
       speed: speed,
       loop: shouldLoop,
       slidesPerGroup: 1,
       allowTouchMove: true,
 
-      observer: true,
-      observeParents: true,
+      observer: false,
+      observeParents: false,
+      resizeObserver: true,
+      updateOnWindowResize: true,
       watchSlidesProgress: true,
 
       autoplay: isAutoplay ? {
@@ -69,6 +76,8 @@ function initQuoteLoopSwiper() {
         }
       },
     });
+
+    swiper.qorixSlidesCount = slidesCount;
   });
 }
 
