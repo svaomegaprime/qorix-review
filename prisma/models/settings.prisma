@@ -10,6 +10,7 @@ model StoreSettings {
   requestScheduling    RequestScheduling?
   store                Store                 @relation(fields: [storeId], references: [storeGID], onDelete: Cascade)
   widgetsSettings      WidgetsSettings?
+  externalSettings     Json?
 }
 
 model RequestScheduling {
@@ -24,6 +25,7 @@ model RequestScheduling {
   minimumOrderValue        Int           @default(100)
   createdAt                DateTime      @default(now())
   updatedAt                DateTime      @updatedAt
+  externalSettings         Json?
   storeSettings            StoreSettings @relation(fields: [storeSettingsId], references: [id], onDelete: Cascade)
 }
 
@@ -50,6 +52,7 @@ model EmailSettings {
   replyReviewEmailSubject   String?
   createdAt                 DateTime      @default(now())
   updatedAt                 DateTime      @updatedAt
+  externalSettings          Json?
   storeSettings             StoreSettings @relation(fields: [storeSettingsId], references: [id], onDelete: Cascade)
 }
 
@@ -63,6 +66,7 @@ model PublishingModeration {
   isSpamFilter         Boolean          @default(true)
   createdAt            DateTime         @default(now())
   updatedAt            DateTime         @updatedAt
+  externalSettings     Json?
   storeSettings        StoreSettings    @relation(fields: [storeSettingsId], references: [id], onDelete: Cascade)
 }
 
@@ -81,6 +85,7 @@ model WidgetsSettings {
   isShowMediaFirst           Boolean                    @default(true)
   createdAt                  DateTime                   @default(now())
   updatedAt                  DateTime                   @updatedAt
+  externalSettings           Json?
   storeSettings              StoreSettings              @relation(fields: [storeSettingsId], references: [id], onDelete: Cascade)
 }
 
@@ -105,6 +110,7 @@ model BrandingSettings {
   isShowFooterBadge       Boolean       @default(true)
   createdAt               DateTime      @default(now())
   updatedAt               DateTime      @updatedAt
+  externalSettings        Json?
   storeSettings           StoreSettings @relation(fields: [storeSettingsId], references: [id], onDelete: Cascade)
 }
 
@@ -118,5 +124,6 @@ model AdminNotification {
   notificationEmailAddress Json
   createdAt                DateTime      @default(now())
   updatedAt                DateTime      @updatedAt
+  externalSettings         Json?
   storeSettings            StoreSettings @relation(fields: [storeSettingsId], references: [id], onDelete: Cascade)
 }
