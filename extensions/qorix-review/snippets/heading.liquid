@@ -11,7 +11,7 @@
 
   <div class="qr-rating-summary">
     {% if reviewStats == 'Show review count & verified badge' or reviewStats == 'Show review count only' %}
-      <div class="qr-rating-stars">
+      <div class="qr-rating-stars" style="--star-color: {{ starColor | default: '#F59E0B' }};">
         {% comment %} {% render 'stars', from: 'heading' starColor : starColor %} {% endcomment %}
         {% render 'half-star' %}
       </div>
