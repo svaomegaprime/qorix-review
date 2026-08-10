@@ -76,7 +76,7 @@ const WIDGETS = [
   },
   {
     id: "video_stack",
-    name: "VidioStack",
+    name: "VideoStack",
     description:
       "A sleek, rotating slider for your most impactful video reviews. Lets shoppers see your products in action without leaving the product page.",
     previewUrl: "/widgets/video-stack.png",

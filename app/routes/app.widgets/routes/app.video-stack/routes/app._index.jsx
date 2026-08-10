@@ -332,7 +332,7 @@ export default function Index() {
               </s-button>
               <s-box>
                 <s-stack direction="inline" alignItems="center" gap="small">
-                  <Text as="h3">VidoeStack</Text>
+                  <Text as="h3">VideoStack</Text>
                   {loaderData?.isInstalled ? (
                     <s-badge tone="success">Installed</s-badge>
                   ) : (
