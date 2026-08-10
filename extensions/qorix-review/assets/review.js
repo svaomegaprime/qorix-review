@@ -27,6 +27,7 @@ class ReviewX {
     this.allowVideoUpload = true;
     this.uploadedFiles = [];
     this.showAllMedia = false;
+    this.selectedReview = null;
 
     this.form = {
       name: "",
@@ -765,6 +766,11 @@ class ReviewX {
     this.lightboxMedia = media;
     this.lightboxOpen = true;
     document.body.style.overflow = "hidden";
+  }
+
+  openMediaModal(review) {
+    this.selectedReview = review;
+    this.showAllMedia = true;
   }
 
   closeLightbox(event) {
