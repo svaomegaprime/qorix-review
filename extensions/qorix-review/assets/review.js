@@ -156,10 +156,12 @@ class ReviewX {
   async productInit(productJson, defaultSort, limit) {
     console.log("productInit called", productJson);
     try {
+      const safeSort = this.getValidSort(defaultSort);
+
       this.limit = Number(limit) || 10;
       this.baseLimit = this.limit;
-      this.sort = defaultSort;
-      this.activeSort = defaultSort;
+      this.sort = safeSort;
+      this.activeSort = safeSort;
 
       if (!productJson) {
         console.warn("No product JSON found");
@@ -169,7 +171,7 @@ class ReviewX {
       this.product = JSON.parse(productJson);
       console.log("parsed product", this.product);
 
-      await this.getReview(defaultSort);
+      await this.getReview(safeSort);
     } catch (error) {
       console.error("Quick review init failed", error);
     }
@@ -643,6 +645,15 @@ class ReviewX {
   setRatingFilter(rating) {
     this.activeFilter = rating;
     this.reinitSwipers();
+  }
+
+  getSortLabel() {
+    const found = this.sortOptions.find((opt) => opt.value === this.activeSort);
+    return found ? found.label : this.activeSort;
+  }
+
+  getValidSort(sort) {
+    return this.sortOptions.some(({ value }) => value === sort) ? sort : "ALL";
   }
 
   async setSort(option) {
