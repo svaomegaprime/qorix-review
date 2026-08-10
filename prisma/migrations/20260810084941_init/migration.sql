@@ -313,6 +313,7 @@ CREATE TABLE "QuickReviewWidget" (
     "isShowReviewCount" BOOLEAN NOT NULL DEFAULT true,
     "isShowRatingBarWithoutRating" BOOLEAN NOT NULL DEFAULT true,
     "isShowMediaWithoutRating" BOOLEAN NOT NULL DEFAULT true,
+    "isShowReviewDataWithoutRating" BOOLEAN NOT NULL DEFAULT true,
     "writeReviewButtonText" TEXT NOT NULL DEFAULT 'Write a review',
     "showHelfullButton" BOOLEAN NOT NULL DEFAULT true,
     "filterAndSorting" "FilterAndSorting" NOT NULL DEFAULT 'FILTER_AND_SORT',
