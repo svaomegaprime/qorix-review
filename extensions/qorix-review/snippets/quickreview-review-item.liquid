@@ -4,7 +4,7 @@
 <template x-for="review in filteredReviews()" :key="review.id">
   <div class="quickreview-review" x-show="!loading">
     <div class="quickreview-review__head">
-      <div class="quickreview-review__avatar">
+      <div x-show="review.reviewerName" class="quickreview-review__avatar">
         <img
           x-show="review.reviewerImage"
           :src="review.reviewerImage"
@@ -24,7 +24,7 @@
           <div style="display: flex; gap:9px;">
             <span class="quickreview-review__author" x-text="review.reviewerName"></span>
             {% if quick_review_metafield.isShowVerifiedBadge %}
-              <span class="qr-quick-review-verified-check">
+              <span x-show="review.reviewerName" class="qr-quick-review-verified-check">
                 <svg width="16" height="16" viewBox="0 0 512 512">
                   <path d="M256 0C114.6 0 0 114.6 0 256s114.6 256 256 256s256-114.6 256-256S397.4 0 256 0zM371.1 204.1l-128 128c-6.3 6.3-16.4 6.3-22.6 0l-64-64c-6.3-6.3-6.3-16.4 0-22.6s16.4-6.3 22.6 0L232 297.4l116.5-116.5c6.3-6.3 16.4-6.3 22.6 0s6.3 16.4 0 22.6z"></path>
                 </svg>
@@ -57,6 +57,11 @@
       <h3 class="quickreview-review__product" x-text="review.productTitle"></h3>
     {% endif %}
     <p class="quickreview-review__body" x-text="review.body"></p>
+
+    <div class="quickreview-review__reply" x-show="review?.reply?.body">
+      <h6>Reply</h6>
+      <p x-text="review?.reply?.body"></p>
+    </div>
 
     {% if quick_review_metafield.isShowMediaThumbnails %}
       <div class="quickreview-review__media" x-show="review.attachments.length > 0">
@@ -108,18 +113,14 @@
           </svg>
           Helpful (<span data-quickreview-review-helpful-count x-text="review.helpfulTotal || 0">0</span>)
         </button>
-        {% comment %}
-          <div class="quickreview-review__report-divider">
-            <button type="button" class="quickreview-review__report" data-quickreview-review-report>Report</button>
-            </div>
-        {% endcomment %}
       </div>
     {% endif %}
   </div>
 </template>
-<p
-  x-show="filteredReviews().length === 0"
-  style="color: #888; font-size: 14px; padding: 20px 0"
+<div
+  x-show="filteredReviews().length === 0 && !loading"
+  style="padding-bottom:20px; color: #666;  margin-top: 20px;"
 >
-  No reviews found.
-</p>
+  {% comment %} <p style="font-size: 16px; margin: 0; font-weight: 500; color: #303030;">No reviews found</p> {% endcomment %}
+  <p>No reviews found</p>
+</div>

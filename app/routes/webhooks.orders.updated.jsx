@@ -5,6 +5,8 @@ import { addJobInQueue } from "../lib/bullmq/bullmq.queue";
 import { reviewQueue } from "../lib/bullmq/bullmq.queue";
 import { formatOrder } from "../utils/formatOrder.js";
 import { enrichOrderProducts } from "../services/productEnrichment.server.js";
+import { getReviewedProductIdsForOrder } from "../services/orders.server.js";
+import { normalizeShopifyId } from "../utils/shopifyGid.js";
 import {
   buildReminderEmailData,
   buildRequestEmailData,
@@ -90,21 +92,12 @@ export const action = async ({ request }) => {
         60 *
         1000;
     // End:: Validate order scheduling options
-    // Start:: Check existing customer review
-    let isReviewExists = false;
-
-    const res = await prisma.review.findFirst({
-      where: {
-        storeId: storeData.id,
-        productId: formattedOrder?.products?.[0]?.productId
-          ? String(formattedOrder?.products?.[0]?.productId)
-          : undefined,
-        reviewerEmail: formattedOrder?.email,
-      },
+    // Start:: Check reviews linked to this exact order
+    const reviewedProductIds = await getReviewedProductIdsForOrder({
+      storeId,
+      orderId: formattedOrder.orderId,
     });
-    if (res?.reviewerEmail === formattedOrder?.email) {
-      isReviewExists = true;
-    }
+    const isReviewExists = reviewedProductIds.size > 0;
     // End:: Check existing customer review
 
     const isOrderCancel =
@@ -190,24 +183,11 @@ export const action = async ({ request }) => {
       );
 
       // Start:: Stamp isReviewed on each product from existing reviews
-      const existReview = await prisma.review.findMany({
-        where: {
-          storeId: storeId,
-          productId: {
-            in: formattedOrder.products.map((item) => String(item.productId)),
-          },
-          reviewerEmail: formattedOrder.email,
-        },
-        select: { productId: true },
-      });
-
-      const reviewedProductIds = new Set(
-        existReview.map((r) => String(r.productId)),
-      );
-
       formattedOrder.products = formattedOrder.products.map((item) => ({
         ...item,
-        isReviewed: reviewedProductIds.has(String(item.productId)),
+        isReviewed: reviewedProductIds.has(
+          normalizeShopifyId(item.productId),
+        ),
       }));
       // End:: Stamp isReviewed
 

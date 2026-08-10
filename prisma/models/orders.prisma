@@ -14,6 +14,7 @@ model Order {
   updatedAt         DateTime          @updatedAt
   store             Store             @relation(fields: [storeId], references: [storeGID], onDelete: Cascade)
   lineItems         OrderLineItem[]
+  reviews           Review[]
 
   @@unique([storeId, orderId])
 }

@@ -35,24 +35,26 @@
   data-section="qorix-review-reel-widget"
   class="qorix-review-reel-real-review-section"
   data-show-first="ONLY_IMAGE_VIDEO"
+  data-filter-min-stars="{{ review_reel_metafield.fiteringMinStart }}"
 >
   {% if review_reel_metafield.showHeader != false and review_reel_metafield.showHeader != 'false' %}
     {% assign header_position = review_reel_metafield.headerStyle | default: 'center' %}
-    {% assign star_color_val = review_reel_metafield.startColor | default: '#34C759' %}
+    {% assign badge_color = review_reel_metafield.startColor | default: '#34C759' %}
     {% render 'heading',
       label: review_reel_metafield.eyebrowLabel,
       title: review_reel_metafield.heading,
       subtitle: review_reel_metafield.subheading,
       position: header_position,
       reviewStats: review_reel_metafield.reviewStats,
-      starColor: star_color_val
+      starColor:badge_color,
+      badgeColor: badge_color
     %}
   {% endif %}
 
   <div class="qorix-review-reel-swiper-wrapper">
     <div class="qorix-review-reel-swiper swiper mySwiper">
       <div class="swiper-wrapper">
-        {% render 'qorix-review-reel-widget-card' %}
+        {% render 'qorix-review-reel-widget-card',showReviewImage: review_reel_metafield.showReviewImage %}
       </div>
     </div>
 
@@ -86,7 +88,7 @@
 <script src="{{ 'qorix-review-reel-widget.js' | asset_url }}" defer></script>
 {% schema %}
 {
-  "name": "review reel",
+  "name": "Review Reel",
   "target": "section",
   "settings": []
 }

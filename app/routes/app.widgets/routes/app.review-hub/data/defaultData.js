@@ -59,6 +59,7 @@ export const DEFAULT_REVIEW_HUB_DATA = {
   layout: "3",
   filterSorting: "FILTER_AND_SORTING",
   reviewsPerPage: 9,
+  filterMinStar: "ALL",
   // color piker
 
   colors: { ...DEFAULT_COLOR_VALUES },
@@ -88,6 +89,7 @@ export const DEFAULT_REVIEW_HUB_DB_DATA = {
   layout: "3",
   filterSorting: "FILTER_AND_SORTING",
   reviewsPerPage: 9,
+  filterMinStar: "ALL",
 
   // Colors
   starColor: DEFAULT_COLOR_VALUES.STAR_COLOR,

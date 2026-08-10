@@ -96,7 +96,7 @@ export default function EmailReply({ outgoingRequestEmail, brandSettings }) {
         </div>
       </div>
       <style>
-        {`  
+        {`
         :root {
           --store-logo-position: ${brandSettings.storeLogoPosition};
           --email-button-bg-color: ${brandSettings.emailPrimaryButtonColor};
@@ -106,26 +106,31 @@ export default function EmailReply({ outgoingRequestEmail, brandSettings }) {
           --email-body-text-color: ${brandSettings.emailBodyTextColor};
           --email-border-color: ${brandSettings.emailAccentBorderColor};
         }
-       
+
         /* Mother selector: everything for this email lives under .email-reply */
         .email-reply {
             max-width: 500px;
             margin: 0 auto;
             background: var(--email-bg);
             border: 1px solid var(--email-border-color);
-            border-radius: 20px;
+            border-radius: 14px;
             padding: 20px;
             box-sizing: border-box;
         }
-        
+
         .email-reply .qr-header {
+            width: 110px;
             display: flex;
             align-items: center;
             justify-content: var(--store-logo-position);
             gap: 10px;
             margin-bottom: 18px;
         }
-        
+
+        .email-reply .qr-header img {
+            width: 100%;
+        }
+
         .email-reply .qr-logo-mark {
             width: 30px;
             height: 30px;
@@ -139,51 +144,51 @@ export default function EmailReply({ outgoingRequestEmail, brandSettings }) {
             justify-content: center;
             flex-shrink: 0;
         }
-        
+
         .email-reply .qr-brand {
             line-height: 1.05;
         }
-        
+
         .email-reply .qr-brand-name {
             font-size: 19px;
             font-weight: 700;
             color: #1a1a1a;
             letter-spacing: 0.2px;
         }
-        
+
         .email-reply .qr-brand-sub {
             font-size: 10px;
             font-weight: 600;
             color: #9a9a9a;
             letter-spacing: 2.5px;
         }
-        
+
         .email-reply .qr-tagline {
             font-size: 14px;
             color: var(--email-body-text-color);
             margin: 0 0 18px;
         }
-        
+
         .email-reply .qr-divider {
             border: none;
             border-top: 1px solid #e9e9e9;
             margin: 0 0 24px;
         }
-        
+
         .email-reply .qr-greeting {
             font-size: 15px;
             font-weight: 700;
             color: #1a1a1a;
             margin: 0 0 12px;
         }
-        
+
         .email-reply .qr-message {
             font-size: 14.5px;
             line-height: 1.55;
             color: var(--email-body-text-color);
             margin: 0 0 24px;
         }
-        
+
         .email-reply .qr-card {
             display: flex;
             align-items: flex-start;
@@ -193,7 +198,7 @@ export default function EmailReply({ outgoingRequestEmail, brandSettings }) {
             padding: 16px;
             margin-bottom: 16px;
         }
-        
+
         .email-reply .qr-card-avatar {
             width: 44px;
             height: 44px;
@@ -204,40 +209,40 @@ export default function EmailReply({ outgoingRequestEmail, brandSettings }) {
             align-items: center;
             justify-content: center;
         }
-        
+
         .email-reply .qr-card-avatar svg {
             width: 22px;
             height: 22px;
             color: #b8b8b8;
         }
-        
+
         .email-reply .qr-card-body {
             display: flex;
             flex-direction: column;
             gap: 6px;
             min-width: 0;
         }
-        
+
         .email-reply .qr-card-title {
             font-size: 14.5px;
             font-weight: 700;
             color: var(--email-heading-color);
         }
-        
+
         .email-reply .qr-rating {
             font-size: 16px;
             color: #f5a623;
             letter-spacing: 2px;
             line-height: 1;
         }
-        
+
         .email-reply .qr-quote {
             font-size: 14px;
             line-height: 1.5;
             color: #4a4a4a;
             margin: 0;
         }
-        
+
         .email-reply .qr-cta {
             display: flex;
             align-items: center;
@@ -256,33 +261,33 @@ export default function EmailReply({ outgoingRequestEmail, brandSettings }) {
             margin: 26px 0 30px;
             cursor: pointer;
         }
-        
+
         .email-reply .qr-cta-arrow {
             font-size: 16px;
             line-height: 1;
         }
-        
+
         .email-reply .qr-footer {
             text-align: center;
         }
-        
+
         .email-reply .qr-footer-meta {
             font-size: 12.5px;
             color: rgb(from var(--email-body-text-color) r g b / 70%);
             margin: 0 0 6px;
         }
-        
+
         .email-reply .qr-footer-meta a {
             color: rgb(from var(--email-body-text-color) r g b / 70%);
             text-decoration: underline;
         }
-        
+
         .email-reply .qr-footer-powered {
             font-size: 13px;
             color: rgb(from var(--email-body-text-color) r g b / 50%);
             margin: 0;
         }
-        
+
         .email-reply .qr-footer-powered .qr-brand-highlight {
             color: var(--email-button-bg-color);
             font-weight: 700;

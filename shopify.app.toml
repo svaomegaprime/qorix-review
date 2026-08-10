@@ -31,6 +31,18 @@ api_version = "2026-07"
   topics = ["orders/cancelled"]
   uri = "/webhooks/orders/cancelled"
 
+  [[webhooks.subscriptions]]
+  compliance_topics = [ "customers/redact" ]
+  uri = "/webhooks/app/customers_redact"
+
+  [[webhooks.subscriptions]]
+  compliance_topics = [ "customers/data_request" ]
+  uri = "/webhooks/app/customers_data_request"
+
+  [[webhooks.subscriptions]]
+  compliance_topics = [ "shop/redact" ]
+  uri = "/webhooks/app/shop_redact"
+
 [access_scopes]
 # Learn more at https://shopify.dev/docs/apps/tools/cli/configuration#access_scopes
 scopes = "read_products,write_products,read_orders,read_all_orders,read_customers,write_app_proxy,read_themes"

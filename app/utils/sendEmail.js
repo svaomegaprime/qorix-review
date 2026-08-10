@@ -86,10 +86,10 @@ export const sendEmail = async ({
       bcc,
       subject,
       html,
-      headers: {
-        "List-Unsubscribe": `<${templateData.buttonUrl}>`,
-        "List-Unsubscribe-Post": "List-Unsubscribe=One-Click",
-      },
+      // headers: {
+      //   "List-Unsubscribe": `<${templateData.buttonUrl}>`,
+      //   "List-Unsubscribe-Post": "List-Unsubscribe=One-Click",
+      // },
       attachments: attachments?.map((attachment) => ({
         filename: attachment.filename,
         content: attachment.content,

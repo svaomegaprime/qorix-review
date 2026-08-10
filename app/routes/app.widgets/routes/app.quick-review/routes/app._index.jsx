@@ -5,8 +5,15 @@ import Text from "../../../../../components/essentials/elements/Text";
 import SaveBar from "../../../components/savebar/SaveBar";
 import { useSaveBarTrigger } from "../../../components/savebar/useSaveBarTrigger";
 import { requestAppWindowClose } from "../../../utils/useAppWindowClose";
-import { useActionData, useFetcher, useLoaderData, useNavigation } from "react-router";
+import {
+  useActionData,
+  useFetcher,
+  useLoaderData,
+  useNavigation,
+} from "react-router";
 import ColorPicker from "../../../components/elements/ColorPicker";
+import AdvanceCSS from "../../../components/elements/AdvanceCSS";
+import ResetToDefaults from "../../../components/elements/ResetToDefaults";
 import QuickReviewComponent from "../componant/quickReviewPreview";
 import TabButton from "../../../../../components/essentials/TabButton";
 import { authenticate } from "../../../../../shopify.server";
@@ -16,6 +23,7 @@ import { setAppMetafield } from "../../../../../utils/appMetafields.server";
 import { adminErrorResponse } from "../../../../../utils/adminError.server";
 import { useAdminFetcherToast } from "../../../../../utils/useAdminFetcherToast";
 import ActiveToggleHeader from "../../../../../routes/app.widgets/components/elements/ActiveToggleHeader";
+import { getWidgetsInstalledStatus } from "../../../../../services/appEmbed.server";
 
 const DEFAULT_COLOR_VALUES = {
   STAR_COLOR: "#f59e0b",
@@ -54,9 +62,10 @@ const DEFAULT_QUICK_REVIEW_STATE = {
   isShowMediaWithoutRating: true,
   writeReviewButtonText: "Write a review",
   showHelfullButton: true,
-  defaultSort: "MOST_RECENT",
+  defaultSort: "ALL",
   filterAndSorting: "FILTER_AND_SORT",
   filterMinStar: "ALL",
+  advanceCss: "",
 };
 
 const parseBorderRadius = (value) => {
@@ -104,14 +113,14 @@ const buildQuickReviewState = (data) => {
       TEXT_COLOR: data.buttonTextColor ?? DEFAULT_COLOR_VALUES.TEXT_COLOR,
       VERIFIED_BADGE_COLOR:
         data.verifiedBadgeColor ?? DEFAULT_COLOR_VALUES.VERIFIED_BADGE_COLOR,
-      BAR_FILE_COLOR:
-        data.barFileColor ?? DEFAULT_COLOR_VALUES.BAR_FILE_COLOR
+      BAR_FILE_COLOR: data.barFileColor ?? DEFAULT_COLOR_VALUES.BAR_FILE_COLOR,
     },
     borderRadius: parseBorderRadius(data.borderRadius),
     showReviewerName:
       data.isShowReviewerName ?? DEFAULT_QUICK_REVIEW_STATE.showReviewerName,
     showMediaThumbnails:
-      data.isShowMediaThumbnails ?? DEFAULT_QUICK_REVIEW_STATE.showMediaThumbnails,
+      data.isShowMediaThumbnails ??
+      DEFAULT_QUICK_REVIEW_STATE.showMediaThumbnails,
     showProductName:
       data.isShowProductName ?? DEFAULT_QUICK_REVIEW_STATE.showProductName,
     showVerifiedBadge:
@@ -119,31 +128,36 @@ const buildQuickReviewState = (data) => {
     showReviewDate:
       data.isShowReviewDate ?? DEFAULT_QUICK_REVIEW_STATE.showReviewDate,
     showStarRatingOnCard:
-      data.isShowStarRatingOnCard ?? DEFAULT_QUICK_REVIEW_STATE.showStarRatingOnCard,
+      data.isShowStarRatingOnCard ??
+      DEFAULT_QUICK_REVIEW_STATE.showStarRatingOnCard,
     showHelpfulButton:
       data.isShowHelpfulButton ?? DEFAULT_QUICK_REVIEW_STATE.showHelpfulButton,
     reviewPerPage:
       data.reviewPerPage ?? DEFAULT_QUICK_REVIEW_STATE.reviewPerPage,
     defaultSort: data.defaultSort ?? DEFAULT_QUICK_REVIEW_STATE.defaultSort,
     isShowStarDistribution:
-      data.isShowStarDistribution ?? DEFAULT_QUICK_REVIEW_STATE.isShowStarDistribution,
+      data.isShowStarDistribution ??
+      DEFAULT_QUICK_REVIEW_STATE.isShowStarDistribution,
     isShowMediaStrip:
       data.isShowMediaStrip ?? DEFAULT_QUICK_REVIEW_STATE.isShowMediaStrip,
     isShowReviewCount:
       data.isShowReviewCount ?? DEFAULT_QUICK_REVIEW_STATE.isShowReviewCount,
     isShowRatingBarWithoutRating:
-      data.isShowRatingBarWithoutRating ?? DEFAULT_QUICK_REVIEW_STATE.isShowRatingBarWithoutRating,
+      data.isShowRatingBarWithoutRating ??
+      DEFAULT_QUICK_REVIEW_STATE.isShowRatingBarWithoutRating,
     isShowMediaWithoutRating:
-      data.isShowMediaWithoutRating ?? DEFAULT_QUICK_REVIEW_STATE.isShowMediaWithoutRating,
+      data.isShowMediaWithoutRating ??
+      DEFAULT_QUICK_REVIEW_STATE.isShowMediaWithoutRating,
     writeReviewButtonText:
-      data.writeReviewButtonText ?? DEFAULT_QUICK_REVIEW_STATE.writeReviewButtonText
-    ,
+      data.writeReviewButtonText ??
+      DEFAULT_QUICK_REVIEW_STATE.writeReviewButtonText,
     showHelfullButton:
       data.showHelfullButton ?? DEFAULT_QUICK_REVIEW_STATE.showHelfullButton,
     filterAndSorting:
       data.filterAndSorting ?? DEFAULT_QUICK_REVIEW_STATE.filterAndSorting,
     filterMinStar:
-      data.filterMinStar ?? DEFAULT_QUICK_REVIEW_STATE.filterMinStar
+      data.filterMinStar ?? DEFAULT_QUICK_REVIEW_STATE.filterMinStar,
+    advanceCss: data.advanceCss ?? DEFAULT_QUICK_REVIEW_STATE.advanceCss,
   };
 };
 
@@ -160,7 +174,25 @@ export async function loader({ request }) {
       },
     });
 
-    return res;
+    const installedWidgetIds = await getWidgetsInstalledStatus(admin);
+    const isInstalled = installedWidgetIds.includes("quick_review");
+
+    const response = await admin.graphql(
+      `#graphql
+      query {
+        products(first: 1) {
+          edges {
+            node {
+              handle
+            }
+          }
+        }
+      }`
+    );
+    const data = await response.json();
+    const productHandle = data.data?.products?.edges?.[0]?.node?.handle;
+
+    return { ...res, isInstalled, shop: session?.shop, productHandle };
   } catch (error) {
     return adminErrorResponse(error);
   }
@@ -189,8 +221,6 @@ export async function action({ request }) {
       },
     });
 
-
-
     const metafieldResult = await setAppMetafield(admin, "quick_review", res);
 
     return {
@@ -205,9 +235,10 @@ export async function action({ request }) {
 
 export default function Index(VALUES = {}) {
   const loaderData = useLoaderData();
+  const isInstalled = loaderData?.isInstalled;
   const actionData = useActionData();
 
-  console.log("[Quick Review::Action Data]: ", actionData)
+  console.log("[Quick Review::Action Data]: ", actionData);
 
   const COLOR_PICKERS_ELEMENTS = [
     {
@@ -243,9 +274,19 @@ export default function Index(VALUES = {}) {
   // End----Default CSR loading state checking for navigation
   const [activeDevice, setActiveDevice] = useState("desktop");
   const [activeToggleManu, setActiveToggleManu] = useState(false);
+  const [resetKey, setResetKey] = useState(0);
   const [quickReview, setQuickReview] = useState(() =>
     buildQuickReviewState(loaderData),
   );
+
+  const customCss = quickReview.advanceCss || "";
+  const handleCssChange = (value) => {
+    setQuickReview((prev) => ({ ...prev, advanceCss: value }));
+  };
+  const handleResetToDefaults = () => {
+    setQuickReview(cloneQuickReviewState(DEFAULT_QUICK_REVIEW_STATE));
+    setResetKey((prev) => prev + 1);
+  };
 
   const postData = {
     // -------- form ----------
@@ -288,6 +329,7 @@ export default function Index(VALUES = {}) {
     defaultSort: quickReview.defaultSort,
     filterAndSorting: quickReview.filterAndSorting,
     filterMinStar: quickReview.filterMinStar,
+    advanceCss: quickReview.advanceCss,
   };
   const fetcher = useFetcher();
   useAdminFetcherToast(fetcher);
@@ -298,7 +340,6 @@ export default function Index(VALUES = {}) {
   if (initQuickReviewRef.current === null) {
     initQuickReviewRef.current = cloneQuickReviewState(quickReview);
   }
-
 
   const handelSubmit = () => {
     savePendingRef.current = true;
@@ -449,7 +490,10 @@ export default function Index(VALUES = {}) {
 
       <SaveBar saveBar={saveBar} />
       <s-query-container>
-        <s-grid gridTemplateColumns="@container (inline-size > 900px) 346px 1fr, 1fr" alignItems="start">
+        <s-grid
+          gridTemplateColumns="@container (inline-size > 900px) 346px 1fr, 1fr"
+          alignItems="start"
+        >
           {/* Start----Sidebar */}
           <CustomSection
             borderRadius="0"
@@ -471,7 +515,11 @@ export default function Index(VALUES = {}) {
               <s-box>
                 <s-stack direction="inline" alignItems="center" gap="small">
                   <Text as="h3">QuickReview</Text>
-                  <s-badge tone="caution">Not installed</s-badge>
+                  {isInstalled ? (
+                    <s-badge tone="success">Installed</s-badge>
+                  ) : (
+                    <s-badge tone="caution">Not installed</s-badge>
+                  )}
                 </s-stack>
                 <s-paragraph color="subdued">
                   Show a quick review form on your product page.
@@ -520,9 +568,12 @@ export default function Index(VALUES = {}) {
                 {quickReviewTab.reviewPopup && (
                   <>
                     <s-stack border="base" borderRadius="base" padding="base">
-
-                      <ActiveToggleHeader activeToggleManu={activeToggleManu} textHeader="Form Fields" activeToggleManuText={"Form_Fields"} setActiveToggleManu={setActiveToggleManu} />
-
+                      <ActiveToggleHeader
+                        activeToggleManu={activeToggleManu}
+                        textHeader="Form Fields"
+                        activeToggleManuText={"Form_Fields"}
+                        setActiveToggleManu={setActiveToggleManu}
+                      />
 
                       {activeToggleManu === "Form_Fields" && (
                         <s-stack>
@@ -551,22 +602,22 @@ export default function Index(VALUES = {}) {
                             details="Let customers attach video"
                             onchange={handleSwitch("video")}
                           ></s-switch>
-
                         </s-stack>
                       )}
-
-
                     </s-stack>
                     {/* ---------------Form fields End-------------------- */}
                     <br></br>
                     {/* ---------------Form text-------------------- */}
                     <s-stack border="base" borderRadius="base" padding="base">
-
-                      <ActiveToggleHeader activeToggleManu={activeToggleManu} textHeader="Form text" activeToggleManuText={"Form"} setActiveToggleManu={setActiveToggleManu} />
+                      <ActiveToggleHeader
+                        activeToggleManu={activeToggleManu}
+                        textHeader="Form text"
+                        activeToggleManuText={"Form"}
+                        setActiveToggleManu={setActiveToggleManu}
+                      />
 
                       {activeToggleManu == "Form" && (
                         <s-stack paddingBlockStart="small">
-
                           <s-stack
                             border="base"
                             paddingInlineStart="small"
@@ -581,7 +632,10 @@ export default function Index(VALUES = {}) {
                             ></s-text-field>
                           </s-stack>
 
-                          <s-stack gap="small" paddingBlockStart="small"></s-stack>
+                          <s-stack
+                            gap="small"
+                            paddingBlockStart="small"
+                          ></s-stack>
                           <s-stack
                             border="base"
                             paddingInlineStart="small"
@@ -596,7 +650,10 @@ export default function Index(VALUES = {}) {
                             ></s-text-field>
                           </s-stack>
 
-                          <s-stack gap="small" paddingBlockStart="small"></s-stack>
+                          <s-stack
+                            gap="small"
+                            paddingBlockStart="small"
+                          ></s-stack>
                           <s-stack
                             border="base"
                             paddingInlineStart="small"
@@ -611,9 +668,7 @@ export default function Index(VALUES = {}) {
                             ></s-text-field>
                           </s-stack>
                         </s-stack>
-
                       )}
-
                     </s-stack>
                     <br></br>
 
@@ -753,8 +808,7 @@ export default function Index(VALUES = {}) {
                 {/* ---------------Form text End-------------------- */}
                 {/* -------------Review list display--------------- */}
                 {quickReviewTab?.quickReview && (
-                  <s-stack >
-
+                  <s-stack>
                     {/* Summary header */}
                     <s-stack
                       border="base"
@@ -762,15 +816,20 @@ export default function Index(VALUES = {}) {
                       padding="base"
                       gap="small"
                     >
-                      <ActiveToggleHeader activeToggleManu={activeToggleManu} textHeader="Summary header" activeToggleManuText={"Summary"} setActiveToggleManu={setActiveToggleManu} />
-
-
+                      <ActiveToggleHeader
+                        activeToggleManu={activeToggleManu}
+                        textHeader="Summary header"
+                        activeToggleManuText={"Summary"}
+                        setActiveToggleManu={setActiveToggleManu}
+                      />
 
                       {activeToggleManu == "Summary" && (
                         <s-stack gap="small" paddingBlockStart="small">
                           <s-switch
                             label="Show star distribution bars"
-                            checked={quickReview.isShowStarDistribution || undefined}
+                            checked={
+                              quickReview.isShowStarDistribution || undefined
+                            }
                             onchange={handleSwitch("isShowStarDistribution")}
                           />
                           <s-switch
@@ -783,8 +842,29 @@ export default function Index(VALUES = {}) {
                             checked={quickReview.isShowReviewCount || undefined}
                             onchange={handleSwitch("isShowReviewCount")}
                           />
+                          <s-switch
+                            label="Show rating bar without rating"
+                            checked={
+                              quickReview.isShowRatingBarWithoutRating ||
+                              undefined
+                            }
+                            onchange={handleSwitch(
+                              "isShowRatingBarWithoutRating",
+                            )}
+                          />
+                          <s-switch
+                            label="Show media bar without media"
+                            checked={
+                              quickReview.isShowMediaWithoutRating || undefined
+                            }
+                            onchange={handleSwitch("isShowMediaWithoutRating")}
+                          />
 
-                          <s-stack border="base" borderRadius="base" padding="small">
+                          <s-stack
+                            border="base"
+                            borderRadius="base"
+                            padding="small"
+                          >
                             <s-text-field
                               label="Button text"
                               maxlength="25"
@@ -793,13 +873,8 @@ export default function Index(VALUES = {}) {
                               onchange={handleText("writeReviewButtonText")}
                             ></s-text-field>
                           </s-stack>
-
                         </s-stack>
-
                       )}
-
-
-
                     </s-stack>
 
                     <br></br>
@@ -809,11 +884,15 @@ export default function Index(VALUES = {}) {
                       padding="base"
                       gap="small"
                     >
-                      <ActiveToggleHeader activeToggleManu={activeToggleManu} textHeader="Review list display" activeToggleManuText={"Review_list"} setActiveToggleManu={setActiveToggleManu} />
-
+                      <ActiveToggleHeader
+                        activeToggleManu={activeToggleManu}
+                        textHeader="Review list display"
+                        activeToggleManuText={"Review_list"}
+                        setActiveToggleManu={setActiveToggleManu}
+                      />
 
                       {activeToggleManu == "Review_list" && (
-                        <s-stack gap="small" paddingBlockStart="small" >
+                        <s-stack gap="small" paddingBlockStart="small">
                           <s-switch
                             label="Show reviewer name"
                             checked={quickReview.showReviewerName || undefined}
@@ -821,7 +900,9 @@ export default function Index(VALUES = {}) {
                           />
                           <s-switch
                             label="Show media thumbnails"
-                            checked={quickReview.showMediaThumbnails || undefined}
+                            checked={
+                              quickReview.showMediaThumbnails || undefined
+                            }
                             onchange={handleSwitch("showMediaThumbnails")}
                           />
                           <s-switch
@@ -841,7 +922,9 @@ export default function Index(VALUES = {}) {
                           />
                           <s-switch
                             label="Show star rating on card"
-                            checked={quickReview.showStarRatingOnCard || undefined}
+                            checked={
+                              quickReview.showStarRatingOnCard || undefined
+                            }
                             onchange={handleSwitch("showStarRatingOnCard")}
                           />
                           <s-switch
@@ -849,19 +932,29 @@ export default function Index(VALUES = {}) {
                             checked={quickReview.showHelpfulButton || undefined}
                             onchange={handleSwitch("showHelpfulButton")}
                           />
-                          <s-switch
+                          {/* <s-switch
                             label="Show rating bar without rating"
-                            checked={quickReview.isShowRatingBarWithoutRating || undefined}
-                            onchange={handleSwitch("isShowRatingBarWithoutRating")}
+                            checked={
+                              quickReview.isShowRatingBarWithoutRating ||
+                              undefined
+                            }
+                            onchange={handleSwitch(
+                              "isShowRatingBarWithoutRating",
+                            )}
                           />
                           <s-switch
-                            label="Show media without rating"
-                            checked={quickReview.isShowMediaWithoutRating || undefined}
+                            label="Show media without media"
+                            checked={
+                              quickReview.isShowMediaWithoutRating || undefined
+                            }
                             onchange={handleSwitch("isShowMediaWithoutRating")}
-                          />
+                          /> */}
 
-
-                          <s-stack border="base" borderRadius="base" padding="small">
+                          <s-stack
+                            border="base"
+                            borderRadius="base"
+                            padding="small"
+                          >
                             <s-select
                               label="Review per page"
                               value={quickReview.reviewPerPage}
@@ -880,7 +973,11 @@ export default function Index(VALUES = {}) {
                             </s-select>
                           </s-stack>
 
-                          <s-stack border="base" borderRadius="base" padding="small">
+                          <s-stack
+                            border="base"
+                            borderRadius="base"
+                            padding="small"
+                          >
                             <s-select
                               label="Default sort"
                               value={quickReview.defaultSort}
@@ -891,8 +988,9 @@ export default function Index(VALUES = {}) {
                                 }))
                               }
                             >
+                              <s-option value="ALL">All (default)</s-option>
                               <s-option value="MOST_RECENT">
-                                Most recent (default)
+                                Most recent
                               </s-option>
 
                               <s-option value="HIGHEST_RATING">
@@ -911,18 +1009,17 @@ export default function Index(VALUES = {}) {
                                 Only videos
                               </s-option>
 
-                              <s-option value="VIDEOS_FIRST">
-                                Videos first
-                              </s-option>
-
                               <s-option value="MOST_HELPFUL">
                                 Most helpful
                               </s-option>
-
                             </s-select>
                           </s-stack>
 
-                          <s-stack border="base" borderRadius="base" padding="small">
+                          <s-stack
+                            border="base"
+                            borderRadius="base"
+                            padding="small"
+                          >
                             <s-select
                               label="Filter & sorting"
                               value={quickReview.filterAndSorting}
@@ -933,18 +1030,24 @@ export default function Index(VALUES = {}) {
                                 }))
                               }
                             >
-
-                              <s-option value="FILTER_AND_SORTING">
+                              <s-option value="FILTER_AND_SORT">
                                 Filter & sorting both
                               </s-option>
-                              <s-option value="FILTER_ONLY">Filter only</s-option>
-                              <s-option value="SORTING_ONLY">Sorting only</s-option>
+                              <s-option value="FILTER_ONLY">
+                                Filter only
+                              </s-option>
+                              <s-option value="SORTING_ONLY">
+                                Sorting only
+                              </s-option>
                               <s-option value="NONE">None</s-option>
-
                             </s-select>
                           </s-stack>
 
-                          <s-stack border="base" borderRadius="base" padding="small">
+                          <s-stack
+                            border="base"
+                            borderRadius="base"
+                            padding="small"
+                          >
                             <s-select
                               label="Filter min stars"
                               value={quickReview.filterMinStar}
@@ -956,19 +1059,23 @@ export default function Index(VALUES = {}) {
                               }
                             >
                               <s-option value="ALL">Show all ratings</s-option>
-                              <s-option value="STAR_1">1 star and above</s-option>
-                              <s-option value="STAR_2">2 star and above</s-option>
-                              <s-option value="STAR_3">3 star and above</s-option>
-                              <s-option value="STAR_4">4 star and above</s-option>
+                              <s-option value="STAR_1">
+                                1 star and above
+                              </s-option>
+                              <s-option value="STAR_2">
+                                2 star and above
+                              </s-option>
+                              <s-option value="STAR_3">
+                                3 star and above
+                              </s-option>
+                              <s-option value="STAR_4">
+                                4 star and above
+                              </s-option>
                               <s-option value="STAR_5">5 star only</s-option>
                             </s-select>
                           </s-stack>
-
                         </s-stack>
-
                       )}
-
-
                     </s-stack>
                   </s-stack>
                 )}
@@ -983,10 +1090,11 @@ export default function Index(VALUES = {}) {
                   <s-heading>Colors</s-heading>
                   {COLOR_PICKERS_ELEMENTS.map((picker) => (
                     <ColorPicker
-                      key={picker.key}
+                      key={`${picker.key}-${resetKey}`}
                       data={picker}
                       defaultColor={
-                        VALUES[picker.key] ?? quickReview?.colorValues[picker.key]
+                        VALUES[picker.key] ??
+                        quickReview?.colorValues[picker.key]
                       }
                       onChange={(value) =>
                         handelQoucikReview({ [picker.key]: value })
@@ -994,6 +1102,14 @@ export default function Index(VALUES = {}) {
                     />
                   ))}
                 </s-stack>
+
+                {/* -------------Custom CSS---------------- */}
+
+                <div style={{ padding: "" }}>
+                  <AdvanceCSS css={customCss} setCss={handleCssChange} />
+                </div>
+  
+                <ResetToDefaults handleResetToDefaults={handleResetToDefaults} />
 
                 {/* -------------Layout picker---------------- */}
               </div>
@@ -1011,13 +1127,14 @@ export default function Index(VALUES = {}) {
             }}
           >
             {/* Start----Preview Header */}
-            <div className="review-item"
-            // style={{
-            //   height: "76px",
-            //   display: "grid",
-            //   alignItems: "center",
-            //   borderBottom: "1px solid #e4e4e4ff",
-            // }}
+            <div
+              className="review-item"
+              // style={{
+              //   height: "76px",
+              //   display: "grid",
+              //   alignItems: "center",
+              //   borderBottom: "1px solid #e4e4e4ff",
+              // }}
             >
               <s-query-container>
                 <s-grid
@@ -1074,7 +1191,18 @@ export default function Index(VALUES = {}) {
                   </s-stack>
                   <s-button-group gap="base">
                     <s-button slot="secondary-actions">Need help?</s-button>
-                    <s-button variant="primary" slot="primary-action">
+                    <s-button
+                      variant="primary"
+                      slot="primary-action"
+                      onClick={() => {
+                        if (loaderData?.shop) {
+                          const url = loaderData.productHandle 
+                            ? `https://${loaderData.shop}/products/${loaderData.productHandle}` 
+                            : `https://${loaderData.shop}`;
+                          window.open(url, "_blank");
+                        }
+                      }}
+                    >
                       <div
                         style={{
                           display: "flex",
@@ -1099,7 +1227,6 @@ export default function Index(VALUES = {}) {
           </div>
           {/* End----Content */}
         </s-grid>
-
       </s-query-container>
     </>
   );

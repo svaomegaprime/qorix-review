@@ -11,7 +11,7 @@ import {
   DEFAULT_POST_REQUEST_EMAIL,
   DEFAULT_SMTP_SETUP,
 } from "../data/defaultData";
-import { useFetcher, useLoaderData } from "react-router";
+import { useFetcher, useLoaderData, useNavigate } from "react-router";
 import { authenticate } from "../../../shopify.server";
 import prisma from "../../../db.server";
 import { adminErrorResponse } from "../../../utils/adminError.server";
@@ -99,6 +99,7 @@ export default function EmailSettings() {
   const fetcher = useFetcher();
   useAdminFetcherToast(fetcher);
   const { storeSettings } = useLoaderData();
+  const navigate = useNavigate();
 
   const initialEmailSettings = normalizeEmailSettings(
     storeSettings?.emailSettings,
@@ -159,7 +160,12 @@ export default function EmailSettings() {
           <Text>Email settings</Text>
           <s-text>Manage what customers see in every email from Qorix</s-text>
         </s-box>
-        <s-button icon="business-entity" inline="fill" variant="secondary">
+        <s-button
+          href="/app/settings/branding"
+          icon="business-entity"
+          inline="fill"
+          variant="secondary"
+        >
           Preview email
         </s-button>
       </s-stack>
@@ -221,9 +227,13 @@ export default function EmailSettings() {
                 Triggered automatically after order delivery based on the timing
                 set in &nbsp;
                 <Text
-                  as="a"
-                  href="//"
+                  as="span"
+                  onClick={(e) => {
+                    e.preventDefault();
+                    navigate("/app/settings");
+                  }}
                   style={{
+                    cursor: "pointer",
                     textDecoration: "none",
                     display: "flex",
                     alignItems: "center",

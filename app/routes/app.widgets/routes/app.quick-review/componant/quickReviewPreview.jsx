@@ -220,7 +220,7 @@ export default function ReviewList({
   const [activeFilter, setActiveFilter] = useState("All");
   const [showManuFiltering, setShowManuFiltering] = useState(true);
   const [showFilteringPopover, setShowFilteringPopover] = useState(false);
-  const [selectedFilter, setSelectedFilter] = useState("Highest rating");
+  const [selectedFilter, setSelectedFilter] = useState("");
   const [lightbox, setLightbox] = useState(null);
   const [showModal, setShowModal] = useState(false);
   const [isPreviewModalDismissed, setIsPreviewModalDismissed] = useState(false);
@@ -255,11 +255,11 @@ export default function ReviewList({
   } = quickReview;
 
   const showSorting =
-    filterAndSorting === "FILTER_AND_SORTING" ||
+    filterAndSorting === "FILTER_AND_SORT" ||
     filterAndSorting === "SORTING_ONLY";
 
   const showFiltering =
-    filterAndSorting === "FILTER_AND_SORTING" ||
+    filterAndSorting === "FILTER_AND_SORT" ||
     filterAndSorting === "FILTER_ONLY";
 
   const {
@@ -534,21 +534,21 @@ border:none;
           padding: 2.5rem 2rem 2rem;
           max-width: 340px;
           text-align: center !important;
-         
+
         }
         .quick-review-popup .icon-wrapper { width: 90px; height: 90px; margin: 0 auto 1.5rem; }
         .qucik-review-success-message { text-align: center !important; }
         .qucik-review-success-message h2 { font-size: 18px; font-weight: 500; color: #111; margin-bottom: 0.75rem; }
         .qucik-review-success-message p { font-size: 14px; color: #666; line-height: 1.6; margin-bottom: 1.75rem; }
         .quick-review-popup .btn { width: 100%; padding: 11px; background: ${Submit_Button_Color}; color: ${TEXT_COLOR}; border: none; border-radius: 8px; font-size: 15px; font-weight: 500; cursor: pointer; }
-      
-       
-      
+
+
+
       /* Real responsive breakpoints (viewport-driven) */
 
       @media (max-width: 1440px){
       .quick-review { padding: 40px 0;  }
-      
+
       }
 
 
@@ -584,9 +584,10 @@ border:none;
   padding: 10px;
     max-width: ${activeDevice === "mobile" ? "92%" : "92%"};
 }
-      
-      
+
+
       `}</style>
+      {quickReview?.advanceCss && <style>{quickReview.advanceCss}</style>}
 
       <div className="quick-review">
         <div className="rv-wrap">
@@ -708,7 +709,8 @@ border:none;
                         }}
                       >
                         {[
-                          "Most recent (default)",
+                          "All (default)",
+                          "Most recent",
                           "Highest rating",
                           "Lowest rating",
                           "Only pictures",
@@ -727,7 +729,7 @@ border:none;
                               cursor: "pointer",
                               color: "#222",
                               background:
-                                selectedFilter === option ? "#f0f0f0" : "#fff",
+                                selectedFilter === false ? "#f0f0f0" : "#fff",
                             }}
                           >
                             {option}
@@ -845,7 +847,9 @@ border:none;
                     )}
 
                     {showProductName && (
-                      <p className="rv-product" style={{ margin: 0 }}>{review.product}</p>
+                      <p className="rv-product" style={{ margin: 0 }}>
+                        {review.product}
+                      </p>
                     )}
 
                     <p className="rv-text">{review.review}</p>
@@ -860,19 +864,19 @@ border:none;
                           >
                             {item.type === "image"
                               ? showMediaThumbnails && (
-                                <img src={item.url} alt={`media-${i}`} />
-                              )
+                                  <img src={item.url} alt={`media-${i}`} />
+                                )
                               : showMediaThumbnails && (
-                                <>
-                                  <video
-                                    src={item.url || item.thumb}
-                                    playsInline
-                                  />
-                                  <div className="rv-play-overlay">
-                                    <div className="rv-play-icon">▶</div>
-                                  </div>
-                                </>
-                              )}
+                                  <>
+                                    <video
+                                      src={item.url || item.thumb}
+                                      playsInline
+                                    />
+                                    <div className="rv-play-overlay">
+                                      <div className="rv-play-icon">▶</div>
+                                    </div>
+                                  </>
+                                )}
                           </div>
                         ))}
                       </div>

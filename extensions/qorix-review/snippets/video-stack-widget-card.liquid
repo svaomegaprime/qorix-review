@@ -42,6 +42,9 @@
 {% if muted_vid == null %}
   {% assign muted_vid = video_stack_metafield.mutedByDefault %}
 {% endif %}
+
+{% render 'skeleton', type: 'card' %}
+
 <template x-for="review in filteredReviews()" :key="review.id">
   <div class="qorix-review-video-stack-swiper-slide" x-show="!loading">
     <div
@@ -121,21 +124,7 @@
         {% if show_product_name != false and show_product_name != 'false' %}
           <a :href="`/products/${review.productHandle}`">
             <div class="qorix-review-video-stack-tag">
-              <svg
-                width="14px"
-                height="14px"
-                viewBox="0 0 24 24"
-                fill="none"
-                stroke="#303030"
-                stroke-width="2"
-                stroke-linecap="round"
-                stroke-linejoin="round"
-                aria-hidden="true"
-              >
-                <path d="M9 3h6v4H9z" />
-                <path d="M6 7h12v14H6z" />
-                <path d="M12 11v4" />
-              </svg>
+              <img :src="review.productImage" width="28px" height="28px" alt="review.productTitle">
               <span x-text="review.productTitle"></span>
             </div>
           </a>
@@ -146,7 +135,7 @@
 </template>
 <p
   x-show="filteredReviews().length === 0 && !loading"
-  style="color: #888; font-size: 14px; padding: 20px 0"
+  style="color: #888; font-size: 16px; padding: 20px 0"
 >
-  No reviews found.
+  No reviews found
 </p>

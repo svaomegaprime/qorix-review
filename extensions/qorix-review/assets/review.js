@@ -13,7 +13,7 @@ class ReviewX {
     ];
 
     this.activeFilter = "ALL";
-    this.activeSort = "MOST_RECENT";
+    this.activeSort = "ALL";
     this.filtersOpen = false;
     this.sortOpen = false;
     this.modalOpen = false;
@@ -155,6 +155,7 @@ class ReviewX {
       this.limit = Number(limit) || 10;
       this.baseLimit = this.limit;
       this.sort = defaultSort;
+      this.activeSort = defaultSort;
 
       if (!productJson) {
         console.warn("No product JSON found");
@@ -179,13 +180,21 @@ class ReviewX {
         "orderId",
       );
       const customerEmail = this.customerEmail || "";
+      const params = new URLSearchParams({
+        productId,
+        sort: defaultSort,
+        page: String(this.currentPage),
+        limit: String(this.limit),
+        isOpen: String(openFromEmail),
+        customerEmail,
+        filterMinStar: this.filterMinStar,
+      });
 
-      const response = await fetch(
-        `/apps/qorix-review/review?productId=${encodeURIComponent(productId)}&sort=${encodeURIComponent(defaultSort)}&page=${this.currentPage}&limit=${this.limit}&isOpen=${openFromEmail}&orderId=${orderId}&customerEmail=${encodeURIComponent(customerEmail)}&filterMinStar=${encodeURIComponent(this.filterMinStar)}`,
-        {
-          method: "GET",
-        },
-      );
+      if (orderId) params.set("orderId", orderId);
+
+      const response = await fetch(`/apps/qorix-review/review?${params}`, {
+        method: "GET",
+      });
 
       const result = await response.json();
 
@@ -378,8 +387,7 @@ class ReviewX {
       !this.form.review.trim()
     ) {
       this.isError = true;
-      this.errorMessage =
-        "Please fill in all required fields and select a star rating.";
+      this.errorMessage = "Please provide all required information.";
       return;
     }
 
@@ -462,6 +470,7 @@ class ReviewX {
       formData.append("productId", product.id ?? "");
       formData.append("productHandle", product.handle ?? "");
       formData.append("productTitle", product.title ?? "");
+      formData.append("productImage", product.images[0] ?? "");
 
       formData.append("source", "PRODUCT_PAGE");
       formData.append("submittedAt", new Date().toISOString());
@@ -473,13 +482,15 @@ class ReviewX {
 
       console.log("Submitting...", formData);
 
-      const fetchPromise = fetch(
-        `/apps/qorix-review/review?isOpen=${openFromEmail}&orderId=${orderId}`,
-        {
-          method: "POST",
-          body: formData,
-        },
-      );
+      const params = new URLSearchParams({
+        isOpen: String(openFromEmail),
+      });
+      if (orderId) params.set("orderId", orderId);
+
+      const fetchPromise = fetch(`/apps/qorix-review/review?${params}`, {
+        method: "POST",
+        body: formData,
+      });
 
       // Wait for BOTH the network request AND the animation to finish
       const [response] = await Promise.all([fetchPromise, animationPromise]);
@@ -673,23 +684,39 @@ class ReviewX {
   }
 
   addFiles(files) {
-    if (Array.from(files).length > 5) {
-      alert("Max 5 file upload");
+    const MAX_FILES = 5;
+    const newFiles = Array.from(files);
+    const totalAfterAdd = this.uploadedFiles.length + newFiles.length;
+
+    if (totalAfterAdd > MAX_FILES) {
+      const remaining = MAX_FILES - this.uploadedFiles.length;
+      this.isError = true;
+      this.errorMessage =
+        remaining <= 0
+          ? `You have already uploaded the maximum of ${MAX_FILES} files.`
+          : `You can only upload ${remaining} more file${remaining === 1 ? "" : "s"}. Maximum ${MAX_FILES} files allowed.`;
       return;
     }
 
-    Array.from(files).forEach((file) => {
+    for (const file of newFiles) {
       if (!this.isAllowedMediaFile(file)) {
+        this.isError = true;
         if (this.allowPhotoUpload && this.allowVideoUpload)
-          alert("Only images and videos are allowed");
-        else if (this.allowPhotoUpload) alert("Only images are allowed");
-        else if (this.allowVideoUpload) alert("Only videos are allowed");
-
+          this.errorMessage = "Only images and videos are allowed.";
+        else if (this.allowPhotoUpload)
+          this.errorMessage = "Only images are allowed.";
+        else if (this.allowVideoUpload)
+          this.errorMessage = "Only videos are allowed.";
         return;
       }
 
-      if (file.size > 20 * 1024 * 1024) {
-        alert(file.name + " is too large. Max 20MB.");
+      const isVideo = file.type.startsWith("video/");
+      const maxSize = isVideo ? 20 * 1024 * 1024 : 2 * 1024 * 1024;
+      const maxLabel = isVideo ? "20 MB" : "2 MB";
+
+      if (file.size > maxSize) {
+        this.isError = true;
+        this.errorMessage = `"${file.name}" is too large. Maximum ${isVideo ? "video" : "image"} size is ${maxLabel}.`;
         return;
       }
 
@@ -699,7 +726,7 @@ class ReviewX {
         url: URL.createObjectURL(file),
         isVideo: file.type.startsWith("video/"),
       });
-    });
+    }
   }
 
   removeMedia(index) {

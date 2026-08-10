@@ -23,6 +23,7 @@ import {
   DEFAULT_COLOR_VALUES,
   createDefaultSettings,
 } from "../data/quoteReviewDefault";
+import { getWidgetsInstalledStatus } from "../../../../../services/appEmbed.server";
 
 const cloneSettings = (settings) => JSON.parse(JSON.stringify(settings));
 
@@ -63,6 +64,7 @@ function dbRowToSettings(row) {
       TEXT_COLOR: row.textColor,
       QUOTE_MARK_COLOR: row.quoteMarkColor,
       Card_Background_Color: row.cardBackgroundColor,
+      ACTIVE_DOT_COLOR: row.activeDotColor,
     },
 
     quoteFontSize: row.quoteFontSize,
@@ -97,10 +99,14 @@ function settingsToDbFields(settings) {
     starColor: settings.colors?.STAR_COLOR ?? DEFAULT_COLOR_VALUES.STAR_COLOR,
     textColor: settings.colors?.TEXT_COLOR ?? DEFAULT_COLOR_VALUES.TEXT_COLOR,
     quoteMarkColor:
-      settings.colors?.QUOTE_MARK_COLOR ?? DEFAULT_COLOR_VALUES.QUOTE_MARK_COLOR,
+      settings.colors?.QUOTE_MARK_COLOR ??
+      DEFAULT_COLOR_VALUES.QUOTE_MARK_COLOR,
     cardBackgroundColor:
       settings.colors?.Card_Background_Color ??
       DEFAULT_COLOR_VALUES.Card_Background_Color,
+    activeDotColor:
+      settings.colors?.ACTIVE_DOT_COLOR ??
+      DEFAULT_COLOR_VALUES.ACTIVE_DOT_COLOR,
 
     quoteFontSize: settings.quoteFontSize,
     textLength: settings.textLength,
@@ -110,7 +116,7 @@ function settingsToDbFields(settings) {
 
 export async function loader({ request }) {
   try {
-    const { admin } = await authenticate.admin(request);
+    const { admin, session } = await authenticate.admin(request);
     const { id } = await getStoreData(admin);
 
     const res = await prisma.quoteLoopWidget.findUnique({
@@ -119,7 +125,12 @@ export async function loader({ request }) {
       },
     });
 
-    return dbRowToSettings(res);
+    const settings = dbRowToSettings(res);
+    const installedWidgetIds = await getWidgetsInstalledStatus(admin);
+    settings.isInstalled = installedWidgetIds.includes("quote_loop");
+    settings.shop = session?.shop;
+
+    return settings;
   } catch (error) {
     console.error("[LOADER] ERROR:", error);
     return adminErrorResponse(error);
@@ -150,10 +161,7 @@ export async function action({ request }) {
       },
     });
 
-
     const metaObjectdata = await setAppMetafield(admin, "quote_loop", res);
-
-
 
     return {
       ok: true,
@@ -356,7 +364,11 @@ export default function Index(VALUES = {}) {
               <s-box>
                 <s-stack direction="inline" alignItems="center" gap="small">
                   <Text as="h3">QuoteLoop</Text>
-                  <s-badge tone="caution">Not installed</s-badge>
+                  {loaderData?.isInstalled ? (
+                    <s-badge tone="success">Installed</s-badge>
+                  ) : (
+                    <s-badge tone="caution">Not installed</s-badge>
+                  )}
                 </s-stack>
                 <s-paragraph color="subdued">
                   Show quotes on your storefront
@@ -463,10 +475,7 @@ export default function Index(VALUES = {}) {
                       label="Show product Name"
                       checked={settings.showProductName}
                       onChange={(e) =>
-                        handleSettingChange(
-                          "showProductName",
-                          e.target.checked,
-                        )
+                        handleSettingChange("showProductName", e.target.checked)
                       }
                     ></s-switch>
                   </s-stack>
@@ -536,22 +545,19 @@ export default function Index(VALUES = {}) {
                       label="Filter min stars"
                       value={settings.fiteringMinStart}
                       onChange={(e) =>
-                        handleSettingChange(
-                          "fiteringMinStart",
-                          e.target.value,
-                        )
+                        handleSettingChange("fiteringMinStart", e.target.value)
                       }
                     >
-                      <s-option value="Show all ratings">
+                      <s-option value="ALL">
                         Show all ratings
                       </s-option>
-                      <s-option value="3 star and above">
+                      <s-option value="STAR_3">
                         3 star and above
                       </s-option>
-                      <s-option value="4 star and above">
+                      <s-option value="STAR_4">
                         4 star and above
                       </s-option>
-                      <s-option value="5 star only">5 star only</s-option>
+                      <s-option value="STAR_5">5 star only</s-option>
                     </s-select>
                   </s-stack>
                 </s-stack>
@@ -572,7 +578,7 @@ export default function Index(VALUES = {}) {
                       key={picker.key}
                       data={picker}
                       defaultColor={
-                        VALUES[picker.key] ?? settings?.colors[picker.key]
+                        VALUES[picker.key] ?? settings?.colors?.[picker.key]
                       }
                       onChange={(value) =>
                         handleChangeColors({ [picker.key]: value })
@@ -719,7 +725,15 @@ export default function Index(VALUES = {}) {
                   </s-stack>
                   <s-button-group gap="base">
                     <s-button slot="secondary-actions">Need help?</s-button>
-                    <s-button variant="primary" slot="primary-action">
+                    <s-button
+                      variant="primary"
+                      slot="primary-action"
+                      onClick={() => {
+                        if (loaderData?.shop) {
+                          window.open(`https://${loaderData.shop}`, "_blank");
+                        }
+                      }}
+                    >
                       <div
                         style={{
                           display: "flex",

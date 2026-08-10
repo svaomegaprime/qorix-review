@@ -137,7 +137,7 @@ export default function PublishingModeration() {
                   Auto-publish verified purchases only
                   <s-text slot="details">
                     Only reviews from confirmed buyers go live. Unverified
-                    reviews are held for manual approval.
+                    reviews are hold for manual approval.
                   </s-text>
                 </s-choice>
                 <s-choice

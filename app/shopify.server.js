@@ -225,7 +225,7 @@ const shopify = shopifyApp({
               },
             },
           },
-          100,
+          0,
           `update_UPDATE_DEFAULT_SETTINGS`,
         );
 

@@ -1,7 +1,13 @@
-import { Outlet, useLoaderData, useRouteError } from "react-router";
+import {
+  Outlet,
+  useLoaderData,
+  useNavigation,
+  useRouteError,
+} from "react-router";
 import { boundary } from "@shopify/shopify-app-react-router/server";
 import { AppProvider } from "@shopify/shopify-app-react-router/react";
 import { authenticate } from "../shopify.server";
+import Loader from "../components/essentials/Loader";
 
 export const loader = async ({ request }) => {
   await authenticate.admin(request);
@@ -12,6 +18,11 @@ export const loader = async ({ request }) => {
 
 export default function App() {
   const { apiKey } = useLoaderData();
+  const navigation = useNavigation();
+  const loading = navigation.state === "loading";
+  if (loading) {
+    return <Loader />; // Show loader while navigating to this page or when loader is fetching data
+  }
 
   return (
     <AppProvider embedded apiKey={apiKey}>

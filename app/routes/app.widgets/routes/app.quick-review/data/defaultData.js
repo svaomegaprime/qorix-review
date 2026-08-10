@@ -35,7 +35,7 @@ const DEFAULT_QUICK_REVIEW_STATE = {
   writeReviewButtonText: "Write a review",
   showHelfullButton: true,
   reviewPerPage: 10,
-  defaultSort: "MOST_RECENT",
+  defaultSort: "ALL",
   filterAndSorting: "FILTER_AND_SORT",
   filterMinStar: "ALL",
 };
@@ -53,7 +53,8 @@ export const DEFAULT_DB_FORMATED_DATA = {
   isShowStarDistribution: DEFAULT_QUICK_REVIEW_STATE.isShowStarDistribution,
   isShowMediaStrip: DEFAULT_QUICK_REVIEW_STATE.isShowMediaStrip,
   isShowReviewCount: DEFAULT_QUICK_REVIEW_STATE.isShowReviewCount,
-  isShowRatingBarWithoutRating: DEFAULT_QUICK_REVIEW_STATE.isShowRatingBarWithoutRating,
+  isShowRatingBarWithoutRating:
+    DEFAULT_QUICK_REVIEW_STATE.isShowRatingBarWithoutRating,
   isShowMediaWithoutRating: DEFAULT_QUICK_REVIEW_STATE.isShowMediaWithoutRating,
   showHelfullButton: DEFAULT_QUICK_REVIEW_STATE.showHelfullButton,
   // ---success-----

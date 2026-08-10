@@ -1,3 +1,8 @@
+<style>
+  [data-qorix-widget] {
+    display: none !important;
+  }
+</style>
 {% assign quick_review_metafield = app.metafields.qorix_review.quick_review.value %}
 {% liquid
   assign allow_photo = quick_review_metafield.isPhotoUpload
@@ -21,7 +26,7 @@
     --button-text-color : {{ quick_review_metafield.buttonTextColor }};
     --verified-badge-color : {{ quick_review_metafield.verifiedBadgeColor }};
     --bar-file-color : {{ quick_review_metafield.barFileColor }};
-    {% comment %} quickreview-rating-summary {% endcomment %}
+
     --qr-color-border: #CFCFCF;
     --qr-color-text-dark: #303030;
     --qr-color-text-secondary: #616161;
@@ -40,12 +45,9 @@
     --qr-color-load-more-bg: #F2F2F2;
     --qr-shadow-nav: 0 1px 6px rgba(0, 0, 0, 0.18);
     --qr-shadow-menu: 0 4px 20px rgba(0, 0, 0, 0.12);
-    {% comment %}  {% endcomment %}
-
   }
-  [data-qorix-widget] { display: none !important; }
 </style>
-
+{% render 'custom-css', css: quick_review_metafield.advanceCss %}
 {{ 'swiper-bundle.min.css' | asset_url | stylesheet_tag }}
 {{ 'quickreview.css' | asset_url | stylesheet_tag }}
 
@@ -117,6 +119,10 @@
   {% render 'lightbox' %}
   {% render 'quickreview-reviews', quick_review_metafield: quick_review_metafield %}
 </div>
+{% comment %}
+  <script src="{{ 'alpine.js' | asset_url }}" defer></script>
+  <script src="{{ 'review.js' | asset_url }}" defer></script>
+{% endcomment %}
 <script src="{{ 'swiper-bundle.min.js' | asset_url }}" defer></script>
 <script src="{{ 'quickreview.js' | asset_url }}" defer></script>
 {% schema %}

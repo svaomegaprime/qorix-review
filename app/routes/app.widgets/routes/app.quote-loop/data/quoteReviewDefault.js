@@ -9,11 +9,15 @@ export const COLOR_PICKERS_ELEMENTS = [
   },
   {
     key: "QUOTE_MARK_COLOR",
-    label: "Quote mark and badge color",
+    label: "Quote mark & badge color",
   },
   {
     key: "STAR_COLOR",
     label: "Star color",
+  },
+  {
+    key: "ACTIVE_DOT_COLOR",
+    label: "Active dot color",
   },
 ];
 
@@ -22,6 +26,7 @@ export const DEFAULT_COLOR_VALUES = {
   TEXT_COLOR: "#303030",
   QUOTE_MARK_COLOR: "#1D9E75",
   Card_Background_Color: "#FFFFFF",
+  ACTIVE_DOT_COLOR: "#34C759",
 };
 
 export const DEFAULT_QUOTE_LOOP_SETTINGS = {
@@ -30,7 +35,7 @@ export const DEFAULT_QUOTE_LOOP_SETTINGS = {
   cardBackgroundColor: "#FFFFFF",
   eyebrowLabel: "CUSTOMER REVIEWS",
   filterSorting: "Filter & sorting both",
-  fiteringMinStart: "3 star and above",
+  fiteringMinStart: "ALL",
   headerStyle: "center",
   heading: "Reviews from people",
   quoteFontSize: 24,

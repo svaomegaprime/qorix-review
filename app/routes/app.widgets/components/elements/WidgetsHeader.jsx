@@ -1,4 +1,4 @@
-export default function WidgetsHeader({ settings, activeDevice }) {
+export default function WidgetsHeader({ settings, activeDevice ,startColor,badgeColor}) {
   const {
     showHeader,
     headerStyle,
@@ -6,7 +6,9 @@ export default function WidgetsHeader({ settings, activeDevice }) {
     heading,
     subheading,
     reviewStats,
+
   } = settings || {};
+  console.log(settings);
 
   if (!showHeader) return null;
   return (
@@ -14,7 +16,8 @@ export default function WidgetsHeader({ settings, activeDevice }) {
       <style>{`
         :root {
           --qr-white: #ffffff;
-          --qr-green: #15b046;
+          --qr-green_star: ${startColor};
+          --qr-verfied_icon : ${badgeColor};
           --qr-text-primary: #1a1a1a;
           --qr-text-muted: #555555;
           --qr-font-body: "Inter", sans-serif;
@@ -33,7 +36,7 @@ export default function WidgetsHeader({ settings, activeDevice }) {
           font-size: 14px;
           font-weight: 600;
           letter-spacing: 0.05em;
-          color: var(--qr-green);
+          color:;
           text-transform: uppercase;
           margin-bottom: 12px;
         }
@@ -102,7 +105,7 @@ export default function WidgetsHeader({ settings, activeDevice }) {
         }
 
         .qr-verified-icon {
-          color: var(--qr-green);
+          color: var(--qr-verfied_icon);
           display: inline-flex;
           align-items: center;
         }
@@ -122,58 +125,58 @@ export default function WidgetsHeader({ settings, activeDevice }) {
         <div className="qr-rating-summary">
           {(reviewStats === "Show review count & verified badge" ||
             reviewStats === "Show review count only") && (
-            <div style={{ display: "flex" }}>
-              <div className="qr-rating-stars">
-                {[...Array(5)].map((_, i) => (
-                  <span key={i} className="qr-star-icon">
-                    <svg
-                      width="18"
-                      height="18"
-                      viewBox="0 0 24 24"
-                      fill="var(--qr-green)"
-                      xmlns="http://www.w3.org/2000/svg"
-                    >
-                      <path d="M12 17.27L18.18 21l-1.64-7.03L22 9.24l-7.19-.61L12 2 9.19 8.63 2 9.24l5.46 4.73L5.82 21z" />
-                    </svg>
-                  </span>
-                ))}
+              <div style={{ display: "flex" }}>
+                <div className="qr-rating-stars">
+                  {[...Array(5)].map((_, i) => (
+                    <span key={i} className="qr-star-icon">
+                      <svg
+                        width="18"
+                        height="18"
+                        viewBox="0 0 24 24"
+                        fill="var(--qr-green_star)"
+                        xmlns="http://www.w3.org/2000/svg"
+                      >
+                        <path d="M12 17.27L18.18 21l-1.64-7.03L22 9.24l-7.19-.61L12 2 9.19 8.63 2 9.24l5.46 4.73L5.82 21z" />
+                      </svg>
+                    </span>
+                  ))}
+                </div>
+
+                <span className="qr-rating-score">4.9</span>
+                <span className="qr-rating-count">(2,451 reviews)</span>
+
+                {reviewStats === "Show review count & verified badge" && (
+                  <span className="qr-rating-divider">|</span>
+                )}
               </div>
-
-              <span className="qr-rating-score">4.9</span>
-              <span className="qr-rating-count">(2,451 reviews)</span>
-
-              {reviewStats === "Show review count & verified badge" && (
-                <span className="qr-rating-divider">|</span>
-              )}
-            </div>
-          )}
+            )}
 
           {(reviewStats === "Show review count & verified badge" ||
             reviewStats === "Show verified badge only") && (
-            <span className="qr-verified-badge">
-              <span className="qr-verified-icon">
-                <svg
-                  width="22"
-                  height="22"
-                  viewBox="0 0 24 24"
-                  fill="currentColor"
-                  xmlns="http://www.w3.org/2000/svg"
-                >
-                  <path d="M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm0 2c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z" />
-                  <circle cx="19" cy="14" r="4" fill="var(--qr-green)" />
-                  <path
-                    d="M17.5 14l1 1 2-2"
-                    stroke="white"
-                    strokeWidth="1.5"
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                    fill="none"
-                  />
-                </svg>
+              <span className="qr-verified-badge">
+                <span className="qr-verified-icon">
+                  <svg
+                    width="22"
+                    height="22"
+                    viewBox="0 0 24 24"
+                    fill="currentColor"
+                    xmlns="http://www.w3.org/2000/svg"
+                  >
+                    <path d="M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm0 2c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z" />
+                    <circle cx="19" cy="14" r="4" fill="var(--qr-verfied_icon)" />
+                    <path
+                      d="M17.5 14l1 1 2-2"
+                      stroke="white"
+                      strokeWidth="1.5"
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                      fill="none"
+                    />
+                  </svg>
+                </span>
+                Verified reviews
               </span>
-              Verified reviews
-            </span>
-          )}
+            )}
         </div>
       </div>
     </>

@@ -27,6 +27,7 @@ import {
   COLOR_PICKERS_ELEMENTS,
   DEFAULT_VALUES_REVIEW_REEL,
 } from "../component/data/reviewRealDefaultData";
+import { getWidgetsInstalledStatus } from "../../../../../services/appEmbed.server";
 
 // Shudhu eituku list-e thaka key gulai DB column, eta ekbar likhe rakle
 // mapper function 2ta ekhane sync thakbe.
@@ -80,14 +81,19 @@ function settingsToDbFields(settings = {}) {
 // ------------------------------------------------------------------
 export async function loader({ request }) {
   try {
-    const { admin } = await authenticate.admin(request);
+    const { admin, session } = await authenticate.admin(request);
     const { id: shop } = await getStoreData(admin);
 
     const row = await prisma.reviewReelSettings.findUnique({
-      where: { shop },
+      where: { storeId: shop },
     });
 
-    return dbRowToSettings(row); // row null hole DEFAULT_VALUES_REVIEW_REEL return kore
+    const settings = dbRowToSettings(row);
+    const installedWidgetIds = await getWidgetsInstalledStatus(admin);
+    settings.isInstalled = installedWidgetIds.includes("review_reel");
+    settings.shop = session?.shop;
+
+    return settings;
   } catch (error) {
     console.error("[LOADER] ERROR:", error);
     return adminErrorResponse(error);
@@ -107,10 +113,14 @@ export async function action({ request }) {
 
     // shop ekhane unique key — thakle update, na thakle notun row create hobe
     const res = await prisma.reviewReelSettings.upsert({
-      where: { shop },
+      where: { storeId: shop },
       update: dbFields,
       create: {
-        shop,
+        store: {
+          connect: {
+            storeGID: shop,
+          },
+        },
         ...dbFields,
       },
     });
@@ -337,7 +347,11 @@ export default function Index() {
               <s-box>
                 <s-stack direction="inline" alignItems="center" gap="small">
                   <Text as="h3">ReviewReel</Text>
-                  <s-badge tone="success">Installed</s-badge>
+                  {loaderData?.isInstalled ? (
+                    <s-badge tone="success">Installed</s-badge>
+                  ) : (
+                    <s-badge tone="caution">Not installed</s-badge>
+                  )}
                 </s-stack>
                 <s-paragraph color="subdued">
                   Show your reviews in a slider with videos and images
@@ -359,6 +373,8 @@ export default function Index() {
                 <Header
                   handleSettingChange={handleSettingChange}
                   settings={settings}
+              
+                
                 />
                 <br></br>
                 <s-stack
@@ -544,16 +560,16 @@ export default function Index() {
                         handleSettingChange("fiteringMinStart", e.target.value)
                       }
                     >
-                      <s-option value="Show all ratings">
+                      <s-option value="ALL">
                         Show all ratings
                       </s-option>
-                      <s-option value="3 star and above">
+                      <s-option value="STAR_3">
                         3 star and above
                       </s-option>
-                      <s-option value="4 star and above">
+                      <s-option value="STAR_4">
                         4 star and above
                       </s-option>
-                      <s-option value="5 star only">5 star only</s-option>
+                      <s-option value="STAR_5">5 star only</s-option>
                     </s-select>
                   </s-stack>
                 </s-stack>
@@ -657,7 +673,15 @@ export default function Index() {
                   </s-stack>
                   <s-button-group gap="base">
                     <s-button slot="secondary-actions">Need help?</s-button>
-                    <s-button variant="primary" slot="primary-action">
+                    <s-button
+                      variant="primary"
+                      slot="primary-action"
+                      onClick={() => {
+                        if (loaderData?.shop) {
+                          window.open(`https://${loaderData.shop}`, "_blank");
+                        }
+                      }}
+                    >
                       <div
                         style={{
                           display: "flex",

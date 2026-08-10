@@ -626,6 +626,7 @@ export default function ReviewItem({
               setReplyReview={setReplyReview}
             />
             <s-button
+              tone="critical"
               icon="delete"
               onClick={() => handleReviewDelete(data.id, data?.attachments)}
             />
@@ -656,6 +657,7 @@ export function ActionButtons({
           Approve
         </s-button>
         <s-button
+          tone="critical"
           icon="x"
           onClick={() => handleStatusUpdate(reviewId, "ARCHIVE")}
         >

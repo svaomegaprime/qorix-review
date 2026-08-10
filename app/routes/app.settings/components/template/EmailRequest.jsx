@@ -12,7 +12,7 @@ export default function EmailRequest({ outgoingRequestEmail, brandSettings }) {
           --email-body-text-color: ${brandSettings.emailBodyTextColor};
           --email-border-color: ${brandSettings.emailAccentBorderColor};
         }
-        
+
         /* Mother selector: everything for this email lives under .email-request */
         .email-request {
             max-width: 500px;
@@ -23,15 +23,20 @@ export default function EmailRequest({ outgoingRequestEmail, brandSettings }) {
             padding: 20px;
             box-sizing: border-box;
         }
-        
+
         .email-request .qr-header {
+            width: 110px;
             display: flex;
             align-items: center;
             justify-content: var(--store-logo-position);
             gap: 10px;
             margin-bottom: 18px;
         }
-        
+
+        .email-request .qr-header img {
+            width: 100%;
+        }
+
         .email-request .qr-logo-mark {
             width: 30px;
             height: 30px;
@@ -45,38 +50,38 @@ export default function EmailRequest({ outgoingRequestEmail, brandSettings }) {
             justify-content: center;
             flex-shrink: 0;
         }
-        
+
         .email-request .qr-brand {
             line-height: 1.05;
         }
-        
-        
+
+
         .email-request .qr-tagline {
             font-size: 14px;
             color: var(--email-body-text-color);
             margin: 0 0 18px;
         }
-        
+
         .email-request .qr-divider {
             border: none;
             border-top: 1px solid #e9e9e9;
             margin: 0 0 24px;
         }
-        
+
         .email-request .qr-greeting {
             font-size: 15px;
             font-weight: 700;
             color: #1a1a1a;
             margin: 0 0 12px;
         }
-        
+
         .email-request .qr-message {
             font-size: 14.5px;
             line-height: 1.55;
             color: var(--email-body-text-color);
             margin: 0 0 24px;
         }
-        
+
         .email-request .qr-product-card {
             display: flex;
             align-items: center;
@@ -86,7 +91,7 @@ export default function EmailRequest({ outgoingRequestEmail, brandSettings }) {
             padding: 14px;
             margin-bottom: 28px;
         }
-        
+
         .email-request .qr-product-thumb {
             width: 64px;
             height: 64px;
@@ -98,30 +103,30 @@ export default function EmailRequest({ outgoingRequestEmail, brandSettings }) {
             justify-content: center;
             overflow: hidden;
         }
-        
+
         .email-request .qr-product-thumb img {
             width: 100%;
             height: 100%;
             object-fit: cover;
         }
-        
+
         .email-request .qr-product-info {
             display: flex;
             flex-direction: column;
             gap: 4px;
         }
-        
+
         .email-request .qr-product-name {
             font-size: 14.5px;
             font-weight: 700;
-            color: var(--email-heading-color);
+            color: var(--email-body-text-color);
         }
-        
+
         .email-request .qr-product-date {
             font-size: 13px;
-            color: #9a9a9a;
+            color: var(--email-body-text-color);
         }
-        
+
         .email-request .qr-cta {
             display: flex;
             align-items: center;
@@ -140,33 +145,33 @@ export default function EmailRequest({ outgoingRequestEmail, brandSettings }) {
             margin-bottom: 30px;
             cursor: pointer;
         }
-        
+
         .email-request .qr-cta-arrow {
             font-size: 16px;
             line-height: 1;
         }
-        
+
         .email-request .qr-footer {
             text-align: center;
         }
-        
+
         .email-request .qr-footer-meta {
             font-size: 12.5px;
             color: rgb(from var(--email-body-text-color) r g b / 70%);
             margin: 0 0 6px;
         }
-        
+
         .email-request .qr-footer-meta a {
             color: rgb(from var(--email-body-text-color) r g b / 70%);
             text-decoration: underline;
         }
-        
+
         .email-request .qr-footer-powered {
             font-size: 13px;
             color: rgb(from var(--email-body-text-color) r g b / 50%);
             margin: 0;
         }
-        
+
         .email-request .qr-footer-powered .qr-brand-highlight {
             color: var(--email-button-bg-color);
             font-weight: 700;

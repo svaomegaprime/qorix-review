@@ -24,6 +24,7 @@ import {
   COLOR_PICKERS_ELEMENTS,
   DEFAULT_VALUES_VIDEO_STACK,
 } from "../data/videoStackDefaultData";
+import { getWidgetsInstalledStatus } from "../../../../../services/appEmbed.server";
 
 // Shudhu eituku list-e thaka key gulai DB column, eta ekbar likhe rakle
 // mapper function 2ta ekhane sync thakbe.
@@ -81,7 +82,12 @@ export async function loader({ request }) {
       where: { storeId: shop },
     });
 
-    return dbRowToSettings(row); // row null hole DEFAULT_VALUES_VIDEO_STACK return kore
+    const settings = dbRowToSettings(row);
+    const installedWidgetIds = await getWidgetsInstalledStatus(admin);
+    settings.isInstalled = installedWidgetIds.includes("video_stack");
+    settings.shop = session?.shop;
+
+    return settings;
   } catch (error) {
     console.error("[LOADER] ERROR:", error);
     return adminErrorResponse(error);
@@ -327,7 +333,11 @@ export default function Index() {
               <s-box>
                 <s-stack direction="inline" alignItems="center" gap="small">
                   <Text as="h3">VidoeStack</Text>
-                  <s-badge tone="caution">Not installed</s-badge>
+                  {loaderData?.isInstalled ? (
+                    <s-badge tone="success">Installed</s-badge>
+                  ) : (
+                    <s-badge tone="caution">Not installed</s-badge>
+                  )}
                 </s-stack>
                 <s-paragraph color="subdued">
                   Showcase your videos in a beautiful slide show
@@ -557,16 +567,16 @@ export default function Index() {
                         handleSettingChange("fiteringMinStart", e.target.value)
                       }
                     >
-                      <s-option value="Show all ratings">
+                      <s-option value="ALL">
                         Show all ratings
                       </s-option>
-                      <s-option value="3 star and above">
+                      <s-option value="STAR_3">
                         3 star and above
                       </s-option>
-                      <s-option value="4 star and above">
+                      <s-option value="STAR_4">
                         4 star and above
                       </s-option>
-                      <s-option value="5 star only">5 star only</s-option>
+                      <s-option value="STAR_5">5 star only</s-option>
                     </s-select>
                     <br></br>
                   </s-stack>
@@ -673,7 +683,15 @@ export default function Index() {
 
                   <s-button-group gap="base">
                     <s-button slot="secondary-actions">Need help?</s-button>
-                    <s-button variant="primary" slot="primary-action">
+                    <s-button
+                      variant="primary"
+                      slot="primary-action"
+                      onClick={() => {
+                        if (loaderData?.shop) {
+                          window.open(`https://${loaderData.shop}`, "_blank");
+                        }
+                      }}
+                    >
                       <div
                         style={{
                           display: "flex",

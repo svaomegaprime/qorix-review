@@ -27,6 +27,12 @@ export default function Contents({
                     onChange={(e) => handleChangeContents({"SHOW_VERIFIED_BADGE": e.target.checked})}
                     defaultChecked={VALUES.SHOW_VERIFIED_BADGE}
                 />
+
+                 <s-switch
+                    label="Show only verified icon"
+                    onChange={(e) => handleChangeContents({"SHOW_VERIFIED_ICON_ONLY": e.target.checked})}
+                    defaultChecked={VALUES.SHOW_VERIFIED_ICON_ONLY}
+                />
             </s-stack>
           
         </CustomSection>

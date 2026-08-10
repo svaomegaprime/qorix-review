@@ -4,7 +4,6 @@
   class="quickreview-reviews"
   data-product-id="{{ product.id }}"
   id="quickreview-reviews-{{ block.id }}"
-  x-show="loading ? true : reviews?.length > 0"
 >
   <div class="quickreview-reviews__header">
     <div class="quickreview-reviews__titles">
@@ -13,8 +12,8 @@
     </div>
 
     <div class="quickreview-reviews__actions">
-      {% if quick_review_metafield.filterAndSorting == 'FILTER_AND_SORTING'
-        or quick_review_metafield.filterAndSorting == 'SORTING_ONLY'
+      {% if quick_review_metafield.filterAndSorting == 'FILTER_AND_SORT'
+        or quick_review_metafield.filterAndSorting == 'FILTER_ONLY'
       %}
         <button
           type="button"
@@ -30,8 +29,8 @@
           </svg>
         </button>
       {% endif %}
-      {% if quick_review_metafield.filterAndSorting == 'FILTER_AND_SORTING'
-        or quick_review_metafield.filterAndSorting == 'FILTER_ONLY'
+      {% if quick_review_metafield.filterAndSorting == 'FILTER_AND_SORT'
+        or quick_review_metafield.filterAndSorting == 'SORTING_ONLY'
       %}
         <div class="quickreview-reviews__sort">
           <button
@@ -49,7 +48,7 @@
           <ul class="quickreview-reviews__sort-menu" x-show="sortOpen">
             <template x-for="option in sortOptions" :key="option.value">
               <li
-                value="ALL"
+                value="option.value"
                 class=""
                 @click="setSort(option.value)"
                 :class="{ 'is-active': option.value === activeSort }"

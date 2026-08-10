@@ -21,7 +21,11 @@ export default function Text({
       {as === "h5" && <h5 style={style}>{children}</h5>}
       {as === "h6" && <h6 style={style}>{children}</h6>}
       {as === "p" && <p style={style}>{children}</p>}
-      {as === "span" && <span style={style}>{children}</span>}
+      {as === "span" && (
+        <span onClick={props?.onClick} style={style}>
+          {children}
+        </span>
+      )}
       {as === "a" && (
         <a
           style={style}

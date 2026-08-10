@@ -57,7 +57,7 @@ model PublishingModeration {
   id                   String           @id @default(uuid()) @db.Uuid
   storeSettingsId      String           @unique @db.Uuid
   autoPublishRules     AutoPublishRules @default(AUTO_PUBLISH)
-  isLowRatingHold      Boolean          @default(true)
+  isLowRatingHold      Boolean          @default(false)
   isProfanityFilter    Boolean          @default(true)
   isPersonalInfoFilter Boolean          @default(true)
   isSpamFilter         Boolean          @default(true)

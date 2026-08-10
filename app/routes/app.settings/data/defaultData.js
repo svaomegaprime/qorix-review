@@ -4,7 +4,7 @@ export const DEFAULT_REQUEST_SCHEDULING = {
   isReminderRequest: true,
   reminderRequestDelay: 5,
   isSkipRefundedOrder: true,
-  isSkipCancelledOrder: true,
+  isSkipCancelledOrder: false,
   minimumOrderValue: 0,
 };
 
@@ -44,7 +44,7 @@ export const DEFAULT_POST_REQUEST_EMAIL = {
 
 export const DEFAULT_PUBLISHING_MODERATION = {
   autoPublishRules: "AUTO_PUBLISH", // VERIFIED_ONLY // MANUAL_PUBLISH
-  isLowRatingHold: true,
+  isLowRatingHold: false,
   isProfanityFilter: true,
   isPersonalInfoFilter: true,
   isSpamFilter: true,
@@ -96,5 +96,3 @@ export const DEFAULT_ADMIN_NOTIFICATION = {
   isLowStarReviewNotify: true,
   isWeeklySummaryNotify: true,
 };
-
-

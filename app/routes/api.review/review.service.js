@@ -12,6 +12,13 @@ import checkPublishRules from "./middleware/checkPublishRules";
 import { sendResponse } from "../../utils/sendResponse";
 import { buildSmtpConfig } from "../../services/emailPayload.server.js";
 import { addJobInQueue, reviewQueue } from "../../lib/bullmq/bullmq.queue";
+import { getOrderReviewTarget } from "../../services/orders.server.js";
+import { normalizeShopifyId } from "../../utils/shopifyGid.js";
+
+function normalizeOrderNumber(value) {
+  if (!value || value === "null" || value === "undefined") return null;
+  return value.startsWith("#") ? value : `#${value}`;
+}
 
 function buildFromAddress(displayName, email) {
   const cleanEmail = String(email || "").trim();
@@ -63,13 +70,7 @@ async function postReview(request, session, admin) {
     const formData = await request.formData();
     const url = new URL(request.url);
     const isOpen = url.searchParams.get("isOpen") === "true";
-    const orderNumber = url.searchParams.get("orderId");
-    const orderId = orderNumber
-      ? orderNumber.startsWith("#")
-        ? orderNumber
-        : `#${orderNumber}`
-      : null;
-    // review.service.js
+    const orderId = normalizeOrderNumber(url.searchParams.get("orderId"));
 
     const storeSettings = await prisma.storeSettings.findFirst({
       where: {
@@ -91,30 +92,86 @@ async function postReview(request, session, admin) {
     const reviewData = {
       storeId: id,
       reviewerName: formData.get("reviewerName") || null,
-      reviewerEmail: formData.get("reviewerEmail") || null,
+      reviewerEmail: String(formData.get("reviewerEmail") || "").trim() || null,
       body: formData.get("body") || null,
       rating: Number(formData.get("rating") || 0),
       source: formData.get("source") || "PRODUCT_PAGE",
       productId: formData.get("productId") || null,
       productHandle: formData.get("productHandle") || null,
       productTitle: formData.get("productTitle") || null,
+      productImage: formData.get("productImage") || null,
     };
 
-    const isAllreadyExist = await prisma.review.findFirst({
-      where: {
-        storeId: reviewData.storeId,
+    let orderTarget = null;
+
+    if (orderId) {
+      if (!reviewData.reviewerEmail || !reviewData.productId) {
+        return sendResponse(null, {
+          ok: false,
+          status: 400,
+          message: "Email and product are required for an order review",
+          data: {},
+        });
+      }
+
+      orderTarget = await getOrderReviewTarget({
+        storeId: id,
+        orderId,
         reviewerEmail: reviewData.reviewerEmail,
         productId: reviewData.productId,
-      },
-    });
-    if (isAllreadyExist && reviewData.reviewerEmail)
-      return sendResponse(null, {
-        ok: false,
-        status: 504,
-        message: "This email already exist",
-
-        data: {},
       });
+
+      if (!orderTarget) {
+        return sendResponse(null, {
+          ok: false,
+          status: 404,
+          message: "Order email and review provided email are not match",
+          data: {},
+        });
+      }
+
+      const existingOrderReview = await prisma.review.findFirst({
+        where: {
+          orderRecordId: orderTarget.order.id,
+          productId: reviewData.productId,
+          reviewerEmail: {
+            equals: String(reviewData.reviewerEmail).trim(),
+            mode: "insensitive",
+          },
+        },
+        select: { id: true },
+      });
+
+      if (existingOrderReview) {
+        return sendResponse(null, {
+          ok: false,
+          status: 409,
+          message: "This order has already reviewed this product",
+          data: {},
+        });
+      }
+    } else if (reviewData.reviewerEmail) {
+      const existingReview = await prisma.review.findFirst({
+        where: {
+          storeId: reviewData.storeId,
+          reviewerEmail: {
+            equals: String(reviewData.reviewerEmail).trim(),
+            mode: "insensitive",
+          },
+          productId: reviewData.productId,
+        },
+        select: { id: true },
+      });
+
+      if (existingReview) {
+        return sendResponse(null, {
+          ok: false,
+          status: 409,
+          message: "You have already reviewed this product.",
+          data: {},
+        });
+      }
+    }
 
     const publishRules = await checkPublishRules(
       session,
@@ -147,6 +204,7 @@ async function postReview(request, session, admin) {
     const res = await prisma.review.create({
       data: {
         ...reviewData,
+        orderRecordId: orderTarget?.order.id ?? null,
         status: publishRules.status,
         ...publishRules,
         attachments: {
@@ -172,11 +230,12 @@ async function postReview(request, session, admin) {
             storeId: id,
             productId: String(reviewData.productId),
             reviewerEmail: String(reviewData.reviewerEmail),
+            reviewId: res.id,
             orderId,
             isOpen,
           },
           0,
-          `POST_REVIEW_SYNC_${id}_${reviewData.productId}_${reviewData.reviewerEmail}`,
+          `POST_REVIEW_SYNC_${res.id}`,
         );
       } catch (err) {
         console.error("[WARN::api.review.orderMetafieldSyncJob]", err);
@@ -272,14 +331,14 @@ async function postReview(request, session, admin) {
         smtpConfig: buildSmtpConfig(emailSettings),
       };
       try {
-        const clientConfirmationEmailJobResponse = await addJobInQueue(
+        await addJobInQueue(
           reviewQueue,
           "JOB_CLIENT_CONFIRMATION_EMAIL",
           {
             emailData: clientEmailData,
           },
           0,
-          `JOB_CLIENT_CONFIRMATION_EMAIL_${reviewData.reviewerEmail}`,
+          `JOB_CLIENT_CONFIRMATION_EMAIL_${res.id}`,
         );
       } catch (error) {
         console.error("[WARN::api.review.confirmationEmail]", error);
@@ -355,14 +414,14 @@ async function postReview(request, session, admin) {
         smtpConfig: buildSmtpConfig(emailSettings),
       };
       try {
-        const adminConfirmationEmailJobResponse = await addJobInQueue(
+        await addJobInQueue(
           reviewQueue,
           "JOB_CLIENT_CONFIRMATION_EMAIL",
           {
             emailData: adminEmailData,
           },
           0,
-          `JOB_ADMIN_NOTIFICATION_EMAIL_${reviewData.reviewerEmail}`,
+          `JOB_ADMIN_NOTIFICATION_EMAIL_${res.id}`,
         );
       } catch (error) {
         console.error("[WARN::api.review.adminEmail]", error);
@@ -396,24 +455,12 @@ async function getReview(request, session, admin) {
       url.searchParams.get("customerEmail") || "",
     ).trim();
     const isOpen = url.searchParams.get("isOpen") === "true";
-    const orderNumber = url.searchParams.get("orderId");
-    const orderId = orderNumber
-      ? orderNumber.startsWith("#")
-        ? orderNumber
-        : `#${orderNumber}`
-      : null;
+    const orderId = normalizeOrderNumber(url.searchParams.get("orderId"));
 
     const { id } = await getStoreContext(session, admin);
 
     if (isOpen && orderId) {
-      const extractNumericId = (val) => {
-        if (!val) return "";
-        const str = String(val);
-        if (str.includes("/")) return str.split("/").pop();
-        return str;
-      };
-
-      const numericProductId = extractNumericId(productId);
+      const numericProductId = normalizeShopifyId(productId);
 
       // Find if there's an order with this orderId and a matching lineItem
       const orderToUpdate = await prisma.order.findFirst({
@@ -432,9 +479,10 @@ async function getReview(request, session, admin) {
       });
 
       if (orderToUpdate) {
-        await prisma.order.update({
+        await prisma.order.updateMany({
           where: {
             id: orderToUpdate.id,
+            reviewCheckStatus: { not: "REVIEWED" },
           },
           data: {
             reviewCheckStatus: "OPENED",
@@ -497,6 +545,7 @@ async function getReview(request, session, admin) {
         ...baseWhere,
       },
       include: {
+        reply: true,
         attachments: true,
         helpfulCount: {
           where: customerEmail
@@ -577,6 +626,11 @@ async function getReview(request, session, admin) {
         break;
 
       case "MOST_HELPFUL":
+        query.where.helpfulCount = {
+          some: {
+            isHelpful: true,
+          },
+        };
         query.orderBy = {
           helpfulCount: {
             _count: "desc",
@@ -637,6 +691,15 @@ async function getReview(request, session, admin) {
       const r = Number(group.rating);
       if (ratingCounts[r] !== undefined) {
         ratingCounts[r] = group._count._all;
+      }
+    }
+
+    // Zero-out star keys below the filterMinStar threshold
+    const minStarMap = { STAR_1: 1, STAR_2: 2, STAR_3: 3, STAR_4: 4, STAR_5: 5 };
+    const minStar = minStarMap[filterMinStar];
+    if (minStar) {
+      for (let s = 1; s < minStar; s++) {
+        ratingCounts[s] = 0;
       }
     }
 

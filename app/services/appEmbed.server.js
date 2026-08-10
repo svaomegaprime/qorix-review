@@ -200,51 +200,16 @@ export async function checkAppEmbedEnabled(admin, appHandle = "app_embed") {
   }
 }
 
+import { getInstalledWidgets } from "./themeBlocks.server.js";
+
 /**
  * Checks which of all 6 widgets are currently installed/enabled in the merchant's live theme.
+ * Scans both theme settings (for app embeds) and theme templates (for app blocks).
  * 
  * @param {Object} admin - Shopify Admin API context
  * @returns {Promise<string[]>} Array of installed widget IDs
  */
 export async function getWidgetsInstalledStatus(admin) {
-  if (!admin) return [];
-  try {
-    const themeId = await getMainThemeId(admin);
-    if (!themeId) return [];
-
-    const settings = await getThemeSettings(admin, themeId);
-    if (!settings) return [];
-
-    const allBlocks = findAllBlocks(settings);
-    const installedWidgetIds = [];
-
-    const WIDGET_MAPPINGS = [
-      { id: "quick_review", handles: ["app_embed", "app-embed", "quick_review"] },
-      { id: "trust_bar", handles: ["trust_bar", "trust-bar"] },
-      { id: "review_reel", handles: ["qorix-review-reel-widget", "review_reel", "review-reel"] },
-      { id: "video_stack", handles: ["video-stack-widget", "video_stack", "video-stack"] },
-      { id: "quote_loop", handles: ["quoteloop", "quote_loop", "quote-loop"] },
-      { id: "review_hub", handles: ["review_hub", "review-hub"] },
-    ];
-
-    for (const item of WIDGET_MAPPINGS) {
-      const foundBlock = allBlocks.find((block) => {
-        if (!block || typeof block?.type !== "string") return false;
-        const typeLower = block.type.toLowerCase();
-        if (typeLower.includes("qorix-popup") || typeLower.includes("qorix_popup")) {
-          return false;
-        }
-        return item.handles.some((handle) => typeLower.includes(handle.toLowerCase()));
-      });
-
-      if (foundBlock && foundBlock.disabled !== true) {
-        installedWidgetIds.push(item.id);
-      }
-    }
-
-    return installedWidgetIds;
-  } catch (error) {
-    console.error("[AppEmbed Service] Error getting widgets status:", error);
-    return [];
-  }
+  return getInstalledWidgets(admin);
 }
+

@@ -25,9 +25,9 @@ export default function PostReviewEmail({ emailSettings, onChange }) {
                 label="Enable review confirmation email"
                 details="Let customers know their review was received"
               />
-              <s-button variant="secondary" icon="eye-check-mark">
+              {/* <s-button variant="secondary" icon="eye-check-mark">
                 Preview
-              </s-button>
+              </s-button> */}
             </s-grid>
             <s-divider />
             <s-heading>Email subject line</s-heading>
@@ -46,7 +46,7 @@ export default function PostReviewEmail({ emailSettings, onChange }) {
               <s-badge tone="neutral">{"{{first_name}}"}</s-badge>{" "}
               <s-badge tone="neutral">{"{{store_name}}"}</s-badge>{" "}
               <s-badge tone="neutral">{"{{product_name}}"}</s-badge>{" "}
-              <s-badge tone="neutral">{"{{review_rating}}"}</s-badge>{" "}
+              {/* <s-badge tone="neutral">{"{{review_rating}}"}</s-badge>{" "} */}
             </s-stack>
           </s-grid>
         </CustomSection>
@@ -66,11 +66,11 @@ export default function PostReviewEmail({ emailSettings, onChange }) {
               label="Enable reply notification email"
               details="Let customers know when you reply to their review"
             ></s-switch>
-            <s-heading>Subject line</s-heading>
-            <s-text-field
+            {/* <s-heading>Subject line</s-heading> */}
+            {/* <s-text-field
               value={emailSettings.replyReviewEmailSubject}
               onInput={handleInputChange("replyReviewEmailSubject")}
-            />
+            /> */}
           </s-grid>
         </CustomSection>
       </CustomGridSection>
