@@ -132,6 +132,9 @@ export default function AdminNotification() {
             Choose when Qorix sends you an email about review activity
           </s-text>
         </s-box>
+        <s-button inline="fill" variant="secondary">
+          Need Help ?
+        </s-button>
       </s-stack>
 
       <s-section key={formResetKey}>

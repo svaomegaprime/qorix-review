@@ -120,7 +120,7 @@ export default function Settings() {
           </s-text>
         </s-box>
         <s-button inline="fill" variant="secondary">
-          View review requests
+          Need Help ?
         </s-button>
       </s-stack>
 

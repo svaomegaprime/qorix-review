@@ -20,14 +20,34 @@
 .shopify-app-block[data-block-handle="quoteloop"] {
   display: block;
   width: 100%;
+  max-width: 100%;
+  min-width: 0;
+  box-sizing: border-box;
+}
+
+.shopify-app-block:has(> [data-section="qorix-quoteloop-widget"]) {
+  display: block;
+  width: 100%;
+  max-width: 100%;
+  min-width: 0;
+  box-sizing: border-box;
 }
 
 [data-section="qorix-quoteloop-widget"] {
+  width: 100%;
+  max-width: var(--qr-desktop-max-width);
+  min-width: 0;
+  margin: 0 auto;
   padding: 12px 8px;
+  box-sizing: border-box;
+  overflow-x: clip;
+  contain: inline-size;
 }
 
 [data-section="qorix-quoteloop-widget"] .qr-quote-swiper {
   width: 100%;
+  max-width: 100%;
+  min-width: 0;
   overflow: hidden;
   padding: 30px 0 70px 16px;
   box-sizing: border-box;
@@ -36,11 +56,14 @@
 
 [data-section="qorix-quoteloop-widget"] .qr-quote-swiper .swiper-wrapper {
   align-items: stretch;
+  min-width: 0;
 }
 
 [data-section="qorix-quoteloop-widget"] .qr-quote-swiper .swiper-slide {
   height: auto;
   width: 84%;
+  max-width: 100%;
+  min-width: 0;
   display: flex;
   justify-content: flex-start;
   transition: transform 0.35s ease, opacity 0.35s ease;
@@ -75,6 +98,7 @@
   height: auto;
   width: 100%;
   max-width: none;
+  min-width: 0;
   box-sizing: border-box;
   display: flex;
   flex-direction: column;
@@ -135,21 +159,26 @@
 [data-section="qorix-quoteloop-widget"] .qr-reviewer-info {
   display: flex;
   flex-direction: column;
+  min-width: 0;
 }
 
 [data-section="qorix-quoteloop-widget"] .qr-reviewer-name {
   display: flex;
   align-items: center;
+  flex-wrap: wrap;
+  min-width: 0;
   gap: 6px;
   font-size: 16px;
   font-weight: 500;
   margin-bottom: 8px;
+  overflow-wrap: anywhere;
 }
 
 [data-section="qorix-quoteloop-widget"] .qr-reviewer-product {
   font-size: 16px;
   font-weight: 400;
   color: var(--qr-color-text-gray);
+  overflow-wrap: anywhere;
 }
 
 /* Pagination */

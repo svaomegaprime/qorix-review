@@ -90,15 +90,25 @@
 .shopify-app-block[data-block-handle="ReviewHub"] {
   display: block;
   width: 100%;
+  max-width: 100%;
+  min-width: 0;
+  box-sizing: border-box;
 }
 
 .qr-review-hub {
+  width: 100%;
+  max-width: 100%;
+  min-width: 0;
   padding: 12px 8px;
+  box-sizing: border-box;
 }
 
 .qr-reviews-section {
+  width: 100%;
   max-width: var(--qr-section-max-width, 1100px);
+  min-width: 0;
   margin: 40px auto 0;
+  box-sizing: border-box;
 }
 
 /* Filter bar */
@@ -284,25 +294,25 @@
 /* Review grid */
 .qr-review-grid {
   display: grid;
-  grid-template-columns: repeat(var(--qr-grid-columns, 3), 1fr);
+  grid-template-columns: repeat(var(--qr-grid-columns, 3), minmax(0, 1fr));
   gap: 20px;
 }
 
 @media (max-width: 1600px) {
   .qr-review-grid {
-    grid-template-columns: repeat(min(var(--qr-grid-columns, 3), 4), 1fr);
+    grid-template-columns: repeat(min(var(--qr-grid-columns, 3), 4), minmax(0, 1fr));
   }
 }
 
 @media (max-width: 1279px) {
   .qr-review-grid {
-    grid-template-columns: repeat(min(var(--qr-grid-columns, 3), 3), 1fr);
+    grid-template-columns: repeat(min(var(--qr-grid-columns, 3), 3), minmax(0, 1fr));
   }
 }
 
 @media (max-width: 991px) {
   .qr-review-grid {
-    grid-template-columns: repeat(2, 1fr);
+    grid-template-columns: repeat(2, minmax(0, 1fr));
   }
 }
 
@@ -493,6 +503,7 @@ span.qr-review-avatar {
   border-radius: 10px;
   overflow: hidden;
   border: 1px solid #767676;
+  width: 28px;
 }
 
 .qr-review-actions {

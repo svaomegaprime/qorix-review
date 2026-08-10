@@ -60,6 +60,7 @@ const DEFAULT_QUICK_REVIEW_STATE = {
   isShowReviewCount: true,
   isShowRatingBarWithoutRating: true,
   isShowMediaWithoutRating: true,
+  isShowReviewDataWithoutRating: true,
   writeReviewButtonText: "Write a review",
   showHelfullButton: true,
   defaultSort: "ALL",
@@ -148,6 +149,9 @@ const buildQuickReviewState = (data) => {
     isShowMediaWithoutRating:
       data.isShowMediaWithoutRating ??
       DEFAULT_QUICK_REVIEW_STATE.isShowMediaWithoutRating,
+    isShowReviewDataWithoutRating:
+      data.isShowReviewDataWithoutRating ??
+      DEFAULT_QUICK_REVIEW_STATE.isShowReviewDataWithoutRating,
     writeReviewButtonText:
       data.writeReviewButtonText ??
       DEFAULT_QUICK_REVIEW_STATE.writeReviewButtonText,
@@ -187,7 +191,7 @@ export async function loader({ request }) {
             }
           }
         }
-      }`
+      }`,
     );
     const data = await response.json();
     const productHandle = data.data?.products?.edges?.[0]?.node?.handle;
@@ -324,6 +328,7 @@ export default function Index(VALUES = {}) {
     isShowHelpfulButton: quickReview.showHelpfulButton,
     isShowRatingBarWithoutRating: quickReview.isShowRatingBarWithoutRating,
     isShowMediaWithoutRating: quickReview.isShowMediaWithoutRating,
+    isShowReviewDataWithoutRating: quickReview.isShowReviewDataWithoutRating,
     writeReviewButtonText: quickReview.writeReviewButtonText,
     reviewPerPage: Number(quickReview.reviewPerPage),
     defaultSort: quickReview.defaultSort,
@@ -932,6 +937,16 @@ export default function Index(VALUES = {}) {
                             checked={quickReview.showHelpfulButton || undefined}
                             onchange={handleSwitch("showHelpfulButton")}
                           />
+                          <s-switch
+                            label="Show review data without rating"
+                            checked={
+                              quickReview.isShowReviewDataWithoutRating ||
+                              undefined
+                            }
+                            onchange={handleSwitch(
+                              "isShowReviewDataWithoutRating",
+                            )}
+                          />
                           {/* <s-switch
                             label="Show rating bar without rating"
                             checked={
@@ -1108,8 +1123,10 @@ export default function Index(VALUES = {}) {
                 <div style={{ padding: "" }}>
                   <AdvanceCSS css={customCss} setCss={handleCssChange} />
                 </div>
-  
-                <ResetToDefaults handleResetToDefaults={handleResetToDefaults} />
+
+                <ResetToDefaults
+                  handleResetToDefaults={handleResetToDefaults}
+                />
 
                 {/* -------------Layout picker---------------- */}
               </div>
@@ -1196,8 +1213,8 @@ export default function Index(VALUES = {}) {
                       slot="primary-action"
                       onClick={() => {
                         if (loaderData?.shop) {
-                          const url = loaderData.productHandle 
-                            ? `https://${loaderData.shop}/products/${loaderData.productHandle}` 
+                          const url = loaderData.productHandle
+                            ? `https://${loaderData.shop}/products/${loaderData.productHandle}`
                             : `https://${loaderData.shop}`;
                           window.open(url, "_blank");
                         }

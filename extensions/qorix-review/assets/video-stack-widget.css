@@ -15,8 +15,10 @@
   --overlay-tint: rgba(233, 31, 31, 0);
 }
 
-[data-section="qorix-review-video-stack-widget"] .qorix-review-video-stack-section {
+[data-section="qorix-review-video-stack-widget"].qorix-review-video-stack-section {
   width: 100%;
+  max-width: 1600px;
+  min-width: 0;
   background: #fff;
   overflow: visible;
   display: flex;
@@ -24,18 +26,34 @@
   align-items: center;
   gap: 50px;
   padding: 80px 0;
+  margin: 0 auto;
+  box-sizing: border-box;
+}
+
+.shopify-app-block:has(> [data-section="qorix-review-video-stack-widget"]) {
+  display: block;
+  width: 100%;
+  max-width: 100%;
+  min-width: 0;
+  box-sizing: border-box;
 }
 
 /* ════════ HEADING CONTAINER ════════ */
-[data-section="qorix-review-video-stack-widget"] .qorix-review-video-stack-heading-container {
+[data-section="qorix-review-video-stack-widget"]
+  .qorix-review-video-stack-heading-container {
   width: 100%;
+  max-width: 100%;
+  min-width: 0;
   margin: 0 auto;
   box-sizing: border-box;
 }
 
 /* ════════ CAROUSEL WRAPPER ════════ */
-[data-section="qorix-review-video-stack-widget"] .qorix-review-video-stack-carousel {
+[data-section="qorix-review-video-stack-widget"]
+  .qorix-review-video-stack-carousel {
   width: 100%;
+  max-width: 100%;
+  min-width: 0;
   margin: 0 auto;
   position: relative;
   /* clip only horizontal overflow so nav arrows stay visible */
@@ -45,17 +63,24 @@
 }
 
 /* ── Swiper ── */
-[data-section="qorix-review-video-stack-widget"] .qorix-review-video-stack-swiper-clip {
+[data-section="qorix-review-video-stack-widget"]
+  .qorix-review-video-stack-swiper-clip {
   overflow: hidden;
   width: 100%;
+  max-width: 100%;
+  min-width: 0;
   /* Extra vertical padding so tallest active card is not vertically clipped */
   padding: 10px 0;
   margin: -10px auto;
 }
 
-[data-section="qorix-review-video-stack-widget"] .qorix-review-video-stack-swiper {
+[data-section="qorix-review-video-stack-widget"]
+  .qorix-review-video-stack-swiper {
   overflow: visible !important;
   width: 100%;
+  max-width: 100%;
+  min-width: 0;
+  box-sizing: border-box;
   /* match figma max height */
   height: 573px;
 
@@ -64,11 +89,17 @@
   --card-w-center: 270px;
   --card-w-adjacent: 220px;
   --card-w-outer: 174px;
-  --d-adjacent: calc(var(--card-w-center) / 2 + var(--gap) + var(--card-w-adjacent) / 2);
-  --d-outer: calc(var(--d-adjacent) + var(--card-w-adjacent) / 2 + var(--gap) + var(--card-w-outer) / 2);
+  --d-adjacent: calc(
+    var(--card-w-center) / 2 + var(--gap) + var(--card-w-adjacent) / 2
+  );
+  --d-outer: calc(
+    var(--d-adjacent) + var(--card-w-adjacent) / 2 + var(--gap) +
+      var(--card-w-outer) / 2
+  );
 }
 
-[data-section="qorix-review-video-stack-widget"] .qorix-review-video-stack-swiper-wrapper {
+[data-section="qorix-review-video-stack-widget"]
+  .qorix-review-video-stack-swiper-wrapper {
   position: relative;
   display: block;
   height: 100%;
@@ -78,7 +109,8 @@
   transition-timing-function: cubic-bezier(0.4, 0, 0.2, 1) !important;
 }
 
-[data-section="qorix-review-video-stack-widget"] .qorix-review-video-stack-swiper-slide {
+[data-section="qorix-review-video-stack-widget"]
+  .qorix-review-video-stack-swiper-slide {
   position: absolute;
   top: 50%;
   left: 50%;
@@ -97,47 +129,66 @@
     transform 0.45s cubic-bezier(0.4, 0, 0.2, 1);
 }
 
-[data-section="qorix-review-video-stack-widget"] .qorix-review-video-stack-swiper-slide.qorix-review-video-stack-visible-slide {
+[data-section="qorix-review-video-stack-widget"]
+  .qorix-review-video-stack-swiper-slide.qorix-review-video-stack-visible-slide {
   opacity: 1;
   visibility: visible;
   pointer-events: auto;
 }
 
-[data-section="qorix-review-video-stack-widget"] .qorix-review-video-stack-swiper-slide-active {
+[data-section="qorix-review-video-stack-widget"]
+  .qorix-review-video-stack-swiper-slide-active {
   justify-content: center;
 }
 
-[data-section="qorix-review-video-stack-widget"] .qorix-review-video-stack-swiper-slide-active~.qorix-review-video-stack-swiper-slide {
+[data-section="qorix-review-video-stack-widget"]
+  .qorix-review-video-stack-swiper-slide-active
+  ~ .qorix-review-video-stack-swiper-slide {
   justify-content: center;
 }
 
-[data-section="qorix-review-video-stack-widget"] .qorix-review-video-stack-position--2 {
-  transform: translate(calc(-1 * var(--d-outer) - var(--card-w-center) / 2), -50%);
+[data-section="qorix-review-video-stack-widget"]
+  .qorix-review-video-stack-position--2 {
+  transform: translate(
+    calc(-1 * var(--d-outer) - var(--card-w-center) / 2),
+    -50%
+  );
   z-index: 1;
 }
 
-[data-section="qorix-review-video-stack-widget"] .qorix-review-video-stack-position--1 {
-  transform: translate(calc(-1 * var(--d-adjacent) - var(--card-w-center) / 2), -50%);
+[data-section="qorix-review-video-stack-widget"]
+  .qorix-review-video-stack-position--1 {
+  transform: translate(
+    calc(-1 * var(--d-adjacent) - var(--card-w-center) / 2),
+    -50%
+  );
   z-index: 3;
 }
 
-[data-section="qorix-review-video-stack-widget"] .qorix-review-video-stack-position-0 {
+[data-section="qorix-review-video-stack-widget"]
+  .qorix-review-video-stack-position-0 {
   transform: translate(-50%, -50%);
   z-index: 5;
 }
 
-[data-section="qorix-review-video-stack-widget"] .qorix-review-video-stack-position-1 {
-  transform: translate(calc(var(--d-adjacent) - var(--card-w-center) / 2), -50%);
+[data-section="qorix-review-video-stack-widget"]
+  .qorix-review-video-stack-position-1 {
+  transform: translate(
+    calc(var(--d-adjacent) - var(--card-w-center) / 2),
+    -50%
+  );
   z-index: 3;
 }
 
-[data-section="qorix-review-video-stack-widget"] .qorix-review-video-stack-position-2 {
+[data-section="qorix-review-video-stack-widget"]
+  .qorix-review-video-stack-position-2 {
   transform: translate(calc(var(--d-outer) - var(--card-w-center) / 2), -50%);
   z-index: 1;
 }
 
 /* ════════ CARD ════════ */
-[data-section="qorix-review-video-stack-widget"] .qorix-review-video-stack-card {
+[data-section="qorix-review-video-stack-widget"]
+  .qorix-review-video-stack-card {
   position: relative;
   border-radius: 16px;
   overflow: hidden;
@@ -156,20 +207,24 @@
   will-change: width, height, filter;
   filter: brightness(0.7);
 }
-[data-section="qorix-review-video-stack-widget"] .qr-stars{
+[data-section="qorix-review-video-stack-widget"] .qr-stars {
   display: flex;
   gap: 8px;
 }
 
 /* Adjacent (prev / next) — medium tier */
-[data-section="qorix-review-video-stack-widget"] .qorix-review-video-stack-tier-adjacent .qorix-review-video-stack-card {
+[data-section="qorix-review-video-stack-widget"]
+  .qorix-review-video-stack-tier-adjacent
+  .qorix-review-video-stack-card {
   width: var(--card-w-adjacent);
   height: 533px;
   filter: brightness(0.85);
 }
 
 /* Active / centre — tallest & widest, full colour */
-[data-section="qorix-review-video-stack-widget"] .qorix-review-video-stack-tier-center .qorix-review-video-stack-card {
+[data-section="qorix-review-video-stack-widget"]
+  .qorix-review-video-stack-tier-center
+  .qorix-review-video-stack-card {
   width: var(--card-w-center);
   height: 573px;
   filter: brightness(1);
@@ -191,7 +246,8 @@
 }
 
 /* ── Gradient overlay ── */
-[data-section="qorix-review-video-stack-widget"] .qorix-review-video-stack-overlay {
+[data-section="qorix-review-video-stack-widget"]
+  .qorix-review-video-stack-overlay {
   position: absolute;
   bottom: 0;
   left: 0;
@@ -200,13 +256,16 @@
   z-index: 2;
   pointer-events: none;
   transform: translateZ(10px);
-  background-image: linear-gradient(180deg,
-      rgba(0, 0, 0, 0) 30%,
-      var(--overlay-tint, #1A1A1A));
+  background-image: linear-gradient(
+    180deg,
+    rgba(0, 0, 0, 0) 30%,
+    var(--overlay-tint, #1a1a1a)
+  );
 }
 
 /* ── Top bar (duration pill + play button) ── */
-[data-section="qorix-review-video-stack-widget"] .qorix-review-video-stack-topbar {
+[data-section="qorix-review-video-stack-widget"]
+  .qorix-review-video-stack-topbar {
   position: absolute;
   top: 14px;
   left: 14px;
@@ -217,7 +276,8 @@
   z-index: 3;
 }
 
-[data-section="qorix-review-video-stack-widget"] .qorix-review-video-stack-pill {
+[data-section="qorix-review-video-stack-widget"]
+  .qorix-review-video-stack-pill {
   display: inline-flex;
   align-items: center;
   gap: 5px;
@@ -226,14 +286,17 @@
   border-radius: 99px;
 }
 
-[data-section="qorix-review-video-stack-widget"] .qorix-review-video-stack-pill span {
+[data-section="qorix-review-video-stack-widget"]
+  .qorix-review-video-stack-pill
+  span {
   font-size: 14px;
   font-weight: 500;
   color: #303030;
   line-height: 20px;
 }
 
-[data-section="qorix-review-video-stack-widget"] .qorix-review-video-stack-play {
+[data-section="qorix-review-video-stack-widget"]
+  .qorix-review-video-stack-play {
   width: 28px;
   height: 28px;
   border-radius: 50%;
@@ -249,7 +312,8 @@
 }
 
 /* ── Bottom info overlay ── */
-[data-section="qorix-review-video-stack-widget"] .qorix-review-video-stack-info {
+[data-section="qorix-review-video-stack-widget"]
+  .qorix-review-video-stack-info {
   position: absolute;
   bottom: 0;
   left: 0;
@@ -262,35 +326,43 @@
   gap: 8px;
   z-index: 3;
   transform: translateZ(20px);
-  background-image: linear-gradient(180deg,
-      rgba(0, 0, 0, 0) 30%,
-      var(--overlay-tint, #1A1A1A));
+  background-image: linear-gradient(
+    180deg,
+    rgba(0, 0, 0, 0) 30%,
+    var(--overlay-tint, #1a1a1a)
+  );
 }
 
-[data-section="qorix-review-video-stack-widget"] .qorix-review-video-stack-card-stars {
+[data-section="qorix-review-video-stack-widget"]
+  .qorix-review-video-stack-card-stars {
   display: flex;
   gap: 2px;
 }
 
-[data-section="qorix-review-video-stack-widget"] .qorix-review-video-stack-card-stars svg {
+[data-section="qorix-review-video-stack-widget"]
+  .qorix-review-video-stack-card-stars
+  svg {
   width: clamp(14px, 1.8vw, 18px);
   height: auto;
 }
 
-[data-section="qorix-review-video-stack-widget"] .qorix-review-video-stack-reviewer {
+[data-section="qorix-review-video-stack-widget"]
+  .qorix-review-video-stack-reviewer {
   display: flex;
   align-items: center;
   gap: 5px;
 }
 
-[data-section="qorix-review-video-stack-widget"] .qorix-review-video-stack-name {
+[data-section="qorix-review-video-stack-widget"]
+  .qorix-review-video-stack-name {
   font-size: clamp(14px, 2vw, 24px);
   font-weight: 500;
   color: #fff;
   line-height: 20px;
 }
 
-[data-section="qorix-review-video-stack-widget"] .qorix-review-video-stack-quote {
+[data-section="qorix-review-video-stack-widget"]
+  .qorix-review-video-stack-quote {
   font-size: clamp(14px, 1.5vw, 1rem);
   font-weight: 400;
   color: #fff;
@@ -310,9 +382,15 @@
   background: #f2f2f2;
   border-radius: 12px;
   width: fit-content;
-
 }
-[data-section="qorix-review-video-stack-widget"] .qorix-review-video-stack-tag span {
+[data-section="qorix-review-video-stack-widget"]
+  .qorix-review-video-stack-tag
+  img {
+  width: 28px;
+}
+[data-section="qorix-review-video-stack-widget"]
+  .qorix-review-video-stack-tag
+  span {
   display: -webkit-box;
   -webkit-line-clamp: 2;
   line-clamp: 2;
@@ -325,7 +403,9 @@
   max-height: calc(1.4em * 2);
 }
 
-[data-section="qorix-review-video-stack-widget"] .qorix-review-video-stack-tag span {
+[data-section="qorix-review-video-stack-widget"]
+  .qorix-review-video-stack-tag
+  span {
   font-size: clamp(14px, 1.5vw, 16px);
   font-weight: 500;
   color: #303030;
@@ -333,7 +413,8 @@
 }
 
 /* ── Controls & Navigation ── */
-[data-section="qorix-review-video-stack-widget"] .qorix-review-video-stack-controls {
+[data-section="qorix-review-video-stack-widget"]
+  .qorix-review-video-stack-controls {
   position: absolute;
   top: 0;
   left: 0;
@@ -360,36 +441,45 @@
   pointer-events: auto;
   box-shadow:
     inset 0px -1px 0px #b5b5b5,
-    inset 0px 0px 0px 1px rgba(0, 0, 0, 0.10),
+    inset 0px 0px 0px 1px rgba(0, 0, 0, 0.1),
     inset 0px 0.5px 0px 1.5px #fff;
-  transition: box-shadow 0.15s ease, opacity 0.15s ease;
+  transition:
+    box-shadow 0.15s ease,
+    opacity 0.15s ease;
 }
 
-[data-section="qorix-review-video-stack-widget"] .qorix-review-video-stack-nav:hover {
+[data-section="qorix-review-video-stack-widget"]
+  .qorix-review-video-stack-nav:hover {
   box-shadow:
     inset 0px -1px 0px #9a9a9a,
     inset 0px 0px 0px 1px rgba(0, 0, 0, 0.15),
     inset 0px 0.5px 0px 1.5px #fff;
 }
 
-[data-section="qorix-review-video-stack-widget"] .qorix-review-video-stack-nav:active {
+[data-section="qorix-review-video-stack-widget"]
+  .qorix-review-video-stack-nav:active {
   opacity: 0.65;
 }
 
-[data-section="qorix-review-video-stack-widget"] .qorix-review-video-stack-nav svg {
+[data-section="qorix-review-video-stack-widget"]
+  .qorix-review-video-stack-nav
+  svg {
   pointer-events: none;
 }
 
-[data-section="qorix-review-video-stack-widget"] .qorix-review-video-stack-nav-prev {
+[data-section="qorix-review-video-stack-widget"]
+  .qorix-review-video-stack-nav-prev {
   left: 20px;
 }
 
-[data-section="qorix-review-video-stack-widget"] .qorix-review-video-stack-nav-next {
+[data-section="qorix-review-video-stack-widget"]
+  .qorix-review-video-stack-nav-next {
   right: 20px;
 }
 
 /* ── Pagination dots ── */
-[data-section="qorix-review-video-stack-widget"] .qorix-review-video-stack-custom-pagination {
+[data-section="qorix-review-video-stack-widget"]
+  .qorix-review-video-stack-custom-pagination {
   display: flex;
   justify-content: center;
   align-items: center;
@@ -410,86 +500,96 @@
   padding: 0;
   margin: 0 8px;
   display: inline-block;
-  transition: opacity 0.25s ease, transform 0.25s ease;
+  transition:
+    opacity 0.25s ease,
+    transform 0.25s ease;
 }
 
-[data-section="qorix-review-video-stack-widget"] .qorix-review-video-stack-dot.active {
+[data-section="qorix-review-video-stack-widget"]
+  .qorix-review-video-stack-dot.active {
   opacity: 1;
   background: var(--active-dot-color, #088728);
 }
 
- [data-section="qorix-review-video-stack-widget"] .qorix-review-video-stack-dot {
-   width: 10px !important;
-   height: 10px !important;
-   border: 0 !important;
-   border-radius: 50% !important;
-   background-color: var(--active-dot-color, #34C759) !important;
-   opacity: 0.25 !important;
-   cursor: pointer !important;
-   padding: 0 !important;
-   margin: 0 4px !important;
-   display: inline-block !important;
-   transition: all 0.3s ease !important;
- }
+[data-section="qorix-review-video-stack-widget"] .qorix-review-video-stack-dot {
+  width: 10px !important;
+  height: 10px !important;
+  border: 0 !important;
+  border-radius: 50% !important;
+  background-color: var(--active-dot-color, #34c759) !important;
+  opacity: 0.25 !important;
+  cursor: pointer !important;
+  padding: 0 !important;
+  margin: 0 4px !important;
+  display: inline-block !important;
+  transition: all 0.3s ease !important;
+}
 
- [data-section="qorix-review-video-stack-widget"] .qorix-review-video-stack-dot.active {
-   width: 28px !important;
-   height: 10px !important;
-   border-radius: 99px !important;
-   opacity: 1 !important;
-   background-color: var(--active-dot-color, #34C759) !important;
- }
+[data-section="qorix-review-video-stack-widget"]
+  .qorix-review-video-stack-dot.active {
+  width: 28px !important;
+  height: 10px !important;
+  border-radius: 99px !important;
+  opacity: 1 !important;
+  background-color: var(--active-dot-color, #34c759) !important;
+}
 
- [data-section="qorix-review-video-stack-widget"] .qorix-review-video-stack-card {
-   position: relative !important;
-   overflow: hidden !important;
-   transform-style: preserve-3d !important;
- }
+[data-section="qorix-review-video-stack-widget"]
+  .qorix-review-video-stack-card {
+  position: relative !important;
+  overflow: hidden !important;
+  transform-style: preserve-3d !important;
+}
 
- [data-section="qorix-review-video-stack-widget"] .qorix-review-video-stack-bg {
-   position: absolute !important;
-   top: 0 !important;
-   left: 0 !important;
-   width: 100% !important;
-   height: 100% !important;
-   object-fit: cover !important;
-   z-index: 1 !important;
-   transform: translateZ(0) !important;
- }
+[data-section="qorix-review-video-stack-widget"] .qorix-review-video-stack-bg {
+  position: absolute !important;
+  top: 0 !important;
+  left: 0 !important;
+  width: 100% !important;
+  height: 100% !important;
+  object-fit: cover !important;
+  z-index: 1 !important;
+  transform: translateZ(0) !important;
+}
 
- [data-section="qorix-review-video-stack-widget"] .qorix-review-video-stack-info {
-   position: absolute !important;
-   bottom: 0 !important;
-   left: 0 !important;
-   right: 0 !important;
-   width: 100% !important;
-   box-sizing: border-box !important;
-   padding: 107px 16px 20px 16px !important;
-   display: flex !important;
-   flex-direction: column !important;
-   gap: 8px !important;
-   z-index: 999 !important;
-   transform: translateZ(20px) !important;
+[data-section="qorix-review-video-stack-widget"]
+  .qorix-review-video-stack-info {
+  position: absolute !important;
+  bottom: 0 !important;
+  left: 0 !important;
+  right: 0 !important;
+  width: 100% !important;
+  box-sizing: border-box !important;
+  padding: 107px 16px 20px 16px !important;
+  display: flex !important;
+  flex-direction: column !important;
+  gap: 8px !important;
+  z-index: 999 !important;
+  transform: translateZ(20px) !important;
 
-   background-image: linear-gradient(180deg,
-     rgba(0, 0, 0, 0) 30%,
-     var(--overlay-tint)
-   ) !important;
- }
+  background-image: linear-gradient(
+    180deg,
+    rgba(0, 0, 0, 0) 30%,
+    var(--overlay-tint)
+  ) !important;
+}
 
- [data-section="qorix-review-video-stack-widget"] .qorix-review-video-stack-topbar {
-   z-index: 3 !important;
-   transform: translateZ(20px) !important;
- }
+[data-section="qorix-review-video-stack-widget"]
+  .qorix-review-video-stack-topbar {
+  z-index: 3 !important;
+  transform: translateZ(20px) !important;
+}
 
 /* ── Responsive ── */
 
 @media (max-width: 768px) {
-  [data-section="qorix-review-video-stack-widget"] .qorix-review-video-stack-carousel {
+  [data-section="qorix-review-video-stack-widget"]
+    .qorix-review-video-stack-carousel {
     padding-bottom: 60px;
   }
 
-  [data-section="qorix-review-video-stack-widget"] .qorix-review-video-stack-controls {
+  [data-section="qorix-review-video-stack-widget"]
+    .qorix-review-video-stack-controls {
     position: absolute !important;
     top: auto !important;
     bottom: 0 !important;
@@ -505,7 +605,8 @@
     z-index: 20 !important;
   }
 
-  [data-section="qorix-review-video-stack-widget"] .qorix-review-video-stack-nav {
+  [data-section="qorix-review-video-stack-widget"]
+    .qorix-review-video-stack-nav {
     display: flex !important;
     position: static !important;
     transform: none !important;
@@ -518,7 +619,8 @@
     flex-shrink: 0 !important;
   }
 
-  [data-section="qorix-review-video-stack-widget"] .qorix-review-video-stack-custom-pagination {
+  [data-section="qorix-review-video-stack-widget"]
+    .qorix-review-video-stack-custom-pagination {
     position: static !important;
     width: auto !important;
     display: flex !important;
@@ -527,82 +629,104 @@
     gap: 8px !important;
   }
 
-  [data-section="qorix-review-video-stack-widget"] .qorix-review-video-stack-dot {
+  [data-section="qorix-review-video-stack-widget"]
+    .qorix-review-video-stack-dot {
     width: 10px !important;
     height: 10px !important;
     margin: 0 !important;
   }
 
-  [data-section="qorix-review-video-stack-widget"] .qorix-review-video-stack-heading-container {
-    width: 95vw;
+  [data-section="qorix-review-video-stack-widget"]
+    .qorix-review-video-stack-heading-container {
+    width: 100%;
+    max-width: 100%;
   }
 
-  [data-section="qorix-review-video-stack-widget"] .qorix-review-video-stack-swiper {
+  [data-section="qorix-review-video-stack-widget"]
+    .qorix-review-video-stack-swiper {
     --gap: var(--gap-between-cards-mobile, 10px);
     height: 450px;
   }
 
-  [data-section="qorix-review-video-stack-widget"] .qorix-review-video-stack-section {
+  [data-section="qorix-review-video-stack-widget"].qorix-review-video-stack-section {
     padding: 60px 0;
     gap: 36px;
-    width: 95vw;
+    width: 100%;
+    max-width: 100%;
   }
 
-  [data-section="qorix-review-video-stack-widget"] .qorix-review-video-stack-card {
+  [data-section="qorix-review-video-stack-widget"]
+    .qorix-review-video-stack-card {
     height: 340px;
   }
 
-  [data-section="qorix-review-video-stack-widget"] .qorix-review-video-stack-tier-adjacent .qorix-review-video-stack-card {
+  [data-section="qorix-review-video-stack-widget"]
+    .qorix-review-video-stack-tier-adjacent
+    .qorix-review-video-stack-card {
     height: 410px;
   }
 
-  [data-section="qorix-review-video-stack-widget"] .qorix-review-video-stack-tier-center .qorix-review-video-stack-card {
+  [data-section="qorix-review-video-stack-widget"]
+    .qorix-review-video-stack-tier-center
+    .qorix-review-video-stack-card {
     height: 450px;
   }
 }
 
 @media (max-width: 610px) {
-  [data-section="qorix-review-video-stack-widget"] .qorix-review-video-stack-swiper {
+  [data-section="qorix-review-video-stack-widget"]
+    .qorix-review-video-stack-swiper {
     height: 420px;
   }
 
-  [data-section="qorix-review-video-stack-widget"] .qorix-review-video-stack-card {
+  [data-section="qorix-review-video-stack-widget"]
+    .qorix-review-video-stack-card {
     height: 280px;
   }
 
-  [data-section="qorix-review-video-stack-widget"] .qorix-review-video-stack-tier-adjacent .qorix-review-video-stack-card {
+  [data-section="qorix-review-video-stack-widget"]
+    .qorix-review-video-stack-tier-adjacent
+    .qorix-review-video-stack-card {
     height: 340px;
     filter: brightness(0.75);
   }
 
-  [data-section="qorix-review-video-stack-widget"] .qorix-review-video-stack-tier-center .qorix-review-video-stack-card {
+  [data-section="qorix-review-video-stack-widget"]
+    .qorix-review-video-stack-tier-center
+    .qorix-review-video-stack-card {
     height: 420px;
     filter: brightness(1);
   }
 }
 
 @media (max-width: 480px) {
-  [data-section="qorix-review-video-stack-widget"] .qorix-review-video-stack-swiper {
+  [data-section="qorix-review-video-stack-widget"]
+    .qorix-review-video-stack-swiper {
     --gap: var(--gap-between-cards-mobile, 10px);
     height: 390px;
   }
 
-  [data-section="qorix-review-video-stack-widget"] .qorix-review-video-stack-section {
+  [data-section="qorix-review-video-stack-widget"].qorix-review-video-stack-section {
     padding: 48px 0;
     gap: 28px;
-    width: 100vw;
+    width: 100%;
+    max-width: 100%;
   }
 
-  [data-section="qorix-review-video-stack-widget"] .qorix-review-video-stack-card {
+  [data-section="qorix-review-video-stack-widget"]
+    .qorix-review-video-stack-card {
     height: 250px;
-
   }
 
-  [data-section="qorix-review-video-stack-widget"] .qorix-review-video-stack-tier-adjacent .qorix-review-video-stack-card {
+  [data-section="qorix-review-video-stack-widget"]
+    .qorix-review-video-stack-tier-adjacent
+    .qorix-review-video-stack-card {
     height: 300px;
   }
 
-  [data-section="qorix-review-video-stack-widget"] .qorix-review-video-stack-tier-center .qorix-review-video-stack-card {
+  [data-section="qorix-review-video-stack-widget"]
+    .qorix-review-video-stack-tier-center
+    .qorix-review-video-stack-card {
     height: 390px;
     width: 60vw;
   }

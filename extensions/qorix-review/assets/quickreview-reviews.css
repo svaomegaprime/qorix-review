@@ -20,11 +20,14 @@
 }
 .quickreview-reviews {
   width: 100%;
+  max-width: 100%;
+  min-width: 0;
   font-family: inherit;
   padding: 30px 30px 0 30px;
   border: 1px solid var(--qr-color-border);
   border-radius: 12px;
   margin-top: 24px;
+  box-sizing: border-box;
 }
 
 /* ---------- Header ---------- */
