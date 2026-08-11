@@ -6,7 +6,7 @@ import SaveBar from "../../../components/savebar/SaveBar";
 import { useSaveBarTrigger } from "../../../components/savebar/useSaveBarTrigger";
 import { requestAppWindowClose } from "../../../utils/useAppWindowClose";
 import { useFetcher, useLoaderData, useNavigation } from "react-router";
-import Header from "../../../components/Header";
+import Header from "../../../components/header";
 import ColorPicker from "../../../components/elements/ColorPicker";
 import QuoteLoopWidget from "../component/quite_loop_preview";
 import Range from "../../../components/elements/Range";

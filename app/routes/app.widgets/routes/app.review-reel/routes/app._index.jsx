@@ -9,7 +9,7 @@ import { useSaveBarTrigger } from "../../../components/savebar/useSaveBarTrigger
 import { requestAppWindowClose } from "../../../utils/useAppWindowClose";
 import { useAdminFetcherToast } from "../../../../../utils/useAdminFetcherToast";
 import ColorPicker from "../../../components/elements/ColorPicker";
-import Header from "../../../components/Header";
+import Header from "../../../components/header";
 import ResetToDefaults from "../../../components/elements/ResetToDefaults";
 import Range from "../../../components/elements/Range";
 import ReviewReelPreeview from "../component/reviewReelPreview";

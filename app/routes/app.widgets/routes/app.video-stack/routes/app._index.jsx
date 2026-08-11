@@ -9,9 +9,9 @@ import { useSaveBarTrigger } from "../../../components/savebar/useSaveBarTrigger
 import { requestAppWindowClose } from "../../../utils/useAppWindowClose";
 import { useAdminFetcherToast } from "../../../../../utils/useAdminFetcherToast";
 import ColorPicker from "../../../components/elements/ColorPicker";
-import Header from "../../../components/Header";
+import Header from "../../../components/header";
 import ResetToDefaults from "../../../components/elements/ResetToDefaults";
-import VideoStackWidget from "../component/videoStackPreview";
+import VideoStackWidget from "../Component/videoStackPreview";
 import AdvanceCSS from "../../../components/elements/AdvanceCSS";
 
 // ---- server-only imports, only used inside loader/action ----
