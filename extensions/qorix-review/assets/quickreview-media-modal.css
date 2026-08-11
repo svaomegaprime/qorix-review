@@ -1,11 +1,14 @@
 /* ---------- Media Modal ---------- */
 .quickreview-media-modal {
-  position: fixed;
-  inset: 0;
-  z-index: 999;
+  position: fixed !important;
+  inset: 0 !important;
+  z-index: 2147483646;
   display: flex;
   align-items: center;
   justify-content: center;
+  padding: 24px;
+  box-sizing: border-box;
+  isolation: isolate;
 }
 
 .quickreview-media-modal[hidden] {
@@ -15,19 +18,20 @@
 .quickreview-media-modal__overlay {
   position: absolute;
   inset: 0;
-  background: rgb(0 0 0 / 12%);
-  opacity: .5;
+  background: rgb(0 0 0 / 45%);
 }
 
 .quickreview-media-modal__box {
   position: relative;
-  width: 860px;
-  max-width: 92vw;
-  height: 640px;
-  max-height: 82vh;
+  z-index: 1;
+  display: flex;
+  flex-direction: column;
+  width: min(860px, 100%);
+  height: min(640px, 100%);
   background: var(--qr-color-white, #fff);
   border-radius: 12px;
   padding: 24px;
+  box-sizing: border-box;
   box-shadow: var(--qr-shadow-menu, 0 4px 20px rgba(0, 0, 0, 0.12));
 }
 .quickreview-media-modal__header{
@@ -64,8 +68,9 @@
 }
 
 .quickreview-media-modal__body {
+  flex: 1 1 auto;
+  min-height: 0;
   width: 100%;
-  height: 100%;
   overflow-y: auto;
   padding-right: 6px;
   -webkit-overflow-scrolling: touch;
@@ -97,8 +102,8 @@
 /* ---------- Responsive ---------- */
 @media (max-width: 989px) {
   .quickreview-media-modal__box {
-    width: 92vw;
-    height: 80vh;
+    width: min(92vw, 860px);
+    height: min(80vh, 100%);
     padding: 18px;
   }
   .quickreview-media-modal__grid {
@@ -109,8 +114,8 @@
 
 @media (max-width: 749px) {
   .quickreview-media-modal__box {
-    width: 92vw;
-    height: 78vh;
+    width: 100%;
+    height: min(78vh, 100%);
     padding: 14px;
     border-radius: 10px;
   }

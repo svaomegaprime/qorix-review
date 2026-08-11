@@ -95,7 +95,7 @@
                     muted
                     playsinline
                     preload="metadata"
-                    @click="showAllMedia = true"
+                    @click="openMediaModal(review)"
                   ></video>
                   <div class="qorix-video-play-badge">
                     <svg width="12" height="14" viewBox="0 0 12 14" fill="none" xmlns="http://www.w3.org/2000/svg">
@@ -114,7 +114,7 @@
                   :data-src="attachment.url"
                   width=""
                   height=""
-                  @click="showAllMedia = true"
+                  @click="openMediaModal(review)"
                 >
               </template>
 
@@ -131,8 +131,6 @@
         </template>
       </div>
     {% endif %}
-
-    {% render 'show-all-media-modal' %}
 
     <div class="qr-review-tag">
       <span class="qr-tag-icon" x-show="review.productImage"

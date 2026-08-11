@@ -16,6 +16,7 @@ model TrustBarWidget {
   hideIfNoReviews      Boolean  @default(false)
   advanceCss           String   @default("")
   showVerifiedIconOnly Boolean  @default(false)
+  externalSettings     Json?
   store                Store    @relation(fields: [storeId], references: [storeGID], onDelete: Cascade)
 }
 
@@ -60,6 +61,7 @@ model QuickReviewWidget {
   advanceCss                    String           @default("")
   createdAt                     DateTime         @default(now())
   updatedAt                     DateTime         @updatedAt
+  externalSettings              Json?
   store                         Store            @relation(fields: [storeId], references: [storeGID], onDelete: Cascade)
 }
 
@@ -95,6 +97,7 @@ model QuoteLoopWidget {
   textColor               String         @default("#303030")
   textLength              Int            @default(160)
   quoteLoopWidgetSettings Json?          @default("{}")
+  externalSettings        Json?
   store                   Store          @relation(fields: [storeId], references: [storeGID], onDelete: Cascade)
 }
 
@@ -127,6 +130,7 @@ model VideoStackSettings {
   badgeColor           String         @default("#34C759")
   overlayTintColor     String         @default("#1A1A1A")
   advanceCss           String         @default("")
+  externalSettings     Json?
   store                Store          @relation(fields: [storeId], references: [storeGID], onDelete: Cascade)
 }
 
@@ -157,6 +161,7 @@ model ReviewReelSettings {
   cardBackgorud      String         @default("#FFF")
   cardTextColor      String         @default("#000")
   advanceCss         String         @default("")
+  externalSettings   Json?
   store              Store          @relation(fields: [storeId], references: [storeGID], onDelete: Cascade)
 }
 
@@ -190,6 +195,7 @@ model ReviewHubWidget {
   advanceCss             String         @default("")
   createdAt              DateTime       @default(now())
   updatedAt              DateTime       @updatedAt
+  externalSettings       Json?
   store                  Store          @relation(fields: [storeId], references: [storeGID], onDelete: Cascade)
 }
 

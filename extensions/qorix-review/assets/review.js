@@ -27,6 +27,7 @@ class ReviewX {
     this.allowVideoUpload = true;
     this.uploadedFiles = [];
     this.showAllMedia = false;
+    this.selectedReview = null;
 
     this.form = {
       name: "",
@@ -163,13 +164,12 @@ class ReviewX {
       this.sort = safeSort;
       this.activeSort = safeSort;
 
-      if (!productJson) {
-        console.warn("No product JSON found");
-        return;
+      if (productJson) {
+        this.product = JSON.parse(productJson);
+        console.log("parsed product", this.product);
+      } else {
+        this.product = {};
       }
-
-      this.product = JSON.parse(productJson);
-      console.log("parsed product", this.product);
 
       await this.getReview(safeSort);
     } catch (error) {
@@ -766,6 +766,11 @@ class ReviewX {
     this.lightboxMedia = media;
     this.lightboxOpen = true;
     document.body.style.overflow = "hidden";
+  }
+
+  openMediaModal(review) {
+    this.selectedReview = review;
+    this.showAllMedia = true;
   }
 
   closeLightbox(event) {

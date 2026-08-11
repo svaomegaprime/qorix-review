@@ -19,7 +19,7 @@
   width: 100%;
   max-width: 1600px;
   min-width: 0;
-  background: #fff;
+  /* background: #fff; */
   overflow: visible;
   display: flex;
   flex-direction: column;

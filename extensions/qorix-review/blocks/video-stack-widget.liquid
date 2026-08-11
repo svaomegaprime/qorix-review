@@ -30,12 +30,13 @@
   x-init="initUploadSettings($el); productInit($el.dataset.product,$el.dataset.sort,$el.dataset.limit)"
   data-customer-id="{{ customer.id }}"
   data-customer-email="{{ customer.email }}"
-  data-product="{{ product | json | escape }}"
   data-sort="{{ video_stack_metafield.defaultSort }}"
   data-limit="{{ video_stack_metafield.reviewPerPage }}"
   data-page-type="{{ template.name }}"
   data-show-first="VIDEO"
   data-filter-min-stars="{{ video_stack_metafield.fiteringMinStart }}"
+  data-isMuted="{{ video_stack_metafield.mutedByDefault }}"
+  data-is-muted="{{ video_stack_metafield.mutedByDefault }}"
 >
   {% if video_stack_metafield.showHeader != false and video_stack_metafield.showHeader != 'false' %}
     <div class="qorix-review-video-stack-heading-container">

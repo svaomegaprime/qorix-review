@@ -8,8 +8,19 @@
     const m = Math.floor(seconds / 60);
     const s = Math.floor(seconds % 60)
       .toString()
-      .padStart(2, '0');
-    return m + ':' + s;
+      .padStart(2, "0");
+    return m + ":" + s;
+  }
+
+  function parseBoolean(val, fallback = true) {
+    if (val === undefined || val === null || val === "") return fallback;
+    if (typeof val === "boolean") return val;
+    if (typeof val === "string") {
+      const lower = val.trim().toLowerCase();
+      if (lower === "false" || lower === "0") return false;
+      if (lower === "true" || lower === "1") return true;
+    }
+    return Boolean(val);
   }
 
   class VideoStackWidget {
@@ -35,7 +46,7 @@
     init() {
       let metafieldData = {};
       try {
-        const rawMeta = this.section.getAttribute('data-video-stack-metafield');
+        const rawMeta = this.section.getAttribute("data-video-stack-metafield");
         if (rawMeta) {
           metafieldData = JSON.parse(rawMeta);
         }
@@ -46,22 +57,39 @@
       const computedStyle = getComputedStyle(this.section);
       this.navCols = metafieldData.thumbnailsShown
         ? parseInt(metafieldData.thumbnailsShown, 10)
-        : (parseInt(computedStyle.getPropertyValue('--nav-cols').trim(), 10) || 5);
-      this.showLoopVideo = metafieldData.showLoopVideo !== undefined
-        ? Boolean(metafieldData.showLoopVideo)
-        : true;
+        : parseInt(computedStyle.getPropertyValue("--nav-cols").trim(), 10) ||
+          5;
+      this.showLoopVideo =
+        metafieldData.showLoopVideo !== undefined
+          ? parseBoolean(metafieldData.showLoopVideo, true)
+          : true;
       this.autoplayEnabled = this.showLoopVideo;
-      this.autoplayOnHover = metafieldData.autoplayOnHover !== undefined
-        ? Boolean(metafieldData.autoplayOnHover)
-        : true;
-      this.mutedByDefault = metafieldData.mutedByDefault !== undefined
-        ? Boolean(metafieldData.mutedByDefault)
-        : true;
+      this.autoplayOnHover =
+        metafieldData.autoplayOnHover !== undefined
+          ? parseBoolean(metafieldData.autoplayOnHover, true)
+          : true;
 
-      this.paginationContainer = this.section.querySelector('.qorix-review-video-stack-custom-pagination');
-      this.stackPrev = this.section.querySelector('.qorix-review-video-stack-nav-prev');
-      this.stackNext = this.section.querySelector('.qorix-review-video-stack-nav-next');
-      this.swiperEl = this.section.querySelector('.qorix-review-video-stack-swiper');
+      const rawIsMuted =
+        this.section.getAttribute("data-isMuted") ??
+        this.section.getAttribute("data-is-muted") ??
+        this.section.getAttribute("data-ismuted") ??
+        (this.section.dataset ? (this.section.dataset.isMuted || this.section.dataset.ismuted) : undefined) ??
+        metafieldData.mutedByDefault;
+
+      this.mutedByDefault = parseBoolean(rawIsMuted, true);
+
+      this.paginationContainer = this.section.querySelector(
+        ".qorix-review-video-stack-custom-pagination",
+      );
+      this.stackPrev = this.section.querySelector(
+        ".qorix-review-video-stack-nav-prev",
+      );
+      this.stackNext = this.section.querySelector(
+        ".qorix-review-video-stack-nav-next",
+      );
+      this.swiperEl = this.section.querySelector(
+        ".qorix-review-video-stack-swiper",
+      );
 
       if (!this.swiperEl) return;
 
@@ -79,7 +107,9 @@
       this.halfCols = Math.floor(cols / 2);
 
       const containerWidth = this.swiperEl.offsetWidth;
-      const gapVal = parseFloat(getComputedStyle(this.swiperEl).getPropertyValue('--gap')) || 20;
+      const gapVal =
+        parseFloat(getComputedStyle(this.swiperEl).getPropertyValue("--gap")) ||
+        20;
       const half = Math.floor(cols / 2);
       const isMobileFocus = window.innerWidth <= 610;
 
@@ -107,15 +137,17 @@
       const adjacentW = Math.round(unitWidth * adjacentWeight);
       const outerW = Math.round(unitWidth * outerWeight);
 
-      this.swiperEl.style.setProperty('--card-w-center', centerW + 'px');
-      this.swiperEl.style.setProperty('--card-w-adjacent', adjacentW + 'px');
-      this.swiperEl.style.setProperty('--card-w-outer', outerW + 'px');
+      this.swiperEl.style.setProperty("--card-w-center", centerW + "px");
+      this.swiperEl.style.setProperty("--card-w-adjacent", adjacentW + "px");
+      this.swiperEl.style.setProperty("--card-w-outer", outerW + "px");
     }
 
     startCountdown(video) {
-      const card = video.closest('.qorix-review-video-stack-card');
+      const card = video.closest(".qorix-review-video-stack-card");
       if (!card) return;
-      const pillSpan = card.querySelector('.qorix-review-video-stack-pill span');
+      const pillSpan = card.querySelector(
+        ".qorix-review-video-stack-pill span",
+      );
       if (!pillSpan) return;
 
       if (!video.dataset.totalDuration && !isNaN(video.duration)) {
@@ -128,23 +160,27 @@
       };
 
       if (video._timeUpdateHandler) {
-        video.removeEventListener('timeupdate', video._timeUpdateHandler);
+        video.removeEventListener("timeupdate", video._timeUpdateHandler);
       }
       video._timeUpdateHandler = onTimeUpdate;
-      video.addEventListener('timeupdate', onTimeUpdate);
+      video.addEventListener("timeupdate", onTimeUpdate);
     }
 
     stopCountdown(video, restoreTotal) {
       if (video._timeUpdateHandler) {
-        video.removeEventListener('timeupdate', video._timeUpdateHandler);
+        video.removeEventListener("timeupdate", video._timeUpdateHandler);
         video._timeUpdateHandler = null;
       }
       if (restoreTotal && video.dataset.totalDuration) {
-        const card = video.closest('.qorix-review-video-stack-card');
+        const card = video.closest(".qorix-review-video-stack-card");
         if (card) {
-          const pillSpan = card.querySelector('.qorix-review-video-stack-pill span');
+          const pillSpan = card.querySelector(
+            ".qorix-review-video-stack-pill span",
+          );
           if (pillSpan) {
-            pillSpan.textContent = formatTime(parseFloat(video.dataset.totalDuration));
+            pillSpan.textContent = formatTime(
+              parseFloat(video.dataset.totalDuration),
+            );
           }
         }
       }
@@ -159,44 +195,53 @@
 
     renderStack() {
       const positionClasses = [
-        'qorix-review-video-stack-visible-slide',
-        'qorix-review-video-stack-tier-center',
-        'qorix-review-video-stack-tier-adjacent',
-        'qorix-review-video-stack-tier-outer',
-        'qorix-review-video-stack-position--2',
-        'qorix-review-video-stack-position--1',
-        'qorix-review-video-stack-position-0',
-        'qorix-review-video-stack-position-1',
-        'qorix-review-video-stack-position-2',
+        "qorix-review-video-stack-visible-slide",
+        "qorix-review-video-stack-tier-center",
+        "qorix-review-video-stack-tier-adjacent",
+        "qorix-review-video-stack-tier-outer",
+        "qorix-review-video-stack-position--2",
+        "qorix-review-video-stack-position--1",
+        "qorix-review-video-stack-position-0",
+        "qorix-review-video-stack-position-1",
+        "qorix-review-video-stack-position-2",
       ];
 
       this.stackSlides.forEach((slide, index) => {
         slide.classList.remove(...positionClasses);
-        slide.style.transform = '';
-        slide.style.zIndex = '';
+        slide.style.transform = "";
+        slide.style.zIndex = "";
 
-        const offset = this.getStackOffset(index, this.activeVideoIndex, this.stackSlides.length);
+        const offset = this.getStackOffset(
+          index,
+          this.activeVideoIndex,
+          this.stackSlides.length,
+        );
         if (Math.abs(offset) > this.halfCols) return;
 
         const tier =
           offset === 0
-            ? 'qorix-review-video-stack-tier-center'
+            ? "qorix-review-video-stack-tier-center"
             : Math.abs(offset) === 1
-              ? 'qorix-review-video-stack-tier-adjacent'
-              : 'qorix-review-video-stack-tier-outer';
+              ? "qorix-review-video-stack-tier-adjacent"
+              : "qorix-review-video-stack-tier-outer";
 
-        slide.classList.add('qorix-review-video-stack-visible-slide', tier);
+        slide.classList.add("qorix-review-video-stack-visible-slide", tier);
 
         if (Math.abs(offset) <= 2) {
-          slide.classList.add('qorix-review-video-stack-position-' + offset);
+          slide.classList.add("qorix-review-video-stack-position-" + offset);
         } else {
           const style = getComputedStyle(this.swiperEl);
-          const dOuter = parseFloat(style.getPropertyValue('--d-outer')) || 0;
-          const cardWOuter = parseFloat(style.getPropertyValue('--card-w-outer')) || 0;
-          const gap = parseFloat(style.getPropertyValue('--gap')) || 20;
+          const dOuter = parseFloat(style.getPropertyValue("--d-outer")) || 0;
+          const cardWOuter =
+            parseFloat(style.getPropertyValue("--card-w-outer")) || 0;
+          const gap = parseFloat(style.getPropertyValue("--gap")) || 20;
           const distance = dOuter + (Math.abs(offset) - 2) * (cardWOuter + gap);
-          const sign = offset > 0 ? '' : '-';
-          slide.style.transform = 'translate(calc(' + sign + distance + 'px - var(--card-w-center) / 2), -50%)';
+          const sign = offset > 0 ? "" : "-";
+          slide.style.transform =
+            "translate(calc(" +
+            sign +
+            distance +
+            "px - var(--card-w-center) / 2), -50%)";
           slide.style.zIndex = 1;
         }
       });
@@ -206,15 +251,15 @@
 
     initPagination() {
       if (!this.paginationContainer) return;
-      this.paginationContainer.innerHTML = '';
+      this.paginationContainer.innerHTML = "";
       this.stackDots = [];
       for (let i = 0; i < this.stackSlides.length; i++) {
-        const dot = document.createElement('button');
-        dot.className = 'qorix-review-video-stack-dot';
-        dot.type = 'button';
+        const dot = document.createElement("button");
+        dot.className = "qorix-review-video-stack-dot";
+        dot.type = "button";
         dot.dataset.index = i;
-        dot.setAttribute('aria-label', 'Show video ' + (i + 1));
-        dot.addEventListener('click', () => {
+        dot.setAttribute("aria-label", "Show video " + (i + 1));
+        dot.addEventListener("click", () => {
           this.goToVideo(parseInt(dot.dataset.index, 10));
         });
         this.paginationContainer.appendChild(dot);
@@ -224,23 +269,26 @@
 
     updatePagination(activeIndex) {
       this.stackDots.forEach((dot) => {
-        dot.classList.remove('active');
+        dot.classList.remove("active");
       });
-      if (this.stackDots[activeIndex]) this.stackDots[activeIndex].classList.add('active');
+      if (this.stackDots[activeIndex])
+        this.stackDots[activeIndex].classList.add("active");
     }
 
     stopCurrentVideo() {
       if (this.currentVideo) {
         this.currentVideo.pause();
         this.currentVideo.muted = true;
-        this.currentVideo.setAttribute('loop', '');
+        this.currentVideo.setAttribute("loop", "");
         this.stopCountdown(this.currentVideo, true);
-        const card = this.currentVideo.closest('.qorix-review-video-stack-card');
+        const card = this.currentVideo.closest(
+          ".qorix-review-video-stack-card",
+        );
         if (card) {
-          const playBtn = card.querySelector('.qorix-review-video-stack-play');
+          const playBtn = card.querySelector(".qorix-review-video-stack-play");
           if (playBtn) {
             playBtn.innerHTML = PLAY_ICON;
-            playBtn.style.display = '';
+            playBtn.style.display = "";
           }
         }
         this.currentVideo = null;
@@ -276,7 +324,7 @@
         this.stopCurrentVideo();
       }
 
-      video.setAttribute('loop', '');
+      video.setAttribute("loop", "");
       video.muted = this.mutedByDefault;
 
       const playPromise = video.play();
@@ -291,17 +339,20 @@
             this.stopAutoplay();
           })
           .catch((error) => {
-            console.log('Video play failed: ', error);
+            console.log("Video play failed: ", error);
             if (!video.muted) {
               video.muted = true;
-              video.play().then(() => {
-                this.currentVideo = video;
-                this.startCountdown(video);
-                if (playBtn) playBtn.innerHTML = PAUSE_ICON;
-                this.stopAutoplay();
-              }).catch((e) => {
-                console.log('Fallback muted play failed:', e);
-              });
+              video
+                .play()
+                .then(() => {
+                  this.currentVideo = video;
+                  this.startCountdown(video);
+                  if (playBtn) playBtn.innerHTML = PAUSE_ICON;
+                  this.stopAutoplay();
+                })
+                .catch((e) => {
+                  console.log("Fallback muted play failed:", e);
+                });
             }
           });
       }
@@ -324,25 +375,27 @@
     setupHoverAutoplay() {
       if (!this.autoplayOnHover) return;
       this.stackSlides.forEach((slide) => {
-        const card = slide.querySelector('.qorix-review-video-stack-card');
+        const card = slide.querySelector(".qorix-review-video-stack-card");
         if (!card || card._hoverAttached) return;
         card._hoverAttached = true;
-        const video = card.querySelector('video.qorix-review-video-stack-bg');
+        const video = card.querySelector("video.qorix-review-video-stack-bg");
         if (!video) return;
-        const playBtn = card.querySelector('.qorix-review-video-stack-play');
+        const playBtn = card.querySelector(".qorix-review-video-stack-play");
 
-        card.addEventListener('mouseenter', () => {
+        card.addEventListener("mouseenter", () => {
           this.playVideo(video, playBtn);
         });
 
-        card.addEventListener('mouseleave', () => {
+        card.addEventListener("mouseleave", () => {
           this.pauseVideo(video, playBtn);
         });
       });
     }
 
     setupVideoTimers() {
-      const videos = this.section.querySelectorAll('video.qorix-review-video-stack-bg');
+      const videos = this.section.querySelectorAll(
+        "video.qorix-review-video-stack-bg",
+      );
       videos.forEach((video) => {
         if (video._durationAttached) return;
         video._durationAttached = true;
@@ -350,9 +403,11 @@
           const duration = video.duration;
           if (!isNaN(duration)) {
             video.dataset.totalDuration = duration;
-            const card = video.closest('.qorix-review-video-stack-card');
+            const card = video.closest(".qorix-review-video-stack-card");
             if (card) {
-              const durationSpan = card.querySelector('.qorix-review-video-stack-pill span');
+              const durationSpan = card.querySelector(
+                ".qorix-review-video-stack-pill span",
+              );
               if (durationSpan) {
                 durationSpan.textContent = formatTime(duration);
               }
@@ -362,45 +417,45 @@
         if (video.readyState >= 1) {
           updateDuration();
         } else {
-          video.addEventListener('loadedmetadata', updateDuration);
+          video.addEventListener("loadedmetadata", updateDuration);
         }
       });
     }
 
     setupOneTimeEvents() {
-      window.addEventListener('resize', () => {
+      window.addEventListener("resize", () => {
         this.computeCardWidths();
         this.renderStack();
       });
 
       if (this.stackPrev) {
-        this.stackPrev.addEventListener('click', (e) => {
+        this.stackPrev.addEventListener("click", (e) => {
           e.preventDefault();
           e.stopPropagation();
           this.goToVideo(this.activeVideoIndex - 1);
         });
       }
       if (this.stackNext) {
-        this.stackNext.addEventListener('click', (e) => {
+        this.stackNext.addEventListener("click", (e) => {
           e.preventDefault();
           e.stopPropagation();
           this.goToVideo(this.activeVideoIndex + 1);
         });
       }
 
-      this.swiperEl.addEventListener('click', (e) => {
+      this.swiperEl.addEventListener("click", (e) => {
         if (this.dragMoved) {
           this.dragMoved = false;
           return;
         }
 
-        const card = e.target.closest('.qorix-review-video-stack-card');
+        const card = e.target.closest(".qorix-review-video-stack-card");
         if (!card) return;
         e.stopPropagation();
 
-        const video = card.querySelector('video.qorix-review-video-stack-bg');
+        const video = card.querySelector("video.qorix-review-video-stack-bg");
         if (!video) return;
-        const playBtn = card.querySelector('.qorix-review-video-stack-play');
+        const playBtn = card.querySelector(".qorix-review-video-stack-play");
 
         if (this.currentVideo === video && !video.paused) {
           this.pauseVideo(video, playBtn);
@@ -431,17 +486,17 @@
           }
         };
 
-        if (video._onPause) video.removeEventListener('pause', video._onPause);
-        if (video._onPlay) video.removeEventListener('play', video._onPlay);
-        if (video._onEnded) video.removeEventListener('ended', video._onEnded);
+        if (video._onPause) video.removeEventListener("pause", video._onPause);
+        if (video._onPlay) video.removeEventListener("play", video._onPlay);
+        if (video._onEnded) video.removeEventListener("ended", video._onEnded);
 
         video._onPause = onPause;
         video._onPlay = onPlay;
         video._onEnded = onEnded;
 
-        video.addEventListener('pause', onPause);
-        video.addEventListener('play', onPlay);
-        video.addEventListener('ended', onEnded);
+        video.addEventListener("pause", onPause);
+        video.addEventListener("play", onPlay);
+        video.addEventListener("ended", onEnded);
       });
 
       let startX = 0;
@@ -478,49 +533,63 @@
       };
 
       this.swiperEl.addEventListener(
-        'touchstart',
+        "touchstart",
         (e) => {
           handleTouchStart(e.touches[0].clientX);
         },
-        { passive: true }
+        { passive: true },
       );
 
       this.swiperEl.addEventListener(
-        'touchmove',
+        "touchmove",
         (e) => {
           handleTouchMove(e.touches[0].clientX);
         },
-        { passive: true }
+        { passive: true },
       );
 
-      this.swiperEl.addEventListener('touchend', () => {
+      this.swiperEl.addEventListener("touchend", () => {
         handleTouchEnd();
       });
 
-      this.swiperEl.addEventListener('mousedown', (e) => {
+      this.swiperEl.addEventListener("mousedown", (e) => {
         handleTouchStart(e.clientX);
       });
 
-      window.addEventListener('mousemove', (e) => {
+      window.addEventListener("mousemove", (e) => {
         handleTouchMove(e.clientX);
       });
 
-      window.addEventListener('mouseup', () => {
+      window.addEventListener("mouseup", () => {
         handleTouchEnd();
       });
     }
 
     refresh() {
-      this.stackSlides = Array.from(this.section.querySelectorAll('.qorix-review-video-stack-swiper-slide'));
+      const rawIsMuted =
+        this.section.getAttribute("data-isMuted") ??
+        this.section.getAttribute("data-is-muted") ??
+        this.section.getAttribute("data-ismuted") ??
+        (this.section.dataset ? (this.section.dataset.isMuted || this.section.dataset.ismuted) : undefined);
+      if (rawIsMuted !== null && rawIsMuted !== undefined) {
+        this.mutedByDefault = parseBoolean(rawIsMuted, this.mutedByDefault);
+      }
+
+      this.stackSlides = Array.from(
+        this.section.querySelectorAll(".qorix-review-video-stack-swiper-slide"),
+      );
       if (this.stackSlides.length === 0) {
-        if (this.paginationContainer) this.paginationContainer.innerHTML = '';
+        if (this.paginationContainer) this.paginationContainer.innerHTML = "";
         this.stopAutoplay();
         return;
       }
 
       this.computeCardWidths();
       this.initPagination();
-      this.activeVideoIndex = Math.min(this.halfCols, Math.max(0, this.stackSlides.length - 1));
+      this.activeVideoIndex = Math.min(
+        this.halfCols,
+        Math.max(0, this.stackSlides.length - 1),
+      );
       this.renderStack();
       this.setupHoverAutoplay();
       this.setupVideoTimers();
@@ -531,20 +600,22 @@
   }
 
   function initVideoStack() {
-    document.querySelectorAll('[data-section="qorix-review-video-stack-widget"]').forEach((section) => {
-      if (!section._videoStackInstance) {
-        section._videoStackInstance = new VideoStackWidget(section);
-      } else {
-        section._videoStackInstance.refresh();
-      }
-    });
+    document
+      .querySelectorAll('[data-section="qorix-review-video-stack-widget"]')
+      .forEach((section) => {
+        if (!section._videoStackInstance) {
+          section._videoStackInstance = new VideoStackWidget(section);
+        } else {
+          section._videoStackInstance.refresh();
+        }
+      });
   }
 
   window.initVideoStack = initVideoStack;
 
-  if (document.readyState === 'loading') {
-    document.addEventListener('DOMContentLoaded', initVideoStack);
+  if (document.readyState === "loading") {
+    document.addEventListener("DOMContentLoaded", initVideoStack);
   } else {
     initVideoStack();
   }
-})();
+})();
