@@ -199,7 +199,14 @@ export default function RequestItem({
           {/* Start----Request title */}
           {/* <s-heading>{data?.products[0]?.title}</s-heading> */}
           {/* End----Request title */}
-          <s-paragraph>Order {data?.orderId}</s-paragraph>
+          <s-stack direction="inline" gap="small">
+            <s-paragraph>Order {data?.orderId}</s-paragraph>
+            {data?.status && (
+              <s-badge tone={data?.status === "PAID" ? "success" : "critical"}>
+                {data?.status}
+              </s-badge>
+            )}
+          </s-stack>
         </div>
         {/* End----Request content */}
 
@@ -310,11 +317,6 @@ export function Badges({ status, paymentStatus }) {
   return (
     <>
       <s-badge tone={tone}>{status}</s-badge>
-      {paymentStatus && (
-        <s-badge tone={paymentStatus === "PAID" ? "success" : "critical"}>
-          {paymentStatus}
-        </s-badge>
-      )}
     </>
   );
 }

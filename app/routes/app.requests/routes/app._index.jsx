@@ -29,7 +29,7 @@ const MAX_VISIBLE_PAGE_BUTTONS = 4;
 const TAB_CONFIG = [
   {
     key: "ALL",
-    label: "All status",
+    label: "All Orders",
     statuses: null,
     tone: "success",
   },
@@ -236,8 +236,7 @@ async function bulkUpsertOrders(orderRows) {
 
 export async function action({ request }) {
   try {
-    const { session, admin, storeId: id } =
-      await requireAdminContext(request);
+    const { session, admin, storeId: id } = await requireAdminContext(request);
     const method = request.method.toUpperCase();
 
     switch (method) {
@@ -398,7 +397,9 @@ export async function action({ request }) {
         const formData = await request.formData();
         const search = formData.get("search") || "";
         const dateRange = formData.get("dateRange") || "all";
-        const formattedOrder = JSON.parse(String(formData.get("order") || "{}"));
+        const formattedOrder = JSON.parse(
+          String(formData.get("order") || "{}"),
+        );
 
         if (!formattedOrder?.orderId) {
           return new Response("order is required", { status: 400 });
@@ -599,9 +600,9 @@ export default function Requests() {
     activeTab === "ALL"
       ? baseRequests
       : baseRequests.filter((request) => {
-        const tabConfig = TAB_CONFIG.find((item) => item.key === activeTab);
-        return tabConfig?.statuses?.includes(request.reviewCheckStatus);
-      });
+          const tabConfig = TAB_CONFIG.find((item) => item.key === activeTab);
+          return tabConfig?.statuses?.includes(request.reviewCheckStatus);
+        });
 
   const sortedRequests = [...filteredRequests].sort((a, b) => {
     const dateA = new Date(a.createdAt).getTime();
@@ -715,7 +716,6 @@ export default function Requests() {
       },
       { method: "PATCH", action: "?index&isReminderEmail=true" },
     );
-
   }
 
   function handleRetryEmailSend(order) {
@@ -727,7 +727,6 @@ export default function Requests() {
       },
       { method: "PATCH", action: "?index&isRetryEmail=true" },
     );
-
   }
 
   if (loading) {
@@ -765,7 +764,8 @@ export default function Requests() {
                     <s-checkbox
                       checked={modalSelectedOrders.has(item.orderId)}
                       onChange={(e) => handleCheckBox(e.target.checked, item)}
-                      disabled={item.reviewCheckStatus === "SENT" ||
+                      disabled={
+                        item.reviewCheckStatus === "SENT" ||
                         item.reviewCheckStatus === "OPENED" ||
                         item.reviewCheckStatus === "REVIEWED"
                       }
@@ -925,8 +925,8 @@ export default function Requests() {
                   <s-badge tone={tab.tone} color="strong">
                     {tab.statuses
                       ? baseRequests.filter((request) =>
-                        tab.statuses.includes(request.reviewCheckStatus),
-                      ).length
+                          tab.statuses.includes(request.reviewCheckStatus),
+                        ).length
                       : baseRequests.length}
                   </s-badge>
                 </TabButton>
@@ -996,7 +996,11 @@ export default function Requests() {
                   <div key={request.id}>
                     <s-grid gridTemplateColumns="auto 1fr" gap="base">
                       <s-checkbox /> {/* Checkbox for selection of requests */}
-                      <RequestItem data={request} handleReminderEmailSend={handleReminderEmailSend} handleRetryEmailSend={handleRetryEmailSend} />
+                      <RequestItem
+                        data={request}
+                        handleReminderEmailSend={handleReminderEmailSend}
+                        handleRetryEmailSend={handleRetryEmailSend}
+                      />
                     </s-grid>
                     {index !== paginatedRequests.length - 1 && (
                       <s-stack paddingBlock="base">

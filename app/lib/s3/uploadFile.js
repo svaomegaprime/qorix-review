@@ -2,8 +2,8 @@ import { s3Client } from "./s3.config";
 import { PutObjectCommand } from "@aws-sdk/client-s3";
 
 function getFolder(fileType) {
-  if (fileType.startsWith("video/")) return "uploads/videos";
-  if (fileType.startsWith("image/")) return "uploads/images";
+  if (fileType.startsWith("video/")) return "qorix-review/videos";
+  if (fileType.startsWith("image/")) return "qorix-review/images";
   return null;
 }
 

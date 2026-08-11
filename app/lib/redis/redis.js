@@ -1,7 +1,13 @@
 import { Redis } from "ioredis";
 
-export const connection = new Redis({
-  host: "localhost",
-  port: process.env.REDIS_PORT,
+const redisOptions = {
   maxRetriesPerRequest: null,
-});
+};
+
+export const connection = process.env.REDIS_URL
+  ? new Redis(process.env.REDIS_URL, redisOptions)
+  : new Redis({
+      ...redisOptions,
+      host: process.env.REDIS_HOST || "127.0.0.1",
+      port: Number(process.env.REDIS_PORT || 6379),
+    });

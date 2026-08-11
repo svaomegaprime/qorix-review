@@ -16,6 +16,7 @@ import {
 } from "../services/reviews.server.js";
 import { sendEmail } from "../utils/sendEmail";
 import { buildReplyEmailData } from "../services/emailPayload.server.js";
+import { invalidateReviewCache } from "../lib/redis/reviewCache.js";
 import { useAdminFetcherToast } from "../utils/useAdminFetcherToast";
 
 import { checkAppEmbedEnabled, getWidgetsInstalledStatus } from "../services/appEmbed.server.js";
@@ -135,6 +136,8 @@ export async function action({ request }) {
             update: { body },
             create: { reviewId, body },
           });
+
+          await invalidateReviewCache(storeData.id, review.productId);
 
           const updatedReview = await prisma.review.findUnique({
             where: { id: reviewId },

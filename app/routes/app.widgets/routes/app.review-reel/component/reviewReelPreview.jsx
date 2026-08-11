@@ -16,10 +16,12 @@ const REVIEWS = [
   {
     id: 1,
     mediaType: "image",
-    image: "https://s3.zenexcloud.com/nextvence/uploads/images/p1-2026-07-28-08:55:42-1785207342582.png",
+    image:
+      "https://s3.zenex.cloud/nextvence/uploads/images/p1-2026-07-28-08:55:42-1785207342582.png",
     imageAlt: "Hydrating Eye Cream",
     product: "Product: Hydrating Eye Cream",
-    quote: "Absolutely love this cream! My under-eye area feels smoother, softer, and well hydrated.",
+    quote:
+      "Absolutely love this cream! My under-eye area feels smoother, softer, and well hydrated.",
     name: "Abdur Razzak",
     avatar: `https://res.cloudinary.com/bkkqeqan/image/upload/v1785919600/razzakislam_dpykkd.png`,
     date: "2 days ago",
@@ -28,78 +30,99 @@ const REVIEWS = [
   {
     id: 2,
     mediaType: "video",
-    videoSrc: "https://s3.zenexcloud.com/nextvence/uploads/videos/pv3-2026-07-28-09:11:16-1785208276075.mp4",
-    image: "https://s3.zenexcloud.com/nextvence/uploads/images/p4-2026-07-28-08:55:43-1785207343330.png",
+    videoSrc:
+      "https://s3.zenex.cloud/nextvence/uploads/videos/pv3-2026-07-28-09:11:16-1785208276075.mp4",
+    image:
+      "https://s3.zenex.cloud/nextvence/uploads/images/p4-2026-07-28-08:55:43-1785207343330.png",
     imageAlt: "Vitamin C Serum",
     product: "Product: Vitamin C Serum",
-    quote: "This serum gives my skin a fresh glow and makes my complexion look noticeably brighter.",
+    quote:
+      "This serum gives my skin a fresh glow and makes my complexion look noticeably brighter.",
     name: "Abir Rayhan",
-    avatar: "https://s3.zenexcloud.com/nextvence/uploads/images/u1-2026-07-28-08:55:40-1785207340918.png",
+    avatar:
+      "https://s3.zenex.cloud/nextvence/uploads/images/u1-2026-07-28-08:55:40-1785207340918.png",
     date: "5 hours ago",
     stars: 5,
   },
   {
     id: 3,
     mediaType: "image",
-    image: "https://s3.zenexcloud.com/nextvence/uploads/images/p7-2026-07-28-08:55:44-1785207344084.png",
+    image:
+      "https://s3.zenex.cloud/nextvence/uploads/images/p7-2026-07-28-08:55:44-1785207344084.png",
     imageAlt: "Gentle Facial Cleanser",
     product: "Product: Gentle Facial Cleanser",
-    quote: "It removes dirt and makeup effectively without leaving my skin feeling dry or tight.",
+    quote:
+      "It removes dirt and makeup effectively without leaving my skin feeling dry or tight.",
     name: "Osman Hasan",
-    avatar: "https://s3.zenexcloud.com/nextvence/uploads/images/u2-2026-07-28-08:55:41-1785207341155.png",
+    avatar:
+      "https://s3.zenex.cloud/nextvence/uploads/images/u2-2026-07-28-08:55:41-1785207341155.png",
     date: "1 week ago",
     stars: 5,
   },
   {
     id: 4,
     mediaType: "image",
-    image: "https://s3.zenexcloud.com/nextvence/uploads/images/p10-2026-07-28-08:55:44-1785207344825.png",
+    image:
+      "https://s3.zenex.cloud/nextvence/uploads/images/p10-2026-07-28-08:55:44-1785207344825.png",
     imageAlt: "Face Moisturizer",
     product: "Product: Face Moisturizer",
-    quote: "My skin feels deeply moisturized, plump, and comfortable throughout the day.",
+    quote:
+      "My skin feels deeply moisturized, plump, and comfortable throughout the day.",
     name: "Imran Khan",
-    avatar: "https://s3.zenexcloud.com/nextvence/uploads/images/u3-2026-07-28-08:55:41-1785207341391.png",
+    avatar:
+      "https://s3.zenex.cloud/nextvence/uploads/images/u3-2026-07-28-08:55:41-1785207341391.png",
     date: "1 week ago",
     stars: 5,
   },
   {
     id: 5,
     mediaType: "video",
-    videoSrc: "https://s3.zenexcloud.com/nextvence/uploads/videos/pv2-2026-07-28-09:11:13-1785208273276.mp4",
-    image: "https://s3.zenexcloud.com/nextvence/uploads/images/p13-2026-07-28-08:55:45-1785207345556.png",
+    videoSrc:
+      "https://s3.zenex.cloud/nextvence/uploads/videos/pv2-2026-07-28-09:11:13-1785208273276.mp4",
+    image:
+      "https://s3.zenex.cloud/nextvence/uploads/images/p13-2026-07-28-08:55:45-1785207345556.png",
     imageAlt: "Niacinamide Serum",
     product: "Product: Niacinamide Serum",
-    quote: "It has helped improve my skin texture and made my pores appear less noticeable.",
+    quote:
+      "It has helped improve my skin texture and made my pores appear less noticeable.",
     name: "Tanvir Ahmed",
-    avatar: "https://s3.zenexcloud.com/nextvence/uploads/images/u4-2026-07-28-08:55:41-1785207341627.png",
+    avatar:
+      "https://s3.zenex.cloud/nextvence/uploads/images/u4-2026-07-28-08:55:41-1785207341627.png",
     date: "1 week ago",
     stars: 5,
   },
   {
     id: 6,
     mediaType: "image",
-    image: "https://s3.zenexcloud.com/nextvence/uploads/images/p16-2026-07-28-08:55:36-1785207336465.png",
+    image:
+      "https://s3.zenex.cloud/nextvence/uploads/images/p16-2026-07-28-08:55:36-1785207336465.png",
     imageAlt: "Soothing Aloe Vera Gel",
     product: "Product: Soothing Aloe Vera Gel",
-    quote: "The lightweight formula feels cooling and instantly calms my dry, irritated skin.",
+    quote:
+      "The lightweight formula feels cooling and instantly calms my dry, irritated skin.",
     name: "Abdur Rahman",
-    avatar: "https://s3.zenexcloud.com/nextvence/uploads/images/u5-2026-07-28-08:55:41-1785207341869.png",
+    avatar:
+      "https://s3.zenex.cloud/nextvence/uploads/images/u5-2026-07-28-08:55:41-1785207341869.png",
     date: "1 month ago",
     stars: 5,
   },
   {
     id: 7,
     mediaType: "video",
-    videoSrc: "https://s3.zenexcloud.com/nextvence/uploads/videos/pv12-2026-07-28-09:15:31-1785208531600.mp4",
-    image: "https://s3.zenexcloud.com/nextvence/uploads/images/p19-2026-07-28-08:55:39-1785207339190.png",
+    videoSrc:
+      "https://s3.zenex.cloud/nextvence/uploads/videos/pv12-2026-07-28-09:15:31-1785208531600.mp4",
+    image:
+      "https://s3.zenex.cloud/nextvence/uploads/images/p19-2026-07-28-08:55:39-1785207339190.png",
     imageAlt: "Sunscreen SPF 50",
     product: "Product: Sunscreen SPF 50",
-    quote: "It blends easily, feels light on the skin, and leaves no greasy finish or white cast.",
+    quote:
+      "It blends easily, feels light on the skin, and leaves no greasy finish or white cast.",
     name: "Taj Uddin",
-    avatar: "https://s3.zenexcloud.com/nextvence/uploads/images/u6-2026-07-28-08:55:42-1785207342107.png",
+    avatar:
+      "https://s3.zenex.cloud/nextvence/uploads/images/u6-2026-07-28-08:55:42-1785207342107.png",
     date: "1 week ago",
     stars: 5,
-  }
+  },
 ];
 const STYLES = `
 [data-section="qorix-review-reel-widget"] {
@@ -118,8 +141,8 @@ section.qorix-review-reel-real-review-section {
   .qorix-review-reel-secound_container {
     width: var(---preview_mobile_width, 100%);
     margin: 0 auto;
-  
-   
+
+
 }
 
 .qorix-review-reel-header{
@@ -419,10 +442,10 @@ padding:20px 20px 0px 20px;
     padding: 60px 24px;
     gap: 40px;
   }
-  
+
   section.qorix-review-reel-real-review-section {
   margin-top: 10px;
-  
+
 
 }
   .qorix-review-reel-controls {
@@ -443,7 +466,7 @@ padding:20px 20px 0px 20px;
 
   }
 
-    
+
   [data-section="qorix-review-reel-widget"] .qorix-review-reel-swiper-wrapper {
     padding-bottom: 0px;
   }
@@ -482,7 +505,7 @@ padding:20px 20px 0px 20px;
 .qorix-review-reel-main_container{
   height : 500px;
   }
-  
+
   [data-section="qorix-review-reel-widget"] .qorix-review-reel-review-quote {
     font-size: 19px;
 }
@@ -508,8 +531,8 @@ padding:20px 20px 0px 20px;
 
   [data-section="qorix-review-reel-widget"] .qorix-review-reel-review-card-image { height: 220px; }
   [data-section="qorix-review-reel-widget"] .qorix-review-reel-review-quote      { font-size: 20px; }
- 
- 
+
+
 }
 `;
 
@@ -548,7 +571,9 @@ function PlayCircleSvg() {
         />
       </g>
       <defs>
-        <clipPath id="pc1"><rect width="40" height="40" fill="white" /></clipPath>
+        <clipPath id="pc1">
+          <rect width="40" height="40" fill="white" />
+        </clipPath>
       </defs>
     </svg>
   );
@@ -557,9 +582,12 @@ function PlayCircleSvg() {
 function ChevronRightSvg() {
   return (
     <svg width="20" height="20" viewBox="0 0 20 20" fill="none">
-      <path fillRule="evenodd" clipRule="evenodd"
+      <path
+        fillRule="evenodd"
+        clipRule="evenodd"
         d="M7.71953 14.53C7.57908 14.3894 7.50019 14.1987 7.50019 14C7.50019 13.8012 7.57908 13.6106 7.71953 13.47L11.1895 10 7.71953 6.53C7.57908 6.3894 7.50019 6.1987 7.50019 6C7.50019 5.5858 7.83597 5.25 8.24953 5.25C8.44828 5.25 8.63891 5.3296 8.77953 5.47L12.7795 9.47C12.92 9.6106 12.9989 9.8012 12.9989 10C12.9989 10.1987 12.92 10.3894 12.7795 10.53L8.77953 14.53C8.63891 14.6704 8.44828 14.7493 8.24953 14.7493C8.05078 14.7493 7.86016 14.6704 7.71953 14.53Z"
-        fill="#4A4A4A" />
+        fill="#4A4A4A"
+      />
     </svg>
   );
 }
@@ -567,9 +595,12 @@ function ChevronRightSvg() {
 function ChevronLeftSvg() {
   return (
     <svg width="20" height="20" viewBox="0 0 20 20" fill="none">
-      <path fillRule="evenodd" clipRule="evenodd"
+      <path
+        fillRule="evenodd"
+        clipRule="evenodd"
         d="M12.2805 14.53C12.4209 14.3894 12.4998 14.1987 12.4998 14C12.4998 13.8012 12.4209 13.6106 12.2805 13.47L8.81047 10 12.2805 6.53C12.4209 6.3894 12.4998 6.1987 12.4998 6C12.4998 5.5858 12.1637 5.25 11.7505 5.25C11.5517 5.25 11.3611 5.3296 11.2205 5.47L7.22047 9.47C7.08002 9.6106 7.00113 9.8012 7.00113 10C7.00113 10.1987 7.08002 10.3894 7.22047 10.53L11.2205 14.53C11.3611 14.6704 11.5517 14.7493 11.7505 14.7493C11.9492 14.7493 12.1398 14.6704 12.2805 14.53Z"
-        fill="#4A4A4A" />
+        fill="#4A4A4A"
+      />
     </svg>
   );
 }
@@ -577,7 +608,14 @@ function ChevronLeftSvg() {
 // ─── ReviewCard ───────────────────────────────────────────────────────────────
 function ReviewCard({ review, settings }) {
   const [videoActive, setVideoActive] = useState(false);
-  const { showReviewerName, showVerifiedBadge, showProductName, showReviewDate, showReviewImage, startColor } = settings || {};
+  const {
+    showReviewerName,
+    showVerifiedBadge,
+    showProductName,
+    showReviewDate,
+    showReviewImage,
+    startColor,
+  } = settings || {};
   function handlePlay(e) {
     e.stopPropagation();
     setVideoActive(true);
@@ -585,17 +623,23 @@ function ReviewCard({ review, settings }) {
 
   return (
     <div className="qorix-review-reel-review-card">
-
-      <div className="qorix-review-reel-review-card-image" data-media-type={review.mediaType}>
+      <div
+        className="qorix-review-reel-review-card-image"
+        data-media-type={review.mediaType}
+      >
         {videoActive ? (
           <video
             src={review.videoSrc}
             controls
             autoPlay
             style={{
-              position: "absolute", inset: 0,
-              width: "100%", height: "100%",
-              objectFit: "cover", zIndex: 2, borderRadius: 8,
+              position: "absolute",
+              inset: 0,
+              width: "100%",
+              height: "100%",
+              objectFit: "cover",
+              zIndex: 2,
+              borderRadius: 8,
             }}
           />
         ) : (
@@ -616,23 +660,46 @@ function ReviewCard({ review, settings }) {
 
       <div className="qorix-review-reel-review-card-content">
         <div className="qorix-review-reel-review-text">
-          {showProductName && <p className="qorix-review-reel-product-title">{review.product}</p>}
+          {showProductName && (
+            <p className="qorix-review-reel-product-title">{review.product}</p>
+          )}
           <h3 className="qorix-review-reel-review-quote">"{review.quote}"</h3>
         </div>
         <div className="qorix-review-reel-review-user">
-          {showReviewImage && <img className="qorix-review-reel-user-avatar" src={review.avatar} alt={review.name} />}
+          {showReviewImage && (
+            <img
+              className="qorix-review-reel-user-avatar"
+              src={review.avatar}
+              alt={review.name}
+            />
+          )}
           <div className="qorix-review-reel-user-info">
             <p className="qorix-review-reel-user-name">
               {showReviewerName && review.name}
               {/* {review.name} */}
 
-              {showVerifiedBadge && <svg width="16" height="16" viewBox="0 0 24 24" style={{ marginLeft: 6, verticalAlign: "middle", flexShrink: 0 }}>
-                <circle cx="12" cy="12" r="12" fill={startColor} />
-                <path d="M10 15.17l-3.59-3.59L5 13l5 5 9-9-1.41-1.42z" fill="#fff" />
-              </svg>}
-
+              {showVerifiedBadge && (
+                <svg
+                  width="16"
+                  height="16"
+                  viewBox="0 0 24 24"
+                  style={{
+                    marginLeft: 6,
+                    verticalAlign: "middle",
+                    flexShrink: 0,
+                  }}
+                >
+                  <circle cx="12" cy="12" r="12" fill={startColor} />
+                  <path
+                    d="M10 15.17l-3.59-3.59L5 13l5 5 9-9-1.41-1.42z"
+                    fill="#fff"
+                  />
+                </svg>
+              )}
             </p>
-            {showReviewDate && <p className="qorix-review-reel-review-date">{review.date}</p>}
+            {showReviewDate && (
+              <p className="qorix-review-reel-review-date">{review.date}</p>
+            )}
           </div>
         </div>
       </div>
@@ -645,14 +712,15 @@ export default function ReviewReelWidget({ settings, activeDevice }) {
   const config = {
     ...CAROUSEL_CONFIG,
     ...settings,
-    autoplaySpeed: settings.autoplaySpeed != null
-      ? settings.autoplaySpeed * 1000
-      : CAROUSEL_CONFIG.autoplaySpeed,
+    autoplaySpeed:
+      settings.autoplaySpeed != null
+        ? settings.autoplaySpeed * 1000
+        : CAROUSEL_CONFIG.autoplaySpeed,
   };
 
-
-
-  const slidesPerView = useSlideCount(activeDevice === "mobile" ? 1 : config.cardsVisible);
+  const slidesPerView = useSlideCount(
+    activeDevice === "mobile" ? 1 : config.cardsVisible,
+  );
   const { showNavigationDots, showArrowControls } = settings || {};
   const slides = useMemo(() => REVIEWS, []);
 
@@ -677,12 +745,13 @@ export default function ReviewReelWidget({ settings, activeDevice }) {
   const [rawIndex, setRawIndex] = useState(slidesPerView);
   const [slideWidth, setSlideWidth] = useState(0);
 
-  const [autoplayKey, setAutoplayKey] = useState(0);  // bump to restart the interval
+  const [autoplayKey, setAutoplayKey] = useState(0); // bump to restart the interval
   const [imagesReady, setImagesReady] = useState(false);
 
   // Which original slide is logically "active" (for dots)
   const realIndex =
-    ((rawIndex - slidesPerView) % slides.length + slides.length) % slides.length;
+    (((rawIndex - slidesPerView) % slides.length) + slides.length) %
+    slides.length;
 
   // Keep refs in sync with state so interval callbacks read current values
   rawIndexRef.current = rawIndex;
@@ -692,8 +761,7 @@ export default function ReviewReelWidget({ settings, activeDevice }) {
   function applyOffset(idx, animate) {
     if (!trackRef.current || !slideWidthRef.current) return;
     trackRef.current.style.transition = animate ? TRANSITION : "none";
-    trackRef.current.style.transform =
-      `translateX(${-(idx * (slideWidthRef.current + GAP))}px)`;
+    trackRef.current.style.transform = `translateX(${-(idx * (slideWidthRef.current + GAP))}px)`;
     if (animate) isAnimatingRef.current = true;
   }
 
@@ -739,7 +807,6 @@ export default function ReviewReelWidget({ settings, activeDevice }) {
     return () => observer.disconnect();
   }, [slidesPerView]);
 
-
   function handleTransitionEnd(e) {
     if (e.target !== e.currentTarget) return;
     isAnimatingRef.current = false;
@@ -755,7 +822,9 @@ export default function ReviewReelWidget({ settings, activeDevice }) {
       setRawIndex(jumpTo);
       applyOffset(jumpTo, false);
       requestAnimationFrame(() =>
-        requestAnimationFrame(() => { isLoopJumping.current = false; })
+        requestAnimationFrame(() => {
+          isLoopJumping.current = false;
+        }),
       );
     } else if (cur < n) {
       isLoopJumping.current = true;
@@ -764,7 +833,9 @@ export default function ReviewReelWidget({ settings, activeDevice }) {
       setRawIndex(jumpTo);
       applyOffset(jumpTo, false);
       requestAnimationFrame(() =>
-        requestAnimationFrame(() => { isLoopJumping.current = false; })
+        requestAnimationFrame(() => {
+          isLoopJumping.current = false;
+        }),
       );
     }
   }
@@ -796,8 +867,14 @@ export default function ReviewReelWidget({ settings, activeDevice }) {
   }
 
   // User-triggered nav also resets autoplay
-  function handleUserNext() { goNext(); setAutoplayKey((k) => k + 1); }
-  function handleUserPrev() { goPrev(); setAutoplayKey((k) => k + 1); }
+  function handleUserNext() {
+    goNext();
+    setAutoplayKey((k) => k + 1);
+  }
+  function handleUserPrev() {
+    goPrev();
+    setAutoplayKey((k) => k + 1);
+  }
 
   // ── Autoplay ─────────────────────────────────────────────────────────────
   // Restarts whenever: slideWidth changes (layout), autoplayKey bumps (user nav),
@@ -862,7 +939,10 @@ export default function ReviewReelWidget({ settings, activeDevice }) {
   // ── Preload all images so everything appears together ──────────────────────
   useEffect(() => {
     const urls = REVIEWS.flatMap((r) => [r.image, r.avatar].filter(Boolean));
-    if (urls.length === 0) { setImagesReady(true); return; }
+    if (urls.length === 0) {
+      setImagesReady(true);
+      return;
+    }
 
     let loaded = 0;
     let cancelled = false;
@@ -877,7 +957,9 @@ export default function ReviewReelWidget({ settings, activeDevice }) {
       img.src = src;
     });
 
-    return () => { cancelled = true; };
+    return () => {
+      cancelled = true;
+    };
   }, []);
 
   console.log("activeDevice", activeDevice);
@@ -885,45 +967,57 @@ export default function ReviewReelWidget({ settings, activeDevice }) {
   return (
     <>
       <style>{STYLES}</style>
-      <div className="qorix-review-reel-main_container"
+      <div
+        className="qorix-review-reel-main_container"
         style={{
           position: "relative",
           "--activedotted_color": settings?.activeDotColor || "#008923",
           "--card_background": settings?.cardBackgorud || "#fff",
-          "--card_text_color": settings?.cardTextColor || "var(---color-text-primary)",
+          "--card_text_color":
+            settings?.cardTextColor || "var(---color-text-primary)",
 
-          "---preview_mobile_width": activeDevice === "mobile" ? "375px" : "100%",
-          "---preview_mobile_review_header": activeDevice === "mobile" ? "20px" : "70px",
-          "---stack-mobile_padding": activeDevice === "mobile" ? "0px 10px 0px 10px" : "0px",
-          "---stack-mobile_width_1024_device": activeDevice === "mobile" ? "90%" : "100%",
+          "---preview_mobile_width":
+            activeDevice === "mobile" ? "375px" : "100%",
+          "---preview_mobile_review_header":
+            activeDevice === "mobile" ? "20px" : "70px",
+          "---stack-mobile_padding":
+            activeDevice === "mobile" ? "0px 10px 0px 10px" : "0px",
+          "---stack-mobile_width_1024_device":
+            activeDevice === "mobile" ? "90%" : "100%",
           "---stack-mobile_width": activeDevice === "mobile" ? "40%" : "100%",
-          "---stack-mobile_margin_top": activeDevice === "mobile" ? "40px" : "60px",
+          "---stack-mobile_margin_top":
+            activeDevice === "mobile" ? "40px" : "60px",
         }}
-
-
       >
         {!imagesReady && (
           <div className="qr-review-reel-loader">
             <div className="qr-review-reel-spinner" />
           </div>
         )}
-        <div className="qorix-review-reel-secound_container" style={{ opacity: imagesReady ? 1 : 0, transition: "opacity 0.4s ease", backgroundColor: "#fff" }}>
-
-
+        <div
+          className="qorix-review-reel-secound_container"
+          style={{
+            opacity: imagesReady ? 1 : 0,
+            transition: "opacity 0.4s ease",
+            backgroundColor: "#fff",
+          }}
+        >
           <br></br>
           <br></br>
           <br></br>
-          <div className="qorix-review-reel-header"><ReaviewHeader settings={settings}      startColor={settings.startColor}
-                  badgeColor={settings.startColor}/>
+          <div className="qorix-review-reel-header">
+            <ReaviewHeader
+              settings={settings}
+              startColor={settings.startColor}
+              badgeColor={settings.startColor}
+            />
           </div>
-
 
           <section
             data-section="qorix-review-reel-widget"
             className={`qorix-review-reel-real-review-section ${activeDevice === "mobile" ? "qorix-review-reel-mobile" : ""}`}
           >
             <div className="qorix-review-reel-swiper-wrapper">
-
               {/* ── Slide track ── */}
               <div
                 ref={wrapperRef}
@@ -932,8 +1026,14 @@ export default function ReviewReelWidget({ settings, activeDevice }) {
                 onTouchMove={handleTouchMove}
                 onTouchEnd={handleTouchEnd}
                 onClick={handleClickGuard}
-                onMouseEnter={() => { isHoveringRef.current = true; clearInterval(autoplayRef.current); }}
-                onMouseLeave={() => { isHoveringRef.current = false; setAutoplayKey((k) => k + 1); }}
+                onMouseEnter={() => {
+                  isHoveringRef.current = true;
+                  clearInterval(autoplayRef.current);
+                }}
+                onMouseLeave={() => {
+                  isHoveringRef.current = false;
+                  setAutoplayKey((k) => k + 1);
+                }}
               >
                 <div
                   ref={trackRef}
@@ -987,10 +1087,8 @@ export default function ReviewReelWidget({ settings, activeDevice }) {
                   </button>
                 )}
               </div>
-
             </div>
           </section>
-
         </div>
       </div>
     </>

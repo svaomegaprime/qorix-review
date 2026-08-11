@@ -27,6 +27,7 @@ class ReviewX {
     this.allowVideoUpload = true;
     this.uploadedFiles = [];
     this.showAllMedia = false;
+    this.selectedReview = null;
 
     this.form = {
       name: "",
@@ -75,6 +76,7 @@ class ReviewX {
     this.baseLimit = 10;
     this.totalPages = 1;
     this.totalReviews = 0;
+    this.filteredTotalReviews = 0;
     this.averageRating = 0;
     this.sort = "ALL";
     this.starCount = { 5: 0, 4: 0, 3: 0, 2: 0, 1: 0 };
@@ -87,6 +89,7 @@ class ReviewX {
     this.showFirst = "";
     this.showRatingBarWithoutRating = true;
     this.showMediaWithoutRating = true;
+    this.showReviewBodyWithoutRating = true;
   }
 
   reinitSwipers() {
@@ -132,6 +135,8 @@ class ReviewX {
     this.filterMinStar = el.dataset.filterMinStars || "ALL";
     this.showName = el.dataset.showName !== "false";
     this.showEmail = el.dataset.showEmail !== "false";
+    this.showReviewBodyWithoutRating =
+      el.dataset.showReviewBodyWithoutRating !== "false";
   }
 
   isAllowedMediaFile(file) {
@@ -152,20 +157,21 @@ class ReviewX {
   async productInit(productJson, defaultSort, limit) {
     console.log("productInit called", productJson);
     try {
+      const safeSort = this.getValidSort(defaultSort);
+
       this.limit = Number(limit) || 10;
       this.baseLimit = this.limit;
-      this.sort = defaultSort;
-      this.activeSort = defaultSort;
+      this.sort = safeSort;
+      this.activeSort = safeSort;
 
-      if (!productJson) {
-        console.warn("No product JSON found");
-        return;
+      if (productJson) {
+        this.product = JSON.parse(productJson);
+        console.log("parsed product", this.product);
+      } else {
+        this.product = {};
       }
 
-      this.product = JSON.parse(productJson);
-      console.log("parsed product", this.product);
-
-      await this.getReview(defaultSort);
+      await this.getReview(safeSort);
     } catch (error) {
       console.error("Quick review init failed", error);
     }
@@ -232,8 +238,10 @@ class ReviewX {
         });
       this.currentPage = result.data?.currentPage ?? 1;
       this.totalPages = result.data?.totalPages ?? 1;
-      this.totalReviews = result.data?.totalReviews ?? 0;
-      this.averageRating = result.data?.averageRating.toFixed(1) ?? 0.0;
+      this.totalReviews = Number(result.data?.totalReviews) || 0;
+      this.filteredTotalReviews =
+        Number(result.data?.filteredTotalReviews) || 0;
+      this.averageRating = (Number(result.data?.averageRating) || 0).toFixed(1);
       this.starCount = result.data?.ratingCounts ?? {
         5: 0,
         4: 0,
@@ -569,7 +577,7 @@ class ReviewX {
   }
 
   hasMoreReviews() {
-    return this.reviews.length < this.totalReviews;
+    return this.reviews.length < this.filteredTotalReviews;
   }
 
   nextPage() {
@@ -637,6 +645,15 @@ class ReviewX {
   setRatingFilter(rating) {
     this.activeFilter = rating;
     this.reinitSwipers();
+  }
+
+  getSortLabel() {
+    const found = this.sortOptions.find((opt) => opt.value === this.activeSort);
+    return found ? found.label : this.activeSort;
+  }
+
+  getValidSort(sort) {
+    return this.sortOptions.some(({ value }) => value === sort) ? sort : "ALL";
   }
 
   async setSort(option) {
@@ -749,6 +766,11 @@ class ReviewX {
     this.lightboxMedia = media;
     this.lightboxOpen = true;
     document.body.style.overflow = "hidden";
+  }
+
+  openMediaModal(review) {
+    this.selectedReview = review;
+    this.showAllMedia = true;
   }
 
   closeLightbox(event) {

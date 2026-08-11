@@ -1,54 +1,56 @@
-  .lightbox {
-    position: fixed;
-    inset: 0;
-    background: rgba(0, 0, 0, 0.88);
-    display: none;
-    align-items: center;
-    justify-content: center;
-    z-index: 300;
-  }
-  .lightbox.open {
-    display: flex;
-  }
-  .lightbox-close {
-    position: fixed;
-    top: 18px;
-    right: 20px;
-    width: 36px;
-    height: 36px;
-    border-radius: 50%;
-    border: none;
-    background: rgba(255, 255, 255, 0.15);
-    color: #fff;
-    font-size: 18px;
-    cursor: pointer;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    z-index: 301;
-    line-height: 1;
-  }
-  .lightbox-close:hover {
-    background: rgba(255, 255, 255, 0.28);
-  }
-  .lightbox-content {
-    max-width: 90vw;
-    max-height: 88vh;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-  }
-  .lightbox-content img {
-    max-width: 90vw;
-    max-height: 88vh;
-    border-radius: 8px;
-    object-fit: contain;
-    display: block;
-  }
-  .lightbox-content video {
-    max-width: 90vw;
-    max-height: 88vh;
-    border-radius: 8px;
-    display: block;
-    outline: none;
-  }
+.lightbox {
+  position: fixed !important;
+  inset: 0 !important;
+  z-index: 2147483647;
+  display: none;
+  box-sizing: border-box;
+  align-items: center;
+  justify-content: center;
+  padding: 24px;
+  background: rgba(0, 0, 0, 0.88);
+}
+
+.lightbox.open {
+  display: flex;
+}
+
+.lightbox-close {
+  position: absolute;
+  top: 18px;
+  right: 20px;
+  z-index: 1;
+  width: 36px;
+  height: 36px;
+  border: none;
+  border-radius: 50%;
+  background: rgba(255, 255, 255, 0.15);
+  color: #fff;
+  font-size: 18px;
+  line-height: 1;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.lightbox-close:hover {
+  background: rgba(255, 255, 255, 0.28);
+}
+
+.lightbox-content {
+  display: flex;
+  max-width: 100%;
+  max-height: 100%;
+  align-items: center;
+  justify-content: center;
+}
+
+.lightbox-content img,
+.lightbox-content video {
+  display: block;
+  max-width: calc(100vw - 48px);
+  max-height: calc(100dvh - 48px);
+  border-radius: 8px;
+  object-fit: contain;
+  outline: none;
+}

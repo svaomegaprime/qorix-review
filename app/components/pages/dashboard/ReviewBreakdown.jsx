@@ -1,8 +1,7 @@
 import CustomText from "../../essentials/elements/Text";
 import CustomSection from "../../essentials/CustomSection";
 import ReviewItem from "../../essentials/ReviewItem";
-import starFilled from "../../../assets/images/star-filled.svg";
-import starEmpty from "../../../assets/images/star-empty.svg";
+import HalfStar from "../../essentials/elements/HalfStar";
 import ReviewPipeItem from "./elements/ReviewPipeItem";
 
 export default function ReviewBreakdown({
@@ -19,7 +18,11 @@ export default function ReviewBreakdown({
           1,
         )
       : "0.0";
-  const roundedRating = Math.floor(Number(averageRating));
+  const numAvgRating = Number(averageRating);
+  const stars = Array.from({ length: 5 }, (_, i) => {
+    const fillAmount = Math.max(0, Math.min(1, numAvgRating - i));
+    return fillAmount * 100;
+  });
 
   const ratingCounts = { 5: 0, 4: 0, 3: 0, 2: 0, 1: 0 };
   reviews.forEach((r) => {
@@ -95,20 +98,9 @@ export default function ReviewBreakdown({
                       gridTemplateColumns="repeat(5, 20px)"
                       alignItems="center"
                     >
-                      {Array.from({ length: 5 }, (_, index) => {
-                        const starValue = index + 1;
-                        return (
-                          <s-image
-                            key={starValue}
-                            src={
-                              starValue <= roundedRating
-                                ? starFilled
-                                : starEmpty
-                            }
-                            inlineSize="fill"
-                          />
-                        );
-                      })}
+                      {stars.map((fillPercentage, idx) => (
+                        <HalfStar key={idx} width={fillPercentage} color="#FF9500" />
+                      ))}
                     </s-grid>
                     <s-paragraph color="subdued">
                       {totalReviews} {totalReviews === 1 ? "review" : "reviews"}

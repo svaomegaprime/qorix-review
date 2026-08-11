@@ -1,12 +1,14 @@
 {{ 'lightbox.css' | asset_url | stylesheet_tag }}
-<div class="lightbox" id="lightbox" :class="{ open: lightboxOpen }" @click="closeLightbox($event)">
-  <button class="lightbox-close" type="button" @click="closeLightbox()">&#x2715;</button>
-  <div class="lightbox-content" id="lightbox-content">
-    <template x-if="lightboxMedia && lightboxMedia.type === 'IMAGE'">
-      <img :src="lightboxMedia.url" alt="media" width="" height="">
-    </template>
-    <template x-if="lightboxMedia && lightboxMedia.type === 'VIDEO'">
-      <video :src="lightboxMedia.url" controls autoplay></video>
-    </template>
+<template x-teleport="body">
+  <div class="lightbox" id="lightbox" :class="{ open: lightboxOpen }" @click.self="closeLightbox()" @keydown.escape.window="lightboxOpen && closeLightbox()">
+    <button class="lightbox-close" type="button" @click="closeLightbox()" aria-label="Close media viewer">&#x2715;</button>
+    <div class="lightbox-content" id="lightbox-content">
+      <template x-if="lightboxMedia && lightboxMedia.type === 'IMAGE'">
+        <img :src="lightboxMedia.url" alt="media" width="" height="">
+      </template>
+      <template x-if="lightboxMedia && lightboxMedia.type === 'VIDEO'">
+        <video :src="lightboxMedia.url" controls autoplay></video>
+      </template>
+    </div>
   </div>
-</div>
+</template>

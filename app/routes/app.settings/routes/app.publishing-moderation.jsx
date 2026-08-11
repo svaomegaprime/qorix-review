@@ -97,6 +97,9 @@ export default function PublishingModeration() {
             Control which reviews go live and how content is filtered
           </s-paragraph>
         </s-box>
+        <s-button inline="fill" variant="secondary">
+          Need Help ?
+        </s-button>
       </s-stack>
 
       <s-section key={formResetKey}>

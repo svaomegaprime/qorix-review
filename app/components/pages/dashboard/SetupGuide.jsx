@@ -2,7 +2,7 @@ import { useEffect, useState } from "react";
 import ProgressiveBar from "./elements/ProgressiveBar";
 import SetupGuideItem from "./elements/SetupGuideItem";
 import { useRevalidator } from "react-router";
-import { getAppEmbedDeepLink } from "../../../utils/themeEditorLinks";
+import { getAppEmbedDeepLink, getAppBlockDeepLink } from "../../../utils/themeEditorLinks";
 
 const DEFAULT_ACTIVE_ITEM = "item1";
 
@@ -76,6 +76,7 @@ export default function SetupGuide({ shop = "", apiKey = "", isAppEnabled = fals
     const isStep3Done = isEmailConfigured;
     const completedSteps = (isAppEnabled ? 1 : 0) + (isStep2Done ? 1 : 0) + (isStep3Done ? 1 : 0);
     const embedUrl = getAppEmbedDeepLink({ shop, apiKey, embedHandle: "app_embed" });
+    const quickReviewUrl = getAppBlockDeepLink({ shop, apiKey, blockHandle: "quick_review", template: "product", target: "newAppsSection" });
 
     return (
         <s-section>
@@ -111,13 +112,13 @@ export default function SetupGuide({ shop = "", apiKey = "", isAppEnabled = fals
                 {/* Step 2 - Customize widget - Start */}
                 <SetupGuideItem
                     title="Enable Quick Review widget"
-                    description="Install the Quick Review widget from the widgets page to display reviews on your products."
+                    description="Add the Quick Review widget to your product pages in the theme editor to showcase customer reviews."
                     isActivated={isActivated === "item2"}
                     onToggle={() => handleToggle("item2")}
                     isCompleted={isStep2Done}
                 >
                     <s-grid gridTemplateColumns='auto auto' gap='small' justifyContent='start'>
-                        <s-button variant='primary' icon='external' href="/app/widgets">Go to widget settings</s-button>
+                        <s-button variant='primary' icon='external' href={quickReviewUrl} target="_blank">Open theme editor</s-button>
                         <s-button
                             variant="secondary"
                             loading={isVerifying}

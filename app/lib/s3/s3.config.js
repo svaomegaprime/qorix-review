@@ -1,9 +1,7 @@
 import { S3Client } from "@aws-sdk/client-s3";
 
 export const s3Client = new S3Client({
-
-
-  endpoint: "http://bucket.zenexcloud.com:9000",
+  endpoint: process.env.ZENEX_S3_ENDPOINT,
 
   region: process.env.ZENEX_REGION || "us-east-1",
   credentials: {

@@ -230,12 +230,21 @@ export default function Branding() {
         onDiscard={handleDiscard}
         saving={fetcher.state !== "idle"}
       />
-      <s-box>
-        <Text>Branding</Text>
-        <s-text>
-          Customize your logo and brand appearance in review emails
-        </s-text>
-      </s-box>
+      <s-stack
+        direction="inline"
+        justifyContent="space-between"
+        alignItems="center"
+      >
+        <s-box>
+          <Text>Branding</Text>
+          <s-text>
+            Customize your logo and brand appearance in review emails
+          </s-text>
+        </s-box>
+        <s-button inline="fill" variant="secondary">
+          Need Help ?
+        </s-button>
+      </s-stack>
       <s-query-container>
         <s-grid
           paddingBlockStart="base"

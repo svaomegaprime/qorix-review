@@ -4,6 +4,7 @@
   class="quickreview-reviews"
   data-product-id="{{ product.id }}"
   id="quickreview-reviews-{{ block.id }}"
+  x-show="filteredReviews().length > 0 ? true : showReviewBodyWithoutRating"
 >
   <div class="quickreview-reviews__header">
     <div class="quickreview-reviews__titles">

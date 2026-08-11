@@ -1,57 +1,95 @@
 {{ 'quickreview-media-modal.css' | asset_url | stylesheet_tag }}
-<div class="quickreview-media-modal" data-quickreview-media-modal x-show="showAllMedia" style="display: none;">
-  <div class="quickreview-media-modal__overlay" data-quickreview-media-modal-close></div>
+<template x-teleport="body">
+  <div class="quickreview-media-modal" data-quickreview-media-modal x-show="showAllMedia" style="display: none;" @keydown.escape.window="showAllMedia && (showAllMedia = false)">
+    <div class="quickreview-media-modal__overlay" data-quickreview-media-modal-close @click="showAllMedia = false"></div>
 
-  <div class="quickreview-media-modal__box">
-    <div class="quickreview-media-modal__header">
-      <p>Review With media</p>
-      <button
-        type="button"
-        class="quickreview-media-modal__close"
-        data-quickreview-media-modal-close
-        aria-label="Close"
-        @click="showAllMedia = false"
-      >
-        <svg width="12" height="12" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-          <path d="M5 5L19 19M19 5L5 19" stroke="#4A4A4A" stroke-width="2.2" stroke-linecap="round"/>
-        </svg>
-      </button>
-    </div>
-    <div class="quickreview-media-modal__body">
-      <div class="quickreview-media-modal__grid" data-quickreview-media-modal-grid>
-        <template x-if="attachments?.length">
-          <template x-for="attachment in attachments" :key="attachment.id">
-            <div class="quickreview-media-modal__item" @click="openLightbox(attachment); showAllMedia = false">
-              <template x-if="attachment.type === 'IMAGE'">
-                <img
-                  :src="attachment.url"
-                  alt="Review media"
-                  width=""
-                  height=""
-                >
-              </template>
+    <div class="quickreview-media-modal__box">
+      <div class="quickreview-media-modal__header">
+        <p>Review With media</p>
+        <button
+          type="button"
+          class="quickreview-media-modal__close"
+          data-quickreview-media-modal-close
+          aria-label="Close"
+          @click="showAllMedia = false"
+        >
+          <svg width="12" height="12" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <path d="M5 5L19 19M19 5L5 19" stroke="#4A4A4A" stroke-width="2.2" stroke-linecap="round"/>
+          </svg>
+        </button>
+      </div>
+      <div class="quickreview-media-modal__body">
+        <div class="quickreview-media-modal__grid" data-quickreview-media-modal-grid>
+        {% if from == 'review_hub' %}
+          <template x-if="selectedReview?.attachments?.length">
+            <template x-for="attachment in selectedReview.attachments" :key="attachment.id">
+              <div class="quickreview-media-modal__item" @click="openLightbox(attachment); showAllMedia = false">
+                <template x-if="attachment.type === 'IMAGE'">
+                  <img
+                    :src="attachment.url"
+                    alt="Review media"
+                    width=""
+                    height=""
+                  >
+                </template>
 
-              <template x-if="attachment.type === 'VIDEO'">
-                <div style="width: 100%; height: 100%; position: relative;">
-                  <video
-                    class="qorix-qr-media-img"
-                    :src="attachment.url + '#t=0.001'"
-                    preload="metadata"
-                    muted
-                    playsinline
-                    style="width: 100%; height: 100%; object-fit: cover;"
-                  ></video>
-                  <div class="qorix-video-play-badge">
-                    <svg width="12" height="14" viewBox="0 0 12 14" fill="none" xmlns="http://www.w3.org/2000/svg">
-                      <path d="M3 2.5L10.5 7L3 11.5V2.5Z" fill="#1A1A1A"/>
-                    </svg>
+                <template x-if="attachment.type === 'VIDEO'">
+                  <div style="width: 100%; height: 100%; position: relative;">
+                    <video
+                      class="qorix-qr-media-img"
+                      :src="attachment.url + '#t=0.001'"
+                      preload="metadata"
+                      muted
+                      playsinline
+                      style="width: 100%; height: 100%; object-fit: cover;"
+                    ></video>
+                    <div class="qorix-video-play-badge">
+                      <svg width="12" height="14" viewBox="0 0 12 14" fill="none" xmlns="http://www.w3.org/2000/svg">
+                        <path d="M3 2.5L10.5 7L3 11.5V2.5Z" fill="#1A1A1A"/>
+                      </svg>
+                    </div>
                   </div>
-                </div>
-              </template>
-            </div>
+                </template>
+              </div>
+            </template>
           </template>
-        </template>
+
+        {% else %}
+          <template x-if="attachments?.length">
+            <template x-for="attachment in attachments" :key="attachment.id">
+              <div class="quickreview-media-modal__item" @click="openLightbox(attachment); showAllMedia = false">
+                <template x-if="attachment.type === 'IMAGE'">
+                  <img
+                    :src="attachment.url"
+                    alt="Review media"
+                    width=""
+                    height=""
+                  >
+                </template>
+
+                <template x-if="attachment.type === 'VIDEO'">
+                  <div style="width: 100%; height: 100%; position: relative;">
+                    <video
+                      class="qorix-qr-media-img"
+                      :src="attachment.url + '#t=0.001'"
+                      preload="metadata"
+                      muted
+                      playsinline
+                      style="width: 100%; height: 100%; object-fit: cover;"
+                    ></video>
+                    <div class="qorix-video-play-badge">
+                      <svg width="12" height="14" viewBox="0 0 12 14" fill="none" xmlns="http://www.w3.org/2000/svg">
+                        <path d="M3 2.5L10.5 7L3 11.5V2.5Z" fill="#1A1A1A"/>
+                      </svg>
+                    </div>
+                  </div>
+                </template>
+              </div>
+            </template>
+          </template>
+        {% endif %}
       </div>
     </div>
   </div>
 </div>
+</template>

@@ -54,7 +54,7 @@ const WIDGETS = [
       "A pre-installed, one-click widget that lets customers write a review instantly — no account required. Increases review collection by 40%+.",
     previewUrl: "/widgets/quick-review.png",
     editUrl: "/app/widgets/quick-review",
-    types: ["floating", "review-form"],
+    types: ["floating", "review-form","product-page"],
   },
   {
     id: "trust_bar",
@@ -72,16 +72,16 @@ const WIDGETS = [
       "An interactive carousel that turns your best video, image, and text reviews into moving stories. Shoppers can swipe, click, and play — no page reload.",
     previewUrl: "/widgets/review-reel.png",
     editUrl: "/app/widgets/review-reel",
-    types: ["product-page", "standalone-page"],
+    types: [ "standalone-page"],
   },
   {
     id: "video_stack",
-    name: "VidioStack",
+    name: "VideoStack",
     description:
       "A sleek, rotating slider for your most impactful video reviews. Lets shoppers see your products in action without leaving the product page.",
     previewUrl: "/widgets/video-stack.png",
     editUrl: "/app/widgets/video-stack",
-    types: ["product-page", "standalone-page"],
+    types: [ "standalone-page"],
   },
   {
     id: "quote_loop",
@@ -90,7 +90,7 @@ const WIDGETS = [
       "A bold, eye-catching carousel to highlight winning quotes from your best reviews. Auto-rotates or manual.",
     previewUrl: "/widgets/quote-loop.png",
     editUrl: "/app/widgets/quote-loop",
-    types: ["product-page", "standalone-page"],
+    types: [ "standalone-page"],
   },
   {
     id: "review_hub",
@@ -99,7 +99,7 @@ const WIDGETS = [
       "Collect and display product reviews directly on your product pages. Full control over layout, sorting, and filters.",
     previewUrl: "/widgets/review-hub.png",
     editUrl: "/app/widgets/review-hub",
-    types: ["product-page", "standalone-page"],
+    types: [ "standalone-page"],
   },
 ];
 

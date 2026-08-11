@@ -1,0 +1,31 @@
+<template x-for="star in 5" :key="star">
+  <svg
+    x-data="
+      {
+        gradientId: `qorix-half-star-${Math.random().toString(36).slice(2)}`
+      }
+    "
+    width="17"
+    height="16"
+    viewBox="0 0 17 16"
+    fill="none"
+    aria-hidden="true"
+  >
+    <defs>
+      <linearGradient :id="gradientId" x1="0%" y1="0%" x2="100%" y2="0%">
+        <stop
+          :offset="Math.max(0, Math.min(100, (Number(averageRating) - (star - 1)) * 100)) + '%'"
+          stop-color="var(--star-color)"
+        />
+        <stop
+          :offset="Math.max(0, Math.min(100, (Number(averageRating) - (star - 1)) * 100)) + '%'"
+          stop-color="#E0E0E0"
+        />
+      </linearGradient>
+    </defs>
+    <path
+      d="M9.52 0.855C8.976 -0.285 7.356 -0.285 6.812 0.855L5.144 4.35 1.306 4.855c-1.25.165-1.752 1.706-.837 2.575L3.277 10.1 2.573 13.9c-.23 1.24 1.08 2.193 2.19 1.592L8.166 13.65l3.403 1.848c1.11.601 2.418-.35 2.19-1.592L13.055 10.1l2.808-2.666c.915-.869.414-2.41-.837-2.575L11.186 4.35 9.52 0.855z"
+      :fill="'url(#' + gradientId + ')'"
+    />
+  </svg>
+</template>

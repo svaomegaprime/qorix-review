@@ -30,6 +30,12 @@ export default function ReviewItem({
   const reply = data?.reply?.body;
   // End----State for review status
 
+  useEffect(() => {
+    if (replyReview) {
+      setReplyBody(reply || "");
+    }
+  }, [replyReview, reply]);
+
   // Start----Review date
   const reviewDate = new Date(data.createdAt);
 
@@ -445,7 +451,7 @@ export default function ReviewItem({
                   <s-text-field
                     onInput={(e) => setReplyBody(e.target.value)}
                     placeholder="Write your reply"
-                    value={reply}
+                    value={replyBody}
                   />
                   <s-button
                     onClick={() => {

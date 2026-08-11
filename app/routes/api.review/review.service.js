@@ -644,46 +644,55 @@ async function getReview(request, session, admin) {
         };
     }
 
-    const [res, info, ratingGroups, allAttachments] = await Promise.all([
-      prisma.review.findMany(query),
+    const [res, filteredInfo, overallInfo, ratingGroups, allAttachments] =
+      await Promise.all([
+        prisma.review.findMany(query),
 
-      prisma.review.aggregate({
-        where: query.where,
+        // Used only for pagination of the currently filtered review list.
+        prisma.review.aggregate({
+          where: query.where,
+          _count: {
+            _all: true,
+          },
+        }),
 
-        _count: {
-          _all: true,
-        },
+        // Product summary must not change when the list is filtered/sorted.
+        // baseWhere always scopes it to this store, product and published status.
+        prisma.review.aggregate({
+          where: baseWhere,
+          _count: {
+            _all: true,
+          },
+          _avg: {
+            rating: true,
+          },
+        }),
 
-        _avg: {
-          rating: true,
-        },
-      }),
+        // Rating counts across ALL reviews for this product (ignores sort/filter/pagination)
+        prisma.review.groupBy({
+          by: ["rating"],
+          where: baseWhere,
+          _count: {
+            _all: true,
+          },
+        }),
 
-      // Rating counts across ALL reviews for this product (ignores sort/filter/pagination)
-      prisma.review.groupBy({
-        by: ["rating"],
-        where: baseWhere,
-        _count: {
-          _all: true,
-        },
-      }),
-
-      // All attachments across ALL reviews for this product
-      prisma.attachment.findMany({
-        where: {
-          review: baseWhere,
-        },
-        select: {
-          id: true,
-          type: true,
-          url: true,
-          reviewId: true,
-        },
-        orderBy: {
-          createdAt: "desc",
-        },
-      }),
-    ]);
+        // All attachments across ALL reviews for this product
+        prisma.attachment.findMany({
+          where: {
+            review: baseWhere,
+          },
+          select: {
+            id: true,
+            type: true,
+            url: true,
+            reviewId: true,
+          },
+          orderBy: {
+            createdAt: "desc",
+          },
+        }),
+      ]);
 
     // Build ratingCounts object: { 5: n, 4: n, 3: n, 2: n, 1: n }
     const ratingCounts = { 5: 0, 4: 0, 3: 0, 2: 0, 1: 0 };
@@ -695,7 +704,13 @@ async function getReview(request, session, admin) {
     }
 
     // Zero-out star keys below the filterMinStar threshold
-    const minStarMap = { STAR_1: 1, STAR_2: 2, STAR_3: 3, STAR_4: 4, STAR_5: 5 };
+    const minStarMap = {
+      STAR_1: 1,
+      STAR_2: 2,
+      STAR_3: 3,
+      STAR_4: 4,
+      STAR_5: 5,
+    };
     const minStar = minStarMap[filterMinStar];
     if (minStar) {
       for (let s = 1; s < minStar; s++) {
@@ -705,10 +720,11 @@ async function getReview(request, session, admin) {
 
     const responseData = {
       reviews: res,
-      totalReviews: info._count._all,
-      totalPages: Math.ceil(info._count._all / limit),
+      totalReviews: overallInfo._count._all,
+      filteredTotalReviews: filteredInfo._count._all,
+      totalPages: Math.ceil(filteredInfo._count._all / limit),
       currentPage: page,
-      averageRating: Number((info._avg.rating || 0).toFixed(1)),
+      averageRating: Number((overallInfo._avg.rating || 0).toFixed(1)),
       ratingCounts,
       attachments: allAttachments,
     };

@@ -1,27 +1,28 @@
 model Review {
-  id            String         @id @default(uuid()) @db.Uuid
-  storeId       String
-  productId     String?
-  productHandle String?
-  productTitle  String?
-  reviewerName  String?
-  reviewerEmail String?
-  reviewerPhone String?
-  productImage  String?
-  rating        Int            @default(0)
-  title         String?
-  body          String?
-  status        ReviewStatus   @default(PENDING)
-  source        ReviewSource?
-  isVerified    Boolean        @default(false)
-  createdAt     DateTime       @default(now())
-  updatedAt     DateTime       @updatedAt
-  orderRecordId String?        @db.Uuid
-  attachments   Attachment[]
-  helpfulCount  HelpfulCount[]
-  reply         Reply?
-  store         Store          @relation(fields: [storeId], references: [storeGID], onDelete: Cascade)
-  order         Order?         @relation(fields: [orderRecordId], references: [id], onDelete: SetNull)
+  id               String         @id @default(uuid()) @db.Uuid
+  storeId          String
+  productId        String?
+  productHandle    String?
+  productTitle     String?
+  reviewerName     String?
+  reviewerEmail    String?
+  reviewerPhone    String?
+  productImage     String?
+  rating           Int            @default(0)
+  title            String?
+  body             String?
+  status           ReviewStatus   @default(PENDING)
+  source           ReviewSource?
+  isVerified       Boolean        @default(false)
+  createdAt        DateTime       @default(now())
+  updatedAt        DateTime       @updatedAt
+  orderRecordId    String?        @db.Uuid
+  attachments      Attachment[]
+  helpfulCount     HelpfulCount[]
+  reply            Reply?
+  store            Store          @relation(fields: [storeId], references: [storeGID], onDelete: Cascade)
+  order            Order?         @relation(fields: [orderRecordId], references: [id], onDelete: SetNull)
+  externalSettings Json?
 
   @@index([storeId, productId, reviewerEmail])
   @@index([orderRecordId])
@@ -34,33 +35,36 @@ model Review {
 }
 
 model HelpfulCount {
-  id            String   @id @default(uuid()) @db.Uuid
-  reviewId      String   @db.Uuid
-  isHelpful     Boolean
-  customerId    String
-  customerEmail String
-  createdAt     DateTime @default(now())
-  updatedAt     DateTime @updatedAt
-  review        Review   @relation(fields: [reviewId], references: [id], onDelete: Cascade)
+  id               String   @id @default(uuid()) @db.Uuid
+  reviewId         String   @db.Uuid
+  isHelpful        Boolean
+  customerId       String
+  customerEmail    String
+  createdAt        DateTime @default(now())
+  updatedAt        DateTime @updatedAt
+  review           Review   @relation(fields: [reviewId], references: [id], onDelete: Cascade)
+  externalSettings Json?
 
   @@unique([reviewId, customerEmail])
 }
 
 model Attachment {
-  id        String          @id @default(uuid()) @db.Uuid
-  type      AttachmentType?
-  url       String?
-  reviewId  String?         @db.Uuid
-  createdAt DateTime        @default(now())
-  updatedAt DateTime        @updatedAt
-  review    Review?         @relation(fields: [reviewId], references: [id], onDelete: Cascade)
+  id               String          @id @default(uuid()) @db.Uuid
+  type             AttachmentType?
+  url              String?
+  reviewId         String?         @db.Uuid
+  createdAt        DateTime        @default(now())
+  updatedAt        DateTime        @updatedAt
+  externalSettings Json?
+  review           Review?         @relation(fields: [reviewId], references: [id], onDelete: Cascade)
 }
 
 model Reply {
-  id        String   @id @default(uuid()) @db.Uuid
-  body      String?
-  reviewId  String?  @unique @db.Uuid
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
-  review    Review?  @relation(fields: [reviewId], references: [id], onDelete: Cascade)
+  id               String   @id @default(uuid()) @db.Uuid
+  body             String?
+  reviewId         String?  @unique @db.Uuid
+  createdAt        DateTime @default(now())
+  updatedAt        DateTime @updatedAt
+  externalSettings Json?
+  review           Review?  @relation(fields: [reviewId], references: [id], onDelete: Cascade)
 }

@@ -315,7 +315,7 @@ export default function Index(VALUES = {}) {
           }
 
           .sidebar-content {
-            height: calc(100vh - 77px);
+            height: auto;
             overflow: hidden auto;
             background: #fff;
             padding: 1rem;
@@ -548,15 +548,9 @@ export default function Index(VALUES = {}) {
                         handleSettingChange("fiteringMinStart", e.target.value)
                       }
                     >
-                      <s-option value="ALL">
-                        Show all ratings
-                      </s-option>
-                      <s-option value="STAR_3">
-                        3 star and above
-                      </s-option>
-                      <s-option value="STAR_4">
-                        4 star and above
-                      </s-option>
+                      <s-option value="ALL">Show all ratings</s-option>
+                      <s-option value="STAR_3">3 star and above</s-option>
+                      <s-option value="STAR_4">4 star and above</s-option>
                       <s-option value="STAR_5">5 star only</s-option>
                     </s-select>
                   </s-stack>
