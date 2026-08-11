@@ -1,150 +1,123 @@
-# name: ${COMPOSE_PROJECT_NAME:-qorix-review-prod}
+name: ${COMPOSE_PROJECT_NAME:-qorix-review-prod}
 
-# x-runtime: &runtime
-#   image: ${QORIX_IMAGE:-qorix-review}:${IMAGE_TAG:-latest}
-#   build:
-#     context: .
-#     dockerfile: Dockerfile
-#     target: runtime
-#   env_file:
-#     - .env
-#   init: true
-#   restart: unless-stopped
-#   stop_grace_period: 30s
-#   networks:
-#     - frontend
-#     - backend
-#   logging:
-#     driver: json-file
-#     options:
-#       max-size: "10m"
-#       max-file: "5"
+x-runtime: &runtime
+  image: ${QORIX_IMAGE:-qorix-review}:${IMAGE_TAG:-latest}
+  build:
+    context: .
+    dockerfile: Dockerfile
+    target: runtime
+  env_file:
+    - .env
+  init: true
+  restart: unless-stopped
+  stop_grace_period: 30s
+  networks:
+    - review-net
+  logging:
+    driver: json-file
+    options:
+      max-size: "10m"
+      max-file: "5"
 
-# x-web: &web
-#   <<: *runtime
-#   depends_on:
-#     migrate:
-#       condition: service_completed_successfully
-#     redis:
-#       condition: service_healthy
-#   healthcheck:
-#     test:
-#       - CMD-SHELL
-#       - >-
-#         node -e "fetch('http://127.0.0.1:' + process.env.PORT + '/healthz')
-#         .then(r => process.exit(r.ok ? 0 : 1)).catch(() => process.exit(1))"
-#     interval: 15s
-#     timeout: 5s
-#     retries: 5
-#     start_period: 30s
-
-# services:
-#   postgres:
-#     image: postgres:16-alpine
-#     restart: unless-stopped
-#     environment:
-#       POSTGRES_USER: ${POSTGRES_USER:?Set POSTGRES_USER in .env}
-#       POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:?Set POSTGRES_PASSWORD in .env}
-#       POSTGRES_DB: ${POSTGRES_DB:?Set POSTGRES_DB in .env}
-#     volumes:
-#       - postgres_data:/var/lib/postgresql/data
-#     healthcheck:
-#       test: ["CMD-SHELL", "pg_isready -U \"$$POSTGRES_USER\" -d \"$$POSTGRES_DB\""]
-#       interval: 10s
-#       timeout: 5s
-#       retries: 10
-#       start_period: 20s
-#     networks:
-#       - backend
-#     logging:
-#       driver: json-file
-#       options:
-#         max-size: "10m"
-#         max-file: "5"
-
-#   redis:
-#     image: redis:7-alpine
-#     restart: unless-stopped
-#     command: ["redis-server", "--appendonly", "yes", "--appendfsync", "everysec"]
-#     volumes:
-#       - redis_data:/data
-#     healthcheck:
-#       test: ["CMD", "redis-cli", "ping"]
-#       interval: 10s
-#       timeout: 5s
-#       retries: 10
-#       start_period: 10s
-#     networks:
-#       - backend
-#     logging:
-#       driver: json-file
-#       options:
-#         max-size: "10m"
-#         max-file: "5"
-
-#   migrate:
-#     <<: *runtime
-#     restart: "no"
-#     command: ["npx", "prisma", "migrate", "deploy"]
-#     depends_on:
-#       postgres:
-#         condition: service_healthy
-#     networks:
-#       - backend
-
-#   app-5000:
-#     <<: *web
-#     environment:
-#       PORT: "5000"
-#     ports:
-#       - "127.0.0.1:${QORIX_PORT_1:-5000}:5000"
-
-#   app-5001:
-#     <<: *web
-#     environment:
-#       PORT: "5001"
-#     ports:
-#       - "127.0.0.1:${QORIX_PORT_2:-5001}:5001"
-
-#   app-5002:
-#     <<: *web
-#     environment:
-#       PORT: "5002"
-#     ports:
-#       - "127.0.0.1:${QORIX_PORT_3:-5002}:5002"
-
-#   worker:
-#     <<: *runtime
-#     command: ["npm", "run", "worker"]
-#     depends_on:
-#       migrate:
-#         condition: service_completed_successfully
-#       redis:
-#         condition: service_healthy
-#     # BullMQ has no HTTP listener, so the worker intentionally publishes no port.
-
-# volumes:
-#   postgres_data:
-#   redis_data:
-
-# networks:
-#   frontend:
-#     driver: bridge
-#   backend:
-#     driver: bridge
-#     internal: true
-
+x-web: &web
+  <<: *runtime
+  depends_on:
+    postgres:
+      condition: service_healthy
+    migrate:
+      condition: service_completed_successfully
+    redis:
+      condition: service_healthy
 
 services:
+  postgres:
+    image: postgres:16-alpine
+    restart: unless-stopped
+    environment:
+      POSTGRES_USER: ${POSTGRES_USER:?Set POSTGRES_USER in .env}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:?Set POSTGRES_PASSWORD in .env}
+      POSTGRES_DB: ${POSTGRES_DB:?Set POSTGRES_DB in .env}
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U $${POSTGRES_USER} -d $${POSTGRES_DB}"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    networks:
+      - review-net
+    logging:
+      driver: json-file
+      options:
+        max-size: "10m"
+        max-file: "5"
+
   redis:
     image: redis:7-alpine
-    container_name: qorix-review-redis
     restart: unless-stopped
-    ports:
-      - "6379:6379"
+    command: ["redis-server", "--appendonly", "yes", "--appendfsync", "everysec"]
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
     volumes:
       - redis_data:/data
-    command: redis-server --appendonly yes
+    networks:
+      - review-net
+    logging:
+      driver: json-file
+      options:
+        max-size: "10m"
+        max-file: "5"
+
+  migrate:
+    <<: *runtime
+    restart: "no"
+    command: ["npx", "prisma", "migrate", "deploy"]
+    depends_on:
+      postgres:
+        condition: service_healthy
+
+  app-5000:
+    <<: *web
+    environment:
+      PORT: "5000"
+    ports:
+      - "127.0.0.1:${QORIX_PORT_1:-5000}:5000"
+
+  app-5001:
+    <<: *web
+    environment:
+      PORT: "5001"
+    ports:
+      - "127.0.0.1:${QORIX_PORT_2:-5001}:5001"
+
+  app-5002:
+    <<: *web
+    environment:
+      PORT: "5002"
+    ports:
+      - "127.0.0.1:${QORIX_PORT_3:-5002}:5002"
+
+  worker:
+    <<: *runtime
+    command: ["npm", "run", "worker"]
+    depends_on:
+      postgres:
+        condition: service_healthy
+      migrate:
+        condition: service_completed_successfully
+      redis:
+        condition: service_healthy
+    # BullMQ has no HTTP listener, so the worker intentionally publishes no port.
 
 volumes:
+  postgres_data:
   redis_data:
+
+networks:
+  review-net:
+    name: review-net
+    driver: bridge
+
