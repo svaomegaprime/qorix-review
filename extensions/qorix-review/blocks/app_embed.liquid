@@ -14,8 +14,15 @@
     --qrtb-text-weight: {% if trust_bar_metafield.fontWeight == 'LIGHT' %} 400 {% elsif  trust_bar_metafield.fontWeight == 'MEDIUM' %} 500 {% elsif  trust_bar_metafield.fontWeight == 'BOLD' %} 900 {% endif %} ;
     --qrtb-no-review-hide:  {% if trust_bar_metafield.hideIfNoReviews %} none {% else %} inline-flex {% endif %};
   }
-  div:empty{
-     display:grid !important;
+  #quick-review div:empty,
+  .qorix-quick-review-widget div:empty,
+  .qr-quoteloop div:empty,
+  .qr-review-hub div:empty,
+  .qorix-inline-widget div:empty,
+  .qorix-inline-widget:empty
+  .qorix-review-video-stack-section div:empty
+  {
+     display:grid;
   }
 </style>
 {{ 'trust-bar.css' | asset_url | stylesheet_tag }}
