@@ -26,6 +26,12 @@ ENV NODE_ENV=production
 # so the web process and the BullMQ worker can use the same immutable image.
 COPY --from=build --chown=node:node /app /app
 
+# vite-node loads the React Router config for the BullMQ worker and creates
+# generated files here at runtime. Prepare the excluded directory while still
+# root so the non-root runtime user can write to it.
+RUN mkdir -p /app/.react-router \
+    && chown node:node /app/.react-router
+
 USER node
 
 EXPOSE 5000
