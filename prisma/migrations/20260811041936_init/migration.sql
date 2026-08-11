@@ -46,6 +46,7 @@ CREATE TABLE "Order" (
     "redisBullmqJobId" JSONB,
     "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
     "updatedAt" TIMESTAMP(3) NOT NULL,
+    "externalSettings" JSONB,
 
     CONSTRAINT "Order_pkey" PRIMARY KEY ("id")
 );
@@ -63,6 +64,7 @@ CREATE TABLE "OrderLineItem" (
     "isReviewed" BOOLEAN NOT NULL DEFAULT false,
     "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
     "updatedAt" TIMESTAMP(3) NOT NULL,
+    "externalSettings" JSONB,
 
     CONSTRAINT "OrderLineItem_pkey" PRIMARY KEY ("id")
 );
@@ -87,6 +89,7 @@ CREATE TABLE "Review" (
     "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
     "updatedAt" TIMESTAMP(3) NOT NULL,
     "orderRecordId" UUID,
+    "externalSettings" JSONB,
 
     CONSTRAINT "Review_pkey" PRIMARY KEY ("id")
 );
@@ -100,6 +103,7 @@ CREATE TABLE "HelpfulCount" (
     "customerEmail" TEXT NOT NULL,
     "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
     "updatedAt" TIMESTAMP(3) NOT NULL,
+    "externalSettings" JSONB,
 
     CONSTRAINT "HelpfulCount_pkey" PRIMARY KEY ("id")
 );
@@ -112,6 +116,7 @@ CREATE TABLE "Attachment" (
     "reviewId" UUID,
     "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
     "updatedAt" TIMESTAMP(3) NOT NULL,
+    "externalSettings" JSONB,
 
     CONSTRAINT "Attachment_pkey" PRIMARY KEY ("id")
 );
@@ -123,6 +128,7 @@ CREATE TABLE "Reply" (
     "reviewId" UUID,
     "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
     "updatedAt" TIMESTAMP(3) NOT NULL,
+    "externalSettings" JSONB,
 
     CONSTRAINT "Reply_pkey" PRIMARY KEY ("id")
 );
@@ -133,6 +139,7 @@ CREATE TABLE "StoreSettings" (
     "storeId" TEXT NOT NULL,
     "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
     "updatedAt" TIMESTAMP(3) NOT NULL,
+    "externalSettings" JSONB,
 
     CONSTRAINT "StoreSettings_pkey" PRIMARY KEY ("id")
 );
@@ -150,6 +157,7 @@ CREATE TABLE "RequestScheduling" (
     "minimumOrderValue" INTEGER NOT NULL DEFAULT 100,
     "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
     "updatedAt" TIMESTAMP(3) NOT NULL,
+    "externalSettings" JSONB,
 
     CONSTRAINT "RequestScheduling_pkey" PRIMARY KEY ("id")
 );
@@ -178,6 +186,7 @@ CREATE TABLE "EmailSettings" (
     "replyReviewEmailSubject" TEXT,
     "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
     "updatedAt" TIMESTAMP(3) NOT NULL,
+    "externalSettings" JSONB,
 
     CONSTRAINT "EmailSettings_pkey" PRIMARY KEY ("id")
 );
@@ -193,6 +202,7 @@ CREATE TABLE "PublishingModeration" (
     "isSpamFilter" BOOLEAN NOT NULL DEFAULT true,
     "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
     "updatedAt" TIMESTAMP(3) NOT NULL,
+    "externalSettings" JSONB,
 
     CONSTRAINT "PublishingModeration_pkey" PRIMARY KEY ("id")
 );
@@ -213,6 +223,7 @@ CREATE TABLE "WidgetsSettings" (
     "isShowMediaFirst" BOOLEAN NOT NULL DEFAULT true,
     "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
     "updatedAt" TIMESTAMP(3) NOT NULL,
+    "externalSettings" JSONB,
 
     CONSTRAINT "WidgetsSettings_pkey" PRIMARY KEY ("id")
 );
@@ -239,6 +250,7 @@ CREATE TABLE "BrandingSettings" (
     "isShowFooterBadge" BOOLEAN NOT NULL DEFAULT true,
     "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
     "updatedAt" TIMESTAMP(3) NOT NULL,
+    "externalSettings" JSONB,
 
     CONSTRAINT "BrandingSettings_pkey" PRIMARY KEY ("id")
 );
@@ -254,6 +266,7 @@ CREATE TABLE "AdminNotification" (
     "notificationEmailAddress" JSONB NOT NULL,
     "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
     "updatedAt" TIMESTAMP(3) NOT NULL,
+    "externalSettings" JSONB,
 
     CONSTRAINT "AdminNotification_pkey" PRIMARY KEY ("id")
 );
@@ -277,6 +290,7 @@ CREATE TABLE "TrustBarWidget" (
     "hideIfNoReviews" BOOLEAN NOT NULL DEFAULT false,
     "advanceCss" TEXT NOT NULL DEFAULT '',
     "showVerifiedIconOnly" BOOLEAN NOT NULL DEFAULT false,
+    "externalSettings" JSONB,
 
     CONSTRAINT "TrustBarWidget_pkey" PRIMARY KEY ("id")
 );
@@ -323,6 +337,7 @@ CREATE TABLE "QuickReviewWidget" (
     "advanceCss" TEXT NOT NULL DEFAULT '',
     "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
     "updatedAt" TIMESTAMP(3) NOT NULL,
+    "externalSettings" JSONB,
 
     CONSTRAINT "QuickReviewWidget_pkey" PRIMARY KEY ("id")
 );
@@ -360,6 +375,7 @@ CREATE TABLE "QuoteLoopWidget" (
     "textColor" TEXT NOT NULL DEFAULT '#303030',
     "textLength" INTEGER NOT NULL DEFAULT 160,
     "quoteLoopWidgetSettings" JSONB DEFAULT '{}',
+    "externalSettings" JSONB,
 
     CONSTRAINT "QuoteLoopWidget_pkey" PRIMARY KEY ("id")
 );
@@ -394,6 +410,7 @@ CREATE TABLE "VideoStackSettings" (
     "badgeColor" TEXT NOT NULL DEFAULT '#34C759',
     "overlayTintColor" TEXT NOT NULL DEFAULT '#1A1A1A',
     "advanceCss" TEXT NOT NULL DEFAULT '',
+    "externalSettings" JSONB,
 
     CONSTRAINT "VideoStackSettings_pkey" PRIMARY KEY ("id")
 );
@@ -426,6 +443,7 @@ CREATE TABLE "ReviewReelSettings" (
     "cardBackgorud" TEXT NOT NULL DEFAULT '#FFF',
     "cardTextColor" TEXT NOT NULL DEFAULT '#000',
     "advanceCss" TEXT NOT NULL DEFAULT '',
+    "externalSettings" JSONB,
 
     CONSTRAINT "ReviewReelSettings_pkey" PRIMARY KEY ("id")
 );
@@ -461,6 +479,7 @@ CREATE TABLE "ReviewHubWidget" (
     "advanceCss" TEXT NOT NULL DEFAULT '',
     "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
     "updatedAt" TIMESTAMP(3) NOT NULL,
+    "externalSettings" JSONB,
 
     CONSTRAINT "ReviewHubWidget_pkey" PRIMARY KEY ("id")
 );
@@ -511,6 +530,7 @@ CREATE TABLE "Subscription" (
     "trialEndsAt" TIMESTAMP(3),
     "startsAt" TIMESTAMP(3),
     "endsAt" TIMESTAMP(3),
+    "externalSettings" JSONB,
     "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
     "updatedAt" TIMESTAMP(3) NOT NULL,
 
