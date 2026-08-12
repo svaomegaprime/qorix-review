@@ -10,7 +10,7 @@ export const DEFAULT_REQUEST_SCHEDULING = {
 
 export const DEFAULT_SMTP_SETUP = {
   smtpUser: "smtp.nextvence@gmail.com",
-  smtpPassword: "mudj ihjx nvnk typz",
+  smtpPassword: "pkpy nskb yxcb duji",
   smtpPort: 465,
   smtpHost: "smtp.gmail.com",
 };
