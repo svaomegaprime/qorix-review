@@ -67,11 +67,11 @@
       <button class="qr-load-more-btn" type="button" @click="loadMore()">Load more reviews</button>
     </div>
   </div>
-  {% render 'show-all-media-modal', from: 'review_hub', inside_shadow: true %}
-  {% render 'lightbox', inside_shadow: true %}
 </div>
 </template>
 </qorix-review-hub-widget>
+{% render 'show-all-media-modal' %}
+{% render 'lightbox' %}
 
 {% schema %}
 {

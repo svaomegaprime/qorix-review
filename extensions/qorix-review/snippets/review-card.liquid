@@ -1,4 +1,4 @@
-{% render 'skeleton', type: 'card' %}
+{% render 'skeleton', type: 'card', grid_columns: grid_columns %}
 <template x-for="review in filteredReviews()" :key="review.id">
   <div class="qr-review-card" x-show="!loading">
     <div>
@@ -62,8 +62,18 @@
                 preload="metadata"
                 @click="openLightbox(review.attachments[0])"
               ></video>
-              <div class="qorix-video-play-badge">
-                <svg width="12" height="14" viewBox="0 0 12 14" fill="none" xmlns="http://www.w3.org/2000/svg">
+              <div
+                class="qorix-video-play-badge"
+                style="position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); width: 32px; height: 32px; border-radius: 50%; background: rgba(255, 255, 255, 0.92); display: flex; align-items: center; justify-content: center; pointer-events: none; z-index: 2; box-shadow: 0 2px 8px rgba(0, 0, 0, 0.25);"
+              >
+                <svg
+                  width="12"
+                  height="14"
+                  viewBox="0 0 12 14"
+                  fill="none"
+                  xmlns="http://www.w3.org/2000/svg"
+                  style="width: 12px; height: 14px; margin-left: 2px; display: block;"
+                >
                   <path d="M3 2.5L10.5 7L3 11.5V2.5Z" fill="#1A1A1A"/>
                 </svg>
               </div>
@@ -98,8 +108,18 @@
                       preload="metadata"
                       @click="openMediaModal(review)"
                     ></video>
-                    <div class="qorix-video-play-badge">
-                      <svg width="12" height="14" viewBox="0 0 12 14" fill="none" xmlns="http://www.w3.org/2000/svg">
+                    <div
+                      class="qorix-video-play-badge"
+                      style="position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); width: 32px; height: 32px; border-radius: 50%; background: rgba(255, 255, 255, 0.92); display: flex; align-items: center; justify-content: center; pointer-events: none; z-index: 2; box-shadow: 0 2px 8px rgba(0, 0, 0, 0.25);"
+                    >
+                      <svg
+                        width="12"
+                        height="14"
+                        viewBox="0 0 12 14"
+                        fill="none"
+                        xmlns="http://www.w3.org/2000/svg"
+                        style="width: 12px; height: 14px; margin-left: 2px; display: block;"
+                      >
                         <path d="M3 2.5L10.5 7L3 11.5V2.5Z" fill="#1A1A1A"/>
                       </svg>
                     </div>
@@ -127,9 +147,11 @@
               </div>
             </template>
           </template>
-          {% comment %} <template x-if="review.attachments.length == 0">
-            <div style="height: 180px;"></div>
-          </template> {% endcomment %}
+          {% comment %}
+            <template x-if="review.attachments.length == 0">
+              <div style="height: 180px;"></div>
+            </template>
+          {% endcomment %}
         </div>
       {% endif %}
     </div>

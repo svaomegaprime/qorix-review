@@ -1,4 +1,52 @@
 class ReviewX {
+  static getPopupStore() {
+    return window.Alpine?.store("qorixPopup");
+  }
+
+  static syncBodyScroll() {
+    const popup = ReviewX.getPopupStore();
+    if (!popup) return;
+
+    document.body.style.overflow =
+      popup.showAllMedia || popup.lightboxOpen ? "hidden" : "";
+  }
+
+  static openMediaModal(review, attachments = review?.attachments ?? []) {
+    const popup = ReviewX.getPopupStore();
+    if (!popup) return;
+
+    popup.attachments = attachments;
+    popup.showAllMedia = true;
+    ReviewX.syncBodyScroll();
+  }
+
+  static closeMediaModal() {
+    const popup = ReviewX.getPopupStore();
+    if (!popup) return;
+
+    popup.showAllMedia = false;
+    popup.attachments = [];
+    ReviewX.syncBodyScroll();
+  }
+
+  static openLightbox(media) {
+    const popup = ReviewX.getPopupStore();
+    if (!popup) return;
+
+    popup.lightboxMedia = media;
+    popup.lightboxOpen = true;
+    ReviewX.syncBodyScroll();
+  }
+
+  static closeLightbox() {
+    const popup = ReviewX.getPopupStore();
+    if (!popup) return;
+
+    popup.lightboxOpen = false;
+    popup.lightboxMedia = null;
+    ReviewX.syncBodyScroll();
+  }
+
   constructor() {
     this.ratings = [1, 2, 3, 4, 5];
 
@@ -26,17 +74,12 @@ class ReviewX {
     this.allowPhotoUpload = true;
     this.allowVideoUpload = true;
     this.uploadedFiles = [];
-    this.showAllMedia = false;
-    this.selectedReview = null;
-
     this.form = {
       name: "",
       email: "",
       review: "",
     };
 
-    this.lightboxOpen = false;
-    this.lightboxMedia = null;
     this.product = {};
     this.customerId = "";
     this.customerEmail = "";
@@ -762,15 +805,11 @@ class ReviewX {
   }
 
   openLightbox(media) {
-    console.log(media);
-    this.lightboxMedia = media;
-    this.lightboxOpen = true;
-    document.body.style.overflow = "hidden";
+    ReviewX.openLightbox(media);
   }
 
   openMediaModal(review) {
-    this.selectedReview = review;
-    this.showAllMedia = true;
+    ReviewX.openMediaModal(review, review?.attachments ?? this.attachments);
   }
 
   closeLightbox(event) {
@@ -782,9 +821,7 @@ class ReviewX {
       return;
     }
 
-    this.lightboxOpen = false;
-    this.lightboxMedia = null;
-    document.body.style.overflow = "";
+    ReviewX.closeLightbox();
   }
 
   // init() {
@@ -800,5 +837,28 @@ class ReviewX {
 // Plain JS usage:  const widget = new QuickReviewWidget(); widget.init();
 
 window.ReviewWidget = () => new ReviewX();
+
+const registerQorixPopupStore = () => {
+  if (!window.Alpine || window.Alpine.store("qorixPopup")) return;
+
+  window.Alpine.store("qorixPopup", {
+    showAllMedia: false,
+    attachments: [],
+    lightboxOpen: false,
+    lightboxMedia: null,
+  });
+};
+
+document.addEventListener("alpine:init", registerQorixPopupStore, {
+  once: true,
+});
+registerQorixPopupStore();
+
+window.QorixPopup = {
+  openMediaModal: ReviewX.openMediaModal,
+  closeMediaModal: ReviewX.closeMediaModal,
+  openLightbox: ReviewX.openLightbox,
+  closeLightbox: ReviewX.closeLightbox,
+};
 
 // export default QuickReviewWidget;

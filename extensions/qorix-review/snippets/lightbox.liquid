@@ -1,18 +1,30 @@
 {{ 'lightbox.css' | asset_url | stylesheet_tag }}
-{% unless inside_shadow %}
-<template x-teleport="body">
-{% endunless %}
-  <div class="lightbox" id="lightbox" :class="{ open: lightboxOpen }" @click.self="closeLightbox()" @keydown.escape.window="lightboxOpen && closeLightbox()">
-    <button class="lightbox-close" type="button" @click="closeLightbox()" aria-label="Close media viewer">&#x2715;</button>
+<div x-data>
+  <template x-teleport="body">
+  <div
+    class="lightbox"
+    id="lightbox"
+    :class="{ open: $store.qorixPopup.lightboxOpen }"
+    @click.self="window.QorixPopup.closeLightbox()"
+    @keydown.escape.window="$store.qorixPopup.lightboxOpen && window.QorixPopup.closeLightbox()"
+  >
+    <button
+      class="lightbox-close"
+      type="button"
+      @click="window.QorixPopup.closeLightbox()"
+      aria-label="Close media viewer"
+      style="position: absolute; top: 18px; right: 20px; z-index: 1; width: 36px; height: 36px; border: none; border-radius: 50%; background: rgba(255, 255, 255, 0.15); color: #ffffff; font-size: 18px; line-height: 1; cursor: pointer; display: flex; align-items: center; justify-content: center; padding: 0;"
+    >
+      &#x2715;
+    </button>
     <div class="lightbox-content" id="lightbox-content">
-      <template x-if="lightboxMedia && lightboxMedia.type === 'IMAGE'">
-        <img :src="lightboxMedia.url" alt="media" width="" height="">
+      <template x-if="$store.qorixPopup.lightboxMedia?.type === 'IMAGE'">
+        <img :src="$store.qorixPopup.lightboxMedia.url" alt="media" width="" height="">
       </template>
-      <template x-if="lightboxMedia && lightboxMedia.type === 'VIDEO'">
-        <video :src="lightboxMedia.url" controls autoplay></video>
+      <template x-if="$store.qorixPopup.lightboxMedia?.type === 'VIDEO'">
+        <video :src="$store.qorixPopup.lightboxMedia.url" controls autoplay></video>
       </template>
     </div>
   </div>
-{% unless inside_shadow %}
 </template>
-{% endunless %}
+</div>
