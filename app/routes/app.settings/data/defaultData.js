@@ -1,6 +1,6 @@
 export const DEFAULT_REQUEST_SCHEDULING = {
   isAutomaticRequest: true,
-  sendRequestAfterDelivery: 5,
+  sendRequestAfterDelivery: 0,
   isReminderRequest: true,
   reminderRequestDelay: 5,
   isSkipRefundedOrder: true,
