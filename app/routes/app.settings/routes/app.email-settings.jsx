@@ -264,9 +264,10 @@ export default function EmailSettings() {
   Go to Admin Notifications
   </s-button>
 
-    <s-button  variant="secondary" onClick={() => window.open("http://qorix-review-docs.nextvence.com/pages/settings/gmail-smtp-setup", "_blank")}>
+    <s-button   slot="secondary-actions"
+    variant="secondary" onClick={() => window.open("http://qorix-review-docs.nextvence.com/pages/settings/gmail-smtp-setup", "_blank")}>
           SMTP Setup Guide
-        </s-button>
+      </s-button>
 
 </s-banner>
 
