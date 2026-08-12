@@ -3,31 +3,33 @@
   <div class="qr-review-card" x-show="!loading">
     <div>
       <div class="qr-review-header">
-        <img
-          src="{{ '' | asset_url }}"
-          alt="{{ reviewer_name }}"
-          class="qr-review-avatar"
-          width=""
-          height=""
-          x-show="review.reviewerImage"
-        >
-        <span
-          x-show="true"
-          class="qr-review-avatar"
-          x-show="true"
-          x-text="review.reviewerName[0].toUpperCase()"
-          style="font-size: 18px;"
-        ></span>
+        {% if review_hub_metafield.showReviewerName %}
+          <img
+            src="{{ '' | asset_url }}"
+            alt="{{ reviewer_name }}"
+            class="qr-review-avatar"
+            width=""
+            height=""
+            x-show="review.reviewerImage"
+          >
+          <span
+            x-show="true"
+            class="qr-review-avatar"
+            x-show="true"
+            x-text="review.reviewerName[0].toUpperCase()"
+            style="font-size: 18px;"
+          ></span>
+        {% endif %}
 
         <div class="qr-review-meta">
           <div class="qr-review-name-row">
             {% if review_hub_metafield.showReviewerName %}
               <span class="qr-review-name" x-text="review.reviewerName"></span>
-            {% endif %}
-            {% if review_hub_metafield.showVerifiedBadge %}
-              <span class="qr-verified-icon">
-                {%- render 'icon', name: 'check', color: review_hub_metafield.verifiedBadgeColor -%}
-              </span>
+              {% if review_hub_metafield.showVerifiedBadge %}
+                <span class="qr-verified-icon">
+                  {%- render 'icon', name: 'check', color: review_hub_metafield.verifiedBadgeColor -%}
+                </span>
+              {% endif %}
             {% endif %}
           </div>
           {% if review_hub_metafield.showReviewTimer %}
