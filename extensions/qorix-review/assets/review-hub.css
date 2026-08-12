@@ -87,7 +87,8 @@
   --qr-heading-margin: 0 auto;
 }
 
-.shopify-app-block[data-block-handle="ReviewHub"] {
+.shopify-app-block[data-block-handle="ReviewHub"],
+.shopify-app-block:has(> [data-section="qorix-review-hub"]) {
   display: block;
   width: 100%;
   max-width: 100%;
