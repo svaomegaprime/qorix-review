@@ -335,6 +335,10 @@
   border-radius: 16px;
   padding: 20px;
   background: var(--card-background-color);
+  min-height: 470px;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
 }
 
 .qr-review-header {
@@ -505,6 +509,7 @@ span.qr-review-avatar {
   overflow: hidden;
   border: 1px solid #767676;
   width: 28px;
+  height: 28px;
 }
 
 .qr-review-actions {

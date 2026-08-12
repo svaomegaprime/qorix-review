@@ -1,173 +1,176 @@
 {% render 'skeleton', type: 'card' %}
 <template x-for="review in filteredReviews()" :key="review.id">
   <div class="qr-review-card" x-show="!loading">
-    <div class="qr-review-header">
-      <img
-        src="{{ '' | asset_url }}"
-        alt="{{ reviewer_name }}"
-        class="qr-review-avatar"
-        width=""
-        height=""
-        x-show="review.reviewerImage"
-      >
-      <span
-        x-show="true"
-        class="qr-review-avatar"
-        x-show="true"
-        x-text="review.reviewerName[0].toUpperCase()"
-        style="font-size: 18px;"
-      ></span>
+    <div>
+      <div class="qr-review-header">
+        <img
+          src="{{ '' | asset_url }}"
+          alt="{{ reviewer_name }}"
+          class="qr-review-avatar"
+          width=""
+          height=""
+          x-show="review.reviewerImage"
+        >
+        <span
+          x-show="true"
+          class="qr-review-avatar"
+          x-show="true"
+          x-text="review.reviewerName[0].toUpperCase()"
+          style="font-size: 18px;"
+        ></span>
 
-      <div class="qr-review-meta">
-        <div class="qr-review-name-row">
-          {% if review_hub_metafield.showReviewerName %}
-            <span class="qr-review-name" x-text="review.reviewerName"></span>
-          {% endif %}
-          {% if review_hub_metafield.showVerifiedBadge %}
-            <span class="qr-verified-icon">
-              {%- render 'icon', name: 'check', color: review_hub_metafield.verifiedBadgeColor -%}
-            </span>
+        <div class="qr-review-meta">
+          <div class="qr-review-name-row">
+            {% if review_hub_metafield.showReviewerName %}
+              <span class="qr-review-name" x-text="review.reviewerName"></span>
+            {% endif %}
+            {% if review_hub_metafield.showVerifiedBadge %}
+              <span class="qr-verified-icon">
+                {%- render 'icon', name: 'check', color: review_hub_metafield.verifiedBadgeColor -%}
+              </span>
+            {% endif %}
+          </div>
+          {% if review_hub_metafield.showReviewTimer %}
+            <span class="qr-review-date" x-text="timeAgo(review.createdAt)"></span>
           {% endif %}
         </div>
-        {% if review_hub_metafield.showReviewTimer %}
-          <span class="qr-review-date" x-text="timeAgo(review.createdAt)"></span>
-        {% endif %}
       </div>
-    </div>
 
-    {% if review_hub_metafield.showStarDistribution %}
-      <div class="qr-review-stars">
-        {% render 'stars',
-          from: 'reviewHubCardStar',
-          starColor: review_hub_metafield.starColor,
-          review_hub_metafield: review_hub_metafield
-        %}
-      </div>
-    {% endif %}
+      {% if review_hub_metafield.showStarDistribution %}
+        <div class="qr-review-stars">
+          {% render 'stars',
+            from: 'reviewHubCardStar',
+            starColor: review_hub_metafield.starColor,
+            review_hub_metafield: review_hub_metafield
+          %}
+        </div>
+      {% endif %}
 
-    <p class="qr-review-text" x-text="review.body"></p>
-    {% if review_hub_metafield.showMediaAsset %}
-      <div
-        class="qr-review-image-wrap"
-        :class="'qr-image-count-' + Math.min(review.attachments.length, 2)"
-      >
-        <template x-if="review.attachments.length === 1 && review.attachments[0].type === 'VIDEO'">
-          <div style="position: relative; width: 100%; height: 100%;">
-            <video
-              class="qr-review-image qr-lightbox-trigger"
-              :src="review.attachments[0].url + '#t=0.001'"
-              muted
-              playsinline
-              preload="metadata"
-              @click="openLightbox(review.attachments[0])"
-            ></video>
-            <div class="qorix-video-play-badge">
-              <svg width="12" height="14" viewBox="0 0 12 14" fill="none" xmlns="http://www.w3.org/2000/svg">
-                <path d="M3 2.5L10.5 7L3 11.5V2.5Z" fill="#1A1A1A"/>
-              </svg>
-            </div>
-          </div>
-        </template>
-
-        <template x-if="review.attachments.length === 1 && review.attachments[0].type === 'IMAGE'">
-          <img
-            :src="review.attachments[0].url"
-            alt="review image"
-            class="qr-review-image qr-lightbox-trigger"
-            data-type="image"
-            :data-src="review.attachments[0].url"
-            width=""
-            height=""
-            @click="openLightbox(review.attachments[0])"
-          >
-        </template>
-
-        <template x-if="review.attachments.length > 1">
-          <template x-for="(attachment, index) in review.attachments.slice(0, 2)" :key="index">
-            <div class="qr-review-image-single" style="position: relative;">
-              <template x-if="attachment.type === 'VIDEO'">
-                <div style="position: relative; width: 100%; height: 100%;">
-                  <video
-                    class="qr-lightbox-trigger"
-                    data-type="video"
-                    :src="attachment.url + '#t=0.001'"
-                    :data-src="attachment.url"
-                    muted
-                    playsinline
-                    preload="metadata"
-                    @click="openMediaModal(review)"
-                  ></video>
-                  <div class="qorix-video-play-badge">
-                    <svg width="12" height="14" viewBox="0 0 12 14" fill="none" xmlns="http://www.w3.org/2000/svg">
-                      <path d="M3 2.5L10.5 7L3 11.5V2.5Z" fill="#1A1A1A"/>
-                    </svg>
-                  </div>
-                </div>
-              </template>
-
-              <template x-if="attachment.type === 'IMAGE'">
-                <img
-                  :src="attachment.url"
-                  alt="review image"
-                  class="qr-lightbox-trigger"
-                  data-type="image"
-                  :data-src="attachment.url"
-                  width=""
-                  height=""
-                  @click="openMediaModal(review)"
-                >
-              </template>
-
-              <span
-                class="qr-review-image-count"
-                x-show="index === 1 && review.attachments.length > 2"
-                x-text="'+' + (review.attachments.length - 2)"
-              ></span>
+      <p class="qr-review-text" x-text="review.body"></p>
+      {% if review_hub_metafield.showMediaAsset %}
+        <div
+          class="qr-review-image-wrap"
+          :class="'qr-image-count-' + Math.min(review.attachments.length, 2)"
+        >
+          <template x-if="review.attachments.length === 1 && review.attachments[0].type === 'VIDEO'">
+            <div style="position: relative; width: 100%; height: 100%;">
+              <video
+                class="qr-review-image qr-lightbox-trigger"
+                :src="review.attachments[0].url + '#t=0.001'"
+                muted
+                playsinline
+                preload="metadata"
+                @click="openLightbox(review.attachments[0])"
+              ></video>
+              <div class="qorix-video-play-badge">
+                <svg width="12" height="14" viewBox="0 0 12 14" fill="none" xmlns="http://www.w3.org/2000/svg">
+                  <path d="M3 2.5L10.5 7L3 11.5V2.5Z" fill="#1A1A1A"/>
+                </svg>
+              </div>
             </div>
           </template>
-        </template>
-        <template x-if="review.attachments.length == 0">
-          <div style="height: 180px;"></div>
-        </template>
-      </div>
-    {% endif %}
 
-    <div class="qr-review-tag">
-      <span class="qr-tag-icon" x-show="review.productImage"
-        ><img :src="review.productImage" alt="" width="23" height="23"
-      ></span>
-      <span
-        @click="window.location.href = `${window.location.href.split('#')[0]}products/${review.productHandle}`"
-        x-text="review.productTitle"
-      ></span>
+          <template x-if="review.attachments.length === 1 && review.attachments[0].type === 'IMAGE'">
+            <img
+              :src="review.attachments[0].url"
+              alt="review image"
+              class="qr-review-image qr-lightbox-trigger"
+              data-type="image"
+              :data-src="review.attachments[0].url"
+              width=""
+              height=""
+              @click="openLightbox(review.attachments[0])"
+            >
+          </template>
+
+          <template x-if="review.attachments.length > 1">
+            <template x-for="(attachment, index) in review.attachments.slice(0, 2)" :key="index">
+              <div class="qr-review-image-single" style="position: relative;">
+                <template x-if="attachment.type === 'VIDEO'">
+                  <div style="position: relative; width: 100%; height: 100%;">
+                    <video
+                      class="qr-lightbox-trigger"
+                      data-type="video"
+                      :src="attachment.url + '#t=0.001'"
+                      :data-src="attachment.url"
+                      muted
+                      playsinline
+                      preload="metadata"
+                      @click="openMediaModal(review)"
+                    ></video>
+                    <div class="qorix-video-play-badge">
+                      <svg width="12" height="14" viewBox="0 0 12 14" fill="none" xmlns="http://www.w3.org/2000/svg">
+                        <path d="M3 2.5L10.5 7L3 11.5V2.5Z" fill="#1A1A1A"/>
+                      </svg>
+                    </div>
+                  </div>
+                </template>
+
+                <template x-if="attachment.type === 'IMAGE'">
+                  <img
+                    :src="attachment.url"
+                    alt="review image"
+                    class="qr-lightbox-trigger"
+                    data-type="image"
+                    :data-src="attachment.url"
+                    width=""
+                    height=""
+                    @click="openMediaModal(review)"
+                  >
+                </template>
+
+                <span
+                  class="qr-review-image-count"
+                  x-show="index === 1 && review.attachments.length > 2"
+                  x-text="'+' + (review.attachments.length - 2)"
+                ></span>
+              </div>
+            </template>
+          </template>
+          {% comment %} <template x-if="review.attachments.length == 0">
+            <div style="height: 180px;"></div>
+          </template> {% endcomment %}
+        </div>
+      {% endif %}
     </div>
-    {% if review_hub_metafield.showAppreciationOption or review_hub_metafield.showShareOption %}
-      <div class="qr-review-actions">
-        {% if review_hub_metafield.showAppreciationOption %}
-          <button
-            class="qr-helpful-btn"
-            type="button"
-            @click="helpfulToggle(review, '{{ customer.id }}', '{{ customer.email }}')"
-            :class="{ 'is-helpful': review.isHelpful }"
-
-            :aria-pressed="review.isHelpful ? 'true' : 'false'"
-          >
-            <span class="qr-thumb-icon">
-              {% render 'icon', name: 'thumbs-up' %}
-            </span>
-            Helpful (<span x-text="review.helpfulTotal || 0"></span>)
-          </button>
-        {% endif %}
-        {% if review_hub_metafield.showShareOption %}
-          <button class="qr-share-btn" type="button" @click="shareReview(review)">
-            <span class="qr-share-icon">
-              {% render 'icon', name: 'share' %}
-            </span>
-            Share
-          </button>
-        {% endif %}
+    <div>
+      <div class="qr-review-tag">
+        <span class="qr-tag-icon" x-show="review.productImage"
+          ><img :src="review.productImage" alt="" width="23" height="23"
+        ></span>
+        <span
+          @click="window.location.href = `${window.location.href.split('#')[0]}products/${review.productHandle}`"
+          x-text="review.productTitle"
+        ></span>
       </div>
-    {% endif %}
+      {% if review_hub_metafield.showAppreciationOption or review_hub_metafield.showShareOption %}
+        <div class="qr-review-actions">
+          {% if review_hub_metafield.showAppreciationOption %}
+            <button
+              class="qr-helpful-btn"
+              type="button"
+              @click="helpfulToggle(review, '{{ customer.id }}', '{{ customer.email }}')"
+              :class="{ 'is-helpful': review.isHelpful }"
+
+              :aria-pressed="review.isHelpful ? 'true' : 'false'"
+            >
+              <span class="qr-thumb-icon">
+                {% render 'icon', name: 'thumbs-up' %}
+              </span>
+              Helpful (<span x-text="review.helpfulTotal || 0"></span>)
+            </button>
+          {% endif %}
+          {% if review_hub_metafield.showShareOption %}
+            <button class="qr-share-btn" type="button" @click="shareReview(review)">
+              <span class="qr-share-icon">
+                {% render 'icon', name: 'share' %}
+              </span>
+              Share
+            </button>
+          {% endif %}
+        </div>
+      {% endif %}
+    </div>
   </div>
 </template>
 <p
