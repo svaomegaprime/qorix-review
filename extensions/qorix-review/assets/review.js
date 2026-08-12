@@ -448,6 +448,24 @@ class ReviewX {
       return;
     }
 
+    if (this.form.name.length > 20) {
+      this.isError = true;
+      this.errorMessage = "Your name cannot exceed 20 characters.";
+      return;
+    }
+
+    if (this.form.email.length > 30) {
+      this.isError = true;
+      this.errorMessage = "Your email cannot exceed 30 characters.";
+      return;
+    }
+
+    if (this.form.review.length > 300) {
+      this.isError = true;
+      this.errorMessage = "Your review cannot exceed 300 characters.";
+      return;
+    }
+
     this.isError = false;
     this.errorMessage = "";
     this.dataPostLoading = true;

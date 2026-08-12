@@ -15,6 +15,10 @@ import { addJobInQueue, reviewQueue } from "../../lib/bullmq/bullmq.queue";
 import { getOrderReviewTarget } from "../../services/orders.server.js";
 import { normalizeShopifyId } from "../../utils/shopifyGid.js";
 
+const MAX_REVIEWER_NAME_LENGTH = 20;
+const MAX_REVIEWER_EMAIL_LENGTH = 30;
+const MAX_REVIEW_BODY_LENGTH = 300;
+
 function normalizeOrderNumber(value) {
   if (!value || value === "null" || value === "undefined") return null;
   return value.startsWith("#") ? value : `#${value}`;
@@ -89,11 +93,47 @@ async function postReview(request, session, admin) {
     const publishingModeration = storeSettings?.publishingModeration ?? {};
     const adminNotification = storeSettings?.adminNotification ?? {};
 
+    const reviewerName = formData.get("reviewerName");
+    const reviewerEmail = formData.get("reviewerEmail");
+    const body = formData.get("body");
+
+    const fieldLimits = [
+      {
+        value: reviewerName,
+        maxLength: MAX_REVIEWER_NAME_LENGTH,
+        message: "Reviewer name cannot exceed 20 characters",
+      },
+      {
+        value: reviewerEmail,
+        maxLength: MAX_REVIEWER_EMAIL_LENGTH,
+        message: "Reviewer email cannot exceed 30 characters",
+      },
+      {
+        value: body,
+        maxLength: MAX_REVIEW_BODY_LENGTH,
+        message: "Review body cannot exceed 300 characters",
+      },
+    ];
+
+    const invalidField = fieldLimits.find(
+      ({ value, maxLength }) =>
+        typeof value === "string" && value.length > maxLength,
+    );
+
+    if (invalidField) {
+      return sendResponse(null, {
+        ok: false,
+        status: 400,
+        message: invalidField.message,
+        data: {},
+      });
+    }
+
     const reviewData = {
       storeId: id,
-      reviewerName: formData.get("reviewerName") || null,
-      reviewerEmail: String(formData.get("reviewerEmail") || "").trim() || null,
-      body: formData.get("body") || null,
+      reviewerName: reviewerName || null,
+      reviewerEmail: String(reviewerEmail || "").trim() || null,
+      body: body || null,
       rating: Number(formData.get("rating") || 0),
       source: formData.get("source") || "PRODUCT_PAGE",
       productId: formData.get("productId") || null,

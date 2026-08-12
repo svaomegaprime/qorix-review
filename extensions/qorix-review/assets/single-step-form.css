@@ -97,18 +97,6 @@
   margin-left: 2px !important;
 }
 
-.star-picker {
-  display: flex !important;
-  gap: 8px !important;
-  margin-bottom: 16px !important;
-  cursor: pointer !important;
-}
-
-.star-picker span {
-  cursor: pointer !important;
-  display: flex !important;
-}
-
 /* Inputs & Textarea */
 .form-textarea {
   width: 100% !important;

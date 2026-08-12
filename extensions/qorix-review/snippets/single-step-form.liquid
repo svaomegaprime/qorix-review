@@ -31,7 +31,11 @@
       </div>
 
       <label class="form-label">Your rating <span class="req">*</span></label>
-      <div class="star-picker" id="star-picker">
+      <div
+        class="star-picker"
+        id="star-picker"
+        style="display: flex; gap: 8px; margin-bottom: 16px; cursor: pointer;"
+      >
         <template x-for="star in ratings" :key="'picker-' + star">
           <span
             role="button"
@@ -42,6 +46,7 @@
             @keydown.enter.prevent="starSelected = star"
             @keydown.space.prevent="starSelected = star"
             :aria-label="'Rate ' + star + ' stars'"
+            style="display: flex; cursor: pointer;"
           >
             <svg
               :stroke="star <= (starHover || starSelected) ? '{{ quick_review_metafield.starColor }}' : '#606060' "
@@ -66,6 +71,8 @@
         placeholder="Tell us what you loved or didn't like..."
         x-model="form.review"
         rows="5"
+        maxlength="300"
+        style="height: 136px;"
       ></textarea>
       <div
         style="
@@ -87,6 +94,7 @@
               type="text"
               placeholder="Enter your name"
               x-model="form.name"
+              maxlength="20"
             >
           </span>
         {%- endif -%}
@@ -101,6 +109,7 @@
               required
               placeholder="Enter your email"
               x-model="form.email"
+              maxlength="30"
             >
           </span>
         {%- endif -%}
