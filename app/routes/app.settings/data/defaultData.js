@@ -88,7 +88,7 @@ export const DEFAULT_BRANDING = {
 export const DEFAULT_ADMIN_NOTIFICATION = {
   notificationEmailAddress: {
     email1: "example@gmail.com",
-    email2: "example@gmail.com",
+    email2: null,
     email3: null,
   },
   isNewReviewNotify: true,

@@ -151,16 +151,14 @@ export default function AdminNotification() {
                 {new Array(countMail).fill(null).map((_, i) => {
                   const key = `email${i + 1}`;
                   return (
-                    <>
                       <s-text-field
-                        key={i}
-                        defaultValue={
-                          adminNotification.notificationEmailAddress[key]
+                        key={key}
+                        value={
+                          adminNotification.notificationEmailAddress[key] ?? ""
                         }
                         details="This is your store's admin email. You can change it at any time."
                         onInput={(e) => handleEmails(i + 1, e.target.value)}
                       />
-                    </>
                   );
                 })}
                 {/* <s-text-field defaultValue="svaomegaprime@gmail.com" />
