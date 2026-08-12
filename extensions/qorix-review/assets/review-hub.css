@@ -1,4 +1,10 @@
-:root {
+:host {
+  display: block;
+  width: 100%;
+  max-width: 100%;
+  min-width: 0;
+  box-sizing: border-box;
+
   /* ---------- Colors: Brand / Semantic ---------- */
   --qr-color-primary: #34c759;
   --qr-color-heading: #1a1a1a;
@@ -85,14 +91,6 @@
 
   /* ---------- Layout: Misc ---------- */
   --qr-heading-margin: 0 auto;
-}
-
-.shopify-app-block[data-block-handle="ReviewHub"] {
-  display: block;
-  width: 100%;
-  max-width: 100%;
-  min-width: 0;
-  box-sizing: border-box;
 }
 
 .qr-review-hub {
@@ -193,7 +191,7 @@
   border: 0.1rem solid var(--qr-color-border-sort);
   border-radius: 8px;
 
-  font-size: 1rem;
+  font-size: 16px;
   line-height: 1;
 
   color: var(--qr-text-primary);
@@ -334,6 +332,10 @@
   border-radius: 16px;
   padding: 20px;
   background: var(--card-background-color);
+  min-height: 470px;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
 }
 
 .qr-review-header {
@@ -504,6 +506,7 @@ span.qr-review-avatar {
   overflow: hidden;
   border: 1px solid #767676;
   width: 28px;
+  height: 28px;
 }
 
 .qr-review-actions {

@@ -22,25 +22,28 @@ export async function setCache(key, data, ttl = DEFAULT_TTL) {
 }
 
 export async function invalidateReviewCache(storeId, productId) {
-  const pattern = productId
-    ? `reviews:${storeId}:${productId}:*`
-    : `reviews:${storeId}:*`;
+  // If productId is provided, invalidate both product-specific and storewide ('all') caches
+  const patterns = productId
+    ? [`reviews:${storeId}:${productId}:*`, `reviews:${storeId}:all:*`]
+    : [`reviews:${storeId}:*`];
 
   try {
-    let cursor = "0";
-    do {
-      const [nextCursor, keys] = await connection.scan(
-        cursor,
-        "MATCH",
-        pattern,
-        "COUNT",
-        100,
-      );
-      cursor = nextCursor;
-      if (keys.length > 0) {
-        await connection.del(...keys);
-      }
-    } while (cursor !== "0");
+    for (const pattern of patterns) {
+      let cursor = "0";
+      do {
+        const [nextCursor, keys] = await connection.scan(
+          cursor,
+          "MATCH",
+          pattern,
+          "COUNT",
+          100,
+        );
+        cursor = nextCursor;
+        if (keys.length > 0) {
+          await connection.del(...keys);
+        }
+      } while (cursor !== "0");
+    }
   } catch (err) {
     console.error("[CACHE::INVALIDATE] error", err);
   }

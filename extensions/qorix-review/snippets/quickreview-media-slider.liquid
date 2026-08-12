@@ -3,7 +3,7 @@
 <div x-show="attachments.length > 0 ? true : showMediaWithoutRating" class="qorix-qr-media-container">
   <div class="qorix-qr-media-header">
     <span class="qorix-qr-media-title">Reviews with media</span>
-    <p class="qorix-qr-media-see-all" @click="showAllMedia = true">See all media</p>
+    <p class="qorix-qr-media-see-all" @click="openMediaModal()">See all media</p>
   </div>
 
   <div class="qorix-qr-media-slider-wrap">
@@ -37,8 +37,8 @@
                     muted
                     playsinline
                   ></video>
-                  <div class="qorix-video-play-badge">
-                    <svg width="12" height="14" viewBox="0 0 12 14" fill="none" xmlns="http://www.w3.org/2000/svg">
+                  <div class="qorix-video-play-badge" style="position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); width: 32px; height: 32px; border-radius: 50%; background: rgba(255, 255, 255, 0.92); display: flex; align-items: center; justify-content: center; pointer-events: none; z-index: 2; box-shadow: 0 2px 8px rgba(0, 0, 0, 0.25);">
+                    <svg width="12" height="14" viewBox="0 0 12 14" fill="none" xmlns="http://www.w3.org/2000/svg" style="width: 12px; height: 14px; margin-left: 2px; display: block;">
                       <path d="M3 2.5L10.5 7L3 11.5V2.5Z" fill="#1A1A1A"/>
                     </svg>
                   </div>
@@ -71,4 +71,4 @@
   </div>
 </div>
 
-{% render 'show-all-media-modal', from: 'quick_review' %}
+{% render 'show-all-media-modal' %}

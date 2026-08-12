@@ -18,7 +18,7 @@
     <form id="form-view" @submit.prevent="(e)=>submitReview(e)" x-show="!submitSuccess && !isError">
       <div class="modal-header">
         <div class="modal-icon">
-          <svg viewBox="0 0 24 24" fill="#fff">
+          <svg viewBox="0 0 24 24">
             <path
               d="M3 17.25V21h3.75L17.81 9.94l-3.75-3.75L3 17.25zM20.71 7.04a1 1 0 000-1.41l-2.34-2.34a1 1 0 00-1.41 0l-1.83 1.83 3.75 3.75 1.83-1.83z"
             />
@@ -31,7 +31,11 @@
       </div>
 
       <label class="form-label">Your rating <span class="req">*</span></label>
-      <div class="star-picker" id="star-picker">
+      <div
+        class="star-picker"
+        id="star-picker"
+        style="display: flex; gap: 8px; margin-bottom: 16px; cursor: pointer;"
+      >
         <template x-for="star in ratings" :key="'picker-' + star">
           <span
             role="button"
@@ -42,6 +46,7 @@
             @keydown.enter.prevent="starSelected = star"
             @keydown.space.prevent="starSelected = star"
             :aria-label="'Rate ' + star + ' stars'"
+            style="display: flex; cursor: pointer;"
           >
             <svg
               :stroke="star <= (starHover || starSelected) ? '{{ quick_review_metafield.starColor }}' : '#606060' "
@@ -52,7 +57,6 @@
               xmlns="http://www.w3.org/2000/svg"
             >
               <path
-
                 :fill="star <= (starHover || starSelected) ? '{{ quick_review_metafield.starColor }}' : ''"
                 d="M9.51964 0.855C8.97604 -0.285 7.35604 -0.285 6.81244 0.855L5.14444 4.3494L1.30564 4.8546C0.0552353 5.0202 -0.446365 6.561 0.469235 7.4298L3.27724 10.0962L2.57284 13.9026C2.34244 15.1434 3.65404 16.0962 4.76284 15.495L8.16604 13.647L11.5692 15.495C12.678 16.0962 13.9896 15.1434 13.7592 13.9026L13.0548 10.0962L15.8628 7.4298C16.7772 6.561 16.2768 5.0202 15.0264 4.8546L11.1864 4.3494L9.51964 0.855Z"
               />
@@ -67,6 +71,8 @@
         placeholder="Tell us what you loved or didn't like..."
         x-model="form.review"
         rows="5"
+        maxlength="300"
+        style="height: 136px;"
       ></textarea>
       <div
         style="
@@ -88,6 +94,7 @@
               type="text"
               placeholder="Enter your name"
               x-model="form.name"
+              maxlength="20"
             >
           </span>
         {%- endif -%}
@@ -102,6 +109,7 @@
               required
               placeholder="Enter your email"
               x-model="form.email"
+              maxlength="30"
             >
           </span>
         {%- endif -%}
@@ -165,7 +173,11 @@
         </div>
       {% endif %}
 
-      <button class="submit-btn" type="submit" :disabled="dataPostLoading">
+      <button
+        class="submit-btn"
+        type="submit"
+        :disabled="dataPostLoading"
+      >
         <span x-show="!dataPostLoading">{{ quick_review_metafield.submitButtonText }}</span>
         <div :style="dataPostLoading ? 'display: flex; align-items: center; justify-content: center; gap: 8px;' : 'display: none;'">
           <span class="qr-loader" aria-hidden="true"></span>
@@ -231,7 +243,7 @@
             stroke-width="1"
             stroke="currentColor"
             class="size-6"
-            style="width: 28px; height:28px"
+            style="width: 28px; height: 28px;"
             stroke="red"
           >
             <path stroke="red" stroke-linecap="round" stroke-linejoin="round" d="M12 9v3.75m-9.303 3.376c-.866 1.5.217 3.374 1.948 3.374h14.71c1.73 0 2.813-1.874 1.948-3.374L13.949 3.378c-.866-1.5-3.032-1.5-3.898 0L2.697 16.126ZM12 15.75h.007v.008H12v-.008Z" />

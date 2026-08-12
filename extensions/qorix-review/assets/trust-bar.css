@@ -112,6 +112,7 @@
 }
 
 .qorix-review-trust-bar-verified-label {
+  margin:0 !important;
   color: var(--qrtb-text-color);
   font-size: var(--qrtb-font-size);
   font-weight: var(--qrtb-text-weight);
