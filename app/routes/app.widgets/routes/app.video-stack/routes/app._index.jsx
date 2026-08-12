@@ -682,7 +682,7 @@ export default function Index() {
                   </s-stack>
 
                   <s-button-group gap="base">
-                    <s-button slot="secondary-actions">Need help?</s-button>
+                    <s-button slot="secondary-actions" href="http://qorix-review-docs.nextvence.com/pages/widgets/videostack" target="_blank">Need help?</s-button>
                     <s-button
                       variant="primary"
                       slot="primary-action"

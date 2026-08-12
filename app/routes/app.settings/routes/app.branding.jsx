@@ -241,9 +241,10 @@ export default function Branding() {
             Customize your logo and brand appearance in review emails
           </s-text>
         </s-box>
-        <s-button inline="fill" variant="secondary">
-          Need Help ?
+           <s-button  variant="secondary" onClick={() => window.open("http://qorix-review-docs.nextvence.com/pages/settings/branding", "_blank")}>
+         Need Help ?
         </s-button>
+       
       </s-stack>
       <s-query-container>
         <s-grid

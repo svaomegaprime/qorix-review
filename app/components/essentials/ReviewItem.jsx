@@ -387,8 +387,8 @@ export default function ReviewItem({
               borderRadius="full"
               src={data.reviewerAvatar}
             />
-            <s-heading>{data.reviewerName}</s-heading>
-          </s-stack>
+            <p style={{  wordBreak: "break-all", fontWeight:"600"}} >{data.reviewerName}</p>
+            </s-stack>
           <s-text>{formattedReviewDate}</s-text>
         </s-stack>
         {/* End----Review header */}
@@ -409,10 +409,10 @@ export default function ReviewItem({
         {/* Start----Review content */}
         <div style={{ display: "grid", gap: "4px", paddingTop: "7px" }}>
           {/* Start----Review title */}
-          <s-heading>{data.productTitle}</s-heading>
+           <p style={{  wordBreak: "break-all", fontWeight:"600"}} >{data.productTitle}</p>
           {/* End----Review title */}
           {/* Start----Review description */}
-          <s-paragraph color="subdued">{data.body}</s-paragraph>
+          <p style={{  wordBreak: "break-all",}} >{data.body}</p>
           {/* End----Review description */}
           {(replied || replyReview) && (
             <div
