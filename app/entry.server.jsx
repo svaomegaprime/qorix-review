@@ -26,6 +26,10 @@ export default async function handleRequest(
           const stream = createReadableStreamFromReadable(body);
 
           responseHeaders.set("Content-Type", "text/html");
+          responseHeaders.set(
+            "Cache-Control",
+            "no-store, no-cache, must-revalidate, max-age=0",
+          );
           resolve(
             new Response(stream, {
               headers: responseHeaders,
