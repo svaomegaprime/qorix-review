@@ -119,7 +119,8 @@ export default function Settings() {
             Send review request emails to customers after delivery
           </s-text>
         </s-box>
-        <s-button inline="fill" variant="secondary">
+         
+        <s-button  variant="secondary" onClick={() => window.open("http://qorix-review-docs.nextvence.com/pages/settings/request-scheduling", "_blank")}>
           Need Help ?
         </s-button>
       </s-stack>

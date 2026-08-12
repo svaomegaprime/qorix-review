@@ -412,7 +412,7 @@ export default function ReviewItem({
           <s-heading>{data.productTitle}</s-heading>
           {/* End----Review title */}
           {/* Start----Review description */}
-          <s-paragraph color="subdued">{data.body}</s-paragraph>
+          <p style={{  wordBreak: "break-all",}} >{data.body}</p>
           {/* End----Review description */}
           {(replied || replyReview) && (
             <div

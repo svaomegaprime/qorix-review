@@ -132,8 +132,8 @@ export default function AdminNotification() {
             Choose when Qorix sends you an email about review activity
           </s-text>
         </s-box>
-        <s-button inline="fill" variant="secondary">
-          Need Help ?
+           <s-button  variant="secondary" onClick={() => window.open("http://qorix-review-docs.nextvence.com/pages/settings/admin-notifications", "_blank")}>
+          Need Help?
         </s-button>
       </s-stack>
 
