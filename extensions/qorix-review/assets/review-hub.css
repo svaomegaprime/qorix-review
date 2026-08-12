@@ -1,4 +1,10 @@
-:root {
+:host {
+  display: block;
+  width: 100%;
+  max-width: 100%;
+  min-width: 0;
+  box-sizing: border-box;
+
   /* ---------- Colors: Brand / Semantic ---------- */
   --qr-color-primary: #34c759;
   --qr-color-heading: #1a1a1a;
@@ -85,15 +91,6 @@
 
   /* ---------- Layout: Misc ---------- */
   --qr-heading-margin: 0 auto;
-}
-
-.shopify-app-block[data-block-handle="ReviewHub"],
-.shopify-app-block:has(> [data-section="qorix-review-hub"]) {
-  display: block;
-  width: 100%;
-  max-width: 100%;
-  min-width: 0;
-  box-sizing: border-box;
 }
 
 .qr-review-hub {

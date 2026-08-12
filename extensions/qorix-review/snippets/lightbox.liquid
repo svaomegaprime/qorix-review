@@ -1,5 +1,7 @@
 {{ 'lightbox.css' | asset_url | stylesheet_tag }}
+{% unless inside_shadow %}
 <template x-teleport="body">
+{% endunless %}
   <div class="lightbox" id="lightbox" :class="{ open: lightboxOpen }" @click.self="closeLightbox()" @keydown.escape.window="lightboxOpen && closeLightbox()">
     <button class="lightbox-close" type="button" @click="closeLightbox()" aria-label="Close media viewer">&#x2715;</button>
     <div class="lightbox-content" id="lightbox-content">
@@ -11,4 +13,6 @@
       </template>
     </div>
   </div>
+{% unless inside_shadow %}
 </template>
+{% endunless %}
