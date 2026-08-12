@@ -138,6 +138,9 @@ class ReviewX {
   reinitSwipers() {
     if (this.$nextTick) {
       this.$nextTick(() => {
+        if (typeof window.initQuickReviewSwiper === "function") {
+          window.initQuickReviewSwiper();
+        }
         if (typeof window.initQuoteLoopSwiper === "function") {
           window.initQuoteLoopSwiper();
         }
@@ -150,6 +153,9 @@ class ReviewX {
       });
     } else {
       setTimeout(() => {
+        if (typeof window.initQuickReviewSwiper === "function") {
+          window.initQuickReviewSwiper();
+        }
         if (typeof window.initQuoteLoopSwiper === "function") {
           window.initQuoteLoopSwiper();
         }
