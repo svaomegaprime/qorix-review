@@ -1,5 +1,6 @@
 import prisma from "../../db.server";
 import { AppError } from "../../utils/appError.server";
+import { invalidateReviewCache } from "../../lib/redis/reviewCache.js";
 
 async function toggleHelpful(request) {
   const body = await request.json();
@@ -33,6 +34,15 @@ async function toggleHelpful(request) {
         isHelpful,
       },
     });
+
+    const review = await prisma.review.findUnique({
+      where: { id: reviewId },
+      select: { storeId: true, productId: true },
+    });
+
+    if (review) {
+      await invalidateReviewCache(review.storeId, review.productId);
+    }
 
     return new Response(JSON.stringify({ ok: true, data: res }), {
       headers: { "Content-Type": "application/json" },
