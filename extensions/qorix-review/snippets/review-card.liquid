@@ -196,7 +196,7 @@
   </div>
 </template>
 <p
-  x-show="filteredReviews().length === 0"
+  x-show="filteredReviews().length === 0 && !loading"
   style="color: #888; font-size: 16px; padding: 20px 0"
 >
   No reviews found
