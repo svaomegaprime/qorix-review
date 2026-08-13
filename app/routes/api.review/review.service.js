@@ -16,7 +16,7 @@ import { getOrderReviewTarget } from "../../services/orders.server.js";
 import { normalizeShopifyId } from "../../utils/shopifyGid.js";
 
 const MAX_REVIEWER_NAME_LENGTH = 20;
-const MAX_REVIEWER_EMAIL_LENGTH = 30;
+const MAX_REVIEWER_EMAIL_LENGTH = 100;
 const MAX_REVIEW_BODY_LENGTH = 300;
 
 function normalizeOrderNumber(value) {
@@ -106,7 +106,7 @@ async function postReview(request, session, admin) {
       {
         value: reviewerEmail,
         maxLength: MAX_REVIEWER_EMAIL_LENGTH,
-        message: "Reviewer email cannot exceed 30 characters",
+        message: "Reviewer email cannot exceed 100 characters",
       },
       {
         value: body,
@@ -456,7 +456,7 @@ async function postReview(request, session, admin) {
       try {
         await addJobInQueue(
           reviewQueue,
-          "JOB_CLIENT_CONFIRMATION_EMAIL",
+          "JOB_ADMIN_NOTIFICATION_EMAIL",
           {
             emailData: adminEmailData,
           },

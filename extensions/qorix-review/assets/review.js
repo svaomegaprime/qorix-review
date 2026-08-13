@@ -454,9 +454,9 @@ class ReviewX {
       return;
     }
 
-    if (this.form.email.length > 30) {
+    if (this.form.email.length > 100) {
       this.isError = true;
-      this.errorMessage = "Your email cannot exceed 30 characters.";
+      this.errorMessage = "Your email cannot exceed 100 characters.";
       return;
     }
 

@@ -66,7 +66,7 @@ export async function action({ request }) {
 
     return {
       ok: true,
-      message: "upserted RequestSchedulingData",
+      message: "Request scheduling settings saved successfully",
     };
   } catch (error) {
     return adminErrorResponse(error);

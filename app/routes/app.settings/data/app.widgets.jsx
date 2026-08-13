@@ -49,7 +49,7 @@ export async function action({ request }) {
 
     return {
       ok: true,
-      message: "upserted PublishingModerationData",
+      message: "Widget settings saved successfully",
     };
   } catch (error) {
     return adminErrorResponse(error);
