@@ -20,11 +20,13 @@
       <span class="qr-rating-count">(<span x-text="totalReviews"></span> reviews)</span>
     {% endif %}
     {% if reviewStats == 'Show review count & verified badge' %}
-      <span x-show="reviews.some(review => review.isVerified)" class="qr-rating-divider">|</span>
+      {% comment %} <span x-show="reviews.some(review => review.isVerified)" class="qr-rating-divider">|</span> {% endcomment %}
+      <span class="qr-rating-divider">|</span>
     {% endif %}
 
     {% if reviewStats == 'Show review count & verified badge' or reviewStats == 'Show verified badge only' %}
-      <span x-show="reviews.some(review => review.isVerified)" class="qr-verified-badge">
+      {% comment %} <span x-show="reviews.some(review => review.isVerified)" class="qr-verified-badge"> {% endcomment %}
+      <span class="qr-verified-badge">
         {% render 'icon', name: 'verified', badgeColor: badgeColor %}
         Verified reviews
       </span>

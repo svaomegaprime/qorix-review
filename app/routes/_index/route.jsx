@@ -70,27 +70,6 @@ export default function App() {
               widgets. Capture customer photos, videos, and authentic reviews to
               drive repeat sales.
             </p>
-
-            {/* {showForm && (
-              <Form className="form" method="post" action="/auth/login">
-                <div className="label">
-                  <span className="labelTitle">Shop domain</span>
-                  <input
-                    className="input"
-                    type="text"
-                    name="shop"
-                    placeholder="e.g: my-shop-domain.myshopify.com"
-                    required
-                  />
-                  <span className="helperText">
-                    e.g: my-shop-domain.myshopify.com
-                  </span>
-                </div>
-                <button className="button" type="submit">
-                  Log in
-                </button>
-              </Form>
-            )} */}
           </div>
         </section>
       </div>
