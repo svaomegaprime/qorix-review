@@ -43,16 +43,18 @@ function getDynamicSavingMessage(fetcher, customSavingMessage) {
     // Settings pages
     if (path.includes("email-settings")) return "Saving email settings...";
     if (path.includes("branding")) return "Saving branding settings...";
-    if (path.includes("publishing-moderation")) return "Saving moderation settings...";
-    if (path.includes("admin-notification")) return "Saving notification settings...";
+    if (path.includes("publishing-moderation"))
+      return "Saving moderation settings...";
+    if (path.includes("admin-notification"))
+      return "Saving notification settings...";
   }
 
   switch (method) {
     case "DELETE":
       return "Deleting...";
     case "PATCH":
-    case "PUT":
-      return "Updating changes...";
+    // case "PUT":
+    //   return "Updating changes...";
     case "POST":
     default:
       return "Saving changes...";
@@ -99,5 +101,12 @@ export function useAdminFetcherToast(
     }
 
     lastStateRef.current = currentState;
-  }, [fetcher.state, fetcher.data, fetcher.formMethod, fetcher.formData, savingMessage, successMessage]);
+  }, [
+    fetcher.state,
+    fetcher.data,
+    fetcher.formMethod,
+    fetcher.formData,
+    savingMessage,
+    successMessage,
+  ]);
 }

@@ -119,7 +119,7 @@ export default function EmailReply({ outgoingRequestEmail, brandSettings }) {
         }
 
         .email-reply .qr-header {
-            width: 110px;
+            width: 100%;
             display: flex;
             align-items: center;
             justify-content: var(--store-logo-position);
@@ -128,7 +128,8 @@ export default function EmailReply({ outgoingRequestEmail, brandSettings }) {
         }
 
         .email-reply .qr-header img {
-            width: 100%;
+            width: 110px;
+            max-width: 100%;
         }
 
         .email-reply .qr-logo-mark {

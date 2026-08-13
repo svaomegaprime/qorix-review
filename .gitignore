@@ -16,7 +16,7 @@ deploy
 deploy*
 .env
 .env.*
-
+.agents
 
 minio-local
 

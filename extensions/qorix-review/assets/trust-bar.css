@@ -112,7 +112,7 @@
 }
 
 .qorix-review-trust-bar-verified-label {
-  margin:0 !important;
+  margin: 0 !important;
   color: var(--qrtb-text-color);
   font-size: var(--qrtb-font-size);
   font-weight: var(--qrtb-text-weight);
@@ -128,6 +128,7 @@
 
 .qorix-review-trust-bar-verified p {
   display: var(--qrtb-show-verified-text, inline);
+  margin-top: 0px !important;
 }
 
 @media (max-width: 480px) {

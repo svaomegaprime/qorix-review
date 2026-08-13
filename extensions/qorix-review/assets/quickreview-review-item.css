@@ -22,16 +22,15 @@
   padding-left: 22px;
   margin-bottom: 27px;
 }
-.quickreview-review__reply>h6 {
+.quickreview-review__reply > h6 {
   font-size: 14px;
   font-weight: 600;
   margin: 0;
 }
-.quickreview-review__reply>p {
+.quickreview-review__reply > p {
   font-size: 14px;
   margin: 0;
 }
-
 
 .quickreview-review__avatar {
   display: flex;
@@ -97,6 +96,7 @@
   font-weight: 400;
   color: var(--qr-color-text-secondary);
   line-height: 1.5;
+  word-break: break-all;
   margin: 0 0 20px 0;
 }
 
@@ -143,7 +143,9 @@
   pointer-events: none;
   z-index: 2;
   box-shadow: 0 2px 8px rgba(0, 0, 0, 0.25);
-  transition: transform 0.2s ease, background 0.2s ease;
+  transition:
+    transform 0.2s ease,
+    background 0.2s ease;
 }
 
 .qorix-video-play-badge svg {
@@ -217,10 +219,10 @@
 .quickreview-reviews__load-more:hover {
   background: var(--qr-color-hover-bg);
 }
-.review-star-color > svg > path{
+.review-star-color > svg > path {
   fill: var(--star-color);
 }
-.qr-quick-review-verified-check svg{
+.qr-quick-review-verified-check svg {
   fill: var(--verified-badge-color);
 }
 @media (max-width: 749px) {
@@ -230,17 +232,17 @@
     align-items: baseline;
   }
 
-  .quickreview-reviews__titles{
+  .quickreview-reviews__titles {
     margin-bottom: 10px;
   }
-  .quickreview-reviews__sort-menu{
-    left:2px;
+  .quickreview-reviews__sort-menu {
+    left: 2px;
   }
-  .quickreview-card{
+  .quickreview-card {
     padding: 12px 10px;
   }
 
-  .quickreview-reviews{
+  .quickreview-reviews {
     padding: 16px 16px 0 16px;
   }
 

@@ -25,7 +25,7 @@ export default function EmailRequest({ outgoingRequestEmail, brandSettings }) {
         }
 
         .email-request .qr-header {
-            width: 110px;
+            width: 100%;
             display: flex;
             align-items: center;
             justify-content: var(--store-logo-position);
@@ -34,7 +34,8 @@ export default function EmailRequest({ outgoingRequestEmail, brandSettings }) {
         }
 
         .email-request .qr-header img {
-            width: 100%;
+            width: 110px;
+            max-width: 100%;
         }
 
         .email-request .qr-logo-mark {

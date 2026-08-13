@@ -87,7 +87,7 @@ export async function action({ request }) {
 
     return {
       ok: true,
-      message: "upserted BrandingSettingsData",
+      message: "Branding settings saved successfully",
     };
   } catch (error) {
     return adminErrorResponse(error);

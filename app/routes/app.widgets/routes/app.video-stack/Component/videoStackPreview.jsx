@@ -498,8 +498,6 @@ const VISIBLE_COUNT_OPTIONS = [3, 5, 7];
 
 // ─── SVG helpers ──────────────────────────────────────────────────────────────
 function OrangeStars(startColor) {
-
-  console.log("startColor", startColor?.startColor);
   const path =
     "M9.51964 0.855C8.97604-.285 7.35604-.285 6.81244.855L5.14444 4.3494 1.30564 4.8546C.0552353 5.0202-.446365 6.561.469235 7.4298L3.27724 10.0962 2.57284 13.9026C2.34244 15.1434 3.65404 16.0962 4.76284 15.495L8.16604 13.647 11.5692 15.495C12.678 16.0962 13.9896 15.1434 13.7592 13.9026L13.0548 10.0962 15.8628 7.4298C16.7772 6.561 16.2768 5.0202 15.0264 4.8546L11.1864 4.3494Z";
   return (
@@ -613,7 +611,6 @@ function ReviewCard({ slide, displayElements }) {
     badgeColor,
   } = displayElements;
 
-  console.log("this is a bange color", badgeColor)
   const [isPlaying, setIsPlaying] = useState(false);
   const videoRef = useRef(null);
 

@@ -87,7 +87,7 @@ export async function action({ request }) {
 
     return {
       ok: true,
-      message: "upserted EmailSettingsData",
+      message: "Email settings saved successfully",
       emailSettings: savedEmailSettings,
     };
   } catch (error) {

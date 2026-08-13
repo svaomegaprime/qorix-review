@@ -20,8 +20,11 @@ export async function uploadFile(file) {
 
   const extension = file.name.split(".").pop();
 
-  // filename without extension
-  const fileName = file.name.replace(/\.[^/.]+$/, "");
+  const fileName = file.name
+    .replace(/\.[^/.]+$/, "")
+    .replace(/[^a-zA-Z0-9._-]/g, "-")
+    .replace(/-+/g, "-")
+    .replace(/^-|-$/g, "");
 
   // 20260622-113045 format
   const now = new Date();
