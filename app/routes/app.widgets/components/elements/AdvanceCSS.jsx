@@ -133,12 +133,10 @@ const styles = {
   },
 };
 
-
 export default function AdvancedCSS({ css, setCss }) {
   const [copied, setCopied] = useState(false);
 
   const cssValue = typeof css === "string" ? css : "";
-
 
   const handleCopy = async () => {
     try {
@@ -148,10 +146,8 @@ export default function AdvancedCSS({ css, setCss }) {
       setTimeout(() => {
         setCopied(false);
       }, 1500);
-
-    } catch { }
+    } catch {}
   };
-
 
   return (
     <div
@@ -159,82 +155,60 @@ export default function AdvancedCSS({ css, setCss }) {
         ...styles.card,
 
         // responsive width
-        ...(typeof window !== "undefined" &&
-          window.innerWidth <= 1024
+        ...(typeof window !== "undefined" && window.innerWidth <= 1024
           ? {
-            maxWidth: "100%",
-          }
+              maxWidth: "100%",
+            }
           : {}),
 
-        ...(typeof window !== "undefined" &&
-          window.innerWidth <= 768
+        ...(typeof window !== "undefined" && window.innerWidth <= 768
           ? {
-            padding: "14px",
-          }
+              padding: "14px",
+            }
           : {}),
       }}
     >
-
-      <h2 style={styles.title}>
-        Advanced
-      </h2>
-
+      <h2 style={styles.title}>Advanced</h2>
 
       <div style={styles.box}>
-
         <div style={styles.boxHeader}>
-          <span style={styles.boxHeaderLabel}>
-            Custom CSS
-          </span>
+          <span style={styles.boxHeaderLabel}>Custom CSS</span>
 
           <span style={styles.counter}>
             {cssValue.length}/{MAX_LENGTH}
           </span>
         </div>
 
-
         <div style={styles.textareaWrap}>
-
           <textarea
             value={cssValue}
-            onChange={(e) =>
-              setCss?.(
-                e.target.value.slice(0, MAX_LENGTH)
-              )
-            }
+            onChange={(e) => setCss?.(e.target.value.slice(0, MAX_LENGTH))}
             placeholder="CSS"
             rows={7}
             spellCheck={false}
             style={styles.textarea}
           />
 
-
           <button
             onClick={handleCopy}
             aria-label="Copy CSS"
             style={styles.copyBtn}
           >
-            {
-              copied
-                ? <CheckIcon />
-                : <CopyIcon />
-            }
+            {copied ? <CheckIcon /> : <CopyIcon />}
           </button>
-
-
         </div>
-
       </div>
-
 
       <p style={styles.helper}>
         Customize widgets with CSS.{" "}
-        <a href="#" style={styles.link}>
+        <a
+          target="_blank"
+          href="https://qorix-review-docs.nextvence.com/pages/widgets/custom-css-guide"
+          style={styles.link}
+        >
           Learn more.
         </a>
       </p>
-
-
     </div>
   );
 }
