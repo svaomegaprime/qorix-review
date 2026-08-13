@@ -47,7 +47,7 @@ export async function action({ request }) {
     });
     return {
       ok: true,
-      message: "upserted PublishingModerationData",
+      message: "Publishing & moderation settings saved successfully",
     };
   } catch (error) {
     return adminErrorResponse(error);

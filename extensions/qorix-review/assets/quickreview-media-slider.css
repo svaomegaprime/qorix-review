@@ -51,7 +51,7 @@
 .qorix-qr-media-see-all {
   font-size: 13px;
   /* var(--button-background-color, #108848) */
-  color: #108848;
+  /* color: #108848; */
   text-decoration: none;
   font-weight: 500;
   line-height: 1.01;

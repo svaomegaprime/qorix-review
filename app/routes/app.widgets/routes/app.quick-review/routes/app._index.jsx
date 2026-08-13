@@ -938,7 +938,7 @@ export default function Index(VALUES = {}) {
                             onchange={handleSwitch("showHelpfulButton")}
                           />
                           <s-switch
-                            label="Show review data without rating"
+                            label="Show body when reviews are available"
                             checked={
                               quickReview.isShowReviewDataWithoutRating ||
                               undefined
@@ -1207,7 +1207,13 @@ export default function Index(VALUES = {}) {
                     </s-button-group>
                   </s-stack>
                   <s-button-group gap="base">
-                    <s-button slot="secondary-actions" href="http://qorix-review-docs.nextvence.com/pages/widgets/quickreview" target="_blank">Need help?</s-button>
+                    <s-button
+                      slot="secondary-actions"
+                      href="http://qorix-review-docs.nextvence.com/pages/widgets/quickreview"
+                      target="_blank"
+                    >
+                      Need help?
+                    </s-button>
                     <s-button
                       variant="primary"
                       slot="primary-action"

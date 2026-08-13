@@ -30,8 +30,8 @@
   x-init="initUploadSettings($el); productInit($el.dataset.product,$el.dataset.sort,$el.dataset.limit)"
   data-customer-id="{{ customer.id }}"
   data-customer-email="{{ customer.email }}"
-  data-sort="{{ video_stack_metafield.defaultSort }}"
-  data-limit="{{ video_stack_metafield.reviewPerPage }}"
+  data-sort="ALL"
+  data-limit="10000"
   data-page-type="{{ template.name }}"
   data-show-first="VIDEO"
   data-filter-min-stars="{{ video_stack_metafield.fiteringMinStart }}"
@@ -56,14 +56,7 @@
     <div class="qorix-review-video-stack-swiper-clip">
       <div class="qorix-review-video-stack-swiper">
         <div class="qorix-review-video-stack-swiper-wrapper">
-          {% render 'video-stack-widget-card',
-            video_src: 'https://www.pexels.com/download/video/7667953/',
-            rating: 5,
-            reviewer_name: 'Ava Rajib.',
-            verified: true,
-            review_quote: 'My skin has never felt better...',
-            loop_video: true
-          %}
+          {% render 'video-stack-widget-card', loop_video: true %}
         </div>
       </div>
     </div>

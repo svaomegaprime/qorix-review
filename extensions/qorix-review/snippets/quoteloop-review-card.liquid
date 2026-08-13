@@ -65,8 +65,8 @@
               {% endif %}
             >
               <span x-text="review.reviewerName"></span>
-              {% if verified and showVerifiedBadge != false and showVerifiedBadge != 'false' %}
-                <svg width="18" height="18" viewBox="0 0 18 18" fill="none" xmlns="http://www.w3.org/2000/svg">
+              {% if showVerifiedBadge != false and showVerifiedBadge != 'false' %}
+                <svg x-show="review.isVerified" width="18" height="18" viewBox="0 0 18 18" fill="none" xmlns="http://www.w3.org/2000/svg">
                   <path d="M9 18C13.9706 18 18 13.9706 18 9C18 4.02944 13.9706 0 9 0C4.02944 0 0 4.02944 0 9C0 13.9706 4.02944 18 9 18Z" fill="{{ verified_badge_color }}"/>
                   <path fill-rule="evenodd" clip-rule="evenodd" d="M13.4844 7.3216C13.4767 7.32982 13.4689 7.33804 13.4609 7.34605L8.28385 12.5231C8.17316 12.6338 8.03972 12.7095 7.89792 12.7501C7.58965 12.8421 7.23893 12.7682 6.9987 12.528L3.94132 9.47061C3.59407 9.1233 3.59088 8.54836 3.94132 8.19786C4.29182 7.84742 4.86364 7.84735 5.21414 8.19779L7.6384 10.622L12.7868 5.47362C13.1373 5.12312 13.711 5.1251 14.0595 5.47362C14.408 5.82214 14.4081 6.39786 14.0596 6.74638L13.4844 7.3216Z" fill="white"/>
                 </svg>

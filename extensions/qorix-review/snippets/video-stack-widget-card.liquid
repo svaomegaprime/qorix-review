@@ -43,7 +43,7 @@
   {% assign muted_vid = video_stack_metafield.mutedByDefault %}
 {% endif %}
 
-{% render 'skeleton', type: 'card' %}
+{% render 'skeleton', type: 'card', grid_columns: 3 %}
 
 <template x-for="review in filteredReviews()" :key="review.id">
   <div class="qorix-review-video-stack-swiper-slide" x-show="!loading">

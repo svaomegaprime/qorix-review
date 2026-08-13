@@ -43,7 +43,15 @@ export default function CardCodeSnippet({ customCss, handleCssChange }) {
             borderColor="#b3b3b3"
             padding="small"
           >
-            <code style={{ display: 'block', whiteSpace: 'pre-wrap', wordBreak: 'break-word', fontSize: '13px', lineHeight: '1.4' }}>
+            <code
+              style={{
+                display: "block",
+                whiteSpace: "pre-wrap",
+                wordBreak: "break-word",
+                fontSize: "13px",
+                lineHeight: "1.4",
+              }}
+            >
               {SNIPPET_CODE}
             </code>
             <s-stack alignItems="end">
@@ -66,7 +74,7 @@ export default function CardCodeSnippet({ customCss, handleCssChange }) {
             </s-list-item>
           </s-ordered-list>
 
-          <Text
+          {/* <Text
             as="a"
             href="//qorix-currency-docs.softvenceomega.com"
             target="_blank"
@@ -80,7 +88,7 @@ export default function CardCodeSnippet({ customCss, handleCssChange }) {
             color="#108848"
           >
             Read full installation guide <ArrowUpRight />
-          </Text>
+          </Text> */}
         </s-grid>
       </CustomSection>
       <AdvancedCSS css={customCss} setCss={handleCssChange} />

@@ -47,7 +47,7 @@ export async function action({ request }) {
 
     return {
       ok: true,
-      message: "upserted AdminNotificationData",
+      message: "Notification preferences saved successfully",
     };
   } catch (error) {
     return adminErrorResponse(error);

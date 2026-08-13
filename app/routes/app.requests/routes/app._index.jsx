@@ -882,17 +882,16 @@ export default function Requests() {
         <s-grid
           gridTemplateColumns="auto 1fr"
           alignItems="center"
-          gap="base"
+          // gap="base"
           paddingBlock="small large"
         >
-          <s-stack direction="inline" alignItems="center" gap="small">
+          <s-stack direction="inline" alignItems="center" >
             <Text as="h2">Requests</Text>
             {/* <s-badge tone="success" color="strong">
             Auto-send: On
           </s-badge> */}
           </s-stack>
-          <s-grid gridTemplateColumns="auto auto auto" justifyContent="end">
-            {/* <s-button icon="settings">Request reviews</s-button> */}
+          <s-grid gridTemplateColumns="auto auto" justifyContent="end" gap="base">
             <s-button
               commandFor="request-rewiew-modal"
               command="--show"
@@ -900,7 +899,7 @@ export default function Requests() {
             >
               Send manual request
             </s-button>
-            
+            <s-button target="_blank" href="https://qorix-review-docs.nextvence.com/pages/review-requests" icon="">How Request Automation Works</s-button>
           </s-grid>
         </s-grid>
         {/* End----Page Header */}
