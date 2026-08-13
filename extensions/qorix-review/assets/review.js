@@ -213,6 +213,13 @@ class ReviewX {
       this.sort = safeSort;
       this.activeSort = safeSort;
 
+      if (!this._reviewSubmittedListenerAdded) {
+        window.addEventListener('qorix-review-submitted', () => {
+          this.getReview(this.activeSort);
+        });
+        this._reviewSubmittedListenerAdded = true;
+      }
+
       if (productJson) {
         this.product = JSON.parse(productJson);
         console.log("parsed product", this.product);
@@ -616,6 +623,10 @@ class ReviewX {
         });
       }
       this.reinitSwipers();
+      
+      // Notify other widgets on the page to update
+      window.dispatchEvent(new CustomEvent('qorix-review-submitted', { detail: result.data }));
+      
       this.dataPostLoading = false;
     } catch (error) {
       console.error(error);
