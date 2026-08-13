@@ -17,9 +17,16 @@ const {
   emailFooterText = "",
   unsubscribeUrl = "#",
   isShowFooterBadge = true,
+  storeLogoPosition = "start",
   review = { rating: 5, date: "" },
   product = { title: "" },
 } = locals;
+const logoAlignment =
+  storeLogoPosition === "center" || storeLogoPosition === "CENTER"
+    ? "center"
+    : storeLogoPosition === "end" || storeLogoPosition === "RIGHT"
+      ? "right"
+      : "left";
 %>
 
 <!DOCTYPE html>
@@ -83,7 +90,7 @@ const {
                   style="border-bottom: 1px solid <%= emailAccentBorderColor %>;"
                 >
                   <tr>
-                    <td style="padding-bottom: 16px">
+                    <td align="<%= logoAlignment %>" style="padding-bottom: 16px">
                       <% if (logo) { %>
                       <img
                         src="<%= logo %>"

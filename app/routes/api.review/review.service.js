@@ -340,6 +340,7 @@ async function postReview(request, session, admin) {
             "Thank you for your review",
           storeName,
           logo: brandingSettings.storeLogo ?? "",
+          storeLogoPosition: brandingSettings.storeLogoPosition ?? "start",
           tagline: brandingSettings.storeTagline ?? "",
           customerName: reviewData.reviewerName ?? "",
           emailBody,

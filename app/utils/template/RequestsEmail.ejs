@@ -74,7 +74,7 @@ const {
                   style="background:  <%= emailBackgroundColor %>; color:<% emailBodyTextColor %>; border-bottom: 1px solid <%= emailAccentBorderColor %>"
                 >
                   <tr>
-                    <td style="padding-bottom: 16px">
+                    <td align="<%= (storeLogoPosition === 'center' || storeLogoPosition === 'CENTER') ? 'center' : ((storeLogoPosition === 'end' || storeLogoPosition === 'RIGHT') ? 'right' : 'left') %>" style="padding-bottom: 16px">
                       <img
                         src="<%= storeLogo %>"
                         alt="<%= storeName %>"
