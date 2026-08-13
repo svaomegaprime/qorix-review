@@ -163,7 +163,7 @@
           ><img :src="review.productImage" alt="" width="23" height="23"
         ></span>
         <span
-          @click="window.location.href = `${window.location.href.split('#')[0]}products/${review.productHandle}`"
+          @click="window.location.href = `/products/${review.productHandle}`"
           x-text="review.productTitle"
         ></span>
       </div>
