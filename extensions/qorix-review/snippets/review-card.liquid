@@ -26,7 +26,7 @@
             {% if review_hub_metafield.showReviewerName %}
               <span class="qr-review-name" x-text="review.reviewerName"></span>
               {% if review_hub_metafield.showVerifiedBadge %}
-                <span class="qr-verified-icon">
+                <span x-show="review.isVerified" class="qr-verified-icon">
                   {%- render 'icon', name: 'check', color: review_hub_metafield.verifiedBadgeColor -%}
                 </span>
               {% endif %}

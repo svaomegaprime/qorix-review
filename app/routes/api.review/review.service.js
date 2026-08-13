@@ -24,6 +24,13 @@ function normalizeOrderNumber(value) {
   return value.startsWith("#") ? value : `#${value}`;
 }
 
+function normalizeReviewVerification(review) {
+  return {
+    ...review,
+    isVerified: Boolean(review.isVerified && review.orderRecordId),
+  };
+}
+
 function buildFromAddress(displayName, email) {
   const cleanEmail = String(email || "").trim();
   const cleanName = String(displayName || "").trim();
@@ -213,10 +220,10 @@ async function postReview(request, session, admin) {
       }
     }
 
-    const publishRules = await checkPublishRules(
-      session,
+    const publishRules = checkPublishRules(
       publishingModeration,
       reviewData,
+      { isVerified: Boolean(orderTarget) },
     );
     const submittedAt = formData.get("submittedAt") || null;
 
@@ -538,6 +545,8 @@ async function getReview(request, session, admin) {
     if (cached) {
       console.log("[CACHE::HIT]", cacheKey);
 
+      cached.reviews = (cached.reviews ?? []).map(normalizeReviewVerification);
+
       // Re-apply per-user helpfulCount personalisation on top of cached data
       if (customerEmail && cached.reviews) {
         cached.reviews = cached.reviews.map((review) => {
@@ -760,7 +769,7 @@ async function getReview(request, session, admin) {
     }
 
     const responseData = {
-      reviews: res,
+      reviews: res.map(normalizeReviewVerification),
       totalReviews: overallInfo._count._all,
       filteredTotalReviews: filteredInfo._count._all,
       totalPages: Math.ceil(filteredInfo._count._all / limit),

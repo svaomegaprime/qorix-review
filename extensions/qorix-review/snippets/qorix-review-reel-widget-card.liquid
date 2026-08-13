@@ -95,8 +95,9 @@
             {% if show_reviewer_name %}
               <p class="qorix-review-reel-user-name">
                 <span x-text="review.reviewerName"></span>
-                {% if show_verified_badge != false and show_verified_badge != 'false' and verified != false %}
+                {% if show_verified_badge != false and show_verified_badge != 'false' %}
                   <svg
+                    x-show="review.isVerified"
                     width="18"
                     height="18"
                     viewBox="0 0 18 18"

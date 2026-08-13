@@ -71,7 +71,7 @@ export default function App() {
               drive repeat sales.
             </p>
 
-            {showForm && (
+            {/* {showForm && (
               <Form className="form" method="post" action="/auth/login">
                 <div className="label">
                   <span className="labelTitle">Shop domain</span>
@@ -90,7 +90,7 @@ export default function App() {
                   Log in
                 </button>
               </Form>
-            )}
+            )} */}
           </div>
         </section>
       </div>

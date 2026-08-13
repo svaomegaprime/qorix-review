@@ -1,10 +1,9 @@
-import { getOrders } from "../../../utils/sync.orders";
 import { personalInfoFilter, profanityFilter } from "./contentFilter";
 
-export default async function checkPublishRules(
-  session,
+export default function checkPublishRules(
   publishingModeration,
   reviewData,
+  { isVerified = false } = {},
 ) {
   const {
     autoPublishRules,
@@ -12,21 +11,7 @@ export default async function checkPublishRules(
     isProfanityFilter,
     isPersonalInfoFilter,
   } = publishingModeration;
-  const { productId, reviewerEmail, rating, body } = reviewData;
-
-  const orders = await getOrders(session.shop, session.accessToken);
-
-  const isVerified = reviewerEmail
-    ? orders.some(
-        (order) =>
-          order.email === reviewerEmail &&
-          order.products.some(
-            (product) =>
-              product.productId === `gid://shopify/Product/${productId}`,
-          ),
-      )
-    : false;
-  console.log("isVerified", isVerified, productId);
+  const { rating, body } = reviewData;
 
   const isRatingLowByTwo = isLowRatingHold && rating <= 2;
 
