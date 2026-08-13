@@ -116,12 +116,27 @@ const shopify = shopifyApp({
         });
 
         // Full settings install ar sathe sathe update korte hobe
-
+        const storeAdminNotification = {
+          ...DEFAULT_ADMIN_NOTIFICATION,
+          notificationEmailAddress: {
+            ...DEFAULT_ADMIN_NOTIFICATION.notificationEmailAddress,
+            email1: shopData.email || null,
+          },
+        };
         await prisma.storeSettings.upsert({
           where: {
             storeId: shopData.id,
           },
-          update: {},
+          update: {
+            adminNotification: {
+              upsert: {
+                update: {
+                  notificationEmailAddress: storeAdminNotification.notificationEmailAddress,
+                },
+                create: storeAdminNotification,
+              },
+            },
+          },
           create: {
             storeId: shopData.id,
             requestScheduling: {
@@ -144,7 +159,7 @@ const shopify = shopifyApp({
               create: DEFAULT_BRANDING,
             },
             adminNotification: {
-              create: DEFAULT_ADMIN_NOTIFICATION,
+              create: storeAdminNotification,
             },
           },
           include: {

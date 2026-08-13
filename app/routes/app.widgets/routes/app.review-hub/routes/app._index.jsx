@@ -696,7 +696,7 @@ export default function Index() {
 
                   <s-stack alignItems="center">
                     <s-button-group gap="base">
-                      <s-button slot="secondary-actions">Need help?</s-button>
+                       <s-button slot="secondary-actions" href="http://qorix-review-docs.nextvence.com/pages/widgets/reviewhub" target="_blank">Need help?</s-button>
                       <s-button
                         variant="primary"
                         slot="primary-action"

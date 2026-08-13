@@ -132,8 +132,8 @@ export default function AdminNotification() {
             Choose when Qorix sends you an email about review activity
           </s-text>
         </s-box>
-        <s-button inline="fill" variant="secondary">
-          Need Help ?
+           <s-button  variant="secondary" onClick={() => window.open("http://qorix-review-docs.nextvence.com/pages/settings/admin-notifications", "_blank")}>
+          Need Help?
         </s-button>
       </s-stack>
 
@@ -151,16 +151,14 @@ export default function AdminNotification() {
                 {new Array(countMail).fill(null).map((_, i) => {
                   const key = `email${i + 1}`;
                   return (
-                    <>
                       <s-text-field
-                        key={i}
-                        defaultValue={
-                          adminNotification.notificationEmailAddress[key]
+                        key={key}
+                        value={
+                          adminNotification.notificationEmailAddress[key] ?? ""
                         }
                         details="This is your store's admin email. You can change it at any time."
                         onInput={(e) => handleEmails(i + 1, e.target.value)}
                       />
-                    </>
                   );
                 })}
                 {/* <s-text-field defaultValue="svaomegaprime@gmail.com" />

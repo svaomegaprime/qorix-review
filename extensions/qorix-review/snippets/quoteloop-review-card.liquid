@@ -2,7 +2,7 @@
 {% assign verified_badge_color = verifiedBageColor | default: verifiedBadgeColor | default: '#088728' %}
 
 {% assign max_len = textLength | plus: 0 %}
-{% render 'skeleton', type: 'card' %}
+{% render 'skeleton', type: 'card', grid_columns: 3 %}
 <template x-for="review in filteredReviews()" :key="review.id">
   <div class="swiper-slide" x-show="!loading">
     <div

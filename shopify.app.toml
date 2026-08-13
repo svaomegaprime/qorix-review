@@ -2,7 +2,7 @@
 
 client_id = "1fd61c4448a3e740e2e1b9bc99b9db0d"
 name = "Qorix Review"
-application_url = "https://example.com"
+application_url = "https://qorix-review.nextvence.com"
 embedded = true
 
 [build]
@@ -49,7 +49,7 @@ scopes = "read_products,write_products,read_orders,read_all_orders,read_customer
 
 
 [auth]
-redirect_urls = [ "https://example.com/api/auth" ]
+redirect_urls = [ "https://qorix-review.nextvence.com/api/auth" ]
 
 [app_proxy]
 url = "/api"

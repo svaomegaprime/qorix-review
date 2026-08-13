@@ -433,7 +433,7 @@ export default function Index() {
                                         </s-button-group>
                                     </s-stack>
                                     <s-button-group gap="base">
-                                        <s-button slot="secondary-actions">Need help?</s-button>
+                                       <s-button slot="secondary-actions" href="http://qorix-review-docs.nextvence.com/pages/widgets/trustbar" target="_blank">Need help?</s-button>
                                         <s-button variant="primary" slot="primary-action" onClick={() => {
                                             if (loaderData?.shop) {
                                                 const url = loaderData.productHandle

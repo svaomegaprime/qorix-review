@@ -9,7 +9,7 @@ export default function Help() {
             <s-stack>
                 <s-grid gridTemplateColumns="repeat(auto-fit, minmax(280px, 1fr))" gap="base">
                     <s-grid-item>
-                        <s-clickable border="base" borderRadius="large" overflow="hidden">
+                        <s-clickable as="a" href="http://qorix-review-docs.nextvence.com/" border="base" borderRadius="large" overflow="hidden">
                             <div style={{ background: "#fff", padding: "20px 15px" }}>
                                 <s-grid gridTemplateColumns="auto 1fr" gap="small">
                                     <s-stack direction="inline" alignItems="center" justifyContent="center" background="subdued" borderRadius="base" padding="small base">

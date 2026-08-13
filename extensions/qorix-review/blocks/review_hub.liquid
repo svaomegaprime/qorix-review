@@ -1,3 +1,4 @@
+<qorix-review-hub-widget>
 {{ 'review-hub.css' | asset_url | stylesheet_tag }}
 {% assign review_hub_metafield = app.metafields.qorix_review.review_hub.value %}
 {% assign grid_columns = review_hub_metafield.layout | plus: 0 %}
@@ -6,6 +7,14 @@
 {% endif %}
 
 <style>
+  :host {
+    display: block;
+    width: 100%;
+    max-width: 100%;
+    min-width: 0;
+    box-sizing: border-box;
+  }
+
   [data-section="qorix-review-hub"], .qr-review-hub {
     --star-color: {{ review_hub_metafield.starColor | default: '#34C759' }};
     --text-color: {{ review_hub_metafield.textColor | default: '#1A1A1A' }};
@@ -15,11 +24,10 @@
     --filter-chio-star-color: {{ review_hub_metafield.filterChipStarColor | default: '#34C759' }};
     --filter-chip-color: {{ review_hub_metafield.filterChipColor | default: '#F2F2F2' }};
   }
-  [data-qorix-widget] { display: none !important; }
 </style>
 
+<template x-if="window.Alpine">
 <div
-  data-qorix-widget
   class="qr-review-hub"
   data-section="qorix-review-hub"
   style="--qr-grid-columns: {{ grid_columns }}; --qr-section-max-width: 100%;"
@@ -52,16 +60,18 @@
     {% render 'review-filters', review_hub_metafield: review_hub_metafield %}
 
     <div class="qr-review-grid">
-      {% render 'review-card', review_hub_metafield: review_hub_metafield %}
+      {% render 'review-card', review_hub_metafield: review_hub_metafield, grid_columns: grid_columns %}
     </div>
 
     <div class="qr-load-more-wrap" x-show="hasMoreReviews()">
       <button class="qr-load-more-btn" type="button" @click="loadMore()">Load more reviews</button>
     </div>
   </div>
-  {% render 'show-all-media-modal', from: 'review_hub' %}
-  {% render 'lightbox' %}
 </div>
+</template>
+</qorix-review-hub-widget>
+{% render 'show-all-media-modal' %}
+{% render 'lightbox' %}
 
 {% schema %}
 {

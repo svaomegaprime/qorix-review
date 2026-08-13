@@ -169,14 +169,9 @@ export default function EmailSettings() {
           >
             Preview email
           </s-button>
-          <s-button
-            href="/app/settings/branding"
-
-            inline="fill"
-            variant="secondary"
-          >
-            Need Help ?
-          </s-button>
+            <s-button  variant="secondary" onClick={() => window.open("http://qorix-review-docs.nextvence.com/pages/settings/email-settings", "_blank")}>
+          Need Help ?
+        </s-button>
         </s-stack>
       </s-stack>
       <s-section>
@@ -254,9 +249,27 @@ export default function EmailSettings() {
                   Request scheduling. <ArrowUpRight />
                 </Text>
               </s-stack>
+              
             </s-stack>
           </s-grid>
         </CustomSection>
+<br></br>
+        <s-banner heading="SMTP not configured" tone="warning" >
+ If SMTP is not configured, Qorix Review will use its default SMTP service to send emails to customers. You can add your email under Admin Notifications to receive a copy (CC) of each email sent.
+  <s-button
+    slot="secondary-actions"
+    variant="secondary"
+    href="/app/settings/admin-notification"
+  >
+  Go to Admin Notifications
+  </s-button>
+
+    <s-button   slot="secondary-actions"
+    variant="secondary" onClick={() => window.open("http://qorix-review-docs.nextvence.com/pages/settings/gmail-smtp-setup", "_blank")}>
+          SMTP Setup Guide
+      </s-button>
+
+</s-banner>
 
         <s-box paddingBlockStart="large"></s-box>
         {emailActiveSettings.requestEmail && (

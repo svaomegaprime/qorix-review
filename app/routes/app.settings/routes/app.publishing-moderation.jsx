@@ -97,8 +97,8 @@ export default function PublishingModeration() {
             Control which reviews go live and how content is filtered
           </s-paragraph>
         </s-box>
-        <s-button inline="fill" variant="secondary">
-          Need Help ?
+          <s-button  variant="secondary" onClick={() => window.open("http://qorix-review-docs.nextvence.com/pages/settings/publishing-moderation", "_blank")}>
+         Need Help?
         </s-button>
       </s-stack>
 

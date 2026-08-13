@@ -1,25 +1,28 @@
-document.addEventListener('DOMContentLoaded', function () {
-  const cards = document.querySelectorAll('.quickreview-card');
+function initQuickReviewSwiper() {
+  if (typeof Swiper === 'undefined') return;
 
-  cards.forEach(function (card) {
-    initSwiper(card);
-  });
-
-  function initSwiper(card) {
+  document.querySelectorAll('.quickreview-card').forEach(function (card) {
     const swiperEl = card.querySelector('[data-quickreview-swiper]');
-    if (!swiperEl || typeof Swiper === 'undefined') return;
+    if (!swiperEl) return;
 
-    // Avoid double-initializing the same slider
-    if (swiperEl.swiper) return;
+    if (swiperEl.swiper) {
+      swiperEl.swiper.update();
+      return;
+    }
 
     new Swiper(swiperEl, {
       slidesPerView: 'auto',
       spaceBetween: 20,
-      watchOverflow: true, 
+      watchOverflow: true,
+      observer: true,
+      observeParents: true,
       navigation: {
         nextEl: card.querySelector('[data-quickreview-nav-next]'),
         prevEl: card.querySelector('[data-quickreview-nav-prev]')
       }
     });
-  }
-});
+  });
+}
+
+window.initQuickReviewSwiper = initQuickReviewSwiper;
+document.addEventListener('DOMContentLoaded', initQuickReviewSwiper);
