@@ -7,255 +7,257 @@
     :class="{ open: modalOpen }"
     @click="overlayClick($event)"
   >
-  <div
-    class="modal-box"
-    id="modal-box"
-    x-ref="modalBox"
-    style="border-radius: {{ quick_review_metafield.borderRadius }}"
-  >
-    <button class="modal-close" type="button" @click="closeModal()">&#x2715;</button>
-    {% comment %} Start:: form  {% endcomment %}
-    <form id="form-view" @submit.prevent="(e)=>submitReview(e)" x-show="!submitSuccess && !isError">
-      <div class="modal-header">
-        <div class="modal-icon">
-          <svg viewBox="0 0 24 24">
-            <path
-              d="M3 17.25V21h3.75L17.81 9.94l-3.75-3.75L3 17.25zM20.71 7.04a1 1 0 000-1.41l-2.34-2.34a1 1 0 00-1.41 0l-1.83 1.83 3.75 3.75 1.83-1.83z"
-            />
-          </svg>
-        </div>
-        <div>
-          <div class="modal-title">{{ quick_review_metafield.formTitle }}</div>
-          <div class="modal-sub">{{ quick_review_metafield.formSubtitle }}</div>
-        </div>
-      </div>
-
-      <label class="form-label">Your rating <span class="req">*</span></label>
-      <div
-        class="star-picker"
-        id="star-picker"
-        style="display: flex; gap: 8px; margin-bottom: 16px; cursor: pointer;"
-      >
-        <template x-for="star in ratings" :key="'picker-' + star">
-          <span
-            role="button"
-            tabindex="0"
-            @mouseenter="starHover = star"
-            @mouseleave="starHover = 0"
-            @click="starSelected = star"
-            @keydown.enter.prevent="starSelected = star"
-            @keydown.space.prevent="starSelected = star"
-            :aria-label="'Rate ' + star + ' stars'"
-            style="display: flex; cursor: pointer;"
-          >
-            <svg
-              :stroke="star <= (starHover || starSelected) ? '{{ quick_review_metafield.starColor }}' : '#606060' "
-              width="20"
-              height="20"
-              viewBox="0 0 17 16"
-              fill="none"
-              xmlns="http://www.w3.org/2000/svg"
-            >
+    <div
+      class="modal-box"
+      id="modal-box"
+      x-ref="modalBox"
+      style="border-radius: {{ quick_review_metafield.borderRadius }}"
+    >
+      <button class="modal-close" type="button" @click="closeModal()">&#x2715;</button>
+      {% comment %} Start:: form  {% endcomment %}
+      <form id="form-view" @submit.prevent="(e)=>submitReview(e)" x-show="!submitSuccess && !isError">
+        <div class="modal-header">
+          <div class="modal-icon">
+            <svg viewBox="0 0 24 24">
               <path
-                :fill="star <= (starHover || starSelected) ? '{{ quick_review_metafield.starColor }}' : ''"
-                d="M9.51964 0.855C8.97604 -0.285 7.35604 -0.285 6.81244 0.855L5.14444 4.3494L1.30564 4.8546C0.0552353 5.0202 -0.446365 6.561 0.469235 7.4298L3.27724 10.0962L2.57284 13.9026C2.34244 15.1434 3.65404 16.0962 4.76284 15.495L8.16604 13.647L11.5692 15.495C12.678 16.0962 13.9896 15.1434 13.7592 13.9026L13.0548 10.0962L15.8628 7.4298C16.7772 6.561 16.2768 5.0202 15.0264 4.8546L11.1864 4.3494L9.51964 0.855Z"
+                d="M3 17.25V21h3.75L17.81 9.94l-3.75-3.75L3 17.25zM20.71 7.04a1 1 0 000-1.41l-2.34-2.34a1 1 0 00-1.41 0l-1.83 1.83 3.75 3.75 1.83-1.83z"
               />
             </svg>
-          </span>
-        </template>
-      </div>
-      <label class="form-label">Your review <span class="req">*</span></label>
-      <textarea
-        class="form-textarea"
-        id="review-text"
-        placeholder="Tell us what you loved or didn't like..."
-        x-model="form.review"
-        rows="5"
-        maxlength="300"
-        style="height: 136px;"
-      ></textarea>
-      <div
-        style="
-          display: grid;
-          {% if quick_review_metafield.isShowNameField == false or quick_review_metafield.isShowEmailField == false %}
-            grid-template-columns: 1fr;
-          {% else %}
-            grid-template-columns: 1fr 1fr;
-          {% endif %}
-          gap: 16px;
-        "
-      >
-        {%- if quick_review_metafield.isShowNameField -%}
-          <span>
-            <label class="form-label">Your name <span class="req">*</span></label>
-            <input
-              class="form-input"
-              id="review-name"
-              type="text"
-              placeholder="Enter your name"
-              x-model="form.name"
-              maxlength="20"
-            >
-          </span>
-        {%- endif -%}
-
-        {%- if quick_review_metafield.isShowEmailField -%}
-          <span>
-            <label class="form-label">Email <span class="req">*</span></label>
-            <input
-              class="form-input"
-              id="review-email"
-              type="email"
-              required
-              placeholder="Enter your email"
-              x-model="form.email"
-              maxlength="100"
-            >
-          </span>
-        {%- endif -%}
-      </div>
-
-      {% if allow_photo or allow_video %}
-        <label class="form-label">Add media <span style="font-weight: 400; color: #888">(optional)</span></label>
-        <input
-          type="file"
-          id="media-input"
-          accept="{{ media_accept }}"
-          multiple
-          style="display: none"
-          x-ref="mediaInput"
-          @change="handleMediaUpload($event)"
-        >
-
-        <div
-          class="upload-zone"
-          id="upload-zone"
-          :class="{ 'drag-over': isDragging }"
-          @click="$refs.mediaInput.click()"
-          @dragover.prevent="isDragging = true"
-          @dragleave="isDragging = false"
-          @drop.prevent="handleDrop($event)"
-        >
-          <svg viewBox="0 0 24 24">
-            <path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4" />
-            <polyline points="17 8 12 3 7 8" />
-            <line x1="12" y1="3" x2="12" y2="15" />
-          </svg>
-          <p>Click to upload or drag and drop</p>
-          <small>
-            {% if allow_photo and allow_video %}
-              JPG, PNG, WEBP, MP4, MOV up to 20MB each
-            {% elsif allow_photo %}
-              JPG, PNG, WEBP up to 20MB each
-            {% elsif allow_video %}
-              MP4, MOV up to 20MB each
-            {% endif %}
-          </small>
+          </div>
+          <div>
+            <div class="modal-title">{{ quick_review_metafield.formTitle }}</div>
+            <div class="modal-sub">{{ quick_review_metafield.formSubtitle }}</div>
+          </div>
         </div>
 
+        <label class="form-label">Your rating <span class="req">*</span></label>
         <div
-          id="media-preview"
-          style="display: flex; gap: 8px; flex-wrap: wrap; margin-bottom: 14px"
-          x-show="uploadedFiles.length > 0"
+          class="star-picker"
+          id="star-picker"
+          style="display: flex; gap: 8px; margin-bottom: 16px; cursor: pointer;"
         >
-          <template x-for="(file, index) in uploadedFiles" :key="file.url">
-            <div class="preview-item">
-              <template x-if="file.isVideo">
-                <video :src="file.url" muted playsinline></video>
-              </template>
-              <template x-if="!file.isVideo">
-                <img :src="file.url" alt="preview" width="" height="">
-              </template>
-              <div class="preview-video-badge" x-show="file.isVideo">VIDEO</div>
-              <button class="preview-remove" type="button" @click="removeMedia(index)">&#x2715;</button>
-            </div>
+          <template x-for="star in ratings" :key="'picker-' + star">
+            <span
+              role="button"
+              tabindex="0"
+              @mouseenter="starHover = star"
+              @mouseleave="starHover = 0"
+              @click="starSelected = star"
+              @keydown.enter.prevent="starSelected = star"
+              @keydown.space.prevent="starSelected = star"
+              :aria-label="'Rate ' + star + ' stars'"
+              style="display: flex; cursor: pointer;"
+            >
+              <svg
+                :stroke="star <= (starHover || starSelected) ? '{{ quick_review_metafield.starColor }}' : '#606060' "
+                width="20"
+                height="20"
+                viewBox="0 0 17 16"
+                fill="none"
+                xmlns="http://www.w3.org/2000/svg"
+              >
+                <path
+                  :fill="star <= (starHover || starSelected) ? '{{ quick_review_metafield.starColor }}' : ''"
+                  d="M9.51964 0.855C8.97604 -0.285 7.35604 -0.285 6.81244 0.855L5.14444 4.3494L1.30564 4.8546C0.0552353 5.0202 -0.446365 6.561 0.469235 7.4298L3.27724 10.0962L2.57284 13.9026C2.34244 15.1434 3.65404 16.0962 4.76284 15.495L8.16604 13.647L11.5692 15.495C12.678 16.0962 13.9896 15.1434 13.7592 13.9026L13.0548 10.0962L15.8628 7.4298C16.7772 6.561 16.2768 5.0202 15.0264 4.8546L11.1864 4.3494L9.51964 0.855Z"
+                />
+              </svg>
+            </span>
           </template>
         </div>
-      {% endif %}
+        <label class="form-label">Your review <span class="req">*</span></label>
+        <textarea
+          class="form-textarea"
+          id="review-text"
+          placeholder="Tell us what you loved or didn't like..."
+          x-model="form.review"
+          rows="5"
+          maxlength="300"
+          style="height: 136px;"
+        ></textarea>
+        <div
+          style="
+            display: grid;
+            {% if quick_review_metafield.isShowNameField == false or quick_review_metafield.isShowEmailField == false %}
+              grid-template-columns: 1fr;
+            {% else %}
+              grid-template-columns: 1fr 1fr;
+            {% endif %}
+            gap: 16px;
+          "
+        >
+          {%- if quick_review_metafield.isShowNameField -%}
+            <span>
+              <label class="form-label">Your name <span class="req">*</span></label>
+              <input
+                class="form-input"
+                id="review-name"
+                type="text"
+                placeholder="Enter your name"
+                x-model="form.name"
+                maxlength="20"
+              >
+            </span>
+          {%- endif -%}
 
-      <button
-        class="submit-btn"
-        type="submit"
-        :disabled="dataPostLoading"
-      >
-        <span x-show="!dataPostLoading">{{ quick_review_metafield.submitButtonText }}</span>
-        <div :style="dataPostLoading ? 'display: flex; align-items: center; justify-content: center; gap: 8px;' : 'display: none;'">
-          <span class="qr-loader" aria-hidden="true"></span>
-          <span x-text="loadingText"></span>
+          {%- if quick_review_metafield.isShowEmailField -%}
+            <span>
+              <label class="form-label">Email <span class="req">*</span></label>
+              <input
+                class="form-input"
+                id="review-email"
+                type="email"
+                required
+                placeholder="Enter your email"
+                x-model="form.email"
+                maxlength="100"
+              >
+            </span>
+          {%- endif -%}
         </div>
-      </button>
 
-      <div class="modal-footer-note">
-        <svg viewBox="0 0 24 24">
-          <rect x="3" y="11" width="18" height="11" rx="2" ry="2" />
-          <path d="M7 11V7a5 5 0 0110 0v4" />
-        </svg>
-        No account required &middot; Your review is public
-      </div>
-    </form>
-    {% comment %} End:: form  {% endcomment %}
-    {% comment %} Start:: success message  {% endcomment %}
-    <div
-      id="success-view"
-      :style="
-        {
-          display: submitSuccess ? 'flex' : 'none',
-          flexDirection: 'column',
-          alignItems: 'center',
-          justifyContent: 'center',
-          minHeight: '320px'
-        }
-      "
-    >
-      <div class="success-box">
-        <div class="success-circle">
-          <svg viewBox="0 0 24 24">
-            <path d="M5 13l4 4L19 7" />
-          </svg>
-        </div>
-        <div class="success-title">{{ quick_review_metafield.successMessageTitle }}</div>
-        <div class="success-sub">{{ quick_review_metafield.successMessage }}</div>
-        <button class="continue-btn" type="button" @click="closeModal()">
-          {{ quick_review_metafield.successButtonText }}
-        </button>
-      </div>
-    </div>
-    {% comment %} End:: success message  {% endcomment %}
-    {% comment %} Start:: Error message  {% endcomment %}
-    <div
-      id="error-view"
-      :style="
-        {
-          display: isError ? 'flex' : 'none',
-          flexDirection: 'column',
-          alignItems: 'center',
-          justifyContent: 'center',
-          minHeight: '320px'
-        }
-      "
-    >
-      <div class="success-box">
-        <div class="success-circle">
-          <svg
-            xmlns="http://www.w3.org/2000/svg"
-            fill="none"
-            viewBox="0 0 24 24"
-            stroke-width="1"
-            stroke="currentColor"
-            class="size-6"
-            style="width: 28px; height: 28px;"
-            stroke="red"
+        {% if allow_photo or allow_video %}
+          <label class="form-label">Add media <span style="font-weight: 400; color: #888">(optional)</span></label>
+          <input
+            type="file"
+            id="media-input"
+            accept="{{ media_accept }}"
+            multiple
+            style="display: none"
+            x-ref="mediaInput"
+            @change="handleMediaUpload($event)"
           >
-            <path stroke="red" stroke-linecap="round" stroke-linejoin="round" d="M12 9v3.75m-9.303 3.376c-.866 1.5.217 3.374 1.948 3.374h14.71c1.73 0 2.813-1.874 1.948-3.374L13.949 3.378c-.866-1.5-3.032-1.5-3.898 0L2.697 16.126ZM12 15.75h.007v.008H12v-.008Z" />
+
+          <div
+            class="upload-zone"
+            id="upload-zone"
+            :class="{ 'drag-over': isDragging }"
+            @click="$refs.mediaInput.click()"
+            @dragover.prevent="isDragging = true"
+            @dragleave="isDragging = false"
+            @drop.prevent="handleDrop($event)"
+          >
+            <svg viewBox="0 0 24 24">
+              <path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4" />
+              <polyline points="17 8 12 3 7 8" />
+              <line x1="12" y1="3" x2="12" y2="15" />
+            </svg>
+            <p>Click to upload or drag and drop</p>
+            <small>
+              {% if allow_photo and allow_video %}
+                JPG, PNG, WEBP, MP4, MOV up to 20MB each
+              {% elsif allow_photo %}
+                JPG, PNG, WEBP up to 20MB each
+              {% elsif allow_video %}
+                MP4, MOV up to 20MB each
+              {% endif %}
+            </small>
+          </div>
+
+          <div
+            id="media-preview"
+            style="display: flex; gap: 8px; flex-wrap: wrap; margin-bottom: 14px"
+            x-show="uploadedFiles.length > 0"
+          >
+            <template x-for="(file, index) in uploadedFiles" :key="file.url">
+              <div class="preview-item">
+                <template x-if="file.isVideo">
+                  <video :src="file.url" muted playsinline></video>
+                </template>
+                <template x-if="!file.isVideo">
+                  <img :src="file.url" alt="preview" width="" height="">
+                </template>
+                <div class="preview-video-badge" x-show="file.isVideo">VIDEO</div>
+                <button x-show="!dataPostLoading" class="preview-remove" type="button" @click="removeMedia(index)">
+                  &#x2715;
+                </button>
+              </div>
+            </template>
+          </div>
+        {% endif %}
+
+        <button
+          class="submit-btn"
+          type="submit"
+          :disabled="dataPostLoading"
+        >
+          <span x-show="!dataPostLoading">{{ quick_review_metafield.submitButtonText }}</span>
+          <div :style="dataPostLoading ? 'display: flex; align-items: center; justify-content: center; gap: 8px;' : 'display: none;'">
+            <span class="qr-loader" aria-hidden="true"></span>
+            <span x-text="loadingText"></span>
+          </div>
+        </button>
+
+        <div class="modal-footer-note">
+          <svg viewBox="0 0 24 24">
+            <rect x="3" y="11" width="18" height="11" rx="2" ry="2" />
+            <path d="M7 11V7a5 5 0 0110 0v4" />
           </svg>
+          No account required &middot; Your review is public
         </div>
-        <div class="success-title">Something went wrong</div>
-        <div class="success-sub" x-text="errorMessage || 'Please try again.'"></div>
-        <button class="continue-btn" type="button" @click="closeErrorModal()">Try again</button>
+      </form>
+      {% comment %} End:: form  {% endcomment %}
+      {% comment %} Start:: success message  {% endcomment %}
+      <div
+        id="success-view"
+        :style="
+          {
+            display: submitSuccess ? 'flex' : 'none',
+            flexDirection: 'column',
+            alignItems: 'center',
+            justifyContent: 'center',
+            minHeight: '320px'
+          }
+        "
+      >
+        <div class="success-box">
+          <div class="success-circle">
+            <svg viewBox="0 0 24 24">
+              <path d="M5 13l4 4L19 7" />
+            </svg>
+          </div>
+          <div class="success-title">{{ quick_review_metafield.successMessageTitle }}</div>
+          <div class="success-sub">{{ quick_review_metafield.successMessage }}</div>
+          <button class="continue-btn" type="button" @click="closeModal()">
+            {{ quick_review_metafield.successButtonText }}
+          </button>
+        </div>
       </div>
+      {% comment %} End:: success message  {% endcomment %}
+      {% comment %} Start:: Error message  {% endcomment %}
+      <div
+        id="error-view"
+        :style="
+          {
+            display: isError ? 'flex' : 'none',
+            flexDirection: 'column',
+            alignItems: 'center',
+            justifyContent: 'center',
+            minHeight: '320px'
+          }
+        "
+      >
+        <div class="success-box">
+          <div class="success-circle">
+            <svg
+              xmlns="http://www.w3.org/2000/svg"
+              fill="none"
+              viewBox="0 0 24 24"
+              stroke-width="1"
+              stroke="currentColor"
+              class="size-6"
+              style="width: 28px; height: 28px;"
+              stroke="red"
+            >
+              <path stroke="red" stroke-linecap="round" stroke-linejoin="round" d="M12 9v3.75m-9.303 3.376c-.866 1.5.217 3.374 1.948 3.374h14.71c1.73 0 2.813-1.874 1.948-3.374L13.949 3.378c-.866-1.5-3.032-1.5-3.898 0L2.697 16.126ZM12 15.75h.007v.008H12v-.008Z" />
+            </svg>
+          </div>
+          <div class="success-title">Something went wrong</div>
+          <div class="success-sub" x-text="errorMessage || 'Please try again.'"></div>
+          <button class="continue-btn" type="button" @click="closeErrorModal()">Try again</button>
+        </div>
+      </div>
+      {% comment %} End:: Error message  {% endcomment %}
     </div>
-    {% comment %} End:: Error message  {% endcomment %}
-  </div>
   </div>
 </template>
 {% comment %} End:: Review form and success {% endcomment %}

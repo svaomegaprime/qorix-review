@@ -138,39 +138,34 @@ export default function ReviewItem({
 
   // Start----Handler for renderers attachments
   const renderAttachment = (attachment, isThumbnail = false) => {
+    if (!attachment) return null;
     const mediaClassName = isThumbnail
       ? "reviewAttachmentMedia reviewAttachmentMediaThumbnail"
       : "reviewAttachmentMedia";
 
     if (attachment.type === "VIDEO") {
       return (
-        <div className={mediaClassName}>
+        <div className={mediaClassName} key={`video-${attachment.url}`}>
           <video
+            key={attachment.url}
+            src={attachment.url}
             controls={!isThumbnail}
-            autoPlay={false}
+            autoPlay={!isThumbnail}
             playsInline
-            width="150px"
-            height="150px"
           >
-            <source
-              src={attachment.url}
-              type="video/mp4"
-              width="150px"
-              height="150px"
-            />
+            <source src={attachment.url} type="video/mp4" />
           </video>
         </div>
       );
     }
 
     return (
-      <div className={mediaClassName}>
+      <div className={mediaClassName} key={`img-${attachment.url}`}>
         <img
+          key={attachment.url}
           src={attachment.url}
           alt=""
           draggable={false}
-          width="150px"
-          height="150px"
         />
       </div>
     );
@@ -387,8 +382,10 @@ export default function ReviewItem({
               borderRadius="full"
               src={data.reviewerAvatar}
             />
-            <p style={{  wordBreak: "break-all", fontWeight:"600"}} >{data.reviewerName}</p>
-            </s-stack>
+            <p style={{ wordBreak: "break-all", fontWeight: "600" }}>
+              {data.reviewerName}
+            </p>
+          </s-stack>
           <s-text>{formattedReviewDate}</s-text>
         </s-stack>
         {/* End----Review header */}
@@ -409,10 +406,12 @@ export default function ReviewItem({
         {/* Start----Review content */}
         <div style={{ display: "grid", gap: "4px", paddingTop: "7px" }}>
           {/* Start----Review title */}
-           <p style={{  wordBreak: "break-all", fontWeight:"600"}} >{data.productTitle}</p>
+          <p style={{ wordBreak: "break-all", fontWeight: "600" }}>
+            {data.productTitle}
+          </p>
           {/* End----Review title */}
           {/* Start----Review description */}
-          <p style={{  wordBreak: "break-all",}} >{data.body}</p>
+          <p style={{ wordBreak: "break-all" }}>{data.body}</p>
           {/* End----Review description */}
           {(replied || replyReview) && (
             <div
@@ -491,12 +490,17 @@ export default function ReviewItem({
                       <span>+{countAttachments - 5}</span>
                     ) : (
                       attachment.type === "VIDEO" && (
-                        <video
-                          src={attachment.url}
-                          width="20"
-                          height="20"
-                          alt=""
-                        />
+                        <>
+                          <img
+                            src="/icons/play-icon.png"
+                            className="overlay-icon"
+                            style={{
+                              width: "20px",
+                              height: "20px",
+                            }}
+                            alt="Play"
+                          />
+                        </>
                       )
                     )}
                   </div>
@@ -530,23 +534,28 @@ export default function ReviewItem({
                     {renderAttachment(activeAttachment)}
                   </div>
                   <div className="reviewAttachmentDialogControls">
-                    <s-button
+                    <button
+                      type="button"
                       onClick={handlePreviousAttachment}
-                      variant="primary"
+                      style={{
+                        display: "inline-flex",
+                        alignItems: "center",
+                        justifyContent: "center",
+                        gap: "6px",
+                        padding: "8px 16px",
+                        background: "#202223",
+                        color: "#ffffff",
+                        border: "1px solid #202223",
+                        borderRadius: "8px",
+                        fontSize: "13px",
+                        fontWeight: "600",
+                        cursor: "pointer",
+                        boxShadow: "0 1px 0 rgba(0, 0, 0, 0.05)",
+                      }}
                     >
-                      <div
-                        style={{
-                          display: "inline-flex",
-                          alignItems: "center",
-                          gap: "4px",
-                          width: "75px",
-                          justifyContent: "center",
-                        }}
-                      >
-                        <s-icon type="arrow-left" />
-                        Previous
-                      </div>
-                    </s-button>
+                      <s-icon type="arrow-left" tone="" />
+                      <span>Previous</span>
+                    </button>
                     <div className="reviewAttachmentDialogThumbs">
                       {attachments.map((attachment, index) => (
                         <button
@@ -558,26 +567,37 @@ export default function ReviewItem({
                               : null
                           }
                           className={`reviewAttachmentDialogThumb ${activeAttachmentIndex === index ? "is-active" : ""}`}
-                          onClick={() => setActiveAttachmentIndex(index)}
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            setActiveAttachmentIndex(index);
+                          }}
                         >
                           {renderAttachment(attachment, true)}
                         </button>
                       ))}
                     </div>
-                    <s-button onClick={handleNextAttachment} variant="primary">
-                      <div
-                        style={{
-                          display: "inline-flex",
-                          alignItems: "center",
-                          gap: "4px",
-                          width: "70px",
-                          justifyContent: "center",
-                        }}
-                      >
-                        Next
-                        <s-icon type="arrow-right" />
-                      </div>
-                    </s-button>
+                    <button
+                      type="button"
+                      onClick={handleNextAttachment}
+                      style={{
+                        display: "inline-flex",
+                        alignItems: "center",
+                        justifyContent: "center",
+                        gap: "6px",
+                        padding: "8px 16px",
+                        background: "#202223",
+                        color: "#ffffff",
+                        border: "1px solid #202223",
+                        borderRadius: "8px",
+                        fontSize: "13px",
+                        fontWeight: "600",
+                        cursor: "pointer",
+                        boxShadow: "0 1px 0 rgba(0, 0, 0, 0.05)",
+                      }}
+                    >
+                      <span>Next</span>
+                      <s-icon type="arrow-right" />
+                    </button>
                   </div>
                 </div>
               </div>
