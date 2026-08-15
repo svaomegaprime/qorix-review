@@ -23,7 +23,7 @@ export const action = async ({ request }) => {
       .filter(Boolean);
 
     await prisma.store.deleteMany({ where: { storeGID: storeId } });
-    await prisma.session.deleteMany({ where: { shop: payload.shop_domain } });
+    // await prisma.session.deleteMany({ where: { shop: payload.shop_domain } });
 
     if (admin) {
       await Promise.all(

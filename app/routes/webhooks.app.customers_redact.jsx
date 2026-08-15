@@ -4,6 +4,7 @@ import prisma from "../db.server";
 export const action = async ({ request }) => {
   try {
     const { payload } = await authenticate.webhook(request);
+    console.log("[Customer Reduct]: Payload ", payload);
 
     const email = String(payload?.customer?.email || "")
       .trim()
@@ -16,7 +17,7 @@ export const action = async ({ request }) => {
         shopId,
         customerId: payload?.customer?.id,
       });
-      console.log("OK");
+      console.log("OK", { status: 200 });
       return new Response("OK", { status: 200 });
     }
 
@@ -33,6 +34,8 @@ export const action = async ({ request }) => {
       email,
       deletedReviews: deleteResult.count,
     });
+
+    console.log("OK", { status: 200 });
 
     return new Response("OK", {
       status: 200,
