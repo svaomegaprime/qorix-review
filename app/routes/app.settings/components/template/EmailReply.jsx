@@ -85,7 +85,9 @@ export default function EmailReply({ outgoingRequestEmail, brandSettings }) {
         <div class="qr-footer">
           <p class="qr-footer-meta">
             {brandSettings.emailFooterText}{" "}
-            <a href="#">{brandSettings.emailFooterLinkText}</a>
+            {brandSettings.emailFooterLinkText && (
+              <a href={brandSettings.externalSettings?.footerTextLink || "#"}>{brandSettings.emailFooterLinkText}</a>
+            )}
           </p>
 
           {brandSettings.isShowFooterBadge && (

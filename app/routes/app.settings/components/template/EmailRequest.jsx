@@ -218,7 +218,7 @@ export default function EmailRequest({ outgoingRequestEmail, brandSettings }) {
           <p class="qr-footer-meta">
             {brandSettings.emailFooterText ? brandSettings.emailFooterText : ""}{" "}
             {brandSettings.emailFooterLinkText && (
-              <a href="#">{brandSettings.emailFooterLinkText}</a>
+              <a href={brandSettings.externalSettings?.footerTextLink || "#"}>{brandSettings.emailFooterLinkText}</a>
             )}
           </p>
           {brandSettings.isShowFooterBadge && (

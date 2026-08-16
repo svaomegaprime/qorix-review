@@ -241,10 +241,17 @@ export default function Branding() {
             Customize your logo and brand appearance in review emails
           </s-text>
         </s-box>
-           <s-button  variant="secondary" onClick={() => window.open("http://qorix-review-docs.nextvence.com/pages/settings/branding", "_blank")}>
-         Need Help ?
+        <s-button
+          variant="secondary"
+          onClick={() =>
+            window.open(
+              "http://qorix-review-docs.nextvence.com/pages/settings/branding",
+              "_blank",
+            )
+          }
+        >
+          Need Help ?
         </s-button>
-       
       </s-stack>
       <s-query-container>
         <s-grid
@@ -504,6 +511,20 @@ export default function Branding() {
                             setBrandSettings,
                             "emailFooterLinkText",
                             e.target.value,
+                          )
+                        }
+                      />
+                      <s-text-field
+                        label="Footer link URL"
+                        defaultValue={brandSettings.externalSettings?.footerTextLink || ""}
+                        onInput={(e) =>
+                          handleStateUpdate(
+                            setBrandSettings,
+                            "externalSettings",
+                            {
+                              ...(brandSettings.externalSettings || {}),
+                              footerTextLink: e.target.value,
+                            },
                           )
                         }
                       />

@@ -293,7 +293,7 @@ export default function ReviewItem({
 
       .reviewAttachmentDialogControls {
           display: grid;
-          grid-template-columns: auto minmax(0, auto) auto;
+          grid-template-columns: auto 1fr auto;
           align-items: center;
           justify-content: center;
           gap: 10px;
