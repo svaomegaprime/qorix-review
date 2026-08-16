@@ -392,7 +392,7 @@ class ReviewX {
   }
 
   async shareReview(review) {
-    const shareUrl = `${window.location.href.split("#")[0]}/products/${review.productHandle}`;
+    const shareUrl = `/products/${review.productHandle}`;
     const shareData = {
       title: document.title,
       text: "Check out this review!",
