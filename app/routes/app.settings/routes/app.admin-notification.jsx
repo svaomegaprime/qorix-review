@@ -62,8 +62,8 @@ export default function AdminNotification() {
     storeSettings.adminNotification ?? DEFAULT_ADMIN_NOTIFICATION,
   );
   const [countMail, setCountMail] = useState(
-    Object.entries(adminNotification.notificationEmailAddress).filter(
-      (item) => item[1] !== null,
+    Object.values(adminNotification.notificationEmailAddress || {}).filter(
+      (val) => typeof val === "string" && val.trim() !== "",
     ).length,
   );
   const maxNumberOfEmail = 3;
@@ -78,18 +78,13 @@ export default function AdminNotification() {
 
   const handleAddButton = () => {
     if (countMail < maxNumberOfEmail) {
-      const newKey = `email${countMail + 1}`;
-      const newField = (adminNotification.notificationEmailAddress[newKey] =
-        "");
+      const nextCount = countMail + 1;
+      const newKey = `email${nextCount}`;
       handleStateUpdate(setAdminNotification, "notificationEmailAddress", {
         ...adminNotification.notificationEmailAddress,
-        [newKey]: newField,
+        [newKey]: "",
       });
-      setCountMail(
-        Object.entries(adminNotification.notificationEmailAddress).filter(
-          (item) => item[1] !== null,
-        ).length,
-      );
+      setCountMail(nextCount);
     } else {
       shopify.toast.show("Maximum email added.");
     }
@@ -105,8 +100,8 @@ export default function AdminNotification() {
     onDiscard: (savedValue) => {
       setAdminNotification(savedValue);
       setCountMail(
-        Object.values(savedValue.notificationEmailAddress).filter(
-          (value) => value !== null,
+        Object.values(savedValue.notificationEmailAddress || {}).filter(
+          (value) => typeof value === "string" && value.trim() !== "",
         ).length,
       );
       setFormResetKey((previous) => previous + 1);
@@ -132,7 +127,15 @@ export default function AdminNotification() {
             Choose when Qorix sends you an email about review activity
           </s-text>
         </s-box>
-           <s-button  variant="secondary" onClick={() => window.open("http://qorix-review-docs.nextvence.com/pages/settings/admin-notifications", "_blank")}>
+        <s-button
+          variant="secondary"
+          onClick={() =>
+            window.open(
+              "http://qorix-review-docs.nextvence.com/pages/settings/admin-notifications",
+              "_blank",
+            )
+          }
+        >
           Need Help?
         </s-button>
       </s-stack>
@@ -151,14 +154,14 @@ export default function AdminNotification() {
                 {new Array(countMail).fill(null).map((_, i) => {
                   const key = `email${i + 1}`;
                   return (
-                      <s-text-field
-                        key={key}
-                        value={
-                          adminNotification.notificationEmailAddress[key] ?? ""
-                        }
-                        details="This is your store's admin email. You can change it at any time."
-                        onInput={(e) => handleEmails(i + 1, e.target.value)}
-                      />
+                    <s-text-field
+                      key={key}
+                      value={
+                        adminNotification.notificationEmailAddress[key] ?? ""
+                      }
+                      details="This is your store's admin email. You can change it at any time."
+                      onInput={(e) => handleEmails(i + 1, e.target.value)}
+                    />
                   );
                 })}
                 {/* <s-text-field defaultValue="svaomegaprime@gmail.com" />
