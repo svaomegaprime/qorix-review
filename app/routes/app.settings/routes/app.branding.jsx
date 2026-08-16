@@ -281,8 +281,8 @@ export default function Branding() {
                         )
                       }
                     />
-                    <s-divider />
-                    <s-text-field
+                    {/* <s-divider /> */}
+                    {/* <s-text-field
                       label="Sender name *"
                       details="Use a personal name to increase open rates (e.g. “Osman from Glow Store”)."
                       defaultValue={brandSettings.storeSenderName}
@@ -293,8 +293,8 @@ export default function Branding() {
                           e.target.value,
                         )
                       }
-                    />
-                    <s-divider />
+                    /> */}
+                    {/* <s-divider /> */}
                     {/* <s-text-field
                       label="Store website URL (optional)"
                       placeholder="https://www.glowstore.com"
@@ -516,7 +516,9 @@ export default function Branding() {
                       />
                       <s-text-field
                         label="Footer link URL"
-                        defaultValue={brandSettings.externalSettings?.footerTextLink || ""}
+                        defaultValue={
+                          brandSettings.externalSettings?.footerTextLink || ""
+                        }
                         onInput={(e) =>
                           handleStateUpdate(
                             setBrandSettings,
