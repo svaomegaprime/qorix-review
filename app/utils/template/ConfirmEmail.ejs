@@ -15,7 +15,8 @@ const {
   emailBodyTextColor = "#0d0e0d",
   emailAccentBorderColor = "#f0f0f0",
   emailFooterText = "",
-  unsubscribeUrl = "#",
+  emailFooterLinkText = "Unsubscribe",
+  emailFooterTextLink = "#",
   isShowFooterBadge = true,
   storeLogoPosition = "start",
   review = { rating: 5, date: "" },
@@ -174,7 +175,7 @@ const logoAlignment =
                   "
                 >
                   <tr>
-                 
+
                     <td
                       valign="middle"
                       style="
@@ -290,9 +291,9 @@ const logoAlignment =
                     >
                       <%= emailFooterText %>
                       <a
-                        href="<%= unsubscribeUrl %>"
+                        href="<%= emailFooterTextLink %>"
                         style="color: <%= emailBodyTextColor %>; text-decoration: underline"
-                        >Unsubscribe</a
+                        ><%= emailFooterLinkText %></a
                       >
                     </td>
                   </tr>

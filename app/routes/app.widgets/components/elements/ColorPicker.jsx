@@ -50,11 +50,11 @@ export default function ColorPicker({ data, onChange, defaultColor }) {
         </s-clickable>
         <s-popover id={data?.key}>
           <s-box padding="base">
-            <s-color-picker value={color} onInput={handleChange} />
+            <s-color-picker value={color} onChange={handleChange} />
           </s-box>
         </s-popover>
 
-        <s-text-field value={color} onInput={handleChange} />
+        <s-text-field value={color} onChange={handleChange} />
       </s-grid>
 
       {data?.info && (

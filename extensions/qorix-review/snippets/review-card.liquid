@@ -175,11 +175,10 @@
               type="button"
               @click="helpfulToggle(review, '{{ customer.id }}', '{{ customer.email }}')"
               :class="{ 'is-helpful': review.isHelpful }"
-
               :aria-pressed="review.isHelpful ? 'true' : 'false'"
             >
               <span class="qr-thumb-icon">
-                {% render 'icon', name: 'thumbs-up' %}
+                {% render 'helpful-icon' %}
               </span>
               Helpful (<span x-text="review.helpfulTotal || 0"></span>)
             </button>

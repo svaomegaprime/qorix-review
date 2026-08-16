@@ -220,11 +220,9 @@ async function postReview(request, session, admin) {
       }
     }
 
-    const publishRules = checkPublishRules(
-      publishingModeration,
-      reviewData,
-      { isVerified: Boolean(orderTarget) },
-    );
+    const publishRules = checkPublishRules(publishingModeration, reviewData, {
+      isVerified: Boolean(orderTarget),
+    });
     const submittedAt = formData.get("submittedAt") || null;
 
     const files = [
@@ -329,10 +327,6 @@ async function postReview(request, session, admin) {
         ? `https://${storeURL}/products/${reviewData.productHandle}`
         : "#";
 
-    const unsubscribeUrl = replyToEmail
-      ? `mailto:${replyToEmail}?subject=Unsubscribe`
-      : "";
-
     if (reviewData.reviewerEmail) {
       const clientEmailData = {
         to: reviewData.reviewerEmail,
@@ -373,7 +367,9 @@ async function postReview(request, session, admin) {
             date: formattedDate,
           },
           emailFooterText: brandingSettings.emailFooterText ?? "",
-          unsubscribeUrl,
+          emailFooterLinkText: brandingSettings.emailFooterLinkText ?? "Unsubscribe",
+          emailFooterTextLink:
+            brandingSettings.externalSettings?.footerTextLink ?? "#",
           isShowFooterBadge: brandingSettings.isShowFooterBadge ?? false,
         },
         smtpConfig: buildSmtpConfig(emailSettings),
