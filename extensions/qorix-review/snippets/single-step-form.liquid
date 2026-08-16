@@ -167,9 +167,9 @@
                   <img :src="file.url" alt="preview" width="" height="">
                 </template>
                 <div class="preview-video-badge" x-show="file.isVideo">VIDEO</div>
-                <button x-show="!dataPostLoading" class="preview-remove" type="button" @click="removeMedia(index)">
-                  &#x2715;
-                </button>
+                <template x-if="!dataPostLoading">
+                  <button class="preview-remove" type="button" @click="removeMedia(index)">&#x2715;</button>
+                </template>
               </div>
             </template>
           </div>
