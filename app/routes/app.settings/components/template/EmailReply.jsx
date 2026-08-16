@@ -15,20 +15,6 @@ export default function EmailReply({ outgoingRequestEmail, brandSettings }) {
         <p class="qr-message">{outgoingRequestEmail.replyEmailBody}</p>
 
         <div class="qr-card">
-          <div class="qr-card-avatar">
-            <svg
-              viewBox="0 0 24 24"
-              fill="none"
-              stroke="currentColor"
-              stroke-width="1.5"
-            >
-              <circle cx="12" cy="8" r="3.2"></circle>
-              <path
-                d="M5 19c0-3.5 3-6 7-6s7 2.5 7 6"
-                stroke-linecap="round"
-              ></path>
-            </svg>
-          </div>
           <div class="qr-card-body">
             <div class="qr-card-title">Your review</div>
             {/* <div class="qr-rating">&#9733;&#9733;&#9733;&#9733;&#9733;</div> */}
@@ -39,35 +25,6 @@ export default function EmailReply({ outgoingRequestEmail, brandSettings }) {
         </div>
 
         <div class="qr-card">
-          <div class="qr-card-avatar">
-            <svg
-              viewBox="0 0 24 24"
-              fill="none"
-              stroke="currentColor"
-              stroke-width="1.5"
-            >
-              <path
-                d="M4 9.5 5.5 4h13L20 9.5"
-                stroke-linecap="round"
-                stroke-linejoin="round"
-              ></path>
-              <path
-                d="M4 9.5a2.5 2.5 0 0 0 5 0 2.5 2.5 0 0 0 5 0 2.5 2.5 0 0 0 5 0"
-                stroke-linecap="round"
-                stroke-linejoin="round"
-              ></path>
-              <path
-                d="M5.5 9.5V19h13V9.5"
-                stroke-linecap="round"
-                stroke-linejoin="round"
-              ></path>
-              <path
-                d="M10 19v-5h4v5"
-                stroke-linecap="round"
-                stroke-linejoin="round"
-              ></path>
-            </svg>
-          </div>
           <div class="qr-card-body">
             <div class="qr-card-title">Reply from Glow Store</div>
             <p class="qr-quote">
