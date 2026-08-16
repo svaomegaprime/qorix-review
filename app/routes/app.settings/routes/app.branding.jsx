@@ -241,10 +241,17 @@ export default function Branding() {
             Customize your logo and brand appearance in review emails
           </s-text>
         </s-box>
-           <s-button  variant="secondary" onClick={() => window.open("http://qorix-review-docs.nextvence.com/pages/settings/branding", "_blank")}>
-         Need Help ?
+        <s-button
+          variant="secondary"
+          onClick={() =>
+            window.open(
+              "http://qorix-review-docs.nextvence.com/pages/settings/branding",
+              "_blank",
+            )
+          }
+        >
+          Need Help ?
         </s-button>
-       
       </s-stack>
       <s-query-container>
         <s-grid
@@ -274,8 +281,8 @@ export default function Branding() {
                         )
                       }
                     />
-                    <s-divider />
-                    <s-text-field
+                    {/* <s-divider /> */}
+                    {/* <s-text-field
                       label="Sender name *"
                       details="Use a personal name to increase open rates (e.g. “Osman from Glow Store”)."
                       defaultValue={brandSettings.storeSenderName}
@@ -286,8 +293,8 @@ export default function Branding() {
                           e.target.value,
                         )
                       }
-                    />
-                    <s-divider />
+                    /> */}
+                    {/* <s-divider /> */}
                     {/* <s-text-field
                       label="Store website URL (optional)"
                       placeholder="https://www.glowstore.com"
@@ -410,7 +417,18 @@ export default function Branding() {
                     )}
                     <CustomSection>
                       <s-select
-                        defaultValue={brandSettings.storeLogoPosition}
+                        value={
+                          brandSettings.storeLogoPosition === "LEFT" ||
+                          brandSettings.storeLogoPosition === "left"
+                            ? "start"
+                            : brandSettings.storeLogoPosition === "RIGHT" ||
+                                brandSettings.storeLogoPosition === "right"
+                              ? "end"
+                              : brandSettings.storeLogoPosition === "CENTER" ||
+                                  brandSettings.storeLogoPosition === "center"
+                                ? "center"
+                                : brandSettings.storeLogoPosition
+                        }
                         onChange={(e) =>
                           handleStateUpdate(
                             setBrandSettings,
@@ -507,6 +525,22 @@ export default function Branding() {
                           )
                         }
                       />
+                      <s-text-field
+                        label="Footer link URL"
+                        defaultValue={
+                          brandSettings.externalSettings?.footerTextLink || ""
+                        }
+                        onInput={(e) =>
+                          handleStateUpdate(
+                            setBrandSettings,
+                            "externalSettings",
+                            {
+                              ...(brandSettings.externalSettings || {}),
+                              footerTextLink: e.target.value,
+                            },
+                          )
+                        }
+                      />
                     </s-grid>
                   </CustomSection>
                   <s-switch
@@ -525,18 +559,19 @@ export default function Branding() {
               </CustomGridSection>
             </CustomSection>
           </CustomSection>
+          <div style={{ position: "sticky", top: "40px" }}>
+            <CustomSection background="#ffffff">
+              <CustomSection background="#fff">
+                <BrandingEmailPreview
+                  brandSettings={brandSettings}
 
-          <CustomSection background="#ffffff">
-            <CustomSection background="#fff">
-              <BrandingEmailPreview
-                brandSettings={brandSettings}
-
-                outgoingRequestEmail={data}
-                postRequestEmail={data}
-                smtpSetup={data}
-              />
+                  outgoingRequestEmail={data}
+                  postRequestEmail={data}
+                  smtpSetup={data}
+                />
+              </CustomSection>
             </CustomSection>
-          </CustomSection>
+          </div>
         </s-grid>
       </s-query-container>
     </>

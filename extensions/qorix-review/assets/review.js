@@ -170,7 +170,6 @@ class ReviewX {
   }
 
   initUploadSettings(el) {
-    console.log("EFT", el);
     this.allowPhotoUpload = el.dataset.photoUpload === "true";
     this.allowVideoUpload = el.dataset.videoUpload === "true";
     this.customerId =
@@ -204,7 +203,6 @@ class ReviewX {
   }
 
   async productInit(productJson, defaultSort, limit) {
-    console.log("productInit called", productJson);
     try {
       const safeSort = this.getValidSort(defaultSort);
 
@@ -214,7 +212,7 @@ class ReviewX {
       this.activeSort = safeSort;
 
       if (!this._reviewSubmittedListenerAdded) {
-        window.addEventListener('qorix-review-submitted', () => {
+        window.addEventListener("qorix-review-submitted", () => {
           this.getReview(this.activeSort);
         });
         this._reviewSubmittedListenerAdded = true;
@@ -222,7 +220,6 @@ class ReviewX {
 
       if (productJson) {
         this.product = JSON.parse(productJson);
-        console.log("parsed product", this.product);
       } else {
         this.product = {};
       }
@@ -309,7 +306,6 @@ class ReviewX {
 
       this.reinitSwipers();
 
-      console.log("GET Review:", result);
       return result;
     } finally {
       this.loading = false;
@@ -354,8 +350,6 @@ class ReviewX {
         : this.reviews.find((item) => item.id === reviewId);
     const isHelpful = !currentReview?.isHelpful;
 
-    console.log({ reviewId, customerId, customerEmail, isHelpful });
-
     if (!reviewId || !customerId || !customerEmail) {
       window.location.href = "/account";
       return;
@@ -392,15 +386,13 @@ class ReviewX {
           );
         }
       }
-
-      console.log(data);
     } catch (error) {
       console.error(error);
     }
   }
 
   async shareReview(review) {
-    const shareUrl = `${window.location.href.split("#")[0]}/products/${review.productHandle}`;
+    const shareUrl = `/products/${review.productHandle}`;
     const shareData = {
       title: document.title,
       text: "Check out this review!",
@@ -437,7 +429,7 @@ class ReviewX {
   async submitReview() {
     if (!this.product) return;
     const product = this.product || {};
-    console.log("999090088888888", product);
+
     const openFromEmail = window.location.search.includes("isOpen=true");
     const orderId = new URLSearchParams(window.location.search).get("orderId");
 
@@ -532,14 +524,6 @@ class ReviewX {
       }, 800);
     });
 
-    console.log(
-      this.form.name,
-      this.form.email,
-      this.form.review,
-      this.starSelected,
-      this.uploadedFiles,
-    );
-
     try {
       const formData = new FormData();
 
@@ -562,8 +546,6 @@ class ReviewX {
         formData.append("media", item.file);
       });
 
-      console.log("Submitting...", formData);
-
       const params = new URLSearchParams({
         isOpen: String(openFromEmail),
       });
@@ -582,9 +564,6 @@ class ReviewX {
       if (!response.ok || result.ok === false) {
         throw new Error(result.message || "Failed to submit review");
       }
-
-      console.log("Review submit result", result);
-      console.log("Uploaded media URLs", result.urls || []);
 
       this.submitSuccess = true;
       this.isError = false;
@@ -623,10 +602,12 @@ class ReviewX {
         });
       }
       this.reinitSwipers();
-      
+
       // Notify other widgets on the page to update
-      window.dispatchEvent(new CustomEvent('qorix-review-submitted', { detail: result.data }));
-      
+      window.dispatchEvent(
+        new CustomEvent("qorix-review-submitted", { detail: result.data }),
+      );
+
       this.dataPostLoading = false;
     } catch (error) {
       console.error(error);

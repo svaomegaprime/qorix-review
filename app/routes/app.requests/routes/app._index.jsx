@@ -885,13 +885,17 @@ export default function Requests() {
           // gap="base"
           paddingBlock="small large"
         >
-          <s-stack direction="inline" alignItems="center" >
+          <s-stack direction="inline" alignItems="center">
             <Text as="h2">Requests</Text>
             {/* <s-badge tone="success" color="strong">
             Auto-send: On
           </s-badge> */}
           </s-stack>
-          <s-grid gridTemplateColumns="auto auto" justifyContent="end" gap="base">
+          <s-grid
+            gridTemplateColumns="auto auto"
+            justifyContent="end"
+            gap="base"
+          >
             <s-button
               commandFor="request-rewiew-modal"
               command="--show"
@@ -899,7 +903,13 @@ export default function Requests() {
             >
               Send manual request
             </s-button>
-            <s-button target="_blank" href="https://qorix-review-docs.nextvence.com/pages/review-requests" icon="">How Request Automation Works</s-button>
+            <s-button
+              target="_blank"
+              href="https://qorix-review-docs.nextvence.com/pages/review-requests"
+              icon=""
+            >
+              How Request Automation Works
+            </s-button>
           </s-grid>
         </s-grid>
         {/* End----Page Header */}
@@ -994,8 +1004,8 @@ export default function Requests() {
               ) : (
                 paginatedRequests.map((request, index) => (
                   <div key={request.id}>
-                    <s-grid gridTemplateColumns="auto 1fr" gap="base">
-                      <s-checkbox /> {/* Checkbox for selection of requests */}
+                    <s-grid gridTemplateColumns=" 1fr" gap="base">
+                      {/* <s-checkbox /> Checkbox for selection of requests */}
                       <RequestItem
                         data={request}
                         handleReminderEmailSend={handleReminderEmailSend}
