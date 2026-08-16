@@ -29,7 +29,7 @@
   data-customer-id="{{ customer.id }}"
   data-customer-email="{{ customer.email }}"
   data-sort="{{ review_reel_metafield.defaultSort }}"
-  data-limit="{{ review_reel_metafield.reviewPerPage }}"
+  {% comment %} data-limit="{{ review_reel_metafield.reviewPerPage }}" {% endcomment %}
   data-page-type="{{ template.name }}"
   data-section="qorix-review-reel-widget"
   class="qorix-review-reel-real-review-section"

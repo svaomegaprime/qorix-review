@@ -417,7 +417,18 @@ export default function Branding() {
                     )}
                     <CustomSection>
                       <s-select
-                        defaultValue={brandSettings.storeLogoPosition}
+                        value={
+                          brandSettings.storeLogoPosition === "LEFT" ||
+                          brandSettings.storeLogoPosition === "left"
+                            ? "start"
+                            : brandSettings.storeLogoPosition === "RIGHT" ||
+                                brandSettings.storeLogoPosition === "right"
+                              ? "end"
+                              : brandSettings.storeLogoPosition === "CENTER" ||
+                                  brandSettings.storeLogoPosition === "center"
+                                ? "center"
+                                : brandSettings.storeLogoPosition
+                        }
                         onChange={(e) =>
                           handleStateUpdate(
                             setBrandSettings,

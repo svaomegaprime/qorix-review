@@ -31,7 +31,7 @@ export default function EmailReply({ outgoingRequestEmail, brandSettings }) {
           </div>
           <div class="qr-card-body">
             <div class="qr-card-title">Your review</div>
-            <div class="qr-rating">&#9733;&#9733;&#9733;&#9733;&#9733;</div>
+            {/* <div class="qr-rating">&#9733;&#9733;&#9733;&#9733;&#9733;</div> */}
             <p class="qr-quote">
               &ldquo;Good results, noticed a difference after a week.&rdquo;
             </p>
@@ -86,7 +86,9 @@ export default function EmailReply({ outgoingRequestEmail, brandSettings }) {
           <p class="qr-footer-meta">
             {brandSettings.emailFooterText}{" "}
             {brandSettings.emailFooterLinkText && (
-              <a href={brandSettings.externalSettings?.footerTextLink || "#"}>{brandSettings.emailFooterLinkText}</a>
+              <a href={brandSettings.externalSettings?.footerTextLink || "#"}>
+                {brandSettings.emailFooterLinkText}
+              </a>
             )}
           </p>
 
@@ -229,7 +231,7 @@ export default function EmailReply({ outgoingRequestEmail, brandSettings }) {
         .email-reply .qr-card-title {
             font-size: 14.5px;
             font-weight: 700;
-            color: var(--email-heading-color);
+            color: var(--email-body-text-color);
         }
 
         .email-reply .qr-rating {
@@ -242,7 +244,7 @@ export default function EmailReply({ outgoingRequestEmail, brandSettings }) {
         .email-reply .qr-quote {
             font-size: 14px;
             line-height: 1.5;
-            color: #4a4a4a;
+            color: var(--email-body-text-color);
             margin: 0;
         }
 
