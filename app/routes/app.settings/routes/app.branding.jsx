@@ -559,18 +559,19 @@ export default function Branding() {
               </CustomGridSection>
             </CustomSection>
           </CustomSection>
+          <div style={{ position: "sticky", top: "40px" }}>
+            <CustomSection background="#ffffff">
+              <CustomSection background="#fff">
+                <BrandingEmailPreview
+                  brandSettings={brandSettings}
 
-          <CustomSection background="#ffffff">
-            <CustomSection background="#fff">
-              <BrandingEmailPreview
-                brandSettings={brandSettings}
-
-                outgoingRequestEmail={data}
-                postRequestEmail={data}
-                smtpSetup={data}
-              />
+                  outgoingRequestEmail={data}
+                  postRequestEmail={data}
+                  smtpSetup={data}
+                />
+              </CustomSection>
             </CustomSection>
-          </CustomSection>
+          </div>
         </s-grid>
       </s-query-container>
     </>
