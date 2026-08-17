@@ -110,6 +110,7 @@ export function buildReminderEmailData(
         formattedOrder?.products?.[0]?.title,
       ),
       reminderEmailButton: emailSettings?.reminderEmailButton,
+      storeFooterTextLink: brandingSettings.externalSettings?.externalSettings,
     },
   };
 }
