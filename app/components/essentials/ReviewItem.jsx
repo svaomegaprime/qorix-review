@@ -292,15 +292,17 @@ export default function ReviewItem({
       }
 
       .reviewAttachmentDialogControls {
+          width: 100%;
           display: grid;
           grid-template-columns: auto 1fr auto;
           align-items: center;
-          justify-content: center;
+          justify-content: space-between;
           gap: 10px;
       }
 
       .reviewAttachmentDialogThumbs {
         display: grid;
+        justify-content: center;
         grid-auto-flow: column;
         grid-auto-columns: 56px;
         gap: 8px;
@@ -310,6 +312,7 @@ export default function ReviewItem({
         scroll-behavior: smooth;
         scroll-snap-type: inline proximity;
         scrollbar-width: none;
+        margin: 0 auto;
       }
 
       .reviewAttachmentDialogThumbs::-webkit-scrollbar {
@@ -534,28 +537,12 @@ export default function ReviewItem({
                     {renderAttachment(activeAttachment)}
                   </div>
                   <div className="reviewAttachmentDialogControls">
-                    <button
-                      type="button"
-                      onClick={handlePreviousAttachment}
-                      style={{
-                        display: "inline-flex",
-                        alignItems: "center",
-                        justifyContent: "center",
-                        gap: "6px",
-                        padding: "8px 16px",
-                        background: "#202223",
-                        color: "#ffffff",
-                        border: "1px solid #202223",
-                        borderRadius: "8px",
-                        fontSize: "13px",
-                        fontWeight: "600",
-                        cursor: "pointer",
-                        boxShadow: "0 1px 0 rgba(0, 0, 0, 0.05)",
-                      }}
-                    >
-                      <s-icon type="arrow-left" tone="" />
-                      <span>Previous</span>
-                    </button>
+                    <s-button onClick={handlePreviousAttachment}>
+                      <s-stack direction="inline" gap="small-200">
+                        <s-icon type="arrow-left"></s-icon>
+                        Previous
+                      </s-stack>
+                    </s-button>
                     <div className="reviewAttachmentDialogThumbs">
                       {attachments.map((attachment, index) => (
                         <button
@@ -576,28 +563,12 @@ export default function ReviewItem({
                         </button>
                       ))}
                     </div>
-                    <button
-                      type="button"
-                      onClick={handleNextAttachment}
-                      style={{
-                        display: "inline-flex",
-                        alignItems: "center",
-                        justifyContent: "center",
-                        gap: "6px",
-                        padding: "8px 16px",
-                        background: "#202223",
-                        color: "#ffffff",
-                        border: "1px solid #202223",
-                        borderRadius: "8px",
-                        fontSize: "13px",
-                        fontWeight: "600",
-                        cursor: "pointer",
-                        boxShadow: "0 1px 0 rgba(0, 0, 0, 0.05)",
-                      }}
-                    >
-                      <span>Next</span>
-                      <s-icon type="arrow-right" />
-                    </button>
+                    <s-button onClick={handleNextAttachment}>
+                      <s-stack direction="inline" gap="small-200">
+                        Next
+                        <s-icon type="arrow-right"></s-icon>
+                      </s-stack>
+                    </s-button>
                   </div>
                 </div>
               </div>
