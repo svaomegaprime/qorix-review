@@ -47,6 +47,13 @@ export default function SmtpSetup({ emailSettings, onChange }) {
                 onInput={handleInputChange("smtpHost")}
                 placeholder="smtp.gmail.com"
               />
+              <s-divider />
+              <s-heading>Sender Email</s-heading>
+              <s-text-field
+                value={emailSettings.smtpSenderEmail}
+                onInput={handleInputChange("smtpSenderEmail")}
+                placeholder="example@gmail.com"
+              />
             </s-grid>
           </CustomSection>
         </CustomGridSection>

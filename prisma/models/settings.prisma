@@ -36,6 +36,7 @@ model EmailSettings {
   smtpPassword              String?
   smtpPort                  Int?
   smtpHost                  String?
+  smtpSenderEmail           String?
   requestEmailSubjectLine   String?
   requestEmailBody          String?
   requestEmailButton        String?

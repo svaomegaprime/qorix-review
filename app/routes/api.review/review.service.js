@@ -311,16 +311,13 @@ async function postReview(request, session, admin) {
     )}`;
 
     const senderEmail =
-      emailSettings.smtpUser ||
+      emailSettings.smtpSenderEmail ||
       brandingSettings.storeReplyToEmail ||
       email ||
       "";
 
     const replyToEmail =
-      brandingSettings.storeReplyToEmail ||
-      emailSettings.smtpUser ||
-      email ||
-      undefined;
+      brandingSettings.storeReplyToEmail || email || undefined;
 
     const productUrl =
       storeURL && reviewData.productHandle
@@ -367,7 +364,7 @@ async function postReview(request, session, admin) {
             date: formattedDate,
           },
           emailFooterText: brandingSettings.emailFooterText ?? "",
-          emailFooterLinkText: brandingSettings.emailFooterLinkText ?? "Unsubscribe",
+          emailFooterLinkText: brandingSettings.emailFooterLinkText ?? "",
           emailFooterTextLink:
             brandingSettings.externalSettings?.footerTextLink ?? "#",
           isShowFooterBadge: brandingSettings.isShowFooterBadge ?? false,
@@ -433,8 +430,10 @@ async function postReview(request, session, admin) {
 
     if (adminEmails.length && shouldSendAdminEmail) {
       const adminEmailData = {
-        to: adminEmails[0],
-        bcc: adminEmails.slice(1),
+        to: emailSettings?.smtpSenderEmail || adminEmails[0],
+        bcc: emailSettings?.smtpSenderEmail
+          ? adminEmails
+          : adminEmails.slice(1),
         from: buildFromAddress(storeName, senderEmail),
         replyTo: replyToEmail,
         templateName: "AdminNotify",

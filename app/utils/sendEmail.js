@@ -1,4 +1,5 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
+/* global process */
 import ejs from "ejs";
 import nodemailer from "nodemailer";
 import path from "path";
@@ -13,7 +14,7 @@ const getSmtpConfig = (smtpConfig) => {
     port,
     user,
     pass,
-    secure: port === 465,
+    secure: port == 465,
     isConfigured: Boolean(host && port && user && pass),
   };
 };
@@ -76,7 +77,11 @@ export const sendEmail = async ({
       `${templateName}.ejs`,
     );
     const html = await ejs.renderFile(templatePath, templateData);
-    const resolvedFrom = from ?? "";
+    const resolvedFrom =
+      from ||
+      smtpConfig?.smtpSenderEmail ||
+      smtpConfig?.smtpUser ||
+      "";
     const resolvedReplyTo = String(replyTo || "").trim() || undefined;
 
     const info = await activeTransporter.sendMail({
@@ -86,6 +91,7 @@ export const sendEmail = async ({
       bcc,
       subject,
       html,
+      text: html.replace(/<[^>]*>?/gm, ""),
       // headers: {
       //   "List-Unsubscribe": `<${templateData.buttonUrl}>`,
       //   "List-Unsubscribe-Post": "List-Unsubscribe=One-Click",

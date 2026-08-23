@@ -8,6 +8,7 @@ export function buildSmtpConfig(emailSettings) {
     smtpPort: emailSettings?.smtpPort,
     smtpUser: emailSettings?.smtpUser,
     smtpPassword: emailSettings?.smtpPassword,
+    smtpSenderEmail: emailSettings?.smtpSenderEmail,
   };
 }
 
@@ -40,7 +41,7 @@ function buildOrderEmailBase(formattedOrder, storeSettings) {
 
   return {
     to: formattedOrder.email,
-    from: emailSettings?.smtpUser,
+    from: emailSettings?.smtpSenderEmail || emailSettings?.smtpUser,
     replyTo: brandingSettings?.storeReplyToEmail,
     smtpConfig: buildSmtpConfig(emailSettings),
     templateData: {
@@ -131,7 +132,7 @@ export function buildReplyEmailData({
 
   return {
     to: review.reviewerEmail,
-    from: emailSettings?.smtpUser,
+    from: emailSettings?.smtpSenderEmail || emailSettings?.smtpUser,
     replyTo: brandingSettings?.storeReplyToEmail,
     templateName: "ReplyEmail",
     subject: emailSettings?.replyEmailSubjectLine,

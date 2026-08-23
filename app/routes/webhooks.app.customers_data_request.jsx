@@ -45,7 +45,8 @@ export const action = async ({ request }) => {
     });
 
     const emailSettings = storeSettings?.emailSettings ?? {};
-    const merchantEmail = emailSettings?.smtpUser || "";
+    const merchantEmail =
+      emailSettings?.smtpSenderEmail || emailSettings?.smtpUser || "";
 
     if (!merchantEmail) {
       console.warn("[customers/data_request] no SMTP user configured", {
