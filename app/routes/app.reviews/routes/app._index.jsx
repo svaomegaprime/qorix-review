@@ -658,6 +658,13 @@ export default function Reviews() {
         >
           Download
       </s-modal> */}
+      <style>
+        {`
+          p{
+            margin: 0 !important;
+          }
+          `}
+      </style>
       <s-modal
         id="delete-modal"
         heading={`Delete ${selectedReviewIds.length} ${selectedReviewIds.length === 1 ? "review" : "reviews"}?`}

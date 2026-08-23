@@ -9,10 +9,11 @@ export const DEFAULT_REQUEST_SCHEDULING = {
 };
 
 export const DEFAULT_SMTP_SETUP = {
-  smtpUser: "smtp.nextvence@gmail.com",
-  smtpPassword: "pkpy nskb yxcb duji",
+  smtpUser: "resend",
+  smtpPassword: "password",
   smtpPort: 465,
-  smtpHost: "smtp.gmail.com",
+  smtpHost: "smtp.resend.com",
+  smtpSenderEmail: "noreply@qorix-review.nextvence.com",
 };
 
 export const DEFAULT_OUTGOING_REQUEST_EMAIL = {

@@ -5,8 +5,13 @@ import CustomSection from "../../../components/essentials/CustomSection";
 import Analytics from "../components/Analytics";
 import RequestItem from "../components/RequestItem";
 import { Prisma } from "@prisma/client";
-import { useFetcher, useLoaderData, useNavigation } from "react-router";
-import { useRef, useState, Fragment } from "react";
+import {
+  useFetcher,
+  useLoaderData,
+  useNavigation,
+  useRevalidator,
+} from "react-router";
+import { useRef, useState, useEffect, Fragment } from "react";
 import { randomUUID } from "crypto";
 import getRequestsWithReviewStatus from "../utils/getRequestsWithReviewStatus";
 import { requireAdminContext } from "../../../services/adminContext.server.js";
@@ -247,6 +252,7 @@ export async function action({ request }) {
         const requests = await getRequestsWithReviewStatus(session, id);
 
         return {
+          ok: true,
           requests: getFilteredRequests(requests, search, dateRange),
         };
       }
@@ -257,6 +263,7 @@ export async function action({ request }) {
         const requests = await getRequestsWithReviewStatus(session, id);
 
         return {
+          ok: true,
           requests: getFilteredRequests(requests, search, dateRange),
         };
       }
@@ -379,6 +386,8 @@ export async function action({ request }) {
         const requests = await getRequestsWithReviewStatus(session, id);
 
         return {
+          ok: true,
+          message: "Review requests sent successfully!",
           requests: getFilteredRequests(requests, search, dateRange),
           manualRequestResult: {
             sent: selectedOrders.length,
@@ -476,6 +485,7 @@ export async function action({ request }) {
               },
             },
             update: {
+              reviewCheckStatus: "SENT",
               requestType: isReminderEmail ? "REMINDER" : "MANUAL",
               redisBullmqJobId: nextRedisBullmqJobId,
             },
@@ -486,7 +496,7 @@ export async function action({ request }) {
                 enrichedOrder.fulfillmentStatus ?? "unfulfilled",
               paymentStatus: enrichedOrder.status ?? "",
               userEmail: enrichedOrder.email ?? "",
-              reviewCheckStatus: enrichedOrder.reviewCheckStatus ?? "PENDING",
+              reviewCheckStatus: "SENT",
               requestType: isReminderEmail ? "REMINDER" : "MANUAL",
               totalPrice: enrichedOrder.totalPrice ?? null,
               currency: enrichedOrder.currency ?? null,
@@ -519,6 +529,10 @@ export async function action({ request }) {
         const requests = await getRequestsWithReviewStatus(session, id);
 
         return {
+          ok: true,
+          message: isReminderEmail
+            ? "Reminder email sent successfully!"
+            : "Review request email resent successfully!",
           requests: getFilteredRequests(requests, search, dateRange),
           emailRequestResult: {
             orderId: enrichedOrder.orderId,
@@ -544,6 +558,19 @@ export default function Requests() {
 
   // Start----Accessing loaded data using useLoaderData
   const { requests } = useLoaderData();
+  const revalidator = useRevalidator();
+
+  useEffect(() => {
+    const handleFocus = () => {
+      if (revalidator.state === "idle") {
+        revalidator.revalidate();
+      }
+    };
+    window.addEventListener("focus", handleFocus);
+    return () => {
+      window.removeEventListener("focus", handleFocus);
+    };
+  }, [revalidator]);
   // End----Accessing loaded data using useLoaderData
 
   // Start----State for active tab
@@ -915,7 +942,7 @@ export default function Requests() {
         {/* End----Page Header */}
 
         {/* Start----Analytics Section */}
-        <Analytics data={requests} />
+        <Analytics data={baseRequests} />
         {/* End----Analytics Section */}
 
         {/* Start----Page main filter tabs */}

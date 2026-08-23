@@ -75,6 +75,16 @@ export async function action({ request }) {
       throw new Error("storeSettingsId is required to save email settings");
     }
 
+    if (
+      Boolean(String(emailSettingsData.smtpUser || "").trim()) &&
+      !String(emailSettingsData.smtpSenderEmail || "").trim()
+    ) {
+      return {
+        ok: false,
+        message: "Sender email is required when SMTP User is provided",
+      };
+    }
+
     const savedEmailSettings = await prisma.emailSettings.upsert({
       where: {
         storeSettingsId: emailSettingsData.storeSettingsId,
@@ -132,8 +142,19 @@ export default function EmailSettings() {
     value: emailSettings,
     initialValue: initialEmailSettings,
     fetcher,
-    onSave: (value) =>
-      fetcher.submit(value, { method: "POST", encType: "application/json" }),
+    onSave: (value) => {
+      const isUserFilled = Boolean(String(value?.smtpUser || "").trim());
+      const isSenderEmpty = !String(value?.smtpSenderEmail || "").trim();
+
+      if (isUserFilled && isSenderEmpty) {
+        if (typeof shopify !== "undefined" && shopify.toast) {
+          shopify.toast.show("Sender email is required", { isError: true });
+        }
+        return;
+      }
+
+      fetcher.submit(value, { method: "POST", encType: "application/json" });
+    },
     onDiscard: setEmailSettings,
     getSavedValue: (data, submittedValue) =>
       data.emailSettings
@@ -169,9 +190,17 @@ export default function EmailSettings() {
           >
             Preview email
           </s-button>
-            <s-button  variant="secondary" onClick={() => window.open("http://qorix-review-docs.nextvence.com/pages/settings/email-settings", "_blank")}>
-          Need Help ?
-        </s-button>
+          <s-button
+            variant="secondary"
+            onClick={() =>
+              window.open(
+                "http://qorix-review-docs.nextvence.com/pages/settings/email-settings",
+                "_blank",
+              )
+            }
+          >
+            Need Help ?
+          </s-button>
         </s-stack>
       </s-stack>
       <s-section>
@@ -249,27 +278,34 @@ export default function EmailSettings() {
                   Request scheduling. <ArrowUpRight />
                 </Text>
               </s-stack>
-              
             </s-stack>
           </s-grid>
         </CustomSection>
-<br></br>
-        <s-banner heading="SMTP not configured" tone="warning" >
- If SMTP is not configured, Qorix Review will use its default SMTP service to send emails to customers. You can add your email under Admin Notifications to receive a copy (CC) of each email sent.
-  <s-button
-    slot="secondary-actions"
-    variant="secondary"
-    href="/app/settings/admin-notification"
-  >
-  Go to Admin Notifications
-  </s-button>
-
-    <s-button   slot="secondary-actions"
-    variant="secondary" onClick={() => window.open("http://qorix-review-docs.nextvence.com/pages/settings/gmail-smtp-setup", "_blank")}>
-          SMTP Setup Guide
-      </s-button>
-
-</s-banner>
+        <br></br>
+        <s-banner heading="SMTP not configured" tone="warning">
+          If SMTP is not configured, Qorix Review will use its default SMTP
+          service to send emails to customers. You can add your email under
+          Admin Notifications to receive a copy (BCC) of each email sent.
+          <s-button
+            slot="secondary-actions"
+            variant="secondary"
+            href="/app/settings/admin-notification"
+          >
+            Go to Admin Notifications
+          </s-button>
+          <s-button
+            slot="secondary-actions"
+            variant="secondary"
+            onClick={() =>
+              window.open(
+                "http://qorix-review-docs.nextvence.com/pages/settings/gmail-smtp-setup",
+                "_blank",
+              )
+            }
+          >
+            SMTP Setup Guide
+          </s-button>
+        </s-banner>
 
         <s-box paddingBlockStart="large"></s-box>
         {emailActiveSettings.requestEmail && (
