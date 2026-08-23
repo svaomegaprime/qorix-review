@@ -19,7 +19,10 @@ import { buildReplyEmailData } from "../services/emailPayload.server.js";
 import { invalidateReviewCache } from "../lib/redis/reviewCache.js";
 import { useAdminFetcherToast } from "../utils/useAdminFetcherToast";
 
-import { checkAppEmbedEnabled, getWidgetsInstalledStatus } from "../services/appEmbed.server.js";
+import {
+  checkAppEmbedEnabled,
+  getWidgetsInstalledStatus,
+} from "../services/appEmbed.server.js";
 export async function loader({ request }) {
   try {
     const { admin, session, storeData } = await requireAdminContext(request);
@@ -53,8 +56,24 @@ export async function loader({ request }) {
       String(emailSettings?.smtpUser || "").trim() &&
       String(emailSettings?.smtpPassword || "").trim() &&
       emailSettings?.smtpPort &&
-      String(emailSettings?.smtpHost || "").trim()
+      String(emailSettings?.smtpHost || "").trim(),
     );
+
+    const response = await admin.graphql(
+      `#graphql
+    query ShopShow {
+      shop {
+        myshopifyDomain
+        name
+        primaryDomain {
+          host
+        }
+        url
+      }
+    }`,
+    );
+    const json = await response.json();
+    const shop = json.data.shop;
 
     return {
       reviews: reviews,
@@ -65,6 +84,7 @@ export async function loader({ request }) {
       isAppEnabled,
       isQuickReviewInstalled,
       isEmailConfigured,
+      storeData: shop,
     };
   } catch (error) {
     return adminErrorResponse(error);
@@ -88,7 +108,7 @@ export async function action({ request }) {
             status: String(status),
             storeId: storeData.id,
           });
-          
+
           let message = "Review status updated successfully";
           if (status === "ARCHIVE") {
             message = "Review unpublished successfully";
@@ -186,7 +206,16 @@ export async function action({ request }) {
 export default function Index() {
   const fetcher = useFetcher();
   useAdminFetcherToast(fetcher);
-  const { reviews, pendingOrders, shop = "", apiKey = "", isAppEnabled = false, isQuickReviewInstalled = false, isEmailConfigured = false } = useLoaderData();
+  const {
+    reviews,
+    pendingOrders,
+    shop = "",
+    apiKey = "",
+    isAppEnabled = false,
+    isQuickReviewInstalled = false,
+    isEmailConfigured = false,
+    storeData,
+  } = useLoaderData();
   // Start----Default CSR loading state checking for navigation
   const navigation = useNavigation();
   if (navigation.state === "loading") {
@@ -229,51 +258,70 @@ export default function Index() {
   // End----Handle review delete
   // End----Default CSR loading state checking for navigation
   return (
-    <s-page>
-      <s-stack
-        direction="inline"
-        gap="base"
-        justifyContent="space-between"
-        alignItems="center"
-        paddingBlockEnd="base"
-      >
-        <Text as="h2">Welcome to Qorix review 👋</Text>
-        <s-grid gridTemplateColumns="auto auto">
-          {/* <s-button variant="secondary" icon="plus">
+    <>
+      <style>
+        {`
+          p {
+            margin: 0 !important;
+          }
+          `}
+      </style>
+      <s-page>
+        <s-stack
+          direction="inline"
+          gap="base"
+          justifyContent="space-between"
+          alignItems="center"
+          paddingBlockEnd="base"
+        >
+          <Text as="h2">Welcome to {storeData?.name} 👋</Text>
+          <s-grid gridTemplateColumns="auto auto">
+            {/* <s-button variant="secondary" icon="plus">
             Request reviews
           </s-button> */}
-          <s-button
-            variant="primary"
-            icon="store"
-            href={shop ? `https://${shop}` : undefined}
-            target="_blank"
-          >
-            View store
-          </s-button>
-        </s-grid>
-      </s-stack>
+            <s-button
+              variant="primary"
+              icon="store"
+              href={shop ? `https://${shop}` : undefined}
+              target="_blank"
+            >
+              View store
+            </s-button>
+          </s-grid>
+        </s-stack>
 
-      <SetupGuide shop={shop} apiKey={apiKey} isAppEnabled={isAppEnabled} isQuickReviewInstalled={isQuickReviewInstalled} isEmailConfigured={isEmailConfigured} />
-      <AppEmbedStatus shop={shop} apiKey={apiKey} isAppEnabled={isAppEnabled} />
-      <Analytics reviews={reviews} pendingOrders={pendingOrders} />
-      <ReviewBreakdown
-        reviews={reviews}
-        handleStatusUpdate={handleStatusUpdate}
-        handleReviewDelete={handleReviewDelete}
-        handleReviewReply={handleReviewReply}
-        isAppEnabled={isAppEnabled}
-      />
-      <s-stack paddingBlockStart="base">
-        <FAQ />
-      </s-stack>
-      <s-stack paddingBlockStart="base">
-        <Help />
-      </s-stack>
-      <s-stack alignItems="center" paddingBlockStart="large">
-        <s-paragraph color="subdued">
-          Powered by Qorix Shopify - All rights reserved
-        </s-paragraph>
-      </s-stack>
-    </s-page>
+        <SetupGuide
+          shop={shop}
+          apiKey={apiKey}
+          isAppEnabled={isAppEnabled}
+          isQuickReviewInstalled={isQuickReviewInstalled}
+          isEmailConfigured={isEmailConfigured}
+        />
+        <AppEmbedStatus
+          shop={shop}
+          apiKey={apiKey}
+          isAppEnabled={isAppEnabled}
+        />
+        <Analytics reviews={reviews} pendingOrders={pendingOrders} />
+        <ReviewBreakdown
+          reviews={reviews}
+          handleStatusUpdate={handleStatusUpdate}
+          handleReviewDelete={handleReviewDelete}
+          handleReviewReply={handleReviewReply}
+          isAppEnabled={isAppEnabled}
+        />
+        <s-stack paddingBlockStart="base">
+          <FAQ />
+        </s-stack>
+        <s-stack paddingBlockStart="base">
+          <Help />
+        </s-stack>
+        <s-stack alignItems="center" paddingBlockStart="large">
+          <s-paragraph color="subdued">
+            Powered by Qorix Shopify - All rights reserved
+          </s-paragraph>
+        </s-stack>
+      </s-page>
+    </>
   );
 }

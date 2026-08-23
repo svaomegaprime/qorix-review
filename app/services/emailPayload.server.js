@@ -8,16 +8,22 @@ export function buildSmtpConfig(emailSettings) {
     smtpPort: emailSettings?.smtpPort,
     smtpUser: emailSettings?.smtpUser,
     smtpPassword: emailSettings?.smtpPassword,
+    smtpSenderEmail: emailSettings?.smtpSenderEmail,
   };
 }
 
 /** @param {Record<string, any> | null | undefined} brandingSettings */
 export function buildBrandingTemplateData(brandingSettings) {
+  const footerLinkUrl =
+    brandingSettings?.externalSettings?.footerTextLink ?? "#";
+
   return {
     storeTagline: brandingSettings?.storeTagline,
     storeName: brandingSettings?.storeDisplayName,
     storeFooterText: brandingSettings?.emailFooterText ?? "",
     storeFooterLinkText: brandingSettings?.emailFooterLinkText ?? "",
+    storeFooterTextLink: footerLinkUrl,
+    emailFooterTextLink: footerLinkUrl,
     isShowFooterBadge: brandingSettings?.isShowFooterBadge,
     storeLogo: brandingSettings?.storeLogo,
     storeLogoPosition: brandingSettings?.storeLogoPosition,
@@ -40,7 +46,7 @@ function buildOrderEmailBase(formattedOrder, storeSettings) {
 
   return {
     to: formattedOrder.email,
-    from: emailSettings?.smtpUser,
+    from: emailSettings?.smtpSenderEmail || emailSettings?.smtpUser,
     replyTo: brandingSettings?.storeReplyToEmail,
     smtpConfig: buildSmtpConfig(emailSettings),
     templateData: {
@@ -110,7 +116,6 @@ export function buildReminderEmailData(
         formattedOrder?.products?.[0]?.title,
       ),
       reminderEmailButton: emailSettings?.reminderEmailButton,
-      storeFooterTextLink: brandingSettings.externalSettings?.externalSettings,
     },
   };
 }
@@ -131,7 +136,7 @@ export function buildReplyEmailData({
 
   return {
     to: review.reviewerEmail,
-    from: emailSettings?.smtpUser,
+    from: emailSettings?.smtpSenderEmail || emailSettings?.smtpUser,
     replyTo: brandingSettings?.storeReplyToEmail,
     templateName: "ReplyEmail",
     subject: emailSettings?.replyEmailSubjectLine,

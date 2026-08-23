@@ -127,7 +127,7 @@
                                     <td align="center"
                                         style="padding-top:16px; font-size:16px; font-weight:500; color:<%= emailBodyTextColor %>; line-height:1.2; font-family: Inter, Arial, sans-serif;">
                                         <%= storeFooterText %>
-                                        <a href="#" style="color:<%= emailBodyTextColor %>; text-decoration:underline;"><%= storeFooterLinkText %></a>
+                                        <a href="<%= typeof storeFooterTextLink !== 'undefined' && storeFooterTextLink ? storeFooterTextLink : (typeof emailFooterTextLink !== 'undefined' && emailFooterTextLink ? emailFooterTextLink : '#') %>" style="color:<%= emailBodyTextColor %>; text-decoration:underline;"><%= storeFooterLinkText %></a>
                                     </td>
                                 </tr>
                                 <% if (isShowFooterBadge) { %>

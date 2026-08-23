@@ -291,7 +291,7 @@ const logoAlignment =
                     >
                       <%= emailFooterText %>
                       <a
-                        href="<%= emailFooterTextLink %>"
+                        href="<%= typeof emailFooterTextLink !== 'undefined' && emailFooterTextLink ? emailFooterTextLink : (typeof storeFooterTextLink !== 'undefined' && storeFooterTextLink ? storeFooterTextLink : '#') %>"
                         style="color: <%= emailBodyTextColor %>; text-decoration: underline"
                         ><%= emailFooterLinkText %></a
                       >
