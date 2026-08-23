@@ -11,6 +11,17 @@ export default function SmtpSetup({ emailSettings, onChange }) {
     onChange(field, nextValue === "" ? null : Number(nextValue));
   };
 
+  const isSenderEmailRequired = Boolean(
+    String(emailSettings?.smtpUser || "").trim(),
+  );
+  const isSenderEmailEmpty = !String(
+    emailSettings?.smtpSenderEmail || "",
+  ).trim();
+  const senderEmailError =
+    isSenderEmailRequired && isSenderEmailEmpty
+      ? "Sender email is required"
+      : undefined;
+
   return (
     <>
       <CustomSection padding="0">
@@ -26,6 +37,17 @@ export default function SmtpSetup({ emailSettings, onChange }) {
                 onInput={handleInputChange("smtpUser")}
                 placeholder="example@gmail.com"
               />
+
+              <s-divider />
+              <s-heading>Sender Email</s-heading>
+              <s-text-field
+                value={emailSettings.smtpSenderEmail}
+                onInput={handleInputChange("smtpSenderEmail")}
+                placeholder="example@gmail.com"
+                required={isSenderEmailRequired}
+                error={senderEmailError}
+              />
+
               <s-divider />
               <s-heading>SMTP Password</s-heading>
               <s-password-field
@@ -46,13 +68,6 @@ export default function SmtpSetup({ emailSettings, onChange }) {
                 value={emailSettings.smtpHost}
                 onInput={handleInputChange("smtpHost")}
                 placeholder="smtp.gmail.com"
-              />
-              <s-divider />
-              <s-heading>Sender Email</s-heading>
-              <s-text-field
-                value={emailSettings.smtpSenderEmail}
-                onInput={handleInputChange("smtpSenderEmail")}
-                placeholder="example@gmail.com"
               />
             </s-grid>
           </CustomSection>

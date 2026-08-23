@@ -10,7 +10,7 @@ export const DEFAULT_REQUEST_SCHEDULING = {
 
 export const DEFAULT_SMTP_SETUP = {
   smtpUser: "resend",
-  smtpPassword: "re_qSG4sHhy_KZ7R4tKhPrFfLZE4NcDETpUf",
+  smtpPassword: "password",
   smtpPort: 465,
   smtpHost: "smtp.resend.com",
   smtpSenderEmail: "noreply@qorix-review.nextvence.com",

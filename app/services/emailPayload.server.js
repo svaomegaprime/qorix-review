@@ -14,11 +14,16 @@ export function buildSmtpConfig(emailSettings) {
 
 /** @param {Record<string, any> | null | undefined} brandingSettings */
 export function buildBrandingTemplateData(brandingSettings) {
+  const footerLinkUrl =
+    brandingSettings?.externalSettings?.footerTextLink ?? "#";
+
   return {
     storeTagline: brandingSettings?.storeTagline,
     storeName: brandingSettings?.storeDisplayName,
     storeFooterText: brandingSettings?.emailFooterText ?? "",
     storeFooterLinkText: brandingSettings?.emailFooterLinkText ?? "",
+    storeFooterTextLink: footerLinkUrl,
+    emailFooterTextLink: footerLinkUrl,
     isShowFooterBadge: brandingSettings?.isShowFooterBadge,
     storeLogo: brandingSettings?.storeLogo,
     storeLogoPosition: brandingSettings?.storeLogoPosition,
@@ -111,7 +116,6 @@ export function buildReminderEmailData(
         formattedOrder?.products?.[0]?.title,
       ),
       reminderEmailButton: emailSettings?.reminderEmailButton,
-      storeFooterTextLink: brandingSettings.externalSettings?.externalSettings,
     },
   };
 }

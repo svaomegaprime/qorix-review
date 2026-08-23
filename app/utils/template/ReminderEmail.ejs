@@ -119,7 +119,7 @@ const {
                         font-family: Inter, Arial, sans-serif;
                       "
                     >
-                      <p style="font-weight: 550; margin: 0 0 8px">Hi <%= name %>,</p>
+                      <!-- <p style="font-weight: 550; margin: 0 0 8px">Hi <%= name %>,</p> -->
                       <p style="font-weight: 400; margin: 0">
                        <%= reminderEmailBody %>
                       </p>
@@ -279,7 +279,7 @@ const {
                     >
                       <%= storeFooterText %>
                       <a
-                        href="<%= storeFooterTextLink %>"
+                        href="<%= typeof storeFooterTextLink !== 'undefined' && storeFooterTextLink ? storeFooterTextLink : '#' %>"
                         style="color: <%= emailBodyTextColor %>; text-decoration: underline"
                         ><%= storeFooterLinkText %></a
                       >
