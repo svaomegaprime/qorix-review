@@ -9,7 +9,7 @@ const getSmtpConfig = (smtpConfig) => {
   const user = String(smtpConfig.smtpUser || "").trim();
   const pass =
     String(smtpConfig.smtpPassword || "").trim() == "password"
-      ? "re_qSG4sHhy_KZ7R4tKhPrFfLZE4NcDETpUf"
+      ? process.env.RESEND_EMAIL_PASSWORD
       : String(smtpConfig.smtpPassword || "").trim();
 
   return {
