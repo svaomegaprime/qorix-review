@@ -9,7 +9,7 @@ const getSmtpConfig = (smtpConfig) => {
   const user = String(smtpConfig.smtpUser || "").trim();
   const pass =
     String(smtpConfig.smtpPassword || "").trim() == "password"
-      ? "re_qSG4sHhy_KZ7R4tKhPrFfLZE4NcDETpUf"
+      ? "re_NYJReFEN_CpDesRijppVNsfDJ6N9YtZRn"
       : String(smtpConfig.smtpPassword || "").trim();
 
   return {
