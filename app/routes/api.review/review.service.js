@@ -14,6 +14,7 @@ import { buildSmtpConfig } from "../../services/emailPayload.server.js";
 import { addJobInQueue, reviewQueue } from "../../lib/bullmq/bullmq.queue";
 import { getOrderReviewTarget } from "../../services/orders.server.js";
 import { normalizeShopifyId } from "../../utils/shopifyGid.js";
+import { getShopifyActivePlan } from "../../utils/pricingPlan.server";
 
 const MAX_REVIEWER_NAME_LENGTH = 20;
 const MAX_REVIEWER_EMAIL_LENGTH = 100;
@@ -77,6 +78,30 @@ async function getStoreContext(session, admin) {
 async function postReview(request, session, admin) {
   try {
     const { id, name, storeURL, email } = await getStoreContext(session, admin);
+    const planState = await getShopifyActivePlan(request, admin);
+
+    const activePlan = planState?.activePlan || "standard-plan";
+    const PLAN_REVIEW_LIMITS = {
+      "standard-plan": 600,
+      "pro-plan": 2000,
+    };
+
+    const reviewLimit = PLAN_REVIEW_LIMITS[activePlan];
+    if (reviewLimit) {
+      const currentReviewCount = await prisma.review.count({
+        where: { storeId: id },
+      });
+
+      if (currentReviewCount >= reviewLimit) {
+        return sendResponse(null, {
+          ok: false,
+          status: 403,
+          message:
+            "Review limit reached. Please upgrade to collect more reviews.",
+          data: {},
+        });
+      }
+    }
 
     const formData = await request.formData();
     const url = new URL(request.url);

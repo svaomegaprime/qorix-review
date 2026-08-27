@@ -1,4 +1,9 @@
-import { useFetcher, useLoaderData, useNavigation } from "react-router";
+import {
+  useFetcher,
+  useLoaderData,
+  useNavigation,
+  useRouteLoaderData,
+} from "react-router";
 import { Text } from "@shopify/polaris";
 import SetupGuide from "../components/pages/dashboard/SetupGuide";
 import ReviewBreakdown from "../components/pages/dashboard/ReviewBreakdown";
@@ -74,6 +79,8 @@ export async function loader({ request }) {
     );
     const json = await response.json();
     const shop = json.data.shop;
+
+    //
 
     return {
       reviews: reviews,
@@ -206,6 +213,8 @@ export async function action({ request }) {
 export default function Index() {
   const fetcher = useFetcher();
   useAdminFetcherToast(fetcher);
+  const { planState } = useRouteLoaderData("routes/app");
+  console.log("App root planState:", planState);
   const {
     reviews,
     pendingOrders,

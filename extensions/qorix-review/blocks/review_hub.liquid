@@ -1,74 +1,73 @@
 <qorix-review-hub-widget>
-{{ 'review-hub.css' | asset_url | stylesheet_tag }}
-{% assign review_hub_metafield = app.metafields.qorix_review.review_hub.value %}
-{% assign grid_columns = review_hub_metafield.layout | plus: 0 %}
-{% if grid_columns < 1 %}
-  {% assign grid_columns = 3 %}
-{% endif %}
+  {{ 'review-hub.css' | asset_url | stylesheet_tag }}
+  {% assign review_hub_metafield = app.metafields.qorix_review.review_hub.value %}
+  {% assign pp = app.metafields.qorix_review.pricing_plan.value.activePlan %}
+  {% if pp == 'pro-plan' or pp == 'plus-plan' or pp == 'unlimited' %}
+    {% assign grid_columns = review_hub_metafield.layout | plus: 0 %}
+    {% if grid_columns < 1 %}
+      {% assign grid_columns = 3 %}
+    {% endif %}
+    <style>
+      :host {
+        display: block;
+        width: 100%;
+        max-width: 100%;
+        min-width: 0;
+        box-sizing: border-box;
+      }
+      [data-section="qorix-review-hub"], .qr-review-hub {
+        --star-color: {{ review_hub_metafield.starColor | default: '#34C759' }};
+        --text-color: {{ review_hub_metafield.textColor | default: '#1A1A1A' }};
+        --verified-badge-color: {{ review_hub_metafield.verifiedBadgeColor | default: '#34C759' }};
+        --card-background-color: {{ review_hub_metafield.cardBackgroundColor | default: '#FFFFFF' }};
+        --border-color: {{ review_hub_metafield.borderColor | default: '#E5E7EB' }};
+        --filter-chio-star-color: {{ review_hub_metafield.filterChipStarColor | default: '#34C759' }};
+        --filter-chip-color: {{ review_hub_metafield.filterChipColor | default: '#F2F2F2' }};
+      }
+    </style>
+    <template x-if="window.Alpine">
+      <div
+        class="qr-review-hub"
+        data-section="qorix-review-hub"
+        style="--qr-grid-columns: {{ grid_columns }}; --qr-section-max-width: 100%;"
+        customerId="{{ customer.id }}"
+        customerEmail="{{ customer.email }}"
+        id="review-hub"
+        x-data="ReviewWidget()"
+        x-init="initUploadSettings($el); productInit($el.dataset.product,$el.dataset.sort,$el.dataset.limit,$el.dataset.showFirst)"
+        data-customer-id="{{ customer.id }}"
+        data-customer-email="{{ customer.email }}"
+        data-sort="{{ review_hub_metafield.defaultSort | default: 'ALL' }}"
+        data-limit="{{ review_hub_metafield.reviewsPerPage }}"
+        data-page-type="{{ template.name }}"
+        data-show-first="IMAGE_VIDEO"
+        data-filter-min-stars="{{ review_hub_metafield.filterMinStar }}"
+      >
+        {% if review_hub_metafield.showHeader %}
+          {% render 'heading',
+            label: review_hub_metafield.eyebrowLabel,
+            title: review_hub_metafield.heading,
+            subtitle: review_hub_metafield.subheading,
+            position: review_hub_metafield.headerStyle,
+            reviewStats: review_hub_metafield.reviewStats,
+            starColor: review_hub_metafield.starColor,
+            badgeColor: review_hub_metafield.verifiedBadgeColor
+          %}
+        {% endif %}
+        <div class="qr-reviews-section">
+          {% render 'review-filters', review_hub_metafield: review_hub_metafield %}
 
-<style>
-  :host {
-    display: block;
-    width: 100%;
-    max-width: 100%;
-    min-width: 0;
-    box-sizing: border-box;
-  }
+          <div class="qr-review-grid">
+            {% render 'review-card', review_hub_metafield: review_hub_metafield, grid_columns: grid_columns %}
+          </div>
 
-  [data-section="qorix-review-hub"], .qr-review-hub {
-    --star-color: {{ review_hub_metafield.starColor | default: '#34C759' }};
-    --text-color: {{ review_hub_metafield.textColor | default: '#1A1A1A' }};
-    --verified-badge-color: {{ review_hub_metafield.verifiedBadgeColor | default: '#34C759' }};
-    --card-background-color: {{ review_hub_metafield.cardBackgroundColor | default: '#FFFFFF' }};
-    --border-color: {{ review_hub_metafield.borderColor | default: '#E5E7EB' }};
-    --filter-chio-star-color: {{ review_hub_metafield.filterChipStarColor | default: '#34C759' }};
-    --filter-chip-color: {{ review_hub_metafield.filterChipColor | default: '#F2F2F2' }};
-  }
-</style>
-
-<template x-if="window.Alpine">
-<div
-  class="qr-review-hub"
-  data-section="qorix-review-hub"
-  style="--qr-grid-columns: {{ grid_columns }}; --qr-section-max-width: 100%;"
-  customerId="{{ customer.id }}"
-  customerEmail="{{ customer.email }}"
-  id="review-hub"
-  x-data="ReviewWidget()"
-  x-init="initUploadSettings($el); productInit($el.dataset.product,$el.dataset.sort,$el.dataset.limit,$el.dataset.showFirst)"
-  data-customer-id="{{ customer.id }}"
-  data-customer-email="{{ customer.email }}"
-  data-sort="{{ review_hub_metafield.defaultSort | default: 'ALL' }}"
-  data-limit="{{ review_hub_metafield.reviewsPerPage }}"
-  data-page-type="{{ template.name }}"
-  data-show-first="IMAGE_VIDEO"
-  data-filter-min-stars="{{ review_hub_metafield.filterMinStar }}"
->
-  {% if review_hub_metafield.showHeader %}
-    {% render 'heading',
-      label: review_hub_metafield.eyebrowLabel,
-      title: review_hub_metafield.heading,
-      subtitle: review_hub_metafield.subheading,
-      position: review_hub_metafield.headerStyle,
-      reviewStats: review_hub_metafield.reviewStats,
-      starColor: review_hub_metafield.starColor,
-      badgeColor: review_hub_metafield.verifiedBadgeColor
-    %}
+          <div class="qr-load-more-wrap" x-show="hasMoreReviews()">
+            <button class="qr-load-more-btn" type="button" @click="loadMore()">Load more reviews</button>
+          </div>
+        </div>
+      </div>
+    </template>
   {% endif %}
-
-  <div class="qr-reviews-section">
-    {% render 'review-filters', review_hub_metafield: review_hub_metafield %}
-
-    <div class="qr-review-grid">
-      {% render 'review-card', review_hub_metafield: review_hub_metafield, grid_columns: grid_columns %}
-    </div>
-
-    <div class="qr-load-more-wrap" x-show="hasMoreReviews()">
-      <button class="qr-load-more-btn" type="button" @click="loadMore()">Load more reviews</button>
-    </div>
-  </div>
-</div>
-</template>
 </qorix-review-hub-widget>
 {% render 'show-all-media-modal' %}
 {% render 'lightbox' %}
