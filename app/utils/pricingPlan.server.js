@@ -1,9 +1,15 @@
 // utils/shopifySubscription.server.js
 import { authenticate } from "../shopify.server";
 
-export async function getShopifyActivePlan(request) {
-  const { admin, session } = await authenticate.admin(request);
-  const shop = session.shop;
+export async function getShopifyActivePlan(request, adminContext) {
+  let admin = adminContext;
+  let shop = null;
+
+  if (!admin) {
+    const auth = await authenticate.admin(request);
+    admin = auth.admin;
+    shop = auth.session?.shop || null;
+  }
 
   const response = await admin.graphql(`
     {
@@ -18,14 +24,18 @@ export async function getShopifyActivePlan(request) {
 
   const data = await response.json();
 
-  const subs = data.data.appInstallation.activeSubscriptions;
+  const subs = data?.data?.appInstallation?.activeSubscriptions || [];
 
   const active = subs.find((s) => s.status === "ACTIVE");
 
   const activePlan = active?.name
-    ? active?.name?.toLowerCase().replace(/\s+/g, "-")
+    ? active.name.toLowerCase().replace(/\s+/g, "-")
     : null;
-  console.log("***", shop, "***", activePlan, "***", active?.status);
+  console.log({
+    shop,
+    activePlan,
+    activeStatus: active?.status || null,
+  });
   return {
     shop,
     activePlan,

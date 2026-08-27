@@ -1,4 +1,6 @@
 {% assign quick_review_metafield = app.metafields.qorix_review.quick_review.value %}
+{% assign pp = app.metafields.qorix_review.pricing_plan.value.activePlan %}
+
 <style>
   [data-qorix-widget] {
     display: none !important;
@@ -101,7 +103,8 @@
     {% render 'quickreview-rating-summary',
       product: product,
       block: block,
-      quick_review_metafield: quick_review_metafield
+      quick_review_metafield: quick_review_metafield,
+      pp: pp
     %}
     {% if show_bar %}
       {% render 'quickreview-rating-bar', product: product, block: block %}
