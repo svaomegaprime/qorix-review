@@ -9,9 +9,12 @@ import { AppProvider } from "@shopify/shopify-app-react-router/react";
 import { authenticate } from "../shopify.server";
 import Loader from "../components/essentials/Loader";
 import { getShopifyActivePlan } from "../utils/pricingPlan.server";
+import { setAppMetafield } from "../utils/appMetafields.server";
 export const loader = async ({ request }) => {
-  await authenticate.admin(request);
+  const { admin } = await authenticate.admin(request);
   const planState = await getShopifyActivePlan(request);
+
+  await setAppMetafield(admin, "pricing_plan", planState);
 
   // eslint-disable-next-line no-undef
   return {
