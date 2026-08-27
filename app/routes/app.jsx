@@ -8,12 +8,16 @@ import { boundary } from "@shopify/shopify-app-react-router/server";
 import { AppProvider } from "@shopify/shopify-app-react-router/react";
 import { authenticate } from "../shopify.server";
 import Loader from "../components/essentials/Loader";
-
+import { getShopifyActivePlan } from "../utils/pricingPlan.server";
 export const loader = async ({ request }) => {
   await authenticate.admin(request);
+  const planState = await getShopifyActivePlan(request);
 
   // eslint-disable-next-line no-undef
-  return { apiKey: process.env.SHOPIFY_API_KEY || "" };
+  return {
+    apiKey: process.env.SHOPIFY_API_KEY || "",
+    planState,
+  };
 };
 
 export default function App() {
@@ -33,6 +37,7 @@ export default function App() {
         <s-link href="/app/reviews">Reviews</s-link>
         <s-link href="/app/requests">Requests</s-link>
         <s-link href="/app/widgets">Widgets</s-link>
+        <s-link href="/app/manage-plan">Manage Plan</s-link>
         <s-link href="/app/settings">Settings</s-link>
       </s-app-nav>
       <Outlet />
