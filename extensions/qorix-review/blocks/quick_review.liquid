@@ -1,9 +1,9 @@
+{% assign quick_review_metafield = app.metafields.qorix_review.quick_review.value %}
 <style>
   [data-qorix-widget] {
     display: none !important;
   }
 </style>
-{% assign quick_review_metafield = app.metafields.qorix_review.quick_review.value %}
 {% liquid
   assign allow_photo = quick_review_metafield.isPhotoUpload
   assign allow_video = quick_review_metafield.isVideoUpload
@@ -18,7 +18,6 @@
     assign media_accept = media_accept | append: 'video/mp4,video/quicktime'
   endif
 %}
-
 <style>
   :root{
     --star-color: {{ quick_review_metafield.starColor }};
@@ -26,7 +25,6 @@
     --button-text-color : {{ quick_review_metafield.buttonTextColor }};
     --verified-badge-color : {{ quick_review_metafield.verifiedBadgeColor }};
     --bar-file-color : {{ quick_review_metafield.barFileColor }};
-
     --qr-color-border: #CFCFCF;
     --qr-color-text-dark: #303030;
     --qr-color-text-secondary: #616161;

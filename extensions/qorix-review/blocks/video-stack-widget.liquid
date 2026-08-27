@@ -1,103 +1,95 @@
-{{ 'swiper-bundle.min.css' | asset_url | stylesheet_tag }}
-{{ 'video-stack-widget.css' | asset_url | stylesheet_tag }}
-
 {% assign video_stack_metafield = app.metafields.qorix_review.video_stack.value %}
-
-{% render 'custom-css', css: video_stack_metafield.advanceCss %}
-
-<style>
-  [data-section="qorix-review-video-stack-widget"] {
-    position: relative !important;
-    z-index: 1 !important;
-    isolation: isolate !important;
-    --nav-cols: {{ video_stack_metafield.thumbnailsShown | default: block.settings.nav_cols | default: 5 }};
-    --star-color: {{ video_stack_metafield.startColor | default: '#F59E0B' }};
-    --active-dot-color: {{ video_stack_metafield.activeDotColor | default: '#34C759' }};
-    --badge-color: {{ video_stack_metafield.badgeColor | default: '#34C759' }};
-    --overlay-tint: {{ video_stack_metafield.overlayTintColor | default: '#1A1A1A' }};
-  }
-  [data-qorix-widget] { display: none !important; }
-</style>
-
-<section
-  data-qorix-widget
-  class="qorix-review-video-stack-section"
-  data-section="qorix-review-video-stack-widget"
-  customerId="{{ customer.id }}"
-  customerEmail="{{ customer.email }}"
-  id="video-stack-widget"
-  x-data="ReviewWidget()"
-  x-init="initUploadSettings($el); productInit($el.dataset.product,$el.dataset.sort,$el.dataset.limit)"
-  data-customer-id="{{ customer.id }}"
-  data-customer-email="{{ customer.email }}"
-  data-sort="ALL"
-  data-limit="10000"
-  data-page-type="{{ template.name }}"
-  data-show-first="VIDEO"
-  data-filter-min-stars="{{ video_stack_metafield.fiteringMinStart }}"
-  data-isMuted="{{ video_stack_metafield.mutedByDefault }}"
-  data-is-muted="{{ video_stack_metafield.mutedByDefault }}"
->
-  {% if video_stack_metafield.showHeader != false and video_stack_metafield.showHeader != 'false' %}
-    <div class="qorix-review-video-stack-heading-container">
-      {% render 'heading',
-        label: video_stack_metafield.eyebrowLabel,
-        title: video_stack_metafield.heading,
-        subtitle: video_stack_metafield.subheading,
-        position: video_stack_metafield.headerStyle,
-        reviewStats: video_stack_metafield.reviewStats,
-        starColor: video_stack_metafield.startColor,
-        badgeColor: video_stack_metafield.badgeColor
-      %}
-    </div>
-  {% endif %}
-
-  <div class="qorix-review-video-stack-carousel">
-    <div class="qorix-review-video-stack-swiper-clip">
-      <div class="qorix-review-video-stack-swiper">
-        <div class="qorix-review-video-stack-swiper-wrapper">
-          {% render 'video-stack-widget-card', loop_video: true %}
-        </div>
-      </div>
-    </div>
-
-    {% if video_stack_metafield.showNavigationDots != false
-      and video_stack_metafield.showNavigationDots != 'false'
-      or video_stack_metafield.showArrowControls != false
-      and video_stack_metafield.showArrowControls != 'false'
-    %}
-      <div class="qorix-review-video-stack-controls" x-show="filteredReviews().length > 0">
-        {% if video_stack_metafield.showArrowControls != false and video_stack_metafield.showArrowControls != 'false' %}
-          <button class="qorix-review-video-stack-nav qorix-review-video-stack-nav-prev" aria-label="Previous slide">
-            <svg width="20" height="20" viewBox="0 0 20 20" fill="none">
-              <path fill-rule="evenodd" clip-rule="evenodd"
-                d="M12.2805 14.53C12.4209 14.3894 12.4998 14.1987 12.4998 14C12.4998 13.8012 12.4209 13.6106 12.2805 13.47L8.81047 10 12.2805 6.53C12.4209 6.3894 12.4998 6.1987 12.4998 6C12.4998 5.5858 12.1637 5.25 11.7505 5.25C11.5517 5.25 11.3611 5.3296 11.2205 5.47L7.22047 9.47C7.08002 9.6106 7.00113 9.8012 7.00113 10C7.00113 10.1987 7.08002 10.3894 7.22047 10.53L11.2205 14.53C11.3611 14.6704 11.5517 14.7493 11.7505 14.7493C11.9492 14.7493 12.1398 14.6704 12.2805 14.53Z"
-                fill="#4A4A4A" />
-            </svg>
-          </button>
-        {% endif %}
-
-        {% if video_stack_metafield.showNavigationDots != false
-          and video_stack_metafield.showNavigationDots != 'false'
+{% assign pp = app.metafields.qorix_review.pricing_plan.value.activePlan %}
+{% if pp == 'pro-plan' or pp == 'plus-plan' or pp == 'unlimited' %}
+  {{ 'swiper-bundle.min.css' | asset_url | stylesheet_tag }}
+  {{ 'video-stack-widget.css' | asset_url | stylesheet_tag }}
+  {% render 'custom-css', css: video_stack_metafield.advanceCss %}
+  <style>
+    [data-section="qorix-review-video-stack-widget"] {
+      position: relative !important;
+      z-index: 1 !important;
+      isolation: isolate !important;
+      --nav-cols: {{ video_stack_metafield.thumbnailsShown | default: block.settings.nav_cols | default: 5 }};
+      --star-color: {{ video_stack_metafield.startColor | default: '#F59E0B' }};
+      --active-dot-color: {{ video_stack_metafield.activeDotColor | default: '#34C759' }};
+      --badge-color: {{ video_stack_metafield.badgeColor | default: '#34C759' }};
+      --overlay-tint: {{ video_stack_metafield.overlayTintColor | default: '#1A1A1A' }};
+    }
+    [data-qorix-widget] { display: none !important; }
+  </style>
+  <section
+    data-qorix-widget
+    class="qorix-review-video-stack-section"
+    data-section="qorix-review-video-stack-widget"
+    customerId="{{ customer.id }}"
+    customerEmail="{{ customer.email }}"
+    id="video-stack-widget"
+    x-data="ReviewWidget()"
+    x-init="initUploadSettings($el); productInit($el.dataset.product,$el.dataset.sort,$el.dataset.limit)"
+    data-customer-id="{{ customer.id }}"
+    data-customer-email="{{ customer.email }}"
+    data-sort="ALL"
+    data-limit="10000"
+    data-page-type="{{ template.name }}"
+    data-show-first="VIDEO"
+    data-filter-min-stars="{{ video_stack_metafield.fiteringMinStart }}"
+    data-isMuted="{{ video_stack_metafield.mutedByDefault }}"
+    data-is-muted="{{ video_stack_metafield.mutedByDefault }}"
+  >
+    {% if video_stack_metafield.showHeader != false and video_stack_metafield.showHeader != 'false' %}
+      <div class="qorix-review-video-stack-heading-container">
+        {% render 'heading',
+          label: video_stack_metafield.eyebrowLabel,
+          title: video_stack_metafield.heading,
+          subtitle: video_stack_metafield.subheading,
+          position: video_stack_metafield.headerStyle,
+          reviewStats: video_stack_metafield.reviewStats,
+          starColor: video_stack_metafield.startColor,
+          badgeColor: video_stack_metafield.badgeColor
         %}
-          <div class="qorix-review-video-stack-custom-pagination"></div>
-        {% endif %}
-
-        {% if video_stack_metafield.showArrowControls != false and video_stack_metafield.showArrowControls != 'false' %}
-          <button class="qorix-review-video-stack-nav qorix-review-video-stack-nav-next" aria-label="Next slide">
-            <svg width="20" height="20" viewBox="0 0 20 20" fill="none">
-              <path fill-rule="evenodd" clip-rule="evenodd"
-                d="M7.71953 14.53C7.57908 14.3894 7.50019 14.1987 7.50019 14C7.50019 13.8012 7.57908 13.6106 7.71953 13.47L11.1895 10 7.71953 6.53C7.57908 6.3894 7.50019 6.1987 7.50019 6C7.50019 5.5858 7.83597 5.25 8.24953 5.25C8.44828 5.25 8.63891 5.3296 8.77953 5.47L12.7795 9.47C12.92 9.6106 12.9989 9.8012 12.9989 10C12.9989 10.1987 12.92 10.3894 12.7795 10.53L8.77953 14.53C8.63891 14.6704 8.44828 14.7493 8.24953 14.7493C8.05078 14.7493 7.86016 14.6704 7.71953 14.53Z"
-                fill="#4A4A4A" />
-            </svg>
-          </button>
-        {% endif %}
       </div>
     {% endif %}
-  </div>
-</section>
-<script src="{{ 'swiper-bundle.min.js' | asset_url }}" defer></script>
-<script src="{{ 'video-stack-widget.js' | asset_url }}" defer></script>
+    <div class="qorix-review-video-stack-carousel">
+      <div class="qorix-review-video-stack-swiper-clip">
+        <div class="qorix-review-video-stack-swiper">
+          <div class="qorix-review-video-stack-swiper-wrapper">
+            {% render 'video-stack-widget-card', loop_video: true %}
+          </div>
+        </div>
+      </div>
+      {% if video_stack_metafield.showNavigationDots != false
+        and video_stack_metafield.showNavigationDots != 'false'
+        or video_stack_metafield.showArrowControls != false
+        and video_stack_metafield.showArrowControls != 'false'
+      %}
+        <div class="qorix-review-video-stack-controls" x-show="filteredReviews().length > 0">
+          {% if video_stack_metafield.showArrowControls != false
+            and video_stack_metafield.showArrowControls != 'false'
+          %}
+            <button class="qorix-review-video-stack-nav qorix-review-video-stack-nav-prev" aria-label="Previous slide">
+              {% render 'svg', name: 'chevron-left' %}
+            </button>
+          {% endif %}
+
+          {% if video_stack_metafield.showNavigationDots != false
+            and video_stack_metafield.showNavigationDots != 'false'
+          %}
+            <div class="qorix-review-video-stack-custom-pagination"></div>
+          {% endif %}
+          {% if video_stack_metafield.showArrowControls != false
+            and video_stack_metafield.showArrowControls != 'false'
+          %}
+            <button class="qorix-review-video-stack-nav qorix-review-video-stack-nav-next" aria-label="Next slide">
+              {% render 'svg', name: 'chevron-right' %}
+            </button>
+          {% endif %}
+        </div>
+      {% endif %}
+    </div>
+  </section>
+  <script src="{{ 'swiper-bundle.min.js' | asset_url }}" defer></script>
+  <script src="{{ 'video-stack-widget.js' | asset_url }}" defer></script>
+{% endif %}
 {% schema %}
 {
   "name": "Qorix Video Stack",

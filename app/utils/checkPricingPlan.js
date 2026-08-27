@@ -1,4 +1,4 @@
-const PLAN_HIERARCHY = ["standard", "pro-plan", "plus-plan", "unlimited"];
+const PLAN_HIERARCHY = ["standard-plan", "pro-plan", "plus-plan", "unlimited"];
 
 export default function checkPricingPlan(activePlan, ...requiredPlans) {
   const activePlanIndex = PLAN_HIERARCHY.indexOf(activePlan);

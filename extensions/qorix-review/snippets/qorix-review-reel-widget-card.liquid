@@ -1,30 +1,24 @@
 {% assign review_reel_metafield = app.metafields.qorix_review.review_reel.value %}
-
 {% assign show_reviewer_name = showReviewerName %}
 {% if show_reviewer_name == null %}
   {% assign show_reviewer_name = review_reel_metafield.showReviewerName %}
 {% endif %}
-
 {% assign show_review_image = showReviewImage %}
 {% if show_review_image == null %}
   {% assign show_review_image = review_reel_metafield.showReviewImage %}
 {% endif %}
-
 {% assign show_verified_badge = showVerifiedBadge %}
 {% if show_verified_badge == null %}
   {% assign show_verified_badge = review_reel_metafield.showVerifiedBadge %}
 {% endif %}
-
 {% assign show_product_name = showProductName %}
 {% if show_product_name == null %}
   {% assign show_product_name = review_reel_metafield.showProductName %}
 {% endif %}
-
 {% assign show_review_date = showReviewDate %}
 {% if show_review_date == null %}
   {% assign show_review_date = review_reel_metafield.showReviewDate %}
 {% endif %}
-
 {% assign start_color_val = startColor | default: review_reel_metafield.startColor | default: '#34C759' %}
 {% render 'skeleton', type: 'card' %}
 <template x-for="review in filteredReviews()" :key="review.id">
@@ -44,13 +38,9 @@
           class="qorix-review-reel-card-video"
         ></video>
         <button class="qorix-review-reel-play-btn" aria-label="Play video review">
-          <svg width="44" height="44" viewBox="0 0 44 44" fill="none" xmlns="http://www.w3.org/2000/svg">
-            <circle cx="22" cy="22" r="22" fill="white" />
-            <path d="M27.5 22L19.25 27.1962V16.8038L27.5 22Z" fill="#303030"/>
-          </svg>
+          {% render 'svg', name: 'play-circle' %}
         </button>
       </div>
-
       <div
         x-show="review.attachments[0] && review.attachments[0].type == 'IMAGE'"
         class="qorix-review-reel-review-card-image"
@@ -63,7 +53,6 @@
           height=""
         >
       </div>
-
       <div class="qorix-review-reel-review-card-content">
         <div class="qorix-review-reel-review-text">
           {% if show_product_name %}
@@ -96,18 +85,9 @@
               <p class="qorix-review-reel-user-name">
                 <span x-text="review.reviewerName"></span>
                 {% if show_verified_badge != false and show_verified_badge != 'false' %}
-                  <svg
-                    x-show="review.isVerified"
-                    width="18"
-                    height="18"
-                    viewBox="0 0 18 18"
-                    fill="none"
-                    style="vertical-align: middle; margin-left: 4px; display: inline-block;"
-                    aria-label="Verified"
-                  >
-                    <circle cx="9" cy="9" r="9" fill="{{ start_color_val }}" />
-                    <path d="M5 9L7.5 11.5L13 6" stroke="white" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" />
-                  </svg>
+                  <span x-show="review.isVerified">
+                    {% render 'svg', name: 'check-simple', color: start_color_val %}
+                  </span>
                 {% endif %}
               </p>
             {% endif %}
