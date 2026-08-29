@@ -1,6 +1,7 @@
 <qorix-review-hub-widget>
   {{ 'review-hub.css' | asset_url | stylesheet_tag }}
   {% assign review_hub_metafield = app.metafields.qorix_review.review_hub.value %}
+  {% render 'custom-css', css: review_hub_metafield.advanceCss %}
   {% assign pp = app.metafields.qorix_review.pricing_plan.value.activePlan %}
   {% if pp == 'pro-plan' or pp == 'plus-plan' or pp == 'unlimited' %}
     {% assign grid_columns = review_hub_metafield.layout | plus: 0 %}
