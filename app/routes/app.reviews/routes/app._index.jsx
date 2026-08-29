@@ -20,8 +20,8 @@ import { invalidateReviewCache } from "../../../lib/redis/reviewCache.js";
 import { usePagination } from "../../../hooks/usePagination.js";
 import { updateProductReviewDefineMetafields } from "../../../utils/updateProductReviewDefineMetafields";
 import { authenticate } from "../../../shopify.server";
+import ImportReviewsModal from "../components/ImportReviewsModal";
 const REVIEWS_PER_PAGE = 8;
-const EXPORT_PREVIEW_LIMIT = 5;
 
 function formatExportValue(value) {
   if (value === null || value === undefined) {
@@ -161,6 +161,151 @@ export async function action({ request }) {
       }
       case "POST": {
         const formData = await request.formData();
+        const actionType = formData.get("actionType");
+
+        if (actionType === "IMPORT_REVIEWS") {
+          const csvData = formData.get("csvData");
+          if (!csvData) {
+            return { ok: false, message: "No CSV data provided" };
+          }
+
+          let importData;
+          try {
+            importData = JSON.parse(String(csvData));
+          } catch {
+            return { ok: false, message: "Invalid import data" };
+          }
+
+          if (!Array.isArray(importData) || importData.length === 0) {
+            return { ok: false, message: "No valid rows to import" };
+          }
+
+          let importedCount = 0;
+          const productIdsToUpdate = new Set();
+          const validStatuses = [
+            "PENDING",
+            "PUBLISHED",
+            "REJECTED",
+            "SPAM",
+            "ARCHIVE",
+          ];
+          const validSources = ["DEMO", "REQUEST_EMAIL", "PRODUCT_PAGE"];
+
+          for (const row of importData) {
+            const rawStatus = String(row.status || "").toUpperCase();
+            const status = validStatuses.includes(rawStatus)
+              ? rawStatus
+              : "PENDING";
+
+            const rawSource = String(row.source || "").toUpperCase();
+            const source = validSources.includes(rawSource) ? rawSource : null;
+
+            const rating = Math.max(
+              1,
+              Math.min(5, Math.round(Number(row.rating) || 5)),
+            );
+
+            /** @type {any} */
+            const reviewData = {
+              storeId: storeData.id,
+              productTitle: row.productTitle ? String(row.productTitle) : null,
+              productHandle: row.productHandle
+                ? String(row.productHandle)
+                : null,
+              productId: row.productId ? String(row.productId) : null,
+              reviewerName: row.reviewerName ? String(row.reviewerName) : null,
+              reviewerEmail: row.reviewerEmail
+                ? String(row.reviewerEmail)
+                : null,
+              reviewerPhone: row.reviewerPhone
+                ? String(row.reviewerPhone)
+                : null,
+              rating,
+              title: row.title ? String(row.title) : null,
+              body: row.body ? String(row.body) : null,
+              status,
+              source,
+              isVerified: Boolean(row.isVerified),
+            };
+
+            if (row.createdAt) {
+              const parsedDate = new Date(row.createdAt);
+              if (!Number.isNaN(parsedDate.getTime())) {
+                reviewData.createdAt = parsedDate;
+              }
+            }
+
+            const attachments = Array.isArray(row.attachmentUrls)
+              ? row.attachmentUrls
+                  .map((url) => {
+                    const cleanUrl = String(url).trim();
+                    if (!cleanUrl) return null;
+                    const isVideo =
+                      /\.(mp4|webm|mov|mkv|avi|m4v)(\?.*)?$/i.test(cleanUrl) ||
+                      cleanUrl.includes("/video");
+                    return {
+                      type: isVideo ? "VIDEO" : "IMAGE",
+                      url: cleanUrl,
+                    };
+                  })
+                  .filter(Boolean)
+              : [];
+
+            if (attachments.length > 0) {
+              reviewData.attachments = {
+                create: attachments,
+              };
+            }
+
+            const createdReview = await prisma.review.create({
+              data: reviewData,
+            });
+
+            if (row.reply) {
+              await prisma.reply.create({
+                data: {
+                  reviewId: createdReview.id,
+                  body: String(row.reply),
+                },
+              });
+            }
+
+            if (createdReview.productId) {
+              productIdsToUpdate.add(createdReview.productId);
+            }
+
+            importedCount++;
+          }
+
+          // Invalidate review cache for this store
+          await invalidateReviewCache(storeData.id);
+
+          // Update metafields for affected products
+          for (const prodId of productIdsToUpdate) {
+            try {
+              await updateProductReviewDefineMetafields(
+                admin,
+                prodId,
+                storeData.id,
+              );
+            } catch (err) {
+              console.error(`Failed to update metafields for ${prodId}:`, err);
+            }
+          }
+
+          const reviews = await getFilteredReviews(
+            storeData.id,
+            "",
+            "all",
+            "all",
+          );
+          return {
+            reviews,
+            ok: true,
+            message: `${importedCount} review${importedCount === 1 ? "" : "s"} imported successfully`,
+          };
+        }
+
         const search = formData.get("search") || "";
         const rating = formData.get("rating") || "all";
         const productId = formData.get("productId") || "all";
@@ -348,7 +493,7 @@ export async function action({ request }) {
           rating,
           productId,
         );
-        return { reviews };
+        return { reviews, ok: true, message: "Reply saved successfully" };
       }
       default: {
         return new Response("Method Not Allowed", { status: 405 });
@@ -392,7 +537,6 @@ export default function Reviews() {
         new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime(),
     ),
   );
-  const exportPreviewRows = exportRows.slice(0, EXPORT_PREVIEW_LIMIT);
   const exportColumns = [
     "id",
     "productTitle",
@@ -741,6 +885,8 @@ export default function Reviews() {
         </s-button>
       </s-modal>
 
+      <ImportReviewsModal fetcher={fetcher} />
+
       <s-page>
         {/* Start----Page Header */}
         <s-grid
@@ -767,7 +913,11 @@ export default function Reviews() {
                 : "Off"}
             </s-badge>
           </s-stack>
-          <s-grid gridTemplateColumns="auto auto auto" justifyContent="end">
+          <s-grid
+            gridTemplateColumns="auto auto"
+            justifyContent="end"
+            gap="small"
+          >
             <s-button
               icon="download"
               onClick={() => shopify.modal.show("import-reviews-modal")}
