@@ -12,6 +12,7 @@ import { useAdminFetcherToast } from "../../../utils/useAdminFetcherToast";
 import {
   deleteReviewWithAttachments,
   updateReviewStatus,
+  updateReviewCreatedAt,
 } from "../../../services/reviews.server.js";
 import { sendEmail } from "../../../utils/sendEmail";
 import { buildReplyEmailData } from "../../../services/emailPayload.server.js";
@@ -140,7 +141,7 @@ async function getFilteredReviews(storeId, search, rating, productId) {
 
 export async function action({ request }) {
   try {
-    const { admin, session } = await authenticate.admin(request);
+    const { admin } = await authenticate.admin(request);
     const { storeData } = await requireAdminContext(request);
     const method = request.method.toUpperCase();
 
@@ -175,6 +176,34 @@ export async function action({ request }) {
         const formData = await request.formData();
         const reviewId = formData.get("reviewId");
         const status = formData.get("status");
+        const createdAt = formData.get("createdAt");
+        const actionType = formData.get("actionType");
+
+        if (actionType === "UPDATE_DATE" || (reviewId && createdAt)) {
+          if (reviewId && createdAt) {
+            await updateReviewCreatedAt({
+              reviewId: String(reviewId),
+              createdAt: String(createdAt),
+              storeId: storeData.id,
+            });
+          }
+
+          const search = formData.get("search") || "";
+          const rating = formData.get("rating") || "all";
+          const productId = formData.get("productId") || "all";
+          const reviews = await getFilteredReviews(
+            storeData.id,
+            search,
+            rating,
+            productId,
+          );
+
+          return {
+            reviews,
+            ok: true,
+            message: "Review date updated successfully",
+          };
+        }
 
         if (reviewId && status) {
           await updateReviewStatus({
@@ -531,6 +560,21 @@ export default function Reviews() {
     );
   };
   // End----Handle review reply
+  // Start----Handle review date update
+  const handleReviewDateUpdate = (reviewId, createdAt) => {
+    fetcher.submit(
+      {
+        actionType: "UPDATE_DATE",
+        reviewId,
+        createdAt,
+        search: searchQuery,
+        rating: selectedRating,
+        productId: selectedProduct,
+      },
+      { method: "PATCH" },
+    );
+  };
+  // End----Handle review date update
 
   // Start----Clear selection when action completes
   useEffect(() => {
@@ -724,12 +768,12 @@ export default function Reviews() {
             </s-badge>
           </s-stack>
           <s-grid gridTemplateColumns="auto auto auto" justifyContent="end">
-            {/* <s-button
+            <s-button
               icon="download"
               onClick={() => shopify.modal.show("import-reviews-modal")}
             >
               Import
-            </s-button> */}
+            </s-button>
             <s-button icon="upload" onClick={() => handleExportReview()}>
               Export
             </s-button>
@@ -897,6 +941,7 @@ export default function Reviews() {
                         handleStatusUpdate={handleStatusUpdate}
                         handleReviewDelete={handleReviewDelete}
                         handleReviewReply={handleReviewReply}
+                        handleReviewDateUpdate={handleReviewDateUpdate}
                       />
                     </s-grid>
                     {index !== paginatedReviews.length - 1 && (
