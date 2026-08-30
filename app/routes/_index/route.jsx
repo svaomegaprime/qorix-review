@@ -22,7 +22,7 @@ export default function App() {
           <nav className="navbar">
             <div className="navLeft">
               <div className="logo">Q</div>
-              <span className="brandName">Qorix Review</span>
+              <span className="brandName">Easy Review</span>
             </div>
 
             <ul className="navLinks">
@@ -63,7 +63,7 @@ export default function App() {
           <div className="heroContent">
             <span className="badge">Shopify Review & Rating App</span>
 
-            <h1 className="heading">Grow Your Store with Qorix Review</h1>
+            <h1 className="heading">Grow Your Store with Easy Review</h1>
 
             <p className="subheading">
               Build trust and boost conversions using high-converting review

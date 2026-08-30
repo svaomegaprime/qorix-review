@@ -4,11 +4,11 @@ import FaqItem from "./elements/FaqItem"
 const FAQ_ITEMS = [
     {
         title: "How do I start collecting reviews?",
-        desc: "After installing the app, go to Requests in the sidebar and enable automatic review requests. Qorix will automatically email your customers after their order is fulfilled."
+        desc: "After installing the app, go to Requests in the sidebar and enable automatic review requests. Easy will automatically email your customers after their order is fulfilled."
     },
     {
         title: "Why are my reviews not showing on my store?",
-        desc: "Make sure the app embed is enabled in your Shopify theme editor. Go to <b>Online Store → Themes → Customize → App embeds</b> and toggle on Qorix Review. Also confirm the Review Widget block is added to your product page template."
+        desc: "Make sure the app embed is enabled in your Shopify theme editor. Go to <b>Online Store → Themes → Customize → App embeds</b> and toggle on Easy Review. Also confirm the Review Widget block is added to your product page template."
     },
     {
         title: "Can I control which reviews are published?",

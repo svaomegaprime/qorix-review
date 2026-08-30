@@ -557,8 +557,8 @@ export default function Branding() {
                   </CustomSection>
                   <s-switch
                     disabled={!checkPricingPlan(planState?.activePlan, "pro-plan")}
-                    label='Show "Powered by Qorix" badge'
-                    details="Display Qorix branding in the email footer."
+                    label='Show "Powered by Easy" badge'
+                    details="Display Easy branding in the email footer."
                     defaultChecked={brandSettings.isShowFooterBadge}
                     onInput={(e) =>
                       handleStateUpdate(

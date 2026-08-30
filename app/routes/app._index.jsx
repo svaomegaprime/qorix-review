@@ -397,7 +397,7 @@ export default function Index() {
         </s-stack>
         <s-stack alignItems="center" paddingBlockStart="large">
           <s-paragraph color="subdued">
-            Powered by Qorix Shopify - All rights reserved
+            Powered by Easy Shopify - All rights reserved
           </s-paragraph>
         </s-stack>
       </s-page>

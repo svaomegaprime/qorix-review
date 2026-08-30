@@ -40,7 +40,7 @@ export default function EmailConfirmation({ postRequestEmail, brandSettings }) {
           </p>
           {brandSettings.isShowFooterBadge && (
             <p class="qr-footer-powered">
-              Powered by <span class="qr-brand-highlight">Qorix</span>
+              Powered by <span class="qr-brand-highlight">Easy</span>
             </p>
           )}
         </div>

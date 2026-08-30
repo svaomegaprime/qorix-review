@@ -61,7 +61,7 @@ export default function Analytics({ reviews, data, pendingOrders, planState }) {
                         planState?.activePlan != null
                       ? 2000
                       : planState?.activePlan != null
-                        ? "unlimited"
+                        ? "Unlimited"
                         : 0}
                 </s-text>
               </Text>

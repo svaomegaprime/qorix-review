@@ -159,8 +159,8 @@ function findEmbedBlock(settings, appHandle = "app_embed") {
     }
 
     return (
-      typeLower.includes("qorix-review") ||
-      typeLower.includes("qorix_review") ||
+      typeLower.includes("easy-review") ||
+      typeLower.includes("easy_review") ||
       typeLower.includes(`blocks/${appHandle}`) ||
       typeLower.includes(appHandle.toLowerCase()) ||
       typeLower.includes("app_embed") ||

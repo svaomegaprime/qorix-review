@@ -13,7 +13,7 @@ import { useSaveBarForm } from "../../../hooks/useSaveBarForm.js";
 import { requireAdminContext } from "../../../services/adminContext.server.js";
 import { useRouteLoaderData } from "react-router";
 import checkPricingPlan from "../../../utils/checkPricingPlan";
-
+import UpgradePlan from "../../../components/essentials/UpgradePlan";
 const DELIVERY_DAY_OPTIONS = [0, 5, 7, 15];
 const REMINDER_DAY_OPTIONS = [0, 5, 7, 10, 15];
 const MINIMUM_ORDER_VALUE_OPTIONS = [0, 100, 500, 1000];
@@ -123,18 +123,28 @@ export default function Settings() {
             Send review request emails to customers after delivery
           </s-text>
         </s-box>
-
-        <s-button
-          variant="secondary"
-          onClick={() =>
-            window.open(
-              "http://qorix-review-docs.nextvence.com/pages/settings/request-scheduling",
-              "_blank",
-            )
-          }
+        <s-stack
+          paddingBlockEnd="base"
+          direction="inline"
+          alignItems="center"
+          justifyContent="space-between"
+          gap="base"
         >
-          Need Help ?
-        </s-button>
+          {!checkPricingPlan(planState?.activePlan, "pro-plan") && (
+            <UpgradePlan text={"Full Access (Pro Plan)"} />
+          )}
+          <s-button
+            variant="secondary"
+            onClick={() =>
+              window.open(
+                "http://qorix-review-docs.nextvence.com/pages/settings/request-scheduling",
+                "_blank",
+              )
+            }
+          >
+            Need Help ?
+          </s-button>
+        </s-stack>
       </s-stack>
 
       <s-section key={formResetKey}>

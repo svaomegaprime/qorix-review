@@ -186,7 +186,7 @@ export default function EmailSettings() {
       >
         <s-box>
           <Text>Email settings</Text>
-          <s-text>Manage what customers see in every email from Qorix</s-text>
+          <s-text>Manage what customers see in every email from Easy</s-text>
         </s-box>
         <s-stack direction="inline" gap="base">
           <s-button
@@ -290,7 +290,7 @@ export default function EmailSettings() {
         </CustomSection>
         <br></br>
         <s-banner heading="SMTP not configured" tone="warning">
-          If SMTP is not configured, Qorix Review will use its default SMTP
+          If SMTP is not configured, Easy Review will use its default SMTP
           service to send emails to customers. You can add your email under
           Admin Notifications to receive a copy (BCC) of each email sent.
           <s-button

@@ -1,5 +1,5 @@
 {
-  "name": "qorix-review",
+  "name": "easy-review",
   "private": true,
   "scripts": {
     "build": "react-router build",

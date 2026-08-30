@@ -27,7 +27,7 @@ export default function SmtpSetup({ emailSettings, onChange, planState }) {
       <CustomSection padding="0">
         <CustomGridSection
           heading="SMTP configuration"
-          description="Set the mailbox credentials Qorix will use to send emails."
+          description="Set the mailbox credentials Easy will use to send emails."
         >
           <CustomSection>
             <s-grid gap="small">
