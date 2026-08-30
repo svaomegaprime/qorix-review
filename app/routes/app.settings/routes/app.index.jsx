@@ -11,6 +11,8 @@ import { useAdminFetcherToast } from "../../../utils/useAdminFetcherToast";
 import SaveBar from "../../../components/essentials/SaveBar";
 import { useSaveBarForm } from "../../../hooks/useSaveBarForm.js";
 import { requireAdminContext } from "../../../services/adminContext.server.js";
+import { useRouteLoaderData } from "react-router";
+import checkPricingPlan from "../../../utils/checkPricingPlan";
 
 const DELIVERY_DAY_OPTIONS = [0, 5, 7, 15];
 const REMINDER_DAY_OPTIONS = [0, 5, 7, 10, 15];
@@ -74,6 +76,8 @@ export async function action({ request }) {
 }
 
 export default function Settings() {
+  const { planState } = useRouteLoaderData("routes/app");
+
   const { storeSettings } = useLoaderData();
   const fetcher = useFetcher();
   useAdminFetcherToast(fetcher);
@@ -119,8 +123,16 @@ export default function Settings() {
             Send review request emails to customers after delivery
           </s-text>
         </s-box>
-         
-        <s-button  variant="secondary" onClick={() => window.open("http://qorix-review-docs.nextvence.com/pages/settings/request-scheduling", "_blank")}>
+
+        <s-button
+          variant="secondary"
+          onClick={() =>
+            window.open(
+              "http://qorix-review-docs.nextvence.com/pages/settings/request-scheduling",
+              "_blank",
+            )
+          }
+        >
           Need Help ?
         </s-button>
       </s-stack>
@@ -143,6 +155,9 @@ export default function Settings() {
                       isAutomaticRequest: e.target.checked,
                     }))
                   }
+                  disabled={
+                    !checkPricingPlan(planState?.activePlan, "pro-plan")
+                  }
                   label="Enable automatic requests"
                   details="Customers receive a review request email automatically after their order is delivered"
                 ></s-switch>
@@ -155,6 +170,9 @@ export default function Settings() {
                   </s-paragraph>
                   <s-box paddingBlock="small">
                     <s-select
+                      disabled={
+                        !checkPricingPlan(planState?.activePlan, "pro-plan")
+                      }
                       value={
                         showCustomFields.customDeliveryDays
                           ? "custom"
@@ -189,6 +207,9 @@ export default function Settings() {
                   </s-box>
                   {showCustomFields.customDeliveryDays && (
                     <s-number-field
+                      disabled={
+                        !checkPricingPlan(planState?.activePlan, "pro-plan")
+                      }
                       inputMode="numeric"
                       step={1}
                       min={1}
@@ -208,6 +229,9 @@ export default function Settings() {
 
                 <s-stack>
                   <s-switch
+                    disabled={
+                      !checkPricingPlan(planState?.activePlan, "pro-plan")
+                    }
                     defaultChecked={requestScheduling.isReminderRequest}
                     onChange={(e) =>
                       setRequestScheduling((pre) => ({
@@ -228,6 +252,9 @@ export default function Settings() {
                   </s-paragraph>
                   <s-box paddingBlock="small">
                     <s-select
+                      disabled={
+                        !checkPricingPlan(planState?.activePlan, "pro-plan")
+                      }
                       value={
                         showCustomFields.customDelayDays
                           ? "custom"
@@ -261,6 +288,9 @@ export default function Settings() {
                   </s-box>
                   {showCustomFields.customDelayDays && (
                     <s-number-field
+                      disabled={
+                        !checkPricingPlan(planState?.activePlan, "pro-plan")
+                      }
                       inputMode="numeric"
                       step={1}
                       min={1}
@@ -290,6 +320,9 @@ export default function Settings() {
             <CustomSection>
               <s-grid gap="small">
                 <s-switch
+                  disabled={
+                    !checkPricingPlan(planState?.activePlan, "pro-plan")
+                  }
                   defaultChecked={requestScheduling.isSkipRefundedOrder}
                   onChange={(e) =>
                     setRequestScheduling((pre) => ({

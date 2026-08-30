@@ -1,4 +1,4 @@
-import { useOutlet } from "react-router";
+import { useOutlet, useRouteLoaderData } from "react-router";
 import Settings from "./routes/app.index.jsx";
 import Clickable from "./components/elements/Clickable.jsx";
 import {
@@ -16,6 +16,8 @@ export async function loader() {
   };
 }
 export default function SettingsRoot() {
+    const { planState } = useRouteLoaderData("routes/app");
+
   const outlet = useOutlet();
   const [open, setOpen] = useState(false);
 
@@ -56,24 +58,27 @@ export default function SettingsRoot() {
               
             >
               <s-section>
-                <s-heading>Request reviews</s-heading>
+                <s-heading>Settings</s-heading>
 
                 <Clickable
                   title="Request scheduling"
                   icon="receipt-dollar"
                   url="/app/settings"
+                  planState={planState}
                 />
 
                 <Clickable
                   title="Email settings"
                   icon="email"
                   url="/app/settings/email-settings"
+                  planState={planState}
                 />
 
                 <Clickable
                   title="Publishing & moderation"
                   icon="receipt-dollar"
                   url="/app/settings/publishing-moderation"
+                  planState={planState}
                 />
 
                 {/* <s-stack paddingBlock="base">
@@ -98,12 +103,14 @@ export default function SettingsRoot() {
                   title="Branding"
                   icon="paint-brush-flat"
                   url="/app/settings/branding"
+                  planState={planState}
                 />
 
                 <Clickable
                   title="Admin notifications"
                   icon="notification"
                   url="/app/settings/admin-notification"
+                  planState={planState}
                 />
               </s-section>
             </div>

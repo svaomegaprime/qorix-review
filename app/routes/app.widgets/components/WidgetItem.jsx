@@ -144,13 +144,21 @@ export default function WidgetItem({
           >
             <s-button
               variant={isInstalled ? "secondary" : "primary"}
-              disabled={isInstalled}
               href={isInstalled ? undefined : embedUrl}
               target="_blank"
+              disabled={isInstalled}
             >
               {isInstalled ? "Installed" : "Install"}
             </s-button>
             <s-button
+              disabled={
+                !checkPricingPlan(
+                  planState.activePlan,
+                  widget?.name == "QuickReview" || widget?.name == "TrustBar"
+                    ? "standard-plan"
+                    : "pro-plan",
+                )
+              }
               icon="paint-brush-round"
               command="--show"
               commandFor={appWindowId}

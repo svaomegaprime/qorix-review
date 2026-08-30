@@ -11,6 +11,7 @@ import {
   useLoaderData,
   useNavigation,
   useRevalidator,
+  useRouteLoaderData,
 } from "react-router";
 import { useRef, useState, useEffect, Fragment } from "react";
 import { randomUUID } from "crypto";
@@ -29,6 +30,7 @@ import {
   buildReminderEmailData,
   buildRequestEmailData,
 } from "../../../services/emailPayload.server.js";
+import checkPricingPlan from "../../../utils/checkPricingPlan";
 const REQUESTS_PER_PAGE = 5;
 const MODAL_REQUESTS_PER_PAGE = 8;
 const MAX_VISIBLE_PAGE_BUTTONS = 4;
@@ -552,6 +554,8 @@ export async function action({ request }) {
 }
 
 export default function Requests() {
+  const { planState } = useRouteLoaderData("routes/app");
+
   // Start----Default CSR loading state checking for navigation
   const navigation = useNavigation();
   const loading = navigation.state === "loading";
@@ -924,11 +928,17 @@ export default function Requests() {
             justifyContent="end"
             gap="base"
           >
-            <UpgradePlan text="Full Access (Plus Plan)"/>
+            <UpgradePlan text="Full Access (Plus Plan)" />
             <s-button
               commandFor="request-rewiew-modal"
               command="--show"
               icon="plus"
+              disabled={
+                !checkPricingPlan(
+                  planState?.activePlan,
+                 "plus-plan", "unlimited"
+                )
+              }
             >
               Send manual request
             </s-button>

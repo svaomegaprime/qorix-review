@@ -3,7 +3,7 @@ import PropTypes from "prop-types";
 import CustomSection from "../../../../components/essentials/CustomSection";
 import Text from "../../../../components/essentials/elements/Text";
 
-export default function ColorPicker({ data, onChange, defaultColor }) {
+export default function ColorPicker({ data, onChange, defaultColor, disabled }) {
   const [color, setColor] = useState(defaultColor);
 
   // The parent replaces defaultColor on reset/discard. Keep this component's
@@ -13,6 +13,7 @@ export default function ColorPicker({ data, onChange, defaultColor }) {
   }, [defaultColor]);
 
   const handleChange = (e) => {
+    if (disabled) return;
     const value = e.target.value ?? e.currentTarget.value;
     setColor(value);
     onChange?.(value);
@@ -22,6 +23,7 @@ export default function ColorPicker({ data, onChange, defaultColor }) {
       <Text as="h4">{data?.label}</Text>
       <s-grid gridTemplateColumns="33px 1fr" gap="small" alignItems="center">
         <s-clickable
+          disabled={disabled}
           command="show"
           commandFor={data?.key}
           borderRadius="small"
@@ -54,7 +56,7 @@ export default function ColorPicker({ data, onChange, defaultColor }) {
           </s-box>
         </s-popover>
 
-        <s-text-field value={color} onChange={handleChange} />
+        <s-text-field disabled={disabled} value={color} onChange={handleChange} />
       </s-grid>
 
       {data?.info && (
@@ -74,4 +76,5 @@ ColorPicker.propTypes = {
   }).isRequired,
   onChange: PropTypes.func,
   defaultColor: PropTypes.string.isRequired,
+  disabled: PropTypes.bool,
 };

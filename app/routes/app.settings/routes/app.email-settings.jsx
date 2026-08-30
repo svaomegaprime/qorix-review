@@ -11,7 +11,12 @@ import {
   DEFAULT_POST_REQUEST_EMAIL,
   DEFAULT_SMTP_SETUP,
 } from "../data/defaultData";
-import { useFetcher, useLoaderData, useNavigate } from "react-router";
+import {
+  useFetcher,
+  useLoaderData,
+  useNavigate,
+  useRouteLoaderData,
+} from "react-router";
 import { authenticate } from "../../../shopify.server";
 import prisma from "../../../db.server";
 import { adminErrorResponse } from "../../../utils/adminError.server";
@@ -106,6 +111,8 @@ export async function action({ request }) {
 }
 
 export default function EmailSettings() {
+  const { planState } = useRouteLoaderData("routes/app");
+
   const fetcher = useFetcher();
   useAdminFetcherToast(fetcher);
   const { storeSettings } = useLoaderData();
@@ -322,6 +329,7 @@ export default function EmailSettings() {
         )}
         {emailActiveSettings.SMTPSetup && (
           <SmtpSetup
+            planState={planState}
             emailSettings={emailSettings}
             onChange={handleEmailSettingsChange}
           />
