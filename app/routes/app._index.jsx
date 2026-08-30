@@ -1,6 +1,7 @@
 import {
   useFetcher,
   useLoaderData,
+  useNavigate,
   useNavigation,
   useRouteLoaderData,
 } from "react-router";
@@ -211,6 +212,7 @@ export async function action({ request }) {
 }
 
 export default function Index() {
+  const navigate = useNavigate();
   const fetcher = useFetcher();
   useAdminFetcherToast(fetcher);
   const { planState } = useRouteLoaderData("routes/app");
@@ -284,10 +286,38 @@ export default function Index() {
           paddingBlockEnd="base"
         >
           <Text as="h2">Welcome to {storeData?.name} 👋</Text>
-          <s-grid gridTemplateColumns="auto auto">
+          <s-grid gridTemplateColumns="auto auto" >
             {/* <s-button variant="secondary" icon="plus">
             Request reviews
           </s-button> */}
+            <button
+              type="button"
+              onClick={() => navigate("/app/manage-plan")}
+              style={{
+                display: 'inline-flex',
+                alignItems: 'center',
+                justifyContent: 'center',
+                gap: '6px',
+                backgroundColor: '#FEF3C7',
+                color: '#92400E',
+                border: '1px solid #FCD34D',
+                padding: '7px 14px',
+                borderRadius: '6px',
+                fontSize: '12px',
+                fontWeight: 600,
+                cursor: 'pointer',
+                marginRight: '12px',
+                boxShadow: '0 1px 2px rgba(0, 0, 0, 0.1)',
+                lineHeight: 1,
+              }}
+            >
+              <span style={{ fontSize: '14px', lineHeight: 1, display: 'inline-flex' }}>
+                👑
+              </span>
+              <Text as="span" variant="bodySm" fontWeight="bold">
+                Upgrade Plan
+              </Text>
+            </button>
             <s-button
               variant="primary"
               icon="store"
