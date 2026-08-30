@@ -30,6 +30,7 @@ import {
   checkAppEmbedEnabled,
   getWidgetsInstalledStatus,
 } from "../services/appEmbed.server.js";
+import checkPricingPlan from "../utils/checkPricingPlan";
 export async function loader({ request }) {
   try {
     const { admin, session, storeData } = await requireAdminContext(request);
@@ -216,7 +217,7 @@ export default function Index() {
   const navigate = useNavigate();
   const fetcher = useFetcher();
   useAdminFetcherToast(fetcher);
-  const { planState } = useRouteLoaderData("routes/app");
+  const { planState } = useRouteLoaderData("routes/app") || {};
   console.log("App root planState:", planState);
   const {
     reviews,
@@ -290,13 +291,40 @@ export default function Index() {
           <s-grid
             gridTemplateColumns="auto auto auto"
             justifyContent="end"
+            alignItems="center"
             gap="small"
           >
             {/* <s-button variant="secondary" icon="plus">
             Request reviews
           </s-button> */}
             {/* Upgrade Plan btn */}
-            <UpgradePlan />
+
+            {!checkPricingPlan(
+              planState?.activePlan,
+              "standard-plan",
+              "pro-plan",
+              "plus-plan",
+              "unlimited",
+            ) ? (
+              <>
+                <UpgradePlan />
+              </>
+            ) : (
+              <>
+                <s-badge tone="success">
+                  {" "}
+                  {planState?.activePlan === "standard-plan"
+                    ? "Standard Plan"
+                    : planState?.activePlan === "pro-plan"
+                      ? "Pro Plan"
+                      : planState?.activePlan === "plus-plan"
+                        ? "Plus Plan"
+                        : planState?.activePlan === "unlimited"
+                          ? "Unlimited"
+                          : "No Active Plan"}
+                </s-badge>
+              </>
+            )}
             {/* <button
               type="button"
               onClick={() => navigate("/app/manage-plan")}
@@ -359,6 +387,7 @@ export default function Index() {
           handleReviewDelete={handleReviewDelete}
           handleReviewReply={handleReviewReply}
           isAppEnabled={isAppEnabled}
+          planState={planState}
         />
         <s-stack paddingBlockStart="base">
           <FAQ />

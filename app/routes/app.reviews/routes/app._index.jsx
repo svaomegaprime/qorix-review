@@ -4,7 +4,7 @@ import CustomSection from "../../../components/essentials/CustomSection";
 import ReviewItem from "../../../components/essentials/ReviewItem";
 import Text from "../../../components/essentials/elements/Text";
 import UpgradePlan from "../../../components/essentials/UpgradePlan"
-import { useLoaderData, useNavigation, useFetcher } from "react-router";
+import { useLoaderData, useNavigation, useFetcher, useRouteLoaderData } from "react-router";
 import { useState, useRef, useEffect } from "react";
 import prisma from "../../../db.server";
 import { requireAdminContext } from "../../../services/adminContext.server.js";
@@ -506,6 +506,8 @@ export async function action({ request }) {
 }
 
 export default function Reviews() {
+  const { planState } = useRouteLoaderData("routes/app") || {};
+  console.log(planState)
   // Start----Default CSR loading state checking for navigation
   const navigation = useNavigation();
   const loading = navigation.state === "loading";
@@ -1094,6 +1096,7 @@ export default function Reviews() {
                         handleReviewDelete={handleReviewDelete}
                         handleReviewReply={handleReviewReply}
                         handleReviewDateUpdate={handleReviewDateUpdate}
+                        planState={planState}
                       />
                     </s-grid>
                     {index !== paginatedReviews.length - 1 && (

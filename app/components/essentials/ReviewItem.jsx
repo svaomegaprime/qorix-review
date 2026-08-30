@@ -1,13 +1,14 @@
 import starFilled from "../../assets/images/star-filled.svg";
 import starEmpty from "../../assets/images/star-empty.svg";
 import { useEffect, useRef, useState } from "react";
-
+import checkPricingPlan from "../../utils/checkPricingPlan";
 export default function ReviewItem({
   data,
   handleStatusUpdate,
   handleReviewDelete,
   handleReviewReply,
   handleReviewDateUpdate,
+  planState,
 }) {
   // Start----State for attachment modal
   const activeThumbRef = useRef(null);
@@ -480,10 +481,7 @@ export default function ReviewItem({
                     }}
                   />
                 </div>
-                <s-button
-                  variant="primary"
-                  onClick={handleDateSubmit}
-                >
+                <s-button variant="primary" onClick={handleDateSubmit}>
                   Update
                 </s-button>
               </>
@@ -720,8 +718,16 @@ export default function ReviewItem({
               handleStatusUpdate={handleStatusUpdate}
               replyReview={replyReview}
               setReplyReview={setReplyReview}
+              planState={planState}
             />
             <s-button
+              disabled={
+                !checkPricingPlan(
+                  planState?.activePlan,
+                  "plus-plan",
+                  "unlimited",
+                )
+              }
               icon={isEditingDate ? "x" : "edit"}
               onClick={() => setIsEditingDate((prev) => !prev)}
             >
@@ -748,6 +754,7 @@ export function ActionButtons({
   handleStatusUpdate,
   replyReview,
   setReplyReview,
+  planState,
 }) {
   if (reviewStatus === "PENDING") {
     return (
@@ -779,6 +786,9 @@ export function ActionButtons({
           </s-button>
         ) : (
           <s-button
+            disabled={
+              !checkPricingPlan(planState?.activePlan, "plus-plan", "unlimited")
+            }
             icon={replyReview ? "x" : "chat"}
             onClick={() => setReplyReview((pre) => !pre)}
           >

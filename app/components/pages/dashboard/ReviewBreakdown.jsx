@@ -4,13 +4,14 @@ import ReviewItem from "../../essentials/ReviewItem";
 import HalfStar from "../../essentials/elements/HalfStar";
 import ReviewPipeItem from "./elements/ReviewPipeItem";
 import PaidIcon from "../../essentials/PaidIcon";
-
+import checkPricingPlan from "../../../utils/checkPricingPlan";
 export default function ReviewBreakdown({
   reviews = [],
   handleStatusUpdate,
   handleReviewDelete,
   handleReviewReply,
   isAppEnabled = false,
+  planState,
 }) {
   const totalReviews = reviews.length;
   const averageRating =
@@ -49,7 +50,14 @@ export default function ReviewBreakdown({
               gap="small"
             >
               <CustomText as="h3">
-                Recent reviews<PaidIcon />
+                Recent reviews{" "}
+                {!checkPricingPlan(
+                  planState?.activePlan,
+                  "standard-plan",
+                  "pro-plan",
+                  "plus-plan",
+                  "unlimited",
+                ) && <PaidIcon />}
               </CustomText>
               <s-button href="/app/reviews" variant="tertiary">
                 <s-stack direction="inline" alignItems="center">
@@ -67,6 +75,7 @@ export default function ReviewBreakdown({
                       handleStatusUpdate={handleStatusUpdate}
                       handleReviewDelete={handleReviewDelete}
                       handleReviewReply={handleReviewReply}
+                      planState={planState}
                     />
                   </CustomSection>
                 ))
@@ -95,7 +104,15 @@ export default function ReviewBreakdown({
               >
                 <s-stack gap="base">
                   <CustomText as="h3">
-                    Rating breakdown<PaidIcon />
+                    Rating breakdown
+
+                   {!checkPricingPlan(
+                    planState?.activePlan,
+                    "standard-plan",
+                    "pro-plan",
+                    "plus-plan",
+                    "unlimited",
+                  ) && <PaidIcon />}
                   </CustomText>
                   <s-box>
                     <CustomText as="h2">{averageRating}</CustomText>

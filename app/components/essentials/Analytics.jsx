@@ -2,7 +2,7 @@ import { Text } from "@shopify/polaris";
 import CustomText from "../essentials/elements/Text";
 import HalfStar from "../essentials/elements/HalfStar";
 import PaidIcon from "../essentials/PaidIcon";
-
+import checkPricingPlan from "../../utils/checkPricingPlan";
 export default function Analytics({ reviews, data, pendingOrders, planState }) {
   const arrowUp = "↑";
   const arrowDown = "↓";
@@ -39,12 +39,32 @@ export default function Analytics({ reviews, data, pendingOrders, planState }) {
                 justifyContent="space-between"
               >
                 <s-heading>
-                  Total reviews
-                  <PaidIcon />
+                  Total reviews {" "}
+                  {!checkPricingPlan(
+                    planState?.activePlan,
+                    "standard-plan",
+                    "pro-plan",
+                    "plus-plan",
+                    "unlimited",
+                  ) && <PaidIcon />}
                 </s-heading>
                 <s-icon type="plan" />
               </s-stack>
-              <Text as="h2">{totalReviews}</Text>
+              <Text as="h2">
+                {totalReviews}{" "}
+                <s-text>
+                  /{" "}
+                  {planState?.activePlan == "standard-plan" &&
+                  planState?.activePlan != null
+                    ? 600
+                    : planState?.activePlan == "pro-plan" &&
+                        planState?.activePlan != null
+                      ? 2000
+                      : planState?.activePlan != null
+                        ? "unlimited"
+                        : 0}
+                </s-text>
+              </Text>
               <CustomText as="p" color={"#00BF7A"}>
                 {arrowUp} 5 this week
               </CustomText>
@@ -61,8 +81,14 @@ export default function Analytics({ reviews, data, pendingOrders, planState }) {
                 justifyContent="space-between"
               >
                 <s-heading>
-                  Avg. rating
-                  <PaidIcon />
+                  Avg. rating {" "}
+                   {!checkPricingPlan(
+                    planState?.activePlan,
+                    "standard-plan",
+                    "pro-plan",
+                    "plus-plan",
+                    "unlimited",
+                  ) && <PaidIcon />}
                 </s-heading>
                 <s-icon type="star-list" />
               </s-stack>
@@ -84,7 +110,15 @@ export default function Analytics({ reviews, data, pendingOrders, planState }) {
                 alignItems="center"
                 justifyContent="space-between"
               >
-                <s-heading>Requests sent<PaidIcon /></s-heading>
+                <s-heading> 
+                  Requests sent {" "}
+                  {!checkPricingPlan(
+                    planState?.activePlan,
+                    "pro-plan",
+                    "plus-plan",
+                    "unlimited",
+                  ) && <PaidIcon />}
+                </s-heading>
                 <s-icon type="send" />
               </s-stack>
               <Text as="h2">{pendingOrders?.length ?? 0}</Text>
@@ -101,7 +135,16 @@ export default function Analytics({ reviews, data, pendingOrders, planState }) {
                 alignItems="center"
                 justifyContent="space-between"
               >
-                <s-heading>Pending<PaidIcon /></s-heading>
+                <s-heading>
+                  Pending
+                  {!checkPricingPlan(
+                    planState?.activePlan,
+                    "standard-plan",
+                    "pro-plan",
+                    "plus-plan",
+                    "unlimited",
+                  ) && <PaidIcon />}
+                </s-heading>
                 <s-icon type="clock" />
               </s-stack>
               <Text as="h2">{pendingReviews}</Text>
