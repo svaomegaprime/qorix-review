@@ -1,6 +1,6 @@
 import Loader from "../../../components/essentials/Loader";
 import Text from "../../../components/essentials/elements/Text";
-import UpgradePlan from "../../../components/essentials/UpgradePlan"
+import UpgradePlan from "../../../components/essentials/UpgradePlan";
 import TabButton from "../../../components/essentials/TabButton";
 import CustomSection from "../../../components/essentials/CustomSection";
 import Analytics from "../components/Analytics";

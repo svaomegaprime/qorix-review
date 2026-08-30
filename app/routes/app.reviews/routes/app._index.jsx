@@ -3,8 +3,13 @@ import TabButton from "../../../components/essentials/TabButton";
 import CustomSection from "../../../components/essentials/CustomSection";
 import ReviewItem from "../../../components/essentials/ReviewItem";
 import Text from "../../../components/essentials/elements/Text";
-import UpgradePlan from "../../../components/essentials/UpgradePlan"
-import { useLoaderData, useNavigation, useFetcher, useRouteLoaderData } from "react-router";
+import UpgradePlan from "../../../components/essentials/UpgradePlan";
+import {
+  useLoaderData,
+  useNavigation,
+  useFetcher,
+  useRouteLoaderData,
+} from "react-router";
 import { useState, useRef, useEffect } from "react";
 import prisma from "../../../db.server";
 import { requireAdminContext } from "../../../services/adminContext.server.js";
@@ -22,6 +27,7 @@ import { usePagination } from "../../../hooks/usePagination.js";
 import { updateProductReviewDefineMetafields } from "../../../utils/updateProductReviewDefineMetafields";
 import { authenticate } from "../../../shopify.server";
 import ImportReviewsModal from "../components/ImportReviewsModal";
+import checkPricingPlan from "../../../utils/checkPricingPlan";
 const REVIEWS_PER_PAGE = 8;
 
 function formatExportValue(value) {
@@ -507,7 +513,7 @@ export async function action({ request }) {
 
 export default function Reviews() {
   const { planState } = useRouteLoaderData("routes/app") || {};
-  console.log(planState)
+  console.log(planState);
   // Start----Default CSR loading state checking for navigation
   const navigation = useNavigation();
   const loading = navigation.state === "loading";
@@ -921,14 +927,36 @@ export default function Reviews() {
             justifyContent="end"
             gap="small"
           >
-            <UpgradePlan text={"Full Access (Plus Plan)"} />
+            {!checkPricingPlan(
+              planState.activePlan,
+              "plus-plan",
+              "unlimited",
+            ) && <UpgradePlan text={"Full Access (Plus Plan)"} />}
+
             <s-button
+              disabled={
+                !checkPricingPlan(
+                  planState.activePlan,
+                  "plus-plan",
+                  "unlimited",
+                )
+              }
               icon="download"
               onClick={() => shopify.modal.show("import-reviews-modal")}
             >
               Import
             </s-button>
-            <s-button icon="upload" onClick={() => handleExportReview()}>
+            <s-button
+              disabled={
+                !checkPricingPlan(
+                  planState.activePlan,
+                  "plus-plan",
+                  "unlimited",
+                )
+              }
+              icon="upload"
+              onClick={() => handleExportReview()}
+            >
               Export
             </s-button>
           </s-grid>
