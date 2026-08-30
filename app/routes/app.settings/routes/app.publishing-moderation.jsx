@@ -4,7 +4,7 @@ import CustomGridSection from "../../../components/essentials/CustomGridSection"
 import { DEFAULT_PUBLISHING_MODERATION } from "../data/defaultData";
 import { useState } from "react";
 import { handleStateUpdate } from "../utils/client/utils.client";
-import { useFetcher, useLoaderData } from "react-router";
+import { useFetcher, useLoaderData, useRouteLoaderData } from "react-router";
 import { authenticate } from "../../../shopify.server";
 import prisma from "../../../db.server";
 
@@ -13,7 +13,7 @@ import { useAdminFetcherToast } from "../../../utils/useAdminFetcherToast";
 import SaveBar from "../../../components/essentials/SaveBar";
 import { useSaveBarForm } from "../../../hooks/useSaveBarForm.js";
 import { requireAdminContext } from "../../../services/adminContext.server.js";
-
+import checkPricingPlan from "../../../utils/checkPricingPlan";
 export async function loader({ request }) {
   try {
     const { storeId: id } = await requireAdminContext(request);
@@ -55,6 +55,8 @@ export async function action({ request }) {
 }
 
 export default function PublishingModeration() {
+  const { planState } = useRouteLoaderData("routes/app");
+
   const { storeSettings } = useLoaderData();
   const fetcher = useFetcher();
   useAdminFetcherToast(fetcher);
@@ -97,8 +99,16 @@ export default function PublishingModeration() {
             Control which reviews go live and how content is filtered
           </s-paragraph>
         </s-box>
-          <s-button  variant="secondary" onClick={() => window.open("http://qorix-review-docs.nextvence.com/pages/settings/publishing-moderation", "_blank")}>
-         Need Help?
+        <s-button
+          variant="secondary"
+          onClick={() =>
+            window.open(
+              "http://qorix-review-docs.nextvence.com/pages/settings/publishing-moderation",
+              "_blank",
+            )
+          }
+        >
+          Need Help?
         </s-button>
       </s-stack>
 
@@ -110,6 +120,9 @@ export default function PublishingModeration() {
           >
             <CustomSection>
               <s-choice-list
+                disabled={
+                  !checkPricingPlan(planState?.activePlan, "standard-plan")
+                }
                 onChange={(e) =>
                   handleStateUpdate(
                     setPublishingModeration,
@@ -167,6 +180,9 @@ export default function PublishingModeration() {
           >
             <CustomSection>
               <s-switch
+                disabled={
+                  !checkPricingPlan(planState?.activePlan, "standard-plan")
+                }
                 defaultChecked={publishingModeration.isLowRatingHold}
                 onChange={(e) =>
                   handleStateUpdate(
@@ -190,6 +206,9 @@ export default function PublishingModeration() {
             <CustomSection>
               <s-stack gap="base">
                 <s-switch
+                  disabled={
+                    !checkPricingPlan(planState?.activePlan, "standard-plan")
+                  }
                   defaultChecked={publishingModeration.isProfanityFilter}
                   onChange={(e) =>
                     handleStateUpdate(
@@ -202,6 +221,9 @@ export default function PublishingModeration() {
                   details="Block or flag reviews containing profanity words and phrases"
                 />
                 <s-switch
+                  disabled={
+                    !checkPricingPlan(planState?.activePlan, "standard-plan")
+                  }
                   defaultChecked={publishingModeration.isPersonalInfoFilter}
                   onChange={(e) =>
                     handleStateUpdate(

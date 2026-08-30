@@ -1,7 +1,7 @@
 # Learn more about configuring your app at https://shopify.dev/docs/apps/tools/cli/configuration
 
 client_id = "1fd61c4448a3e740e2e1b9bc99b9db0d"
-name = "Qorix Review"
+name = "Easy Product Reviews"
 application_url = "https://qorix-review.nextvence.com"
 embedded = true
 

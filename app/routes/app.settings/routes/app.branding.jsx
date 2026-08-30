@@ -18,7 +18,7 @@ import { useAdminFetcherToast } from "../../../utils/useAdminFetcherToast";
 import SaveBar from "../../../components/essentials/SaveBar";
 import { useSaveBarForm } from "../../../hooks/useSaveBarForm.js";
 import { requireAdminContext } from "../../../services/adminContext.server.js";
-
+import checkPricingPlan from "../../../utils/checkPricingPlan"
 export async function loader({ request }) {
   try {
     const { storeId: id } = await requireAdminContext(request);
@@ -95,6 +95,8 @@ export async function action({ request }) {
 }
 
 export default function Branding() {
+      const { planState } = useRouteLoaderData("routes/app");
+
   // const data = useRouteLoaderData("routes/app.settings");
   const { storeSettings } = useLoaderData();
   const fetcher = useFetcher();
@@ -270,6 +272,7 @@ export default function Branding() {
                 <CustomSection>
                   <s-grid gap="small">
                     <s-text-field
+                      disabled={!checkPricingPlan(planState?.activePlan, "pro-plan")}
                       label="Store display name *"
                       details="This name appears in email headers and subject lines."
                       defaultValue={brandSettings.storeDisplayName}
@@ -310,6 +313,7 @@ export default function Branding() {
                     /> */}
                     <s-divider />
                     <s-text-field
+                      disabled={!checkPricingPlan(planState?.activePlan, "pro-plan")}
                       label="Store tagline (optional)"
                       placeholder="Skincare that makes you glow"
                       details="A short tagline shown below the store name."
@@ -325,6 +329,7 @@ export default function Branding() {
                     <s-divider />
 
                     <s-text-field
+                      disabled={!checkPricingPlan(planState?.activePlan, "pro-plan")}
                       label="Reply-to email *"
                       details="Replies to any email will be sent to this email address."
                       defaultValue={brandSettings.storeReplyToEmail}
@@ -351,6 +356,7 @@ export default function Branding() {
                 <CustomSection>
                   <s-grid gap="small">
                     <s-drop-zone
+                      disabled={!checkPricingPlan(planState?.activePlan, "pro-plan")}
                       label="Recommended 240*80px. Maximum file size: 2MB (500KB recommended)."
                       accessibilityLabel="Upload image of type jpg, png, or gif"
                       accept=".jpg,.png,.gif"
@@ -406,6 +412,7 @@ export default function Branding() {
                           />
                         </div>
                         <s-button
+                          disabled={!checkPricingPlan(planState?.activePlan, "pro-plan")}
                           variant="secondary"
                           onClick={() =>
                             handleStateUpdate(setBrandSettings, "storeLogo", "")
@@ -417,6 +424,7 @@ export default function Branding() {
                     )}
                     <CustomSection>
                       <s-select
+                        disabled={!checkPricingPlan(planState?.activePlan, "pro-plan")}
                         value={
                           brandSettings.storeLogoPosition === "LEFT" ||
                           brandSettings.storeLogoPosition === "left"
@@ -474,6 +482,7 @@ export default function Branding() {
                     {brandingColorSettings.map((picker) => {
                       return (
                         <ColorPicker
+                          disabled={!checkPricingPlan(planState?.activePlan, "pro-plan")}
                           key={picker.key}
                           defaultColor={brandSettings[picker.key]}
                           onChange={(value) => {
@@ -503,6 +512,7 @@ export default function Branding() {
                   <CustomSection>
                     <s-grid gap="small">
                       <s-text-field
+                        disabled={!checkPricingPlan(planState?.activePlan, "pro-plan")}
                         label="Footer text"
                         defaultValue={brandSettings.emailFooterText}
                         onInput={(e) =>
@@ -515,6 +525,7 @@ export default function Branding() {
                       />
 
                       <s-text-field
+                        disabled={!checkPricingPlan(planState?.activePlan, "pro-plan")}
                         label="Footer link text"
                         defaultValue={brandSettings.emailFooterLinkText}
                         onInput={(e) =>
@@ -526,6 +537,7 @@ export default function Branding() {
                         }
                       />
                       <s-text-field
+                        disabled={!checkPricingPlan(planState?.activePlan, "pro-plan")}
                         label="Footer link URL"
                         defaultValue={
                           brandSettings.externalSettings?.footerTextLink || ""
@@ -544,8 +556,9 @@ export default function Branding() {
                     </s-grid>
                   </CustomSection>
                   <s-switch
-                    label='Show "Powered by Qorix" badge'
-                    details="Display Qorix branding in the email footer."
+                    disabled={!checkPricingPlan(planState?.activePlan, "pro-plan")}
+                    label='Show "Powered by Easy" badge'
+                    details="Display Easy branding in the email footer."
                     defaultChecked={brandSettings.isShowFooterBadge}
                     onInput={(e) =>
                       handleStateUpdate(

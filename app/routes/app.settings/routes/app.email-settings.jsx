@@ -11,7 +11,12 @@ import {
   DEFAULT_POST_REQUEST_EMAIL,
   DEFAULT_SMTP_SETUP,
 } from "../data/defaultData";
-import { useFetcher, useLoaderData, useNavigate } from "react-router";
+import {
+  useFetcher,
+  useLoaderData,
+  useNavigate,
+  useRouteLoaderData,
+} from "react-router";
 import { authenticate } from "../../../shopify.server";
 import prisma from "../../../db.server";
 import { adminErrorResponse } from "../../../utils/adminError.server";
@@ -106,6 +111,8 @@ export async function action({ request }) {
 }
 
 export default function EmailSettings() {
+  const { planState } = useRouteLoaderData("routes/app");
+
   const fetcher = useFetcher();
   useAdminFetcherToast(fetcher);
   const { storeSettings } = useLoaderData();
@@ -179,7 +186,7 @@ export default function EmailSettings() {
       >
         <s-box>
           <Text>Email settings</Text>
-          <s-text>Manage what customers see in every email from Qorix</s-text>
+          <s-text>Manage what customers see in every email from Easy</s-text>
         </s-box>
         <s-stack direction="inline" gap="base">
           <s-button
@@ -283,7 +290,7 @@ export default function EmailSettings() {
         </CustomSection>
         <br></br>
         <s-banner heading="SMTP not configured" tone="warning">
-          If SMTP is not configured, Qorix Review will use its default SMTP
+          If SMTP is not configured, Easy Review will use its default SMTP
           service to send emails to customers. You can add your email under
           Admin Notifications to receive a copy (BCC) of each email sent.
           <s-button
@@ -322,6 +329,7 @@ export default function EmailSettings() {
         )}
         {emailActiveSettings.SMTPSetup && (
           <SmtpSetup
+            planState={planState}
             emailSettings={emailSettings}
             onChange={handleEmailSettingsChange}
           />

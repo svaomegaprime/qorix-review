@@ -37,7 +37,7 @@ export async function updateReviewCreatedAt({ reviewId, createdAt, storeId }) {
  * Storage failures are logged but do not leave an undeletable admin record.
  *
  * @param {{ reviewId: string, storeId: string }} input
- * @returns {Promise<boolean>}
+ * @returns {Promise<{ productId: string | null } | false>}
  */
 export async function deleteReviewWithAttachments({ reviewId, storeId }) {
   const review = await prisma.review.findFirst({

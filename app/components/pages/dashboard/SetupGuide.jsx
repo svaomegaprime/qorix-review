@@ -85,7 +85,7 @@ export default function SetupGuide({ shop = "", apiKey = "", isAppEnabled = fals
                 {/* Step 1 - Enable app embed - Start */}
                 <SetupGuideItem
                     title="Install review widget and rating badge"
-                    description="Enable the Qorix Reviews block in your theme editor to display reviews and star ratings on your product pages."
+                    description="Enable the Easy Reviews block in your theme editor to display reviews and star ratings on your product pages."
                     isActivated={isActivated === "item1"}
                     onToggle={() => handleToggle("item1")}
                     isCompleted={isAppEnabled}

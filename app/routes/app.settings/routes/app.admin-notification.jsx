@@ -4,7 +4,7 @@ import CustomSection from "../../../components/essentials/CustomSection";
 import Text from "../../../components/essentials/elements/Text";
 import { DEFAULT_ADMIN_NOTIFICATION } from "../data/defaultData";
 import { handleStateUpdate } from "../utils/client/utils.client";
-import { useFetcher, useLoaderData } from "react-router";
+import { useFetcher, useLoaderData, useRouteLoaderData } from "react-router";
 import { authenticate } from "../../../shopify.server";
 import prisma from "../../../db.server";
 
@@ -13,7 +13,7 @@ import { useAdminFetcherToast } from "../../../utils/useAdminFetcherToast";
 import SaveBar from "../../../components/essentials/SaveBar";
 import { useSaveBarForm } from "../../../hooks/useSaveBarForm.js";
 import { requireAdminContext } from "../../../services/adminContext.server.js";
-
+import checkPricingPlan from "../../../utils/checkPricingPlan";
 export async function loader({ request }) {
   try {
     const { storeId: id } = await requireAdminContext(request);
@@ -54,6 +54,8 @@ export async function action({ request }) {
   }
 }
 export default function AdminNotification() {
+  const { planState } = useRouteLoaderData("routes/app");
+
   const { storeSettings } = useLoaderData();
   const fetcher = useFetcher();
   useAdminFetcherToast(fetcher);
@@ -155,6 +157,9 @@ export default function AdminNotification() {
                   const key = `email${i + 1}`;
                   return (
                     <s-text-field
+                      disabled={
+                        !checkPricingPlan(planState?.activePlan, "pro-plan")
+                      }
                       key={key}
                       value={
                         adminNotification.notificationEmailAddress[key] ?? ""
@@ -171,6 +176,9 @@ export default function AdminNotification() {
                   onClick={() => handleAddButton()}
                   icon="email"
                   variant="secondary"
+                  disabled={
+                    !checkPricingPlan(planState?.activePlan, "pro-plan")
+                  }
                 >
                   Add email (max 3)
                 </s-button>
@@ -187,6 +195,9 @@ export default function AdminNotification() {
             <CustomSection>
               <s-grid gap="small">
                 <s-switch
+                  disabled={
+                    !checkPricingPlan(planState?.activePlan, "pro-plan")
+                  }
                   defaultChecked={adminNotification.isNewReviewNotify}
                   onChange={(e) =>
                     handleStateUpdate(
@@ -199,6 +210,9 @@ export default function AdminNotification() {
                   details="Notify when any customer submits a review"
                 />
                 <s-switch
+                  disabled={
+                    !checkPricingPlan(planState?.activePlan, "pro-plan")
+                  }
                   defaultChecked={adminNotification.isReviewApprovalNotify}
                   onChange={(e) =>
                     handleStateUpdate(
@@ -211,6 +225,9 @@ export default function AdminNotification() {
                   details="Notify when a review is hold for your approval"
                 />
                 <s-switch
+                  disabled={
+                    !checkPricingPlan(planState?.activePlan, "pro-plan")
+                  }
                   defaultChecked={adminNotification.isLowStarReviewNotify}
                   onChange={(e) =>
                     handleStateUpdate(

@@ -4,10 +4,16 @@ import Loader from "../../../components/essentials/Loader";
 import TabButton from "../../../components/essentials/TabButton";
 import CustomSection from "../../../components/essentials/CustomSection";
 import WidgetItem from "../components/WidgetItem";
-import { useLoaderData, useNavigation, useRevalidator } from "react-router";
+import {
+  useLoaderData,
+  useNavigation,
+  useRevalidator,
+  useRouteLoaderData,
+} from "react-router";
 import { getWidgetsInstalledStatus } from "../../../services/appEmbed.server.js";
 import { requireAdminContext } from "../../../services/adminContext.server.js";
-
+import UpgradePlan from "../../../components/essentials/UpgradePlan";
+import checkPricingPlan from "../../../utils/checkPricingPlan"
 export async function loader({ request }) {
   try {
     const { admin, session } = await requireAdminContext(request);
@@ -54,7 +60,7 @@ const WIDGETS = [
       "A pre-installed, one-click widget that lets customers write a review instantly — no account required. Increases review collection by 40%+.",
     previewUrl: "/widgets/quick-review.png",
     editUrl: "/app/widgets/quick-review",
-    types: ["floating", "review-form","product-page"],
+    types: ["floating", "review-form", "product-page"],
   },
   {
     id: "trust_bar",
@@ -72,7 +78,7 @@ const WIDGETS = [
       "An interactive carousel that turns your best video, image, and text reviews into moving stories. Shoppers can swipe, click, and play — no page reload.",
     previewUrl: "/widgets/review-reel.png",
     editUrl: "/app/widgets/review-reel",
-    types: [ "standalone-page"],
+    types: ["standalone-page"],
   },
   {
     id: "video_stack",
@@ -81,7 +87,7 @@ const WIDGETS = [
       "A sleek, rotating slider for your most impactful video reviews. Lets shoppers see your products in action without leaving the product page.",
     previewUrl: "/widgets/video-stack.png",
     editUrl: "/app/widgets/video-stack",
-    types: [ "standalone-page"],
+    types: ["standalone-page"],
   },
   {
     id: "quote_loop",
@@ -90,7 +96,7 @@ const WIDGETS = [
       "A bold, eye-catching carousel to highlight winning quotes from your best reviews. Auto-rotates or manual.",
     previewUrl: "/widgets/quote-loop.png",
     editUrl: "/app/widgets/quote-loop",
-    types: [ "standalone-page"],
+    types: ["standalone-page"],
   },
   {
     id: "review_hub",
@@ -99,7 +105,7 @@ const WIDGETS = [
       "Collect and display product reviews directly on your product pages. Full control over layout, sorting, and filters.",
     previewUrl: "/widgets/review-hub.png",
     editUrl: "/app/widgets/review-hub",
-    types: [ "standalone-page"],
+    types: ["standalone-page"],
   },
 ];
 
@@ -110,6 +116,7 @@ export default function Widegets() {
     installedWidgetIds = [],
   } = useLoaderData() || {};
   const revalidator = useRevalidator();
+  const { planState } = useRouteLoaderData("routes/app");
 
   useEffect(() => {
     const handleFocus = () => {
@@ -171,6 +178,12 @@ export default function Widegets() {
           <s-stack direction="inline" alignItems="center" gap="small">
             <Text as="h2">Widgets</Text>
           </s-stack>
+          {!checkPricingPlan(
+            planState.activePlan,
+            "pro-plan",
+            "plus-plan",
+            "unlimited",
+          ) && <UpgradePlan text={"Full Access (Pro Plan)"} />}
         </s-grid>
         {/* End----Page Header */}
 
@@ -212,6 +225,7 @@ export default function Widegets() {
                       status={isInstalled ? "INSTALLED" : "NOT_INSTALLED"}
                       shop={shop}
                       apiKey={apiKey}
+                      planState={planState}
                     />
                   );
                 })}
