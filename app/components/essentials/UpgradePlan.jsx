@@ -1,13 +1,15 @@
+import { useNavigate } from "react-router";
 import Text from "./elements/Text";
 
-function componentName({
+function UpgradePlan({
   text = "Upgrade Plan",
-  navigate = "/app/manage-plan",
+  navigate:navigateTo  = "/app/manage-plan",
 }) {
+ const navigate = useNavigate();
   return (
     <button
       type="button"
-      onClick={() => navigate(navigate)}
+      onClick={() => navigate(navigateTo)}
       style={{
         display: "inline-flex",
         alignItems: "center",
@@ -35,4 +37,4 @@ function componentName({
   );
 }
 
-export default componentName;
+export default UpgradePlan;
