@@ -928,7 +928,11 @@ export default function Requests() {
             justifyContent="end"
             gap="base"
           >
-            <UpgradePlan text="Full Access (Plus Plan)" />
+            {!checkPricingPlan(
+              planState?.activePlan,
+              "plus-plan",
+              "unlimited",
+            ) && <UpgradePlan text="Full Access (Plus Plan)" />}
             <s-button
               commandFor="request-rewiew-modal"
               command="--show"
@@ -936,7 +940,8 @@ export default function Requests() {
               disabled={
                 !checkPricingPlan(
                   planState?.activePlan,
-                 "plus-plan", "unlimited"
+                  "plus-plan",
+                  "unlimited",
                 )
               }
             >
