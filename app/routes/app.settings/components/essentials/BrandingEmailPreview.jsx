@@ -30,7 +30,7 @@ export default function BrandingEmailPreview({
             Refresh preview
           </s-button> */}
         </s-stack>
-        <s-text>Manage what customers see in every email from Qorix</s-text>
+        <s-text>Manage what customers see in every email from Easy</s-text>
       </s-box>
       <s-grid
         gridTemplateColumns="1fr 1fr 1fr"

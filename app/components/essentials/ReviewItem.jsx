@@ -1,12 +1,14 @@
 import starFilled from "../../assets/images/star-filled.svg";
 import starEmpty from "../../assets/images/star-empty.svg";
 import { useEffect, useRef, useState } from "react";
-
+import checkPricingPlan from "../../utils/checkPricingPlan";
 export default function ReviewItem({
   data,
   handleStatusUpdate,
   handleReviewDelete,
   handleReviewReply,
+  handleReviewDateUpdate,
+  planState,
 }) {
   // Start----State for attachment modal
   const activeThumbRef = useRef(null);
@@ -38,6 +40,32 @@ export default function ReviewItem({
 
   // Start----Review date
   const reviewDate = new Date(data.createdAt);
+  const [isEditingDate, setIsEditingDate] = useState(false);
+  const dateInputRef = useRef(null);
+
+  const formatDateTimeForInput = (date) => {
+    if (!date) return "";
+    const d = new Date(date);
+    if (Number.isNaN(d.getTime())) return "";
+    const year = d.getFullYear();
+    const month = String(d.getMonth() + 1).padStart(2, "0");
+    const day = String(d.getDate()).padStart(2, "0");
+    const hours = String(d.getHours()).padStart(2, "0");
+    const minutes = String(d.getMinutes()).padStart(2, "0");
+    return `${year}-${month}-${day}T${hours}:${minutes}`;
+  };
+
+  const handleDateSubmit = () => {
+    const newDateStr = dateInputRef.current?.value;
+    if (!newDateStr || !handleReviewDateUpdate) return;
+    let targetDate = new Date(newDateStr);
+    if (Number.isNaN(targetDate.getTime())) return;
+    if (targetDate.getTime() > Date.now()) {
+      targetDate = new Date();
+    }
+    handleReviewDateUpdate(data.id, targetDate.toISOString());
+    setIsEditingDate(false);
+  };
 
   const formatRelativeDate = (date) => {
     const diff = Date.now() - new Date(date).getTime();
@@ -389,7 +417,76 @@ export default function ReviewItem({
               {data.reviewerName}
             </p>
           </s-stack>
-          <s-text>{formattedReviewDate}</s-text>
+          <s-stack direction="inline" gap="small" alignItems="center">
+            <s-text>{formattedReviewDate}</s-text>
+            {isEditingDate && (
+              <>
+                <div
+                  style={{
+                    display: "inline-flex",
+                    alignItems: "center",
+                    gap: "6px",
+                    backgroundColor: "#ffffff",
+                    border: "1px solid #c9cccf",
+                    borderRadius: "6px",
+                    padding: "2px 8px",
+                    boxShadow: "0 1px 2px rgba(0, 0, 0, 0.05)",
+                  }}
+                >
+                  <svg
+                    width="14"
+                    height="14"
+                    viewBox="0 0 24 24"
+                    fill="none"
+                    stroke="#5c5f62"
+                    strokeWidth="2"
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    style={{ flexShrink: 0, cursor: "pointer" }}
+                    onClick={() => {
+                      try {
+                        dateInputRef.current?.showPicker?.();
+                      } catch {
+                        dateInputRef.current?.focus();
+                      }
+                    }}
+                  >
+                    <rect x="3" y="4" width="18" height="18" rx="2" ry="2" />
+                    <line x1="16" y1="2" x2="16" y2="6" />
+                    <line x1="8" y1="2" x2="8" y2="6" />
+                    <line x1="3" y1="10" x2="21" y2="10" />
+                  </svg>
+                  <input
+                    ref={dateInputRef}
+                    type="datetime-local"
+                    defaultValue={formatDateTimeForInput(data.createdAt)}
+                    max={formatDateTimeForInput(new Date())}
+                    onClick={(e) => {
+                      try {
+                        e.currentTarget.showPicker?.();
+                      } catch {
+                        // fallback to standard browser click behavior
+                      }
+                    }}
+                    autoFocus
+                    style={{
+                      border: "none",
+                      outline: "none",
+                      background: "transparent",
+                      fontSize: "13px",
+                      fontFamily: "inherit",
+                      color: "#202223",
+                      cursor: "pointer",
+                      padding: "2px 0",
+                    }}
+                  />
+                </div>
+                <s-button variant="primary" onClick={handleDateSubmit}>
+                  Update
+                </s-button>
+              </>
+            )}
+          </s-stack>
         </s-stack>
         {/* End----Review header */}
         {/* Start----Review rating */}
@@ -621,7 +718,21 @@ export default function ReviewItem({
               handleStatusUpdate={handleStatusUpdate}
               replyReview={replyReview}
               setReplyReview={setReplyReview}
+              planState={planState}
             />
+            <s-button
+              disabled={
+                !checkPricingPlan(
+                  planState?.activePlan,
+                  "plus-plan",
+                  "unlimited",
+                )
+              }
+              icon={isEditingDate ? "x" : "edit"}
+              onClick={() => setIsEditingDate((prev) => !prev)}
+            >
+              {isEditingDate ? "Cancel" : "Edit"}
+            </s-button>
             <s-button
               tone="critical"
               icon="delete"
@@ -643,6 +754,7 @@ export function ActionButtons({
   handleStatusUpdate,
   replyReview,
   setReplyReview,
+  planState,
 }) {
   if (reviewStatus === "PENDING") {
     return (
@@ -674,6 +786,9 @@ export function ActionButtons({
           </s-button>
         ) : (
           <s-button
+            disabled={
+              !checkPricingPlan(planState?.activePlan, "plus-plan", "unlimited")
+            }
             icon={replyReview ? "x" : "chat"}
             onClick={() => setReplyReview((pre) => !pre)}
           >

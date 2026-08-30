@@ -3,7 +3,13 @@ import TabButton from "../../../components/essentials/TabButton";
 import CustomSection from "../../../components/essentials/CustomSection";
 import ReviewItem from "../../../components/essentials/ReviewItem";
 import Text from "../../../components/essentials/elements/Text";
-import { useLoaderData, useNavigation, useFetcher } from "react-router";
+import UpgradePlan from "../../../components/essentials/UpgradePlan";
+import {
+  useLoaderData,
+  useNavigation,
+  useFetcher,
+  useRouteLoaderData,
+} from "react-router";
 import { useState, useRef, useEffect } from "react";
 import prisma from "../../../db.server";
 import { requireAdminContext } from "../../../services/adminContext.server.js";
@@ -12,6 +18,7 @@ import { useAdminFetcherToast } from "../../../utils/useAdminFetcherToast";
 import {
   deleteReviewWithAttachments,
   updateReviewStatus,
+  updateReviewCreatedAt,
 } from "../../../services/reviews.server.js";
 import { sendEmail } from "../../../utils/sendEmail";
 import { buildReplyEmailData } from "../../../services/emailPayload.server.js";
@@ -19,8 +26,9 @@ import { invalidateReviewCache } from "../../../lib/redis/reviewCache.js";
 import { usePagination } from "../../../hooks/usePagination.js";
 import { updateProductReviewDefineMetafields } from "../../../utils/updateProductReviewDefineMetafields";
 import { authenticate } from "../../../shopify.server";
+import ImportReviewsModal from "../components/ImportReviewsModal";
+import checkPricingPlan from "../../../utils/checkPricingPlan";
 const REVIEWS_PER_PAGE = 8;
-const EXPORT_PREVIEW_LIMIT = 5;
 
 function formatExportValue(value) {
   if (value === null || value === undefined) {
@@ -140,7 +148,7 @@ async function getFilteredReviews(storeId, search, rating, productId) {
 
 export async function action({ request }) {
   try {
-    const { admin, session } = await authenticate.admin(request);
+    const { admin } = await authenticate.admin(request);
     const { storeData } = await requireAdminContext(request);
     const method = request.method.toUpperCase();
 
@@ -160,6 +168,151 @@ export async function action({ request }) {
       }
       case "POST": {
         const formData = await request.formData();
+        const actionType = formData.get("actionType");
+
+        if (actionType === "IMPORT_REVIEWS") {
+          const csvData = formData.get("csvData");
+          if (!csvData) {
+            return { ok: false, message: "No CSV data provided" };
+          }
+
+          let importData;
+          try {
+            importData = JSON.parse(String(csvData));
+          } catch {
+            return { ok: false, message: "Invalid import data" };
+          }
+
+          if (!Array.isArray(importData) || importData.length === 0) {
+            return { ok: false, message: "No valid rows to import" };
+          }
+
+          let importedCount = 0;
+          const productIdsToUpdate = new Set();
+          const validStatuses = [
+            "PENDING",
+            "PUBLISHED",
+            "REJECTED",
+            "SPAM",
+            "ARCHIVE",
+          ];
+          const validSources = ["DEMO", "REQUEST_EMAIL", "PRODUCT_PAGE"];
+
+          for (const row of importData) {
+            const rawStatus = String(row.status || "").toUpperCase();
+            const status = validStatuses.includes(rawStatus)
+              ? rawStatus
+              : "PENDING";
+
+            const rawSource = String(row.source || "").toUpperCase();
+            const source = validSources.includes(rawSource) ? rawSource : null;
+
+            const rating = Math.max(
+              1,
+              Math.min(5, Math.round(Number(row.rating) || 5)),
+            );
+
+            /** @type {any} */
+            const reviewData = {
+              storeId: storeData.id,
+              productTitle: row.productTitle ? String(row.productTitle) : null,
+              productHandle: row.productHandle
+                ? String(row.productHandle)
+                : null,
+              productId: row.productId ? String(row.productId) : null,
+              reviewerName: row.reviewerName ? String(row.reviewerName) : null,
+              reviewerEmail: row.reviewerEmail
+                ? String(row.reviewerEmail)
+                : null,
+              reviewerPhone: row.reviewerPhone
+                ? String(row.reviewerPhone)
+                : null,
+              rating,
+              title: row.title ? String(row.title) : null,
+              body: row.body ? String(row.body) : null,
+              status,
+              source,
+              isVerified: Boolean(row.isVerified),
+            };
+
+            if (row.createdAt) {
+              const parsedDate = new Date(row.createdAt);
+              if (!Number.isNaN(parsedDate.getTime())) {
+                reviewData.createdAt = parsedDate;
+              }
+            }
+
+            const attachments = Array.isArray(row.attachmentUrls)
+              ? row.attachmentUrls
+                  .map((url) => {
+                    const cleanUrl = String(url).trim();
+                    if (!cleanUrl) return null;
+                    const isVideo =
+                      /\.(mp4|webm|mov|mkv|avi|m4v)(\?.*)?$/i.test(cleanUrl) ||
+                      cleanUrl.includes("/video");
+                    return {
+                      type: isVideo ? "VIDEO" : "IMAGE",
+                      url: cleanUrl,
+                    };
+                  })
+                  .filter(Boolean)
+              : [];
+
+            if (attachments.length > 0) {
+              reviewData.attachments = {
+                create: attachments,
+              };
+            }
+
+            const createdReview = await prisma.review.create({
+              data: reviewData,
+            });
+
+            if (row.reply) {
+              await prisma.reply.create({
+                data: {
+                  reviewId: createdReview.id,
+                  body: String(row.reply),
+                },
+              });
+            }
+
+            if (createdReview.productId) {
+              productIdsToUpdate.add(createdReview.productId);
+            }
+
+            importedCount++;
+          }
+
+          // Invalidate review cache for this store
+          await invalidateReviewCache(storeData.id);
+
+          // Update metafields for affected products
+          for (const prodId of productIdsToUpdate) {
+            try {
+              await updateProductReviewDefineMetafields(
+                admin,
+                prodId,
+                storeData.id,
+              );
+            } catch (err) {
+              console.error(`Failed to update metafields for ${prodId}:`, err);
+            }
+          }
+
+          const reviews = await getFilteredReviews(
+            storeData.id,
+            "",
+            "all",
+            "all",
+          );
+          return {
+            reviews,
+            ok: true,
+            message: `${importedCount} review${importedCount === 1 ? "" : "s"} imported successfully`,
+          };
+        }
+
         const search = formData.get("search") || "";
         const rating = formData.get("rating") || "all";
         const productId = formData.get("productId") || "all";
@@ -175,6 +328,34 @@ export async function action({ request }) {
         const formData = await request.formData();
         const reviewId = formData.get("reviewId");
         const status = formData.get("status");
+        const createdAt = formData.get("createdAt");
+        const actionType = formData.get("actionType");
+
+        if (actionType === "UPDATE_DATE" || (reviewId && createdAt)) {
+          if (reviewId && createdAt) {
+            await updateReviewCreatedAt({
+              reviewId: String(reviewId),
+              createdAt: String(createdAt),
+              storeId: storeData.id,
+            });
+          }
+
+          const search = formData.get("search") || "";
+          const rating = formData.get("rating") || "all";
+          const productId = formData.get("productId") || "all";
+          const reviews = await getFilteredReviews(
+            storeData.id,
+            search,
+            rating,
+            productId,
+          );
+
+          return {
+            reviews,
+            ok: true,
+            message: "Review date updated successfully",
+          };
+        }
 
         if (reviewId && status) {
           await updateReviewStatus({
@@ -319,7 +500,7 @@ export async function action({ request }) {
           rating,
           productId,
         );
-        return { reviews };
+        return { reviews, ok: true, message: "Reply saved successfully" };
       }
       default: {
         return new Response("Method Not Allowed", { status: 405 });
@@ -331,6 +512,8 @@ export async function action({ request }) {
 }
 
 export default function Reviews() {
+  const { planState } = useRouteLoaderData("routes/app") || {};
+  console.log(planState);
   // Start----Default CSR loading state checking for navigation
   const navigation = useNavigation();
   const loading = navigation.state === "loading";
@@ -363,7 +546,6 @@ export default function Reviews() {
         new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime(),
     ),
   );
-  const exportPreviewRows = exportRows.slice(0, EXPORT_PREVIEW_LIMIT);
   const exportColumns = [
     "id",
     "productTitle",
@@ -531,6 +713,21 @@ export default function Reviews() {
     );
   };
   // End----Handle review reply
+  // Start----Handle review date update
+  const handleReviewDateUpdate = (reviewId, createdAt) => {
+    fetcher.submit(
+      {
+        actionType: "UPDATE_DATE",
+        reviewId,
+        createdAt,
+        search: searchQuery,
+        rating: selectedRating,
+        productId: selectedProduct,
+      },
+      { method: "PATCH" },
+    );
+  };
+  // End----Handle review date update
 
   // Start----Clear selection when action completes
   useEffect(() => {
@@ -697,6 +894,8 @@ export default function Reviews() {
         </s-button>
       </s-modal>
 
+      <ImportReviewsModal fetcher={fetcher} />
+
       <s-page>
         {/* Start----Page Header */}
         <s-grid
@@ -723,14 +922,41 @@ export default function Reviews() {
                 : "Off"}
             </s-badge>
           </s-stack>
-          <s-grid gridTemplateColumns="auto auto auto" justifyContent="end">
-            {/* <s-button
+          <s-grid
+            gridTemplateColumns="auto auto auto"
+            justifyContent="end"
+            gap="small"
+          >
+            {!checkPricingPlan(
+              planState.activePlan,
+              "plus-plan",
+              "unlimited",
+            ) && <UpgradePlan text={"Full Access (Plus Plan)"} />}
+
+            <s-button
+              disabled={
+                !checkPricingPlan(
+                  planState.activePlan,
+                  "plus-plan",
+                  "unlimited",
+                )
+              }
               icon="download"
               onClick={() => shopify.modal.show("import-reviews-modal")}
             >
               Import
-            </s-button> */}
-            <s-button icon="upload" onClick={() => handleExportReview()}>
+            </s-button>
+            <s-button
+              disabled={
+                !checkPricingPlan(
+                  planState.activePlan,
+                  "plus-plan",
+                  "unlimited",
+                )
+              }
+              icon="upload"
+              onClick={() => handleExportReview()}
+            >
               Export
             </s-button>
           </s-grid>
@@ -897,6 +1123,8 @@ export default function Reviews() {
                         handleStatusUpdate={handleStatusUpdate}
                         handleReviewDelete={handleReviewDelete}
                         handleReviewReply={handleReviewReply}
+                        handleReviewDateUpdate={handleReviewDateUpdate}
+                        planState={planState}
                       />
                     </s-grid>
                     {index !== paginatedReviews.length - 1 && (

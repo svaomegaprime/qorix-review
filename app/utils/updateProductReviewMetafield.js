@@ -1,12 +1,61 @@
 import prisma from "../db.server";
 import { toProductGid } from "./shopifyGid.js";
+
+function isOwnerMissingError(error) {
+  if (!error) return false;
+  const message = String(error.message || "").toLowerCase();
+  const fields = Array.isArray(error.field) ? error.field.map(String) : [];
+
+  if (fields.includes("ownerId")) {
+    return true;
+  }
+
+  return (
+    message.includes("owner does not exist") ||
+    message.includes("owner not found") ||
+    message.includes("not found") ||
+    message.includes("does not exist") ||
+    message.includes("could not resolve to a node") ||
+    message.includes("invalid global id") ||
+    message.includes("record not found")
+  );
+}
+
+function isOwnerMissingException(error) {
+  if (!error) return false;
+  const message = String(error?.message || "").toLowerCase();
+  return (
+    message.includes("owner does not exist") ||
+    message.includes("owner not found") ||
+    message.includes("not found") ||
+    message.includes("does not exist") ||
+    message.includes("could not resolve to a node") ||
+    message.includes("invalid global id") ||
+    message.includes("record not found") ||
+    message.includes("ownerid")
+  );
+}
+
 export async function updateProductReviewMetafields(admin, productId, storeId) {
   if (!admin) throw new Error("admin is required");
-  if (!productId) throw new Error("productId is required");
+  if (!productId || productId === "null" || productId === "undefined") {
+    return {
+      ok: true,
+      skipped: true,
+      reason: "Product ID is missing or invalid",
+    };
+  }
   if (!storeId) throw new Error("storeId is required");
 
   try {
     const productGid = toProductGid(productId);
+    if (!productGid) {
+      return {
+        ok: true,
+        skipped: true,
+        reason: "Invalid product GID",
+      };
+    }
 
     const reviews = await prisma.review.findMany({
       where: {
@@ -71,6 +120,20 @@ export async function updateProductReviewMetafields(admin, productId, storeId) {
 
     const userErrors = json?.data?.metafieldsSet?.userErrors || [];
     if (userErrors.length) {
+      const isOwnerMissing = userErrors.some(isOwnerMissingError);
+
+      if (isOwnerMissing) {
+        console.warn(
+          `[updateProductReviewMetafields] Product ${productGid} does not exist in Shopify. Skipping metafields update.`
+        );
+        return {
+          ok: true,
+          productId: productGid,
+          skipped: true,
+          reason: "Owner does not exist in Shopify",
+        };
+      }
+
       console.error("[updateProductReviewMetafields] userErrors:", userErrors);
       throw new Error(userErrors.map((e) => e.message).join(", "));
     }
@@ -83,6 +146,18 @@ export async function updateProductReviewMetafields(admin, productId, storeId) {
       metafields: json?.data?.metafieldsSet?.metafields || [],
     };
   } catch (error) {
+    if (isOwnerMissingException(error)) {
+      console.warn(
+        `[updateProductReviewMetafields] Caught owner missing error for ${productId}. Skipping.`
+      );
+      return {
+        ok: true,
+        productId,
+        skipped: true,
+        reason: "Owner does not exist in Shopify",
+      };
+    }
+
     console.error("[updateProductReviewMetafields] error:", error);
     throw error;
   }

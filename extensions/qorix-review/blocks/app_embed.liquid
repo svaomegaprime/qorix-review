@@ -1,4 +1,5 @@
 {% assign trust_bar_metafield = app.metafields.qorix_review.trust_bar.value %}
+{% assign pricing_plan_metafield = app.metafields.qorix_review.pricing_plan.value %}
 <style>
   :root{
     --qrtb-show-average-rating: {% if trust_bar_metafield.showAverageRating %} block {% else %} none {% endif %};
@@ -27,28 +28,27 @@
 </style>
 {{ 'trust-bar.css' | asset_url | stylesheet_tag }}
 {% render 'custom-css', css: trust_bar_metafield.advanceCss %}
-
-<script>
-  window.__QORIX_APP_EMBED_ENABLED__ = true;
-  document.documentElement.classList.add('qorix-embed-active');
-</script>
-<style>
-  html.qorix-embed-active [data-qorix-widget] {
-    display: block !important;
-  }
-  html.qorix-embed-active [data-qorix-widget].qorix-inline-widget {
-    display: inline-flex !important;
-  }
-</style>
-
-<script src="{{ 'my-isolated-section.js' | asset_url }}" defer></script>
-<script src="{{ 'trust-bar.js' | asset_url }}" defer></script>
-<script src="{{ 'review.js' | asset_url }}" defer></script>
-<script src="{{ 'alpine.js' | asset_url }}" defer></script>
-
+{% if pricing_plan_metafield.activeStatus == 'ACTIVE' %}
+  <script>
+    window.__QORIX_APP_EMBED_ENABLED__ = true;
+    document.documentElement.classList.add('qorix-embed-active');
+  </script>
+  <style>
+    html.qorix-embed-active [data-qorix-widget] {
+      display: block !important;
+    }
+    html.qorix-embed-active [data-qorix-widget].qorix-inline-widget {
+      display: inline-flex !important;
+    }
+  </style>
+  <script src="{{ 'my-isolated-section.js' | asset_url }}" defer></script>
+  <script src="{{ 'trust-bar.js' | asset_url }}" defer></script>
+  <script src="{{ 'review.js' | asset_url }}" defer></script>
+  <script src="{{ 'alpine.js' | asset_url }}" defer></script>
+{% endif %}
 {% schema %}
 {
-  "name": "Qorix Product Reviews",
+  "name": "Easy Product Reviews",
   "target": "body"
 }
 {% endschema %}

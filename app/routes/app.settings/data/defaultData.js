@@ -1,7 +1,7 @@
 export const DEFAULT_REQUEST_SCHEDULING = {
-  isAutomaticRequest: true,
+  isAutomaticRequest: false,
   sendRequestAfterDelivery: 0,
-  isReminderRequest: true,
+  isReminderRequest: false,
   reminderRequestDelay: 5,
   isSkipRefundedOrder: true,
   isSkipCancelledOrder: false,
@@ -9,11 +9,11 @@ export const DEFAULT_REQUEST_SCHEDULING = {
 };
 
 export const DEFAULT_SMTP_SETUP = {
-  smtpUser: "resend",
-  smtpPassword: "password",
+  smtpUser: "",
+  smtpPassword: "",
   smtpPort: 465,
-  smtpHost: "smtp.resend.com",
-  smtpSenderEmail: "noreply@qorix-review.nextvence.com",
+  smtpHost: "smtp.gmail.com",
+  smtpSenderEmail: "example@gmail.com",
 };
 
 export const DEFAULT_OUTGOING_REQUEST_EMAIL = {

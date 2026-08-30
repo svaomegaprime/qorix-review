@@ -10,7 +10,7 @@
   </div>
   <div class="quickreview-summary__stars">
     <div class="qr-stars">
-    {% render 'half-star' %}
+      {% render 'half-star' %}
     </div>
   </div>
   <button
@@ -18,6 +18,12 @@
     class="quickreview-summary__write-btn"
     data-quickreview-write-review
     @click="openModal()"
+    {% if pp == 'standard-plan' %}
+      x-show="totalReviews <= 600"
+    {% endif %}
+    {% if pp == 'pro-plan' %}
+      x-show="totalReviews <= 2000"
+    {% endif %}
   >
     {{ quick_review_metafield.writeReviewButtonText }}
   </button>

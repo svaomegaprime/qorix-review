@@ -17,12 +17,27 @@ export async function updateReviewStatus({ reviewId, status, storeId }) {
   return updated;
 }
 
+/** @param {{ reviewId: string, createdAt: string | Date, storeId: string }} input */
+export async function updateReviewCreatedAt({ reviewId, createdAt, storeId }) {
+  const updated = await prisma.review.update({
+    where: { id: reviewId, storeId },
+    data: {
+      createdAt: new Date(createdAt),
+    },
+  });
+
+  // Invalidate review cache for this store
+  await invalidateReviewCache(storeId);
+
+  return updated;
+}
+
 /**
  * Delete a store-owned review and clean attachment objects loaded from the DB.
  * Storage failures are logged but do not leave an undeletable admin record.
  *
  * @param {{ reviewId: string, storeId: string }} input
- * @returns {Promise<boolean>}
+ * @returns {Promise<{ productId: string | null } | false>}
  */
 export async function deleteReviewWithAttachments({ reviewId, storeId }) {
   const review = await prisma.review.findFirst({

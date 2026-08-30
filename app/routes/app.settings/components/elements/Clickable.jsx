@@ -1,6 +1,8 @@
 import { useLocation } from "react-router";
+import PaidIcon from "../../../../components/essentials/PaidIcon";
+import checkPricingPlan from "../../../../utils/checkPricingPlan"
 
-export default function Clickable({ icon, title, url }) {
+export default function Clickable({ icon, title, url,planState }) {
   const { pathname } = useLocation();
   return (
     <s-clickable
@@ -12,7 +14,14 @@ export default function Clickable({ icon, title, url }) {
     >
       <s-stack direction="inline" gap="small">
         <s-icon type={icon} />
-        <s-text>{title}</s-text>
+        <s-text>{title}
+          {!checkPricingPlan(
+                planState.activePlan,
+                title == "Publishing & moderation"
+                  ? "standard-plan"
+                  : "pro-plan",
+              ) && <PaidIcon />}
+        </s-text>
       </s-stack>
     </s-clickable>
   );

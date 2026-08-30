@@ -1,5 +1,4 @@
 {{ 'quickreview-review-item.css' | asset_url | stylesheet_tag }}
-
 {% render 'skeleton', type: 'list' %}
 <template x-for="review in filteredReviews()" :key="review.id">
   <div class="quickreview-review" x-show="!loading">
@@ -27,9 +26,7 @@
             <span class="quickreview-review__author" x-text="review.reviewerName"></span>
             {% if quick_review_metafield.isShowVerifiedBadge %}
               <span x-show="review.isVerified" class="qr-quick-review-verified-check">
-                <svg width="16" height="16" viewBox="0 0 512 512">
-                  <path d="M256 0C114.6 0 0 114.6 0 256s114.6 256 256 256s256-114.6 256-256S397.4 0 256 0zM371.1 204.1l-128 128c-6.3 6.3-16.4 6.3-22.6 0l-64-64c-6.3-6.3-6.3-16.4 0-22.6s16.4-6.3 22.6 0L232 297.4l116.5-116.5c6.3-6.3 16.4-6.3 22.6 0s6.3 16.4 0 22.6z"></path>
-                </svg>
+                {% render 'svg', name: 'check', color: quick_review_metafield.verifiedBadgeColor %}
               </span>
             {% endif %}
           </div>
@@ -88,10 +85,11 @@
                   muted
                   playsinline
                 ></video>
-                <div class="qorix-video-play-badge" style="position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); width: 32px; height: 32px; border-radius: 50%; background: rgba(255, 255, 255, 0.92); display: flex; align-items: center; justify-content: center; pointer-events: none; z-index: 2; box-shadow: 0 2px 8px rgba(0, 0, 0, 0.25);">
-                  <svg width="12" height="14" viewBox="0 0 12 14" fill="none" xmlns="http://www.w3.org/2000/svg" style="width: 12px; height: 14px; margin-left: 2px; display: block;">
-                    <path d="M3 2.5L10.5 7L3 11.5V2.5Z" fill="#1A1A1A"/>
-                  </svg>
+                <div
+                  class="qorix-video-play-badge"
+                  style="position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); width: 32px; height: 32px; border-radius: 50%; background: rgba(255, 255, 255, 0.92); display: flex; align-items: center; justify-content: center; pointer-events: none; z-index: 2; box-shadow: 0 2px 8px rgba(0, 0, 0, 0.25);"
+                >
+                  {% render 'svg', name: 'play-badge' %}
                 </div>
               </div>
             </template>
@@ -121,6 +119,5 @@
   x-show="filteredReviews().length === 0 && !loading"
   style="padding-bottom:20px; color: #666;  margin-top: 20px;"
 >
-  {% comment %} <p style="font-size: 16px; margin: 0; font-weight: 500; color: #303030;">No reviews found</p> {% endcomment %}
   <p>No reviews found</p>
 </div>

@@ -6,7 +6,8 @@ import {
   getAppEmbedDeepLink,
   getAppBlockDeepLink,
 } from "../../../utils/themeEditorLinks";
-
+import PaidIcon from "../../../components/essentials/PaidIcon";
+import checkPricingPlan from "../../../utils/checkPricingPlan";
 const WIDGET_BLOCK_MAP = {
   quick_review: {
     isEmbed: false,
@@ -51,6 +52,7 @@ export default function WidgetItem({
   status = "NOT_INSTALLED",
   shop = "",
   apiKey = "",
+  planState,
 }) {
   const appWindowId = `edit-window${widget?.id}`;
 
@@ -121,7 +123,15 @@ export default function WidgetItem({
             justifyContent="space-between"
             alignItems="center"
           >
-            <s-heading>{widget?.name}</s-heading>
+            <s-heading>
+              {widget?.name}{" "}
+              {!checkPricingPlan(
+                planState.activePlan,
+                widget?.name == "QuickReview" || widget?.name == "TrustBar"
+                  ? "standard-plan"
+                  : "pro-plan",
+              ) && <PaidIcon />}
+            </s-heading>
             <s-badge tone={isInstalled ? "success" : "caution"}>
               {isInstalled ? "Installed" : "Not installed"}
             </s-badge>
@@ -134,13 +144,21 @@ export default function WidgetItem({
           >
             <s-button
               variant={isInstalled ? "secondary" : "primary"}
-              disabled={isInstalled}
               href={isInstalled ? undefined : embedUrl}
               target="_blank"
+              disabled={isInstalled}
             >
               {isInstalled ? "Installed" : "Install"}
             </s-button>
             <s-button
+              disabled={
+                !checkPricingPlan(
+                  planState.activePlan,
+                  widget?.name == "QuickReview" || widget?.name == "TrustBar"
+                    ? "standard-plan"
+                    : "pro-plan",
+                )
+              }
               icon="paint-brush-round"
               command="--show"
               commandFor={appWindowId}

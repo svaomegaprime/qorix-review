@@ -1,90 +1,82 @@
-{{ 'swiper-bundle.min.css' | asset_url | stylesheet_tag }}
-{{ 'qorix-review-reel-widget.css' | asset_url | stylesheet_tag }}
-
 {% assign review_reel_metafield = app.metafields.qorix_review.review_reel.value %}
-{% render 'custom-css', css: review_reel_metafield.advanceCss %}
-
-<style>
-  [data-section="qorix-review-reel-widget"] {
-    --nav-cols: {{ review_reel_metafield.cardsVisible | default: 3 }};
-    --star-color: {{ review_reel_metafield.startColor | default: '#34C759' }};
-    --badge-color: {{ review_reel_metafield.startColor | default: '#34C759' }};
-    --active-dot-color: {{ review_reel_metafield.activeDotColor | default: '#34C759' }};
-    --card-background: {{ review_reel_metafield.cardBackgorud | default: '#FFFFFF' }};
-    --color-text-primary: {{ review_reel_metafield.cardTextColor | default: '#000000' }};
-    --color-text-product-name: {{ review_reel_metafield.cardTextColor | default: '#000000' }};
-    --autoplay-enabled: {% if review_reel_metafield.showAutoPlay != false and review_reel_metafield.showAutoPlay != 'false' %}true{% else %}false{% endif %};
-    --autoplay-speed: {{ review_reel_metafield.autoplaySpeed | default: 4 | times: 1000 }};
-  }
-  [data-qorix-widget] { display: none !important; }
-</style>
-
-<section
-  data-qorix-widget
-  customerId="{{ customer.id }}"
-  customerEmail="{{ customer.email }}"
-  id="quick-review"
-  x-data="ReviewWidget()"
-  x-init="initUploadSettings($el); productInit($el.dataset.product,$el.dataset.sort,$el.dataset.limit)"
-  data-customer-id="{{ customer.id }}"
-  data-customer-email="{{ customer.email }}"
-  data-sort="{{ review_reel_metafield.defaultSort }}"
-  {% comment %} data-limit="{{ review_reel_metafield.reviewPerPage }}" {% endcomment %}
-  data-page-type="{{ template.name }}"
-  data-section="qorix-review-reel-widget"
-  class="qorix-review-reel-real-review-section"
-  data-show-first="ONLY_IMAGE_VIDEO"
-  data-filter-min-stars="{{ review_reel_metafield.fiteringMinStart }}"
->
-  {% if review_reel_metafield.showHeader != false and review_reel_metafield.showHeader != 'false' %}
-    {% assign header_position = review_reel_metafield.headerStyle | default: 'center' %}
-    {% assign badge_color = review_reel_metafield.startColor | default: '#34C759' %}
-    {% render 'heading',
-      label: review_reel_metafield.eyebrowLabel,
-      title: review_reel_metafield.heading,
-      subtitle: review_reel_metafield.subheading,
-      position: header_position,
-      reviewStats: review_reel_metafield.reviewStats,
-      starColor: badge_color,
-      badgeColor: badge_color
-    %}
-  {% endif %}
-
-  <div class="qorix-review-reel-swiper-wrapper">
-    <div class="qorix-review-reel-swiper swiper mySwiper">
-      <div class="swiper-wrapper">
-        {% render 'qorix-review-reel-widget-card', showReviewImage: review_reel_metafield.showReviewImage %}
-      </div>
-    </div>
-
-    {% if review_reel_metafield.showNavigationDots or review_reel_metafield.showArrowControls %}
-      <div class="qorix-review-reel-controls">
-        {% if review_reel_metafield.showArrowControls %}
-          <div data-swiper-controller class="qorix-review-reel-swiper-button-prev" aria-label="Previous slide">
-            <svg width="20" height="20" viewBox="0 0 20 20" fill="none">
-              <path fill-rule="evenodd" clip-rule="evenodd" d="M12.28 14.53a.75.75 0 0 0 0-1.06L8.81 10l3.47-3.47a.75.75 0 1 0-1.06-1.06l-4 4a.75.75 0 0 0 0 1.06l4 4a.75.75 0 0 0 1.06 0z" fill="#4A4A4A"/>
-            </svg>
-          </div>
-        {% endif %}
-
-        {% if review_reel_metafield.showNavigationDots %}
-          <div class="qorix-review-reel-swiper-pagination"></div>
-        {% endif %}
-
-        {% if review_reel_metafield.showArrowControls != false and review_reel_metafield.showArrowControls != 'false' %}
-          <div data-swiper-controller class="qorix-review-reel-swiper-button-next" aria-label="Next slide">
-            <svg width="20" height="20" viewBox="0 0 20 20" fill="none">
-              <path fill-rule="evenodd" clip-rule="evenodd" d="M7.72 14.53a.75.75 0 0 1 0-1.06L11.19 10 7.72 6.53a.75.75 0 0 1 1.06-1.06l4 4a.75.75 0 0 1 0 1.06l-4 4a.75.75 0 0 1-1.06 0z" fill="#4A4A4A"/>
-            </svg>
-          </div>
-        {% endif %}
-      </div>
+{% assign pp = app.metafields.qorix_review.pricing_plan.value.activePlan %}
+{% if pp == 'pro-plan' or pp == 'plus-plan' or pp == 'unlimited' %}
+  {{ 'swiper-bundle.min.css' | asset_url | stylesheet_tag }}
+  {{ 'qorix-review-reel-widget.css' | asset_url | stylesheet_tag }}
+  {% render 'custom-css', css: review_reel_metafield.advanceCss %}
+  <style>
+    [data-section="qorix-review-reel-widget"] {
+      --nav-cols: {{ review_reel_metafield.cardsVisible | default: 3 }};
+      --star-color: {{ review_reel_metafield.startColor | default: '#34C759' }};
+      --badge-color: {{ review_reel_metafield.startColor | default: '#34C759' }};
+      --active-dot-color: {{ review_reel_metafield.activeDotColor | default: '#34C759' }};
+      --card-background: {{ review_reel_metafield.cardBackgorud | default: '#FFFFFF' }};
+      --color-text-primary: {{ review_reel_metafield.cardTextColor | default: '#000000' }};
+      --color-text-product-name: {{ review_reel_metafield.cardTextColor | default: '#000000' }};
+      --autoplay-enabled: {% if review_reel_metafield.showAutoPlay != false and review_reel_metafield.showAutoPlay != 'false' %}true{% else %}false{% endif %};
+      --autoplay-speed: {{ review_reel_metafield.autoplaySpeed | default: 4 | times: 1000 }};
+    }
+    [data-qorix-widget] { display: none !important; }
+  </style>
+  <section
+    data-qorix-widget
+    customerId="{{ customer.id }}"
+    customerEmail="{{ customer.email }}"
+    id="quick-review"
+    x-data="ReviewWidget()"
+    x-init="initUploadSettings($el); productInit($el.dataset.product,$el.dataset.sort,$el.dataset.limit)"
+    data-customer-id="{{ customer.id }}"
+    data-customer-email="{{ customer.email }}"
+    data-sort="{{ review_reel_metafield.defaultSort }}"
+    data-page-type="{{ template.name }}"
+    data-section="qorix-review-reel-widget"
+    class="qorix-review-reel-real-review-section"
+    data-show-first="ONLY_IMAGE_VIDEO"
+    data-filter-min-stars="{{ review_reel_metafield.fiteringMinStart }}"
+  >
+    {% if review_reel_metafield.showHeader != false and review_reel_metafield.showHeader != 'false' %}
+      {% assign header_position = review_reel_metafield.headerStyle | default: 'center' %}
+      {% assign badge_color = review_reel_metafield.startColor | default: '#34C759' %}
+      {% render 'heading',
+        label: review_reel_metafield.eyebrowLabel,
+        title: review_reel_metafield.heading,
+        subtitle: review_reel_metafield.subheading,
+        position: header_position,
+        reviewStats: review_reel_metafield.reviewStats,
+        starColor: badge_color,
+        badgeColor: badge_color
+      %}
     {% endif %}
-  </div>
-</section>
-
-<script src="{{ 'swiper-bundle.min.js' | asset_url }}" defer></script>
-<script src="{{ 'qorix-review-reel-widget.js' | asset_url }}" defer></script>
+    <div class="qorix-review-reel-swiper-wrapper">
+      <div class="qorix-review-reel-swiper swiper mySwiper">
+        <div class="swiper-wrapper">
+          {% render 'qorix-review-reel-widget-card', showReviewImage: review_reel_metafield.showReviewImage %}
+        </div>
+      </div>
+      {% if review_reel_metafield.showNavigationDots or review_reel_metafield.showArrowControls %}
+        <div class="qorix-review-reel-controls">
+          {% if review_reel_metafield.showArrowControls %}
+            <div data-swiper-controller class="qorix-review-reel-swiper-button-prev" aria-label="Previous slide">
+              {% render 'svg', name: 'chevron-left' %}
+            </div>
+          {% endif %}
+          {% if review_reel_metafield.showNavigationDots %}
+            <div class="qorix-review-reel-swiper-pagination"></div>
+          {% endif %}
+          {% if review_reel_metafield.showArrowControls != false
+            and review_reel_metafield.showArrowControls != 'false'
+          %}
+            <div data-swiper-controller class="qorix-review-reel-swiper-button-next" aria-label="Next slide">
+              {% render 'svg', name: 'chevron-right' %}
+            </div>
+          {% endif %}
+        </div>
+      {% endif %}
+    </div>
+  </section>
+  <script src="{{ 'swiper-bundle.min.js' | asset_url }}" defer></script>
+  <script src="{{ 'qorix-review-reel-widget.js' | asset_url }}" defer></script>
+{% endif %}
 {% schema %}
 {
   "name": "Review Reel",

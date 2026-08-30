@@ -1,4 +1,10 @@
-import { useFetcher, useLoaderData, useNavigation } from "react-router";
+import {
+  useFetcher,
+  useLoaderData,
+  useNavigate,
+  useNavigation,
+  useRouteLoaderData,
+} from "react-router";
 import { Text } from "@shopify/polaris";
 import SetupGuide from "../components/pages/dashboard/SetupGuide";
 import ReviewBreakdown from "../components/pages/dashboard/ReviewBreakdown";
@@ -7,6 +13,7 @@ import AppEmbedStatus from "../components/essentials/AppEmbedStatus";
 import Analytics from "../components/essentials/Analytics";
 import FAQ from "../components/pages/dashboard/FAQ";
 import Help from "../components/pages/dashboard/Help";
+import UpgradePlan from "../components/essentials/UpgradePlan";
 import prisma from "../db.server";
 import { requireAdminContext } from "../services/adminContext.server.js";
 import { adminErrorResponse } from "../utils/adminError.server";
@@ -23,6 +30,7 @@ import {
   checkAppEmbedEnabled,
   getWidgetsInstalledStatus,
 } from "../services/appEmbed.server.js";
+import checkPricingPlan from "../utils/checkPricingPlan";
 export async function loader({ request }) {
   try {
     const { admin, session, storeData } = await requireAdminContext(request);
@@ -74,6 +82,8 @@ export async function loader({ request }) {
     );
     const json = await response.json();
     const shop = json.data.shop;
+
+    //
 
     return {
       reviews: reviews,
@@ -204,8 +214,11 @@ export async function action({ request }) {
 }
 
 export default function Index() {
+  const navigate = useNavigate();
   const fetcher = useFetcher();
   useAdminFetcherToast(fetcher);
+  const { planState } = useRouteLoaderData("routes/app") || {};
+  console.log("App root planState:", planState);
   const {
     reviews,
     pendingOrders,
@@ -275,10 +288,71 @@ export default function Index() {
           paddingBlockEnd="base"
         >
           <Text as="h2">Welcome to {storeData?.name} 👋</Text>
-          <s-grid gridTemplateColumns="auto auto">
+          <s-grid
+            gridTemplateColumns="auto auto auto"
+            justifyContent="end"
+            alignItems="center"
+            gap="small"
+          >
             {/* <s-button variant="secondary" icon="plus">
             Request reviews
           </s-button> */}
+            {/* Upgrade Plan btn */}
+
+            {!checkPricingPlan(
+              planState?.activePlan,
+              "standard-plan",
+              "pro-plan",
+              "plus-plan",
+              "unlimited",
+            ) ? (
+              <>
+                <UpgradePlan />
+              </>
+            ) : (
+              <>
+                <s-badge tone="success">
+                  {" "}
+                  {planState?.activePlan === "standard-plan"
+                    ? "Standard Plan"
+                    : planState?.activePlan === "pro-plan"
+                      ? "Pro Plan"
+                      : planState?.activePlan === "plus-plan"
+                        ? "Plus Plan"
+                        : planState?.activePlan === "unlimited"
+                          ? "Unlimited"
+                          : "No Active Plan"}
+                </s-badge>
+              </>
+            )}
+            {/* <button
+              type="button"
+              onClick={() => navigate("/app/manage-plan")}
+              style={{
+                display: 'inline-flex',
+                alignItems: 'center',
+                justifyContent: 'center',
+                gap: '6px',
+                backgroundColor: '#FEF3C7',
+                color: '#92400E',
+                border: '1px solid #FCD34D',
+                padding: '7px 14px',
+                borderRadius: '6px',
+                fontSize: '12px',
+                fontWeight: 600,
+                cursor: 'pointer',
+                marginRight: '12px',
+                boxShadow: '0 1px 2px rgba(0, 0, 0, 0.1)',
+                lineHeight: 1,
+              }}
+            >
+              <span style={{ fontSize: '14px', lineHeight: 1, display: 'inline-flex' }}>
+                👑
+              </span>
+              <Text as="span" variant="bodySm" fontWeight="bold">
+                Upgrade Plan
+              </Text>
+            </button> */}
             <s-button
               variant="primary"
               icon="store"
@@ -302,13 +376,18 @@ export default function Index() {
           apiKey={apiKey}
           isAppEnabled={isAppEnabled}
         />
-        <Analytics reviews={reviews} pendingOrders={pendingOrders} />
+        <Analytics
+          reviews={reviews}
+          pendingOrders={pendingOrders}
+          planState={planState}
+        />
         <ReviewBreakdown
           reviews={reviews}
           handleStatusUpdate={handleStatusUpdate}
           handleReviewDelete={handleReviewDelete}
           handleReviewReply={handleReviewReply}
           isAppEnabled={isAppEnabled}
+          planState={planState}
         />
         <s-stack paddingBlockStart="base">
           <FAQ />
@@ -318,7 +397,7 @@ export default function Index() {
         </s-stack>
         <s-stack alignItems="center" paddingBlockStart="large">
           <s-paragraph color="subdued">
-            Powered by Qorix Shopify - All rights reserved
+            Powered by Easy Shopify - All rights reserved
           </s-paragraph>
         </s-stack>
       </s-page>
