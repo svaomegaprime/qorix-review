@@ -1,7 +1,7 @@
 import { Text } from "@shopify/polaris";
 import CustomText from "../essentials/elements/Text";
 import HalfStar from "../essentials/elements/HalfStar";
-
+import PaidIcon from "../essentials/PaidIcon";
 export default function Analytics({ reviews, data, pendingOrders }) {
   const arrowUp = "↑";
   const arrowDown = "↓";
@@ -37,7 +37,7 @@ export default function Analytics({ reviews, data, pendingOrders }) {
                 alignItems="center"
                 justifyContent="space-between"
               >
-                <s-heading>Total reviews</s-heading>
+                <s-heading>Total reviews <PaidIcon /></s-heading>
                 <s-icon type="plan" />
               </s-stack>
               <Text as="h2">{totalReviews}</Text>
