@@ -2,7 +2,8 @@ import { Text } from "@shopify/polaris";
 import CustomText from "../essentials/elements/Text";
 import HalfStar from "../essentials/elements/HalfStar";
 import PaidIcon from "../essentials/PaidIcon";
-export default function Analytics({ reviews, data, pendingOrders }) {
+
+export default function Analytics({ reviews, data, pendingOrders, planState }) {
   const arrowUp = "↑";
   const arrowDown = "↓";
 
@@ -37,7 +38,10 @@ export default function Analytics({ reviews, data, pendingOrders }) {
                 alignItems="center"
                 justifyContent="space-between"
               >
-                <s-heading>Total reviews <PaidIcon /></s-heading>
+                <s-heading>
+                  Total reviews
+                  <PaidIcon />
+                </s-heading>
                 <s-icon type="plan" />
               </s-stack>
               <Text as="h2">{totalReviews}</Text>
@@ -56,7 +60,10 @@ export default function Analytics({ reviews, data, pendingOrders }) {
                 alignItems="center"
                 justifyContent="space-between"
               >
-                <s-heading>Avg. rating</s-heading>
+                <s-heading>
+                  Avg. rating
+                  <PaidIcon />
+                </s-heading>
                 <s-icon type="star-list" />
               </s-stack>
               <Text as="h2">{avgRating.toFixed(1)}</Text>
@@ -77,7 +84,7 @@ export default function Analytics({ reviews, data, pendingOrders }) {
                 alignItems="center"
                 justifyContent="space-between"
               >
-                <s-heading>Requests sent</s-heading>
+                <s-heading>Requests sent<PaidIcon /></s-heading>
                 <s-icon type="send" />
               </s-stack>
               <Text as="h2">{pendingOrders?.length ?? 0}</Text>
@@ -94,7 +101,7 @@ export default function Analytics({ reviews, data, pendingOrders }) {
                 alignItems="center"
                 justifyContent="space-between"
               >
-                <s-heading>Pending</s-heading>
+                <s-heading>Pending<PaidIcon /></s-heading>
                 <s-icon type="clock" />
               </s-stack>
               <Text as="h2">{pendingReviews}</Text>

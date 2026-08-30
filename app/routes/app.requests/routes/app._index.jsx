@@ -1,5 +1,6 @@
 import Loader from "../../../components/essentials/Loader";
 import Text from "../../../components/essentials/elements/Text";
+import UpgradePlan from "../../../components/essentials/UpgradePlan"
 import TabButton from "../../../components/essentials/TabButton";
 import CustomSection from "../../../components/essentials/CustomSection";
 import Analytics from "../components/Analytics";
@@ -919,10 +920,11 @@ export default function Requests() {
           </s-badge> */}
           </s-stack>
           <s-grid
-            gridTemplateColumns="auto auto"
+            gridTemplateColumns="auto auto auto"
             justifyContent="end"
             gap="base"
           >
+            <UpgradePlan text="Full Access (Plus Plan)"/>
             <s-button
               commandFor="request-rewiew-modal"
               command="--show"

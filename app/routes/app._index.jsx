@@ -13,6 +13,7 @@ import AppEmbedStatus from "../components/essentials/AppEmbedStatus";
 import Analytics from "../components/essentials/Analytics";
 import FAQ from "../components/pages/dashboard/FAQ";
 import Help from "../components/pages/dashboard/Help";
+import UpgradePlan from "../components/essentials/UpgradePlan";
 import prisma from "../db.server";
 import { requireAdminContext } from "../services/adminContext.server.js";
 import { adminErrorResponse } from "../utils/adminError.server";
@@ -286,11 +287,17 @@ export default function Index() {
           paddingBlockEnd="base"
         >
           <Text as="h2">Welcome to {storeData?.name} 👋</Text>
-          <s-grid gridTemplateColumns="auto auto" >
+          <s-grid
+            gridTemplateColumns="auto auto auto"
+            justifyContent="end"
+            gap="small"
+          >
             {/* <s-button variant="secondary" icon="plus">
             Request reviews
           </s-button> */}
-            <button
+            {/* Upgrade Plan btn */}
+            <UpgradePlan />
+            {/* <button
               type="button"
               onClick={() => navigate("/app/manage-plan")}
               style={{
@@ -317,7 +324,7 @@ export default function Index() {
               <Text as="span" variant="bodySm" fontWeight="bold">
                 Upgrade Plan
               </Text>
-            </button>
+            </button> */}
             <s-button
               variant="primary"
               icon="store"
@@ -341,7 +348,11 @@ export default function Index() {
           apiKey={apiKey}
           isAppEnabled={isAppEnabled}
         />
-        <Analytics reviews={reviews} pendingOrders={pendingOrders} />
+        <Analytics
+          reviews={reviews}
+          pendingOrders={pendingOrders}
+          planState={planState}
+        />
         <ReviewBreakdown
           reviews={reviews}
           handleStatusUpdate={handleStatusUpdate}

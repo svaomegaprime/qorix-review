@@ -6,6 +6,7 @@ import {
   getAppEmbedDeepLink,
   getAppBlockDeepLink,
 } from "../../../utils/themeEditorLinks";
+import PaidIcon from "../../../components/essentials/PaidIcon";
 
 const WIDGET_BLOCK_MAP = {
   quick_review: {
@@ -121,7 +122,7 @@ export default function WidgetItem({
             justifyContent="space-between"
             alignItems="center"
           >
-            <s-heading>{widget?.name}</s-heading>
+            <s-heading>{widget?.name}<PaidIcon /></s-heading>
             <s-badge tone={isInstalled ? "success" : "caution"}>
               {isInstalled ? "Installed" : "Not installed"}
             </s-badge>

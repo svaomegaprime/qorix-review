@@ -14,6 +14,7 @@ export default function PaidIcon() {
                     fontSize: '11px',
                     fontWeight: 700,
                     lineHeight: 1,
+                    marginLeft: "4px"
                 }}
             >
                 <span style={{ fontSize: '12px' }}>👑</span>
