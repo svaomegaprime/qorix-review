@@ -3,6 +3,7 @@ import CustomSection from "../../essentials/CustomSection";
 import ReviewItem from "../../essentials/ReviewItem";
 import HalfStar from "../../essentials/elements/HalfStar";
 import ReviewPipeItem from "./elements/ReviewPipeItem";
+import PaidIcon from "../../essentials/PaidIcon";
 
 export default function ReviewBreakdown({
   reviews = [],
@@ -47,7 +48,9 @@ export default function ReviewBreakdown({
               alignItems="center"
               gap="small"
             >
-              <CustomText as="h3">Recent reviews</CustomText>
+              <CustomText as="h3">
+                Recent reviews<PaidIcon />
+              </CustomText>
               <s-button href="/app/reviews" variant="tertiary">
                 <s-stack direction="inline" alignItems="center">
                   <s-paragraph tone="success">View all</s-paragraph>{" "}
@@ -91,7 +94,9 @@ export default function ReviewBreakdown({
                 alignItems="center"
               >
                 <s-stack gap="base">
-                  <CustomText as="h3">Rating breakdown</CustomText>
+                  <CustomText as="h3">
+                    Rating breakdown<PaidIcon />
+                  </CustomText>
                   <s-box>
                     <CustomText as="h2">{averageRating}</CustomText>
                     <s-grid
@@ -99,7 +104,11 @@ export default function ReviewBreakdown({
                       alignItems="center"
                     >
                       {stars.map((fillPercentage, idx) => (
-                        <HalfStar key={idx} width={fillPercentage} color="#FF9500" />
+                        <HalfStar
+                          key={idx}
+                          width={fillPercentage}
+                          color="#FF9500"
+                        />
                       ))}
                     </s-grid>
                     <s-paragraph color="subdued">

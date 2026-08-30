@@ -3,6 +3,7 @@ import TabButton from "../../../components/essentials/TabButton";
 import CustomSection from "../../../components/essentials/CustomSection";
 import ReviewItem from "../../../components/essentials/ReviewItem";
 import Text from "../../../components/essentials/elements/Text";
+import UpgradePlan from "../../../components/essentials/UpgradePlan"
 import { useLoaderData, useNavigation, useFetcher } from "react-router";
 import { useState, useRef, useEffect } from "react";
 import prisma from "../../../db.server";
@@ -914,10 +915,11 @@ export default function Reviews() {
             </s-badge>
           </s-stack>
           <s-grid
-            gridTemplateColumns="auto auto"
+            gridTemplateColumns="auto auto auto"
             justifyContent="end"
             gap="small"
           >
+            <UpgradePlan text={"Full Access (Plus Plan)"} />
             <s-button
               icon="download"
               onClick={() => shopify.modal.show("import-reviews-modal")}

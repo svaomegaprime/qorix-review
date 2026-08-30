@@ -1,4 +1,6 @@
 import { useLocation } from "react-router";
+import PaidIcon from "../../../../components/essentials/PaidIcon";
+
 
 export default function Clickable({ icon, title, url }) {
   const { pathname } = useLocation();
@@ -12,7 +14,7 @@ export default function Clickable({ icon, title, url }) {
     >
       <s-stack direction="inline" gap="small">
         <s-icon type={icon} />
-        <s-text>{title}</s-text>
+        <s-text>{title}<PaidIcon /></s-text>
       </s-stack>
     </s-clickable>
   );
