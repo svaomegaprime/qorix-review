@@ -559,7 +559,10 @@ export default function Index() {
                         )
                       }
                     >
+                      <s-option value="3">3 reviews</s-option>
+                      <s-option value="4">4 reviews</s-option>
                       <s-option value="6">6 reviews</s-option>
+                      <s-option value="8">8 reviews</s-option>
                       <s-option value="9">9 reviews</s-option>
                       <s-option value="12">12 reviews</s-option>
                       <s-option value="15">15 reviews</s-option>
