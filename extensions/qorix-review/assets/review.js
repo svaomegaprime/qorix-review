@@ -247,6 +247,7 @@ class ReviewX {
         isOpen: String(openFromEmail),
         customerEmail,
         filterMinStar: this.filterMinStar,
+        filterRating: this.activeFilter,
       });
 
       if (orderId) params.set("orderId", orderId);
@@ -692,17 +693,14 @@ class ReviewX {
   }
 
   filteredReviews() {
-    if (this.activeFilter === "ALL") {
-      return this.reviews;
-    }
-
-    const rating = Number(this.activeFilter);
-
-    return this.reviews.filter((review) => Number(review.rating) === rating);
+    return this.reviews;
   }
 
-  setRatingFilter(rating) {
+  async setRatingFilter(rating) {
     this.activeFilter = rating;
+    this.limit = this.baseLimit;
+    this.currentPage = 1;
+    await this.getReview(this.sort);
     this.reinitSwipers();
   }
 
