@@ -519,6 +519,7 @@ async function getReview(request, session, admin) {
     const page = Number(url.searchParams.get("page")) || 1;
     const limit = Number(url.searchParams.get("limit")) || 10;
     const filterMinStar = url.searchParams.get("filterMinStar") || "ALL";
+    const filterRating = url.searchParams.get("filterRating") || "ALL";
     const customerEmail = String(
       url.searchParams.get("customerEmail") || "",
     ).trim();
@@ -559,7 +560,7 @@ async function getReview(request, session, admin) {
       }
     }
     // ── Redis cache-aside ──────────────────────────────────────────
-    const cacheKey = `reviews:${id}:${productId || "all"}:${page}:${limit}:${sort}:${filterMinStar}`;
+    const cacheKey = `reviews:${id}:${productId || "all"}:${page}:${limit}:${sort}:${filterMinStar}:${filterRating}`;
     const cached = await getCache(cacheKey);
 
     if (cached) {
@@ -657,6 +658,12 @@ async function getReview(request, session, admin) {
         break;
       default:
         break;
+    }
+
+    // Exact star filter — overrides filterMinStar range when set
+    const exactRating = Number(filterRating);
+    if (filterRating !== "ALL" && exactRating >= 1 && exactRating <= 5) {
+      query.where.rating = exactRating;
     }
 
     // Sorting logic
