@@ -258,7 +258,7 @@ export default function Widgets() {
           >
             <CustomSection>
               <s-grid gap="small">
-                <s-heading>Reviews per page </s-heading>
+                <s-heading>Reviews per page</s-heading>
                 <s-select
                   onChange={(e) => {
                     const isCustom = e.target.value == "CUSTOM";
