@@ -127,7 +127,10 @@ export default function WidgetItem({
               {widget?.name}{" "}
               {!checkPricingPlan(
                 planState.activePlan,
-                widget?.name == "QuickReview" || widget?.name == "TrustBar"
+                widget?.name == "QuickReview" ||
+                  widget?.name == "TrustBar" ||
+                  widget?.name == "ReviewReel" ||
+                  widget?.name == "QuoteLoop"
                   ? "standard-plan"
                   : "pro-plan",
               ) && <PaidIcon />}
@@ -144,7 +147,10 @@ export default function WidgetItem({
           >
             {checkPricingPlan(
               planState.activePlan,
-              widget?.name == "QuickReview" || widget?.name == "TrustBar"
+              widget?.name == "QuickReview" ||
+                widget?.name == "TrustBar" ||
+                widget?.name == "ReviewReel" ||
+                widget?.name == "QuoteLoop"
                 ? "standard-plan"
                 : "pro-plan",
             ) && (
@@ -161,7 +167,10 @@ export default function WidgetItem({
               disabled={
                 !checkPricingPlan(
                   planState.activePlan,
-                  widget?.name == "QuickReview" || widget?.name == "TrustBar"
+                  widget?.name == "QuickReview" ||
+                    widget?.name == "TrustBar" ||
+                    widget?.name == "ReviewReel" ||
+                    widget?.name == "QuoteLoop"
                     ? "standard-plan"
                     : "pro-plan",
                 )
