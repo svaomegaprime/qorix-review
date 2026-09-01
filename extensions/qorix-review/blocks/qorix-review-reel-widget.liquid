@@ -1,6 +1,6 @@
 {% assign review_reel_metafield = app.metafields.qorix_review.review_reel.value %}
 {% assign pp = app.metafields.qorix_review.pricing_plan.value.activePlan %}
-{% if pp == 'pro-plan' or pp == 'plus-plan' or pp == 'unlimited' %}
+{% if pp == 'standard-plan' or pp == 'pro-plan' or pp == 'plus-plan' or pp == 'unlimited' %}
   {{ 'swiper-bundle.min.css' | asset_url | stylesheet_tag }}
   {{ 'qorix-review-reel-widget.css' | asset_url | stylesheet_tag }}
   {% render 'custom-css', css: review_reel_metafield.advanceCss %}
