@@ -32,7 +32,7 @@
     data-page-type="{{ template.name }}"
     data-section="qorix-review-reel-widget"
     class="qorix-review-reel-real-review-section"
-    data-show-first="VIDEO"
+    data-show-first="ONLY_IMAGE_VIDEO"
     data-filter-min-stars="{{ review_reel_metafield.fiteringMinStart }}"
   >
     {% if review_reel_metafield.showHeader != false and review_reel_metafield.showHeader != 'false' %}
@@ -50,7 +50,10 @@
     {% endif %}
     {% assign cards_visible = review_reel_metafield.cardsVisible | default: 3 %}
     {% render 'skeleton', type: 'card', grid_columns: cards_visible %}
-    <div class="qorix-review-reel-swiper-wrapper" x-show="!loading && (filteredReviews ? filteredReviews().length > 0 : reviews.length > 0)">
+    <div
+      class="qorix-review-reel-swiper-wrapper"
+      x-show="!loading && (filteredReviews ? filteredReviews().length > 0 : reviews.length > 0)"
+    >
       <div class="qorix-review-reel-swiper swiper mySwiper">
         <div class="swiper-wrapper">
           {% render 'qorix-review-reel-widget-card', showReviewImage: review_reel_metafield.showReviewImage %}
