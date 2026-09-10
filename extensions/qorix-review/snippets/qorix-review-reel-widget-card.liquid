@@ -52,6 +52,9 @@
           height=""
         >
       </div>
+      <div class="qr-review-stars">
+        {% render 'stars', from: 'reviewReel', starColor: starColor, review_reel_metafield: review_reel_metafield %}
+      </div>
       <div class="qorix-review-reel-review-card-content">
         <div class="qorix-review-reel-review-text">
           {% if show_product_name %}
