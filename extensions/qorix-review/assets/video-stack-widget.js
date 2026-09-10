@@ -253,6 +253,17 @@
       if (!this.paginationContainer) return;
       this.paginationContainer.innerHTML = "";
       this.stackDots = [];
+      const isDynamic = this.stackSlides.length > 7;
+      if (isDynamic) {
+        this.paginationContainer.classList.add(
+          "qorix-review-video-stack-pagination-dynamic",
+        );
+      } else {
+        this.paginationContainer.classList.remove(
+          "qorix-review-video-stack-pagination-dynamic",
+        );
+      }
+
       for (let i = 0; i < this.stackSlides.length; i++) {
         const dot = document.createElement("button");
         dot.className = "qorix-review-video-stack-dot";
@@ -268,11 +279,49 @@
     }
 
     updatePagination(activeIndex) {
+      const total = this.stackDots.length;
+      if (total === 0) return;
+
       this.stackDots.forEach((dot) => {
-        dot.classList.remove("active");
+        dot.classList.remove(
+          "active",
+          "dot-near",
+          "dot-far",
+          "dot-edge",
+          "dot-hidden",
+        );
       });
-      if (this.stackDots[activeIndex])
-        this.stackDots[activeIndex].classList.add("active");
+
+      if (total <= 7) {
+        if (this.stackDots[activeIndex]) {
+          this.stackDots[activeIndex].classList.add("active");
+        }
+        return;
+      }
+
+      // Dynamic pagination for > 7 dots (Max 7 visible, active centered)
+      const activeDot = this.stackDots[activeIndex];
+      if (activeDot) {
+        activeDot.classList.add("active");
+      }
+
+      // 3 dots on left (3 * 18px = 54px). Shift moves activeIndex to 54px position.
+      const shift = activeIndex * 18 - 54;
+      this.stackDots.forEach((dot, idx) => {
+        dot.style.left = `-${shift}px`;
+        const dist = Math.abs(idx - activeIndex);
+        if (dist === 0) {
+          // active pill
+        } else if (dist === 1) {
+          dot.classList.add("dot-near");
+        } else if (dist === 2) {
+          dot.classList.add("dot-far");
+        } else if (dist === 3) {
+          dot.classList.add("dot-edge");
+        } else {
+          dot.classList.add("dot-hidden");
+        }
+      });
     }
 
     stopCurrentVideo() {
