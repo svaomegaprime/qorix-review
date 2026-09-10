@@ -5,7 +5,7 @@ function initQuoteLoopSwiper() {
   const SwiperClass = typeof Swiper !== 'undefined' ? Swiper : window.Swiper;
 
   document.querySelectorAll('.qr-quote-swiper').forEach((slider) => {
-    const desktopSlides = parseInt(slider.dataset.desktopSlides, 10) || 5;
+    const desktopSlides = parseInt(slider.dataset.desktopSlides, 10) || 3;
     const isAutoplay = slider.dataset.quoteLoopAutoplay === 'true' || slider.dataset.quoteLoopAutoplay === '1';
     const speed = parseInt(slider.dataset.quoteLoopSpeed, 10) || 450;
 
@@ -28,8 +28,8 @@ function initQuoteLoopSwiper() {
       slidesPerGroup: 1,
       allowTouchMove: true,
 
-      observer: false,
-      observeParents: false,
+      observer: true,
+      observeParents: true,
       resizeObserver: true,
       updateOnWindowResize: true,
       watchSlidesProgress: true,
@@ -52,18 +52,19 @@ function initQuoteLoopSwiper() {
 
       breakpoints: {
         320: {
-          slidesPerView: 'auto',
+          slidesPerView: 1.2,
           slidesPerGroup: 1,
           spaceBetween: 12,
-        },
-        768: {
-          slidesPerView: 2,
-          slidesPerGroup: 1,
-          spaceBetween: 20,
           centeredSlides: true,
         },
-        1024: {
-          slidesPerView: 3,
+        640: {
+          slidesPerView: Math.min(desktopSlides, 2),
+          slidesPerGroup: 1,
+          spaceBetween: 16,
+          centeredSlides: true,
+        },
+        900: {
+          slidesPerView: desktopSlides,
           slidesPerGroup: 1,
           spaceBetween: 20,
           centeredSlides: true,
@@ -76,6 +77,11 @@ function initQuoteLoopSwiper() {
         }
       },
     });
+
+    if (shouldLoop && typeof swiper.loopFix === 'function') {
+      swiper.loopFix();
+    }
+    swiper.update();
 
     swiper.qorixSlidesCount = slidesCount;
   });

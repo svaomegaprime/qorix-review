@@ -696,6 +696,17 @@ class ReviewX {
     return this.reviews;
   }
 
+  quoteLoopReviews() {
+    const list = this.filteredReviews();
+    if (!list || list.length === 0) return [];
+    if (list.length >= 10) return list;
+    const result = [];
+    while (result.length < 12) {
+      result.push(...list);
+    }
+    return result;
+  }
+
   async setRatingFilter(rating) {
     this.activeFilter = rating;
     this.limit = this.baseLimit;
