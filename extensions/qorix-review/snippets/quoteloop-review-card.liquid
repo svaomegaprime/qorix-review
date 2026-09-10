@@ -1,8 +1,7 @@
 {% assign icon_color = quoteIconColor | default: '#088728' %}
 {% assign verified_badge_color = verifiedBageColor | default: verifiedBadgeColor | default: '#088728' %}
 {% assign max_len = textLength | plus: 0 %}
-{% render 'skeleton', type: 'card', grid_columns: 3 %}
-<template x-for="review in filteredReviews()" :key="review.id">
+<template x-for="(review, index) in quoteLoopReviews()" :key="index">
   <div class="swiper-slide" x-show="!loading">
     <div
       class="qr-review-card"
@@ -84,9 +83,3 @@
     </div>
   </div>
 </template>
-<p
-  x-show="filteredReviews().length === 0 && !loading"
-  style="color: #888; font-size: 16px; padding: 20px 0"
->
-  No reviews found
-</p>

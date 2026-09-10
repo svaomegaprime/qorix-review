@@ -1,8 +1,9 @@
 {{ 'skeleton.css' | asset_url | stylesheet_tag }}
 
+{% assign cols = grid_columns | default: 3 %}
 {% if type == 'card' %}
-  <div class="qr-skeleton-card-wrapper" x-show="loading">
-    {% for i in (1..grid_columns) %}
+  <div class="qr-skeleton-card-wrapper" x-show="loading" style="--qr-grid-columns: {{ cols }};">
+    {% for i in (1..cols) %}
       <div class="qr-skeleton-card">
         <div class="qr-skeleton-header">
           <div class="qr-skeleton-avatar qr-shimmer"></div>
