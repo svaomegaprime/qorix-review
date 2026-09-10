@@ -26,12 +26,13 @@
     x-data="ReviewWidget()"
     x-init="initUploadSettings($el); productInit($el.dataset.product,$el.dataset.sort,$el.dataset.limit)"
     data-customer-id="{{ customer.id }}"
+    data-limit="1000"
     data-customer-email="{{ customer.email }}"
     data-sort="{{ review_reel_metafield.defaultSort }}"
     data-page-type="{{ template.name }}"
     data-section="qorix-review-reel-widget"
     class="qorix-review-reel-real-review-section"
-    data-show-first="ONLY_IMAGE_VIDEO"
+    data-show-first="VIDEO"
     data-filter-min-stars="{{ review_reel_metafield.fiteringMinStart }}"
   >
     {% if review_reel_metafield.showHeader != false and review_reel_metafield.showHeader != 'false' %}
@@ -47,7 +48,9 @@
         badgeColor: badge_color
       %}
     {% endif %}
-    <div class="qorix-review-reel-swiper-wrapper">
+    {% assign cards_visible = review_reel_metafield.cardsVisible | default: 3 %}
+    {% render 'skeleton', type: 'card', grid_columns: cards_visible %}
+    <div class="qorix-review-reel-swiper-wrapper" x-show="!loading && (filteredReviews ? filteredReviews().length > 0 : reviews.length > 0)">
       <div class="qorix-review-reel-swiper swiper mySwiper">
         <div class="swiper-wrapper">
           {% render 'qorix-review-reel-widget-card', showReviewImage: review_reel_metafield.showReviewImage %}
@@ -73,6 +76,12 @@
         </div>
       {% endif %}
     </div>
+    <p
+      x-show="(filteredReviews ? filteredReviews().length === 0 : reviews.length === 0) && !loading"
+      style="color: #888; font-size: 16px; padding: 20px 0; text-align: center;"
+    >
+      No reviews found
+    </p>
   </section>
   <script src="{{ 'swiper-bundle.min.js' | asset_url }}" defer></script>
   <script src="{{ 'qorix-review-reel-widget.js' | asset_url }}" defer></script>

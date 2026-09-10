@@ -20,7 +20,6 @@
   {% assign show_review_date = review_reel_metafield.showReviewDate %}
 {% endif %}
 {% assign start_color_val = startColor | default: review_reel_metafield.startColor | default: '#34C759' %}
-{% render 'skeleton', type: 'card' %}
 <template x-for="review in filteredReviews()" :key="review.id">
   <div class="qorix-review-reel-swiper-slide swiper-slide" x-show="!loading">
     <div class="qorix-review-reel-review-card">
@@ -100,9 +99,3 @@
     </div>
   </div>
 </template>
-<p
-  x-show="filteredReviews().length === 0 && !loading"
-  style="color: #888; font-size: 16px; padding: 20px 0"
->
-  No reviews found
-</p>

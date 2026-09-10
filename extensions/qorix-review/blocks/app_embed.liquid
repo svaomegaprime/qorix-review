@@ -25,6 +25,9 @@
   {
      display:grid;
   }
+  .swiper-pagination-bullet::after{
+    border: none!important;
+  }
 </style>
 {{ 'trust-bar.css' | asset_url | stylesheet_tag }}
 {% render 'custom-css', css: trust_bar_metafield.advanceCss %}
