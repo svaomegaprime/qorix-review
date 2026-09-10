@@ -189,6 +189,16 @@
   justify-content: center;
 }
 
+[data-section="qorix-quoteloop-widget"] .qr-quote-swiper .swiper-pagination.swiper-pagination-bullets-dynamic {
+  display: block;
+  overflow: hidden;
+  white-space: nowrap;
+  left: 50% !important;
+  transform: translateX(-50%) !important;
+  padding: 6px 0;
+  box-sizing: content-box;
+}
+
 [data-section="qorix-quoteloop-widget"] .qr-quote-swiper .swiper-pagination-bullet {
   width: 10px;
   height: 10px;
@@ -198,14 +208,25 @@
   border-radius: 50%;
   display: inline-block;
   margin: 0 4px !important;
+  vertical-align: middle;
 }
 
-[data-section="qorix-quoteloop-widget"] .qr-quote-swiper .swiper-pagination-bullet-active {
-  width: 28px;
+[data-section="qorix-quoteloop-widget"] .qr-quote-swiper .swiper-pagination-bullet-active,
+[data-section="qorix-quoteloop-widget"] .qr-quote-swiper .swiper-pagination.swiper-pagination-bullets-dynamic .swiper-pagination-bullet-active {
+  width: 28px !important;
+  height: 10px !important;
+  border-radius: 99px !important;
+  opacity: 1 !important;
+  background: var(--active-dot-color, var(--qr-color-pagination-active, #34c759)) !important;
+  transform: scale(1) !important;
+}
+
+[data-section="qorix-quoteloop-widget"] .qr-quote-swiper .swiper-pagination.swiper-pagination-bullets-dynamic .swiper-pagination-bullet-active-main:not(.swiper-pagination-bullet-active) {
+  width: 10px;
   height: 10px;
-  border-radius: 99px;
-  opacity: 1;
-  background: var(--active-dot-color, var(--qr-color-pagination-active, #34c759));
+  border-radius: 50%;
+  opacity: 0.35;
+  transform: scale(0.9);
 }
 
 /* Navigation arrows — MOBILE: bottom corners */

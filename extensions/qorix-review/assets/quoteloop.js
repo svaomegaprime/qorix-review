@@ -43,6 +43,8 @@ function initQuoteLoopSwiper() {
       pagination: {
         el: slider.querySelector('.swiper-pagination'),
         clickable: true,
+        dynamicBullets: true,
+        dynamicMainBullets: 3,
       },
 
       navigation: {
@@ -78,10 +80,24 @@ function initQuoteLoopSwiper() {
       },
     });
 
+    function adjustDynamicPaginationWidth(pEl) {
+      if (pEl && pEl.classList.contains('swiper-pagination-bullets-dynamic')) {
+        const w = parseFloat(pEl.style.width);
+        if (w) {
+          pEl.style.width = `${w + 18}px`;
+        }
+      }
+    }
+
+    swiper.on('paginationUpdate', (sw, pEl) => {
+      adjustDynamicPaginationWidth(pEl);
+    });
+
     if (shouldLoop && typeof swiper.loopFix === 'function') {
       swiper.loopFix();
     }
     swiper.update();
+    adjustDynamicPaginationWidth(slider.querySelector('.swiper-pagination'));
 
     swiper.qorixSlidesCount = slidesCount;
   });
