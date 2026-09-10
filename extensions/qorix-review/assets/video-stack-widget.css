@@ -489,26 +489,18 @@
   pointer-events: auto;
 }
 
-[data-section="qorix-review-video-stack-widget"] .qorix-review-video-stack-dot {
-  width: 12px;
-  height: 12px;
-  border: 0;
-  border-radius: 50%;
-  background: var(--active-dot-color, #088728);
-  opacity: 0.2;
-  cursor: pointer;
-  padding: 0;
-  margin: 0 8px;
-  display: inline-block;
-  transition:
-    opacity 0.25s ease,
-    transform 0.25s ease;
-}
-
 [data-section="qorix-review-video-stack-widget"]
-  .qorix-review-video-stack-dot.active {
-  opacity: 1;
-  background: var(--active-dot-color, #088728);
+  .qorix-review-video-stack-custom-pagination.qorix-review-video-stack-pagination-dynamic {
+  display: block;
+  overflow: hidden;
+  white-space: nowrap;
+  width: 144px;
+  max-width: 144px;
+  left: 50%;
+  transform: translateX(-50%);
+  padding: 6px 0;
+  box-sizing: content-box;
+  text-align: left;
 }
 
 [data-section="qorix-review-video-stack-widget"] .qorix-review-video-stack-dot {
@@ -522,7 +514,9 @@
   padding: 0 !important;
   margin: 0 4px !important;
   display: inline-block !important;
-  transition: all 0.3s ease !important;
+  vertical-align: middle !important;
+  position: relative;
+  transition: width 0.3s ease, border-radius 0.3s ease, opacity 0.25s ease, transform 0.25s ease, left 0.25s ease !important;
 }
 
 [data-section="qorix-review-video-stack-widget"]
@@ -532,6 +526,32 @@
   border-radius: 99px !important;
   opacity: 1 !important;
   background-color: var(--active-dot-color, #34c759) !important;
+  transform: scale(1) !important;
+}
+
+[data-section="qorix-review-video-stack-widget"]
+  .qorix-review-video-stack-dot.dot-near {
+  opacity: 0.45 !important;
+  transform: scale(0.9) !important;
+}
+
+[data-section="qorix-review-video-stack-widget"]
+  .qorix-review-video-stack-dot.dot-far {
+  opacity: 0.3 !important;
+  transform: scale(0.66) !important;
+}
+
+[data-section="qorix-review-video-stack-widget"]
+  .qorix-review-video-stack-dot.dot-edge {
+  opacity: 0.2 !important;
+  transform: scale(0.33) !important;
+}
+
+[data-section="qorix-review-video-stack-widget"]
+  .qorix-review-video-stack-dot.dot-hidden {
+  opacity: 0 !important;
+  transform: scale(0) !important;
+  pointer-events: none !important;
 }
 
 [data-section="qorix-review-video-stack-widget"]

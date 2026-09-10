@@ -1,3 +1,4 @@
+/* global Swiper */
 (function () {
   window.initReviewReel = function () {
     let container = document.querySelector(".qorix-review-reel-real-review-section .mySwiper");
@@ -49,6 +50,8 @@
       pagination: {
         el: wrapper ? wrapper.querySelector(".qorix-review-reel-swiper-pagination") : ".qorix-review-reel-swiper-pagination",
         clickable: true,
+        dynamicBullets: true,
+        dynamicMainBullets: 3,
       },
       breakpoints: {
         600: { slidesPerView: Math.min(2, navCols), spaceBetween: gapBetweenCards },
@@ -65,6 +68,22 @@
     }
 
     let swiper = new Swiper(container, swiperOptions);
+
+    function adjustDynamicPaginationWidth(pEl) {
+      if (pEl && pEl.classList.contains("swiper-pagination-bullets-dynamic")) {
+        const w = parseFloat(pEl.style.width);
+        if (w) {
+          pEl.style.width = `${w + 18}px`;
+        }
+      }
+    }
+
+    swiper.on("paginationUpdate", (sw, pEl) => {
+      adjustDynamicPaginationWidth(pEl);
+    });
+
+    let paginationEl = wrapper ? wrapper.querySelector(".qorix-review-reel-swiper-pagination") : null;
+    adjustDynamicPaginationWidth(paginationEl);
 
     function updateControlsVisibility() {
       totalSlides = container.querySelectorAll(".swiper-slide").length;
