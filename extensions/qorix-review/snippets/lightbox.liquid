@@ -1,30 +1,106 @@
+{{ 'swiper-bundle.min.css' | asset_url | stylesheet_tag }}
 {{ 'lightbox.css' | asset_url | stylesheet_tag }}
-<div x-data>
+
+<div x-data="qorixLightboxComponent()" x-init="init()">
   <template x-teleport="body">
-  <div
-    class="lightbox"
-    id="lightbox"
-    :class="{ open: $store.qorixPopup.lightboxOpen }"
-    @click.self="window.QorixPopup.closeLightbox()"
-    @keydown.escape.window="$store.qorixPopup.lightboxOpen && window.QorixPopup.closeLightbox()"
-  >
-    <button
-      class="lightbox-close"
-      type="button"
-      @click="window.QorixPopup.closeLightbox()"
-      aria-label="Close media viewer"
-      style="position: absolute; top: 18px; right: 20px; z-index: 1; width: 36px; height: 36px; border: none; border-radius: 50%; background: rgba(255, 255, 255, 0.15); color: #ffffff; font-size: 18px; line-height: 1; cursor: pointer; display: flex; align-items: center; justify-content: center; padding: 0;"
+    <div
+      class="lightbox qr-lightbox-modal"
+      id="lightbox"
+      :class="{ open: $store.qorixPopup.lightboxOpen }"
+      x-show="$store.qorixPopup.lightboxOpen"
+      style="display: none;"
+      @keydown.escape.window="$store.qorixPopup.lightboxOpen && close()"
+      @click.self="close()"
     >
-      &#x2715;
-    </button>
-    <div class="lightbox-content" id="lightbox-content">
-      <template x-if="$store.qorixPopup.lightboxMedia?.type === 'IMAGE'">
-        <img :src="$store.qorixPopup.lightboxMedia.url" alt="media" width="" height="">
-      </template>
-      <template x-if="$store.qorixPopup.lightboxMedia?.type === 'VIDEO'">
-        <video :src="$store.qorixPopup.lightboxMedia.url" controls autoplay></video>
-      </template>
+      <button
+        class="lightbox-close qr-lightbox-close"
+        type="button"
+        @click="close()"
+        aria-label="Close media viewer"
+      >
+        &#x2715;
+      </button>
+
+      <div class="qr-lightbox-swiper-container" @click.self="close()">
+        <!-- Prev Button -->
+        <button
+          type="button"
+          class="qr-lightbox-nav-btn qr-lightbox-swiper-button-prev"
+          aria-label="Previous slide"
+          x-show="hasMultipleAttachments"
+        >
+          <svg
+            width="22"
+            height="22"
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke="currentColor"
+            stroke-width="2.5"
+            stroke-linecap="round"
+            stroke-linejoin="round"
+          >
+            <polyline points="15 18 9 12 15 6"></polyline>
+          </svg>
+        </button>
+
+        <!-- Swiper -->
+        <div class="swiper qr-lightbox-swiper" x-ref="swiperContainer">
+          <div class="swiper-wrapper">
+            <template x-for="(item, idx) in attachments" :key="item.id || item.url || idx">
+              <div class="swiper-slide qr-lightbox-slide" @click.self="close()">
+                <div class="qr-lightbox-media-wrapper" @click.stop>
+                  <template x-if="item.type === 'IMAGE'">
+                    <img
+                      :src="item.url"
+                      alt="Review photo"
+                      class="qr-lightbox-img"
+                      loading="lazy"
+                      width=""
+                      height=""
+                    >
+                  </template>
+                  <template x-if="item.type === 'VIDEO'">
+                    <video
+                      :src="item.url"
+                      class="qr-lightbox-video"
+                      controls
+                      playsinline
+                      preload="metadata"
+                    ></video>
+                  </template>
+                </div>
+              </div>
+            </template>
+          </div>
+        </div>
+
+        <!-- Next Button -->
+        <button
+          type="button"
+          class="qr-lightbox-nav-btn qr-lightbox-swiper-button-next"
+          aria-label="Next slide"
+          x-show="hasMultipleAttachments"
+        >
+          <svg
+            width="22"
+            height="22"
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke="currentColor"
+            stroke-width="2.5"
+            stroke-linecap="round"
+            stroke-linejoin="round"
+          >
+            <polyline points="9 18 15 12 9 6"></polyline>
+          </svg>
+        </button>
+
+        <!-- Counter Indicator -->
+        <div class="qr-lightbox-counter" x-show="hasMultipleAttachments">
+          <span x-text="(currentIndex + 1) + ' / ' + attachments.length"></span>
+        </div>
+      </div>
     </div>
-  </div>
-</template>
+  </template>
 </div>
+<script src="{{ 'lightbox.js' | asset_url }}" defer></script>

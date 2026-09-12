@@ -11,8 +11,8 @@
     <div class="qorix-qr-media-slider swiper" data-quickreview-swiper>
       <div class="swiper-wrapper">
         <template x-if="attachments?.length">
-          <template x-for="attachment in attachments" :key="attachment.id">
-            <div class="swiper-slide qorix-qr-media-slide" @click="openLightbox(attachment)">
+          <template x-for="(attachment, index) in attachments" :key="attachment.id">
+            <div class="swiper-slide qorix-qr-media-slide" @click="openLightbox(attachment, attachments, index)">
               <template x-if="attachment.type === 'IMAGE' && !loading">
                 <img
                   class="qorix-qr-media-img"

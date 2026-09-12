@@ -30,10 +30,10 @@
         <div class="quickreview-media-modal__body">
           <div class="quickreview-media-modal__grid" data-quickreview-media-modal-grid>
             <template x-if="$store.qorixPopup.attachments.length">
-              <template x-for="attachment in $store.qorixPopup.attachments" :key="attachment.id">
+              <template x-for="(attachment, index) in $store.qorixPopup.attachments" :key="attachment.id">
                 <div
                   class="quickreview-media-modal__item"
-                  @click="window.QorixPopup.openLightbox(attachment); window.QorixPopup.closeMediaModal()"
+                  @click="window.QorixPopup.openLightbox(attachment, $store.qorixPopup.attachments, index); window.QorixPopup.closeMediaModal()"
                 >
                   <template x-if="attachment.type === 'IMAGE'">
                     <img

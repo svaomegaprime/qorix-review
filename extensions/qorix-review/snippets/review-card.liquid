@@ -62,7 +62,7 @@
                 muted
                 playsinline
                 preload="metadata"
-                @click="openLightbox(review.attachments[0])"
+                @click="openLightbox(review.attachments[0], review.attachments, 0)"
               ></video>
               <div
                 class="qorix-video-play-badge"
@@ -82,7 +82,7 @@
               :data-src="review.attachments[0].url"
               width=""
               height=""
-              @click="openLightbox(review.attachments[0])"
+              @click="openLightbox(review.attachments[0], review.attachments, 0)"
             >
           </template>
 
@@ -99,7 +99,7 @@
                       muted
                       playsinline
                       preload="metadata"
-                      @click="openMediaModal(review)"
+                      @click="openLightbox(attachment, review.attachments, index)"
                     ></video>
                     <div
                       class="qorix-video-play-badge"
@@ -119,7 +119,7 @@
                     :data-src="attachment.url"
                     width=""
                     height=""
-                    @click="openMediaModal(review)"
+                    @click="openLightbox(attachment, review.attachments, index)"
                   >
                 </template>
 
@@ -127,6 +127,7 @@
                   class="qr-review-image-count"
                   x-show="index === 1 && review.attachments.length > 2"
                   x-text="'+' + (review.attachments.length - 2)"
+                  @click.stop="openLightbox(attachment, review.attachments, index)"
                 ></span>
               </div>
             </template>

@@ -29,11 +29,13 @@ class ReviewX {
     ReviewX.syncBodyScroll();
   }
 
-  static openLightbox(media) {
+  static openLightbox(media, attachments = [], initialIndex = 0) {
     const popup = ReviewX.getPopupStore();
     if (!popup) return;
 
     popup.lightboxMedia = media;
+    popup.lightboxAttachments = attachments && attachments.length ? attachments : (media ? [media] : []);
+    popup.lightboxActiveIndex = initialIndex || 0;
     popup.lightboxOpen = true;
     ReviewX.syncBodyScroll();
   }
@@ -44,6 +46,8 @@ class ReviewX {
 
     popup.lightboxOpen = false;
     popup.lightboxMedia = null;
+    popup.lightboxAttachments = [];
+    popup.lightboxActiveIndex = 0;
     ReviewX.syncBodyScroll();
   }
 
@@ -829,8 +833,8 @@ class ReviewX {
     this.uploadedFiles = [];
   }
 
-  openLightbox(media) {
-    ReviewX.openLightbox(media);
+  openLightbox(media, attachments = [], initialIndex = 0) {
+    ReviewX.openLightbox(media, attachments, initialIndex);
   }
 
   openMediaModal(review) {
@@ -871,6 +875,8 @@ const registerQorixPopupStore = () => {
     attachments: [],
     lightboxOpen: false,
     lightboxMedia: null,
+    lightboxAttachments: [],
+    lightboxActiveIndex: 0,
   });
 };
 
