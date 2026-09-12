@@ -64,8 +64,8 @@
 
     {% if quick_review_metafield.isShowMediaThumbnails %}
       <div class="quickreview-review__media" x-show="review.attachments.length > 0">
-        <template x-for="attachment in review.attachments" :key="attachment.id">
-          <div class="quickreview-review__media-item" @click="openLightbox(attachment)">
+        <template x-for="(attachment, index) in review.attachments" :key="attachment.id">
+          <div class="quickreview-review__media-item" @click="openLightbox(attachment, review.attachments, index)">
             <template x-if="attachment.type === 'IMAGE'">
               <img
                 class="quickreview-review__media-img"
