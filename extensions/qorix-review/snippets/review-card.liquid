@@ -48,7 +48,35 @@
         </div>
       {% endif %}
 
-      <p class="qr-review-text" x-text="review.body"></p>
+      <div
+        class="qr-review-body-wrap"
+        x-data="{
+          isClamped: false,
+          checkClamp() {
+            const el = this.$refs.reviewText;
+            if (!el || el.clientHeight === 0) return;
+            this.isClamped = el.scrollHeight > (el.clientHeight + 1);
+          }
+        }"
+        x-init="
+          $nextTick(() => checkClamp());
+          const ro = new ResizeObserver(() => checkClamp());
+          if ($refs.reviewText) ro.observe($refs.reviewText);
+          $cleanup(() => ro.disconnect());
+        "
+        x-effect="if (!loading && review.body) { $nextTick(() => checkClamp()); }"
+        @resize.window.debounce.150ms="checkClamp()"
+      >
+        <p class="qr-review-text" x-ref="reviewText" x-text="review.body"></p>
+        <button
+          type="button"
+          class="qr-see-more-btn"
+          x-show="isClamped"
+          @click="openMediaModal(review)"
+        >
+          See more
+        </button>
+      </div>
       {% if review_hub_metafield.showMediaAsset %}
         <div
           class="qr-review-image-wrap"

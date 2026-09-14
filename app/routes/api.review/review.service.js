@@ -18,7 +18,7 @@ import { getShopifyActivePlan } from "../../utils/pricingPlan.server";
 
 const MAX_REVIEWER_NAME_LENGTH = 20;
 const MAX_REVIEWER_EMAIL_LENGTH = 100;
-const MAX_REVIEW_BODY_LENGTH = 300;
+const MAX_REVIEW_BODY_LENGTH = 1000;
 
 function normalizeOrderNumber(value) {
   if (!value || value === "null" || value === "undefined") return null;
@@ -143,7 +143,7 @@ async function postReview(request, session, admin) {
       {
         value: body,
         maxLength: MAX_REVIEW_BODY_LENGTH,
-        message: "Review body cannot exceed 300 characters",
+        message: "Review body cannot exceed 1000 characters",
       },
     ];
 
