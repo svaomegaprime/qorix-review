@@ -34,7 +34,8 @@ class ReviewX {
     if (!popup) return;
 
     popup.lightboxMedia = media;
-    popup.lightboxAttachments = attachments && attachments.length ? attachments : (media ? [media] : []);
+    popup.lightboxAttachments =
+      attachments && attachments.length ? attachments : media ? [media] : [];
     popup.lightboxActiveIndex = initialIndex || 0;
     popup.lightboxOpen = true;
     ReviewX.syncBodyScroll();
@@ -464,9 +465,9 @@ class ReviewX {
       return;
     }
 
-    if (this.form.review.length > 300) {
+    if (this.form.review.length > 1000) {
       this.isError = true;
-      this.errorMessage = "Your review cannot exceed 300 characters.";
+      this.errorMessage = "Your review cannot exceed 1000 characters.";
       return;
     }
 

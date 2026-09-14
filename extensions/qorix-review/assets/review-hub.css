@@ -442,6 +442,10 @@ span.qr-review-avatar {
   line-height: 1.5;
   min-height: 48px;
   word-break: break-all;
+  display: -webkit-box;
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: 3;
+  overflow: hidden;
 }
 
 .qr-review-image-wrap {
