@@ -1,5 +1,16 @@
 {{ 'quickreview-media-modal.css' | asset_url | stylesheet_tag }}
-<div x-data>
+<div
+  x-data="
+    {
+      formatDate(date) {
+        if (typeof window.QorixPopup?.timeAgo === 'function') {
+          return window.QorixPopup.timeAgo(date);
+        }
+        return 'Recently';
+      }
+    }
+  "
+>
   <template x-teleport="body">
     <div
       class="quickreview-media-modal"
@@ -13,58 +24,160 @@
         data-quickreview-media-modal-close
         @click="window.QorixPopup.closeMediaModal()"
       ></div>
+
       <div class="quickreview-media-modal__box">
         <div class="quickreview-media-modal__header">
-          <p>Review With media</p>
+          <!-- Active Review Header: Author Info -->
+          <template x-if="$store.qorixPopup.activeReview">
+            <div class="quickreview-modal-author-section">
+              <div class="quickreview-modal-author-row">
+                <div class="quickreview-modal-avatar-wrap">
+                  <img
+                    x-show="$store.qorixPopup.activeReview.reviewerImage"
+                    :src="$store.qorixPopup.activeReview.reviewerImage"
+                    alt=""
+                    class="quickreview-modal-avatar"
+                    width=""
+                    height=""
+                  >
+                  <span
+                    x-show="!$store.qorixPopup.activeReview.reviewerImage"
+                    class="quickreview-modal-avatar quickreview-modal-avatar-fallback"
+                    x-text="($store.qorixPopup.activeReview.reviewerName || 'A')[0].toUpperCase()"
+                  ></span>
+                </div>
+                <div class="quickreview-modal-author-meta">
+                  <div class="quickreview-modal-name-row">
+                    <span class="quickreview-modal-name" x-text="$store.qorixPopup.activeReview.reviewerName"></span>
+                    <span x-show="$store.qorixPopup.activeReview.isVerified" class="quickreview-modal-verified">
+                      {% render 'icon', name: 'check', color: 'var(--verified-badge-color, #34C759)' %}
+                    </span>
+                  </div>
+                  <span
+                    class="quickreview-modal-date"
+                    x-text="formatDate($store.qorixPopup.activeReview.createdAt)"
+                  ></span>
+                </div>
+              </div>
+
+              <!-- Rating Stars (below author info) -->
+              <div class="quickreview-modal-stars">
+                <template x-for="star in 5" :key="star">
+                  <span class="quickreview-modal-star-icon">
+                    <template x-if="star <= Math.floor($store.qorixPopup.activeReview.rating || 5)">
+                      {% render 'icon', name: 'star', color: 'var(--star-color, #34C759)' %}
+                    </template>
+                    <template x-if="star > Math.floor($store.qorixPopup.activeReview.rating || 5)">
+                      {% render 'icon', name: 'star', color: '#E0E0E0' %}
+                    </template>
+                  </span>
+                </template>
+              </div>
+            </div>
+          </template>
+
+          <!-- Fallback header if opened without activeReview -->
+          <template x-if="!$store.qorixPopup.activeReview">
+            <p class="quickreview-media-modal__title">Review With media</p>
+          </template>
+
           <button
             type="button"
             class="quickreview-media-modal__close"
             data-quickreview-media-modal-close
             aria-label="Close"
             @click="window.QorixPopup.closeMediaModal()"
-            style="width: 32px; height: 32px; display: flex; align-items: center; justify-content: center; background: #ffffff; border: none; border-radius: 50%; box-shadow: 0 1px 6px rgba(0, 0, 0, 0.18); cursor: pointer; z-index: 2; padding: 0;"
           >
             {% render 'svg', name: 'close-x' %}
           </button>
         </div>
+
         <div class="quickreview-media-modal__body">
-          <div class="quickreview-media-modal__grid" data-quickreview-media-modal-grid>
-            <template x-if="$store.qorixPopup.attachments.length">
-              <template x-for="(attachment, index) in $store.qorixPopup.attachments" :key="attachment.id">
-                <div
-                  class="quickreview-media-modal__item"
-                  @click="window.QorixPopup.openLightbox(attachment, $store.qorixPopup.attachments, index); window.QorixPopup.closeMediaModal()"
-                >
-                  <template x-if="attachment.type === 'IMAGE'">
-                    <img
-                      :src="attachment.url"
-                      alt="Review media"
-                      width=""
-                      height=""
+          <!-- Active Review Content -->
+          <template x-if="$store.qorixPopup.activeReview">
+            <div class="quickreview-modal-review-content">
+              <!-- Full Review Body -->
+              <p class="quickreview-modal-text" x-text="$store.qorixPopup.activeReview.body"></p>
+
+              <!-- Image/Video Attachments -->
+              <div
+                class="quickreview-modal-media-wrap"
+                x-show="$store.qorixPopup.attachments && $store.qorixPopup.attachments.length > 0"
+              >
+                <div class="quickreview-modal-media-grid">
+                  <template x-for="(attachment, index) in $store.qorixPopup.attachments" :key="attachment.id || index">
+                    <div
+                      class="quickreview-modal-media-item"
+                      @click="window.QorixPopup.openLightbox(attachment, $store.qorixPopup.attachments, index); window.QorixPopup.closeMediaModal()"
                     >
-                  </template>
-                  <template x-if="attachment.type === 'VIDEO'">
-                    <div style="width: 100%; height: 100%; position: relative;">
-                      <video
-                        class="qorix-qr-media-img"
-                        :src="attachment.url + '#t=0.001'"
-                        preload="metadata"
-                        muted
-                        playsinline
-                        style="width: 100%; height: 100%; object-fit: cover;"
-                      ></video>
-                      <div
-                        class="qorix-video-play-badge"
-                        style="position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); width: 32px; height: 32px; border-radius: 50%; background: rgba(255, 255, 255, 0.92); display: flex; align-items: center; justify-content: center; pointer-events: none; z-index: 2; box-shadow: 0 2px 8px rgba(0, 0, 0, 0.25);"
-                      >
-                        {% render 'svg', name: 'play-badge' %}
-                      </div>
+                      <template x-if="attachment.type === 'IMAGE'">
+                        <img
+                          :src="attachment.url"
+                          alt="Review media"
+                          class="quickreview-modal-media-thumb"
+                          loading="lazy"
+                          width=""
+                          height=""
+                        >
+                      </template>
+                      <template x-if="attachment.type === 'VIDEO'">
+                        <div class="quickreview-modal-video-wrap">
+                          <video
+                            class="quickreview-modal-media-thumb"
+                            :src="attachment.url + '#t=0.001'"
+                            preload="metadata"
+                            muted
+                            playsinline
+                          ></video>
+                          <div class="qorix-video-play-badge">
+                            {% render 'svg', name: 'play-badge' %}
+                          </div>
+                        </div>
+                      </template>
                     </div>
                   </template>
                 </div>
+              </div>
+            </div>
+          </template>
+
+          <!-- Fallback: Generic Media Grid when no activeReview -->
+          <template x-if="!$store.qorixPopup.activeReview">
+            <div class="quickreview-media-modal__grid" data-quickreview-media-modal-grid>
+              <template x-if="$store.qorixPopup.attachments && $store.qorixPopup.attachments.length">
+                <template x-for="(attachment, index) in $store.qorixPopup.attachments" :key="attachment.id || index">
+                  <div
+                    class="quickreview-media-modal__item"
+                    @click="window.QorixPopup.openLightbox(attachment, $store.qorixPopup.attachments, index); window.QorixPopup.closeMediaModal()"
+                  >
+                    <template x-if="attachment.type === 'IMAGE'">
+                      <img
+                        :src="attachment.url"
+                        alt="Review media"
+                        loading="lazy"
+                        width=""
+                        height=""
+                      >
+                    </template>
+                    <template x-if="attachment.type === 'VIDEO'">
+                      <div class="quickreview-modal-video-wrap">
+                        <video
+                          class="qorix-qr-media-img"
+                          :src="attachment.url + '#t=0.001'"
+                          preload="metadata"
+                          muted
+                          playsinline
+                        ></video>
+                        <div class="qorix-video-play-badge">
+                          {% render 'svg', name: 'play-badge' %}
+                        </div>
+                      </div>
+                    </template>
+                  </div>
+                </template>
               </template>
-            </template>
-          </div>
+            </div>
+          </template>
         </div>
       </div>
     </div>

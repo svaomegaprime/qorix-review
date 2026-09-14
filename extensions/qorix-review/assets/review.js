@@ -15,6 +15,7 @@ class ReviewX {
     const popup = ReviewX.getPopupStore();
     if (!popup) return;
 
+    popup.activeReview = review || null;
     popup.attachments = attachments;
     popup.showAllMedia = true;
     ReviewX.syncBodyScroll();
@@ -25,6 +26,7 @@ class ReviewX {
     if (!popup) return;
 
     popup.showAllMedia = false;
+    popup.activeReview = null;
     popup.attachments = [];
     ReviewX.syncBodyScroll();
   }
@@ -34,7 +36,8 @@ class ReviewX {
     if (!popup) return;
 
     popup.lightboxMedia = media;
-    popup.lightboxAttachments = attachments && attachments.length ? attachments : (media ? [media] : []);
+    popup.lightboxAttachments =
+      attachments && attachments.length ? attachments : media ? [media] : [];
     popup.lightboxActiveIndex = initialIndex || 0;
     popup.lightboxOpen = true;
     ReviewX.syncBodyScroll();
@@ -464,9 +467,9 @@ class ReviewX {
       return;
     }
 
-    if (this.form.review.length > 300) {
+    if (this.form.review.length > 1000) {
       this.isError = true;
-      this.errorMessage = "Your review cannot exceed 300 characters.";
+      this.errorMessage = "Your review cannot exceed 1000 characters.";
       return;
     }
 
@@ -658,7 +661,7 @@ class ReviewX {
     }
   }
 
-  timeAgo(date) {
+  static timeAgo(date) {
     if (!date) return "Recently";
 
     const d = new Date(date);
@@ -686,6 +689,10 @@ class ReviewX {
     }
 
     return "Just now";
+  }
+
+  timeAgo(date) {
+    return ReviewX.timeAgo(date);
   }
 
   initials(name) {
@@ -838,7 +845,10 @@ class ReviewX {
   }
 
   openMediaModal(review) {
-    ReviewX.openMediaModal(review, review?.attachments ?? this.attachments);
+    ReviewX.openMediaModal(
+      review,
+      review ? (review.attachments || []) : this.attachments,
+    );
   }
 
   closeLightbox(event) {
@@ -872,6 +882,7 @@ const registerQorixPopupStore = () => {
 
   window.Alpine.store("qorixPopup", {
     showAllMedia: false,
+    activeReview: null,
     attachments: [],
     lightboxOpen: false,
     lightboxMedia: null,
@@ -890,6 +901,7 @@ window.QorixPopup = {
   closeMediaModal: ReviewX.closeMediaModal,
   openLightbox: ReviewX.openLightbox,
   closeLightbox: ReviewX.closeLightbox,
+  timeAgo: ReviewX.timeAgo,
 };
 
 // export default QuickReviewWidget;
