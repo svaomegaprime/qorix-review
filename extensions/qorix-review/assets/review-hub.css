@@ -470,6 +470,7 @@ span.qr-review-avatar {
 .qr-review-image-wrap {
   position: relative;
   margin-bottom: 12px;
+  cursor: pointer;
 }
 
 .qr-review-image {
@@ -501,6 +502,7 @@ span.qr-review-avatar {
   position: relative;
   flex: 1;
   height: 180px;
+  cursor: pointer;
 }
 
 .qr-review-image-wraper {
